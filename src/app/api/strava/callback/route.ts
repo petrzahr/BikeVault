@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Validate and consume the one-time state token to resolve the initiating user
-  const stateValidation = consumeOAuthState(state);
+  const stateValidation = await consumeOAuthState(state);
   if (!stateValidation.valid || !stateValidation.bikeVaultUserId) {
     return NextResponse.redirect(
       `${baseUrl}/settings?tab=integrations&strava_error=${encodeURIComponent(

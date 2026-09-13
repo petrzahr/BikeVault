@@ -45,10 +45,10 @@ export function getStravaConfig() {
 /**
  * Builds the Strava OAuth 2.0 authorization URL with a secure state token bound to bikeVaultUserId.
  */
-export function buildAuthorizeUrl(bikeVaultUserId?: string | null): string {
+export async function buildAuthorizeUrl(bikeVaultUserId?: string | null): Promise<string> {
   const { clientId, redirectUri } = getStravaConfig();
   const userId = normalizeUserId(bikeVaultUserId);
-  const state = createOAuthState(userId);
+  const state = await createOAuthState(userId);
 
   const params = new URLSearchParams({
     client_id: clientId,
@@ -99,7 +99,7 @@ export async function exchangeCodeForTokens(
 
   // Athlete Integrity Check:
   // If this user already has an active integration with a DIFFERENT Strava athlete ID, do NOT silently replace!
-  const existing = getUserStravaAuth(userId);
+  const existing = await getUserStravaAuth(userId);
   if (existing && existing.stravaAthleteId && String(existing.stravaAthleteId) !== String(athleteId)) {
     throw new Error(
       `Účet uživatele '${userId}' je již propojen se Strava sportovcem '${existing.athleteName || existing.stravaAthleteId}' (ID: ${existing.stravaAthleteId}). Před propojením jiného sportovce (ID: ${athleteId}) nejprve odpojte stávající integraci.`
@@ -116,7 +116,7 @@ export async function exchangeCodeForTokens(
     connectedAt: new Date().toISOString(),
   };
 
-  saveUserStravaAuth(authRecord);
+  await saveUserStravaAuth(authRecord);
   return authRecord;
 }
 
@@ -147,7 +147,7 @@ export async function refreshAccessToken(
 
   if (!response.ok) {
     if (response.status === 400 || response.status === 401) {
-      clearUserStravaAuth(userId);
+      await clearUserStravaAuth(userId);
       throw new Error("Platnost Strava tokenu vypršela nebo byl přístup odvolán. Připojte prosím Stravu znovu.");
     }
     const errorBody = await response.text();
@@ -155,7 +155,7 @@ export async function refreshAccessToken(
   }
 
   const data = await response.json();
-  const current = getUserStravaAuth(userId);
+  const current = await getUserStravaAuth(userId);
 
   const updatedAuth: StravaIntegrationRecord = {
     bikeVaultUserId: userId,
@@ -168,7 +168,7 @@ export async function refreshAccessToken(
     lastSyncAt: current?.lastSyncAt,
   };
 
-  saveUserStravaAuth(updatedAuth);
+  await saveUserStravaAuth(updatedAuth);
   return updatedAuth;
 }
 
@@ -177,7 +177,7 @@ export async function refreshAccessToken(
  */
 export async function getValidAccessToken(bikeVaultUserId?: string | null): Promise<string> {
   const userId = normalizeUserId(bikeVaultUserId);
-  const auth = getUserStravaAuth(userId);
+  const auth = await getUserStravaAuth(userId);
   if (!auth) {
     throw new Error(`Strava není připojena pro uživatele '${userId}'. Nejprve připojte svůj účet Strava.`);
   }
@@ -306,7 +306,7 @@ export async function getGearMileageFromStrava(
  */
 export async function disconnectStrava(bikeVaultUserId?: string | null): Promise<void> {
   const userId = normalizeUserId(bikeVaultUserId);
-  const auth = getUserStravaAuth(userId);
+  const auth = await getUserStravaAuth(userId);
   if (auth && auth.accessToken) {
     try {
       await fetch(STRAVA_OAUTH_DEAUTHORIZE, {
@@ -318,5 +318,5 @@ export async function disconnectStrava(bikeVaultUserId?: string | null): Promise
       console.warn(`[Strava] Failed to call deauthorize API on Strava for user '${userId}':`, err);
     }
   }
-  clearUserStravaAuth(userId);
+  await clearUserStravaAuth(userId);
 }

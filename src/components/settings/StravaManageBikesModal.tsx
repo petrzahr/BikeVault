@@ -19,6 +19,7 @@ import { Bike } from "@/types/vault";
 import { compareMileage } from "@/lib/domain/stravaSync";
 import { formatKm } from "@/lib/i18n";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
+import { getValidAccessToken } from "@/lib/google/googleAuth";
 
 interface StravaManageBikesModalProps {
   isOpen: boolean;
@@ -55,8 +56,12 @@ export function StravaManageBikesModal({
     setLoading(true);
     setError(null);
     try {
+      const googleToken = getValidAccessToken();
       const res = await fetch("/api/strava/bikes", {
-        headers: userId ? { "x-bikevault-user-id": userId } : {},
+        headers: {
+          ...(userId ? { "x-bikevault-user-id": userId } : {}),
+          ...(googleToken ? { Authorization: `Bearer ${googleToken}` } : {}),
+        },
       });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
@@ -100,11 +105,13 @@ export function StravaManageBikesModal({
 
     try {
       // First fetch fresh mileage from Strava API
+      const googleToken = getValidAccessToken();
       const res = await fetch("/api/strava/sync", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(userId ? { "x-bikevault-user-id": userId } : {}),
+          ...(googleToken ? { Authorization: `Bearer ${googleToken}` } : {}),
         },
         body: JSON.stringify({ gearId: stravaBike.id, userId }),
       });

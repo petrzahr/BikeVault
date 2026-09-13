@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildAuthorizeUrl, getStravaConfig } from "@/lib/strava/stravaApi";
-import { resolveRequestUserId } from "@/lib/strava/requestUser";
+import { resolveAuthenticatedUserId, UnauthorizedError } from "@/lib/strava/requestUser";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userId = resolveRequestUserId(request);
-    const authorizeUrl = buildAuthorizeUrl(userId);
+    const userId = await resolveAuthenticatedUserId(request);
+    const authorizeUrl = await buildAuthorizeUrl(userId);
 
     const url = new URL(request.url);
     if (url.searchParams.get("redirect") === "1") {
@@ -27,6 +27,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ url: authorizeUrl });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Chyba při inicializaci Strava OAuth." },
       { status: 500 }

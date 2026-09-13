@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGearMileageFromStrava } from "@/lib/strava/stravaApi";
 import { updateUserLastSyncTime } from "@/lib/strava/stravaTokenStore";
-import { resolveRequestUserId } from "@/lib/strava/requestUser";
+import { resolveAuthenticatedUserId, UnauthorizedError } from "@/lib/strava/requestUser";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
+    const userId = await resolveAuthenticatedUserId(request);
     const body = await request.json();
-    const { gearId, gearIds, userId: bodyUserId } = body as {
+    const { gearId, gearIds } = body as {
       gearId?: string;
       gearIds?: string[];
-      userId?: string;
     };
 
-    const userId = bodyUserId || resolveRequestUserId(request);
     const idsToSync = gearIds || (gearId ? [gearId] : []);
 
     if (idsToSync.length === 0) {
@@ -40,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     const nowIso = new Date().toISOString();
-    updateUserLastSyncTime(userId, nowIso);
+    await updateUserLastSyncTime(userId, nowIso);
 
     return NextResponse.json({
       success: true,
@@ -48,6 +47,9 @@ export async function POST(request: NextRequest) {
       results,
     });
   } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Chyba při synchronizaci se Stravou." },
       { status: 500 }

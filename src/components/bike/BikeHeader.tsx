@@ -23,6 +23,7 @@ import { useVault } from "@/context/VaultContext";
 import { QuickPressureModal } from "@/components/garage/QuickPressureModal";
 import { UpdateOdometerModal } from "@/components/garage/UpdateOdometerModal";
 import { BikeModal } from "@/components/garage/BikeModal";
+import { getValidAccessToken } from "@/lib/google/googleAuth";
 import { resolveBikeImage, formatWeightCs } from "@/lib/domain/bikeImage";
 import { Bike } from "@/types/vault";
 
@@ -73,11 +74,13 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
     setStravaSyncNotice(null);
 
     try {
+      const googleToken = getValidAccessToken();
       const res = await fetch("/api/strava/sync", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-bikevault-user-id": currentUserId,
+          ...(googleToken ? { Authorization: `Bearer ${googleToken}` } : {}),
         },
         body: JSON.stringify({ gearId: bike.stravaGearId, userId: currentUserId }),
       });

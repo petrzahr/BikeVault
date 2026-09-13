@@ -27,10 +27,15 @@ import {
   getStravaAuth, 
   clearStravaAuth, 
   isTokenExpired, 
-  getPublicStravaStatus 
+  getPublicStravaStatus,
+  setCustomStorageAdapterForTest,
+  MemoryTokenStorageAdapter
 } from "../src/lib/strava/stravaTokenStore";
 import { createEmptyVaultData } from "../src/constants/defaultData";
 import { validateVaultData, saveStoredCache, loadStoredCacheResult, setActiveStorageKey } from "../src/lib/storage/storageService";
+
+// Isolate token store in memory for tests
+setCustomStorageAdapterForTest(new MemoryTokenStorageAdapter());
 
 // Mock localStorage for Node environment
 const storageMock = (() => {
@@ -183,72 +188,73 @@ function createTestDataset(): BikeVaultData {
   return base;
 }
 
-// Ensure clean environment before tests
-clearStravaAuth();
-storageMock.clear();
+async function runTests() {
+  // Ensure clean environment before tests
+  await clearStravaAuth();
+  storageMock.clear();
 
-// 1. Strava OAuth callback succeeds
-{
-  const mockTokens: StravaAuthData = {
-    accessToken: "mock_access_token_12345",
-    refreshToken: "mock_refresh_token_67890",
-    expiresAt: Math.floor(Date.now() / 1000) + 21600, // +6 hours
-    stravaAthleteId: 987654,
-    athleteName: "Petr Zahrádka",
-    connectedAt: new Date().toISOString(),
-  };
+  // 1. Strava OAuth callback succeeds
+  {
+    const mockTokens: StravaAuthData = {
+      accessToken: "mock_access_token_12345",
+      refreshToken: "mock_refresh_token_67890",
+      expiresAt: Math.floor(Date.now() / 1000) + 21600, // +6 hours
+      stravaAthleteId: 987654,
+      athleteName: "Petr Zahrádka",
+      connectedAt: new Date().toISOString(),
+    };
 
-  saveStravaAuth(mockTokens);
-  const stored = getStravaAuth();
-  assert.strictEqual(stored !== null, true, "Tokens should be saved in token store");
-  assert.strictEqual(stored?.accessToken, "mock_access_token_12345");
-  assert.strictEqual(stored?.athleteName, "Petr Zahrádka");
-  console.log("✅ PASSED Test 1: Strava OAuth callback succeeds and credentials persist server-side.");
-}
-
-// 2. Token refresh works
-{
-  const expiredTokens: StravaAuthData = {
-    accessToken: "expired_token",
-    refreshToken: "valid_refresh_token",
-    expiresAt: Math.floor(Date.now() / 1000) - 300, // expired 5 mins ago
-    stravaAthleteId: 987654,
-    connectedAt: new Date().toISOString(),
-  };
-  saveStravaAuth(expiredTokens);
-
-  const auth = getStravaAuth()!;
-  assert.strictEqual(isTokenExpired(auth), true, "Expired token must be detected");
-
-  // Simulate refresh
-  const refreshedTokens: StravaAuthData = {
-    ...auth,
-    accessToken: "fresh_access_token_9999",
-    expiresAt: Math.floor(Date.now() / 1000) + 21600,
-  };
-  saveStravaAuth(refreshedTokens);
-
-  const refreshedAuth = getStravaAuth()!;
-  assert.strictEqual(isTokenExpired(refreshedAuth), false, "Refreshed token must not be expired");
-  assert.strictEqual(refreshedAuth.accessToken, "fresh_access_token_9999");
-  console.log("✅ PASSED Test 2: Token refresh works when expired.");
-}
-
-// 3. Tokens are not exposed to client / localStorage
-{
-  const publicStatus = getPublicStravaStatus();
-  assert.strictEqual(publicStatus.connected, true);
-  assert.strictEqual("accessToken" in publicStatus, false, "accessToken must never be in public status");
-  assert.strictEqual("refreshToken" in publicStatus, false, "refreshToken must never be in public status");
-
-  // Check localStorage contains no Strava tokens
-  for (const key of Object.keys(storageMock)) {
-    const val = storageMock.getItem(key) || "";
-    assert.strictEqual(val.includes("mock_access_token"), false);
-    assert.strictEqual(val.includes("mock_refresh_token"), false);
+    await saveStravaAuth(mockTokens);
+    const stored = await getStravaAuth();
+    assert.strictEqual(stored !== null, true, "Tokens should be saved in token store");
+    assert.strictEqual(stored?.accessToken, "mock_access_token_12345");
+    assert.strictEqual(stored?.athleteName, "Petr Zahrádka");
+    console.log("✅ PASSED Test 1: Strava OAuth callback succeeds and credentials persist server-side.");
   }
-  console.log("✅ PASSED Test 3: Tokens are not exposed to client or localStorage.");
-}
+
+  // 2. Token refresh works
+  {
+    const expiredTokens: StravaAuthData = {
+      accessToken: "expired_token",
+      refreshToken: "valid_refresh_token",
+      expiresAt: Math.floor(Date.now() / 1000) - 300, // expired 5 mins ago
+      stravaAthleteId: 987654,
+      connectedAt: new Date().toISOString(),
+    };
+    await saveStravaAuth(expiredTokens);
+
+    const auth = (await getStravaAuth())!;
+    assert.strictEqual(isTokenExpired(auth), true, "Expired token must be detected");
+
+    // Simulate refresh
+    const refreshedTokens: StravaAuthData = {
+      ...auth,
+      accessToken: "fresh_access_token_9999",
+      expiresAt: Math.floor(Date.now() / 1000) + 21600,
+    };
+    await saveStravaAuth(refreshedTokens);
+
+    const refreshedAuth = (await getStravaAuth())!;
+    assert.strictEqual(isTokenExpired(refreshedAuth), false, "Refreshed token must not be expired");
+    assert.strictEqual(refreshedAuth.accessToken, "fresh_access_token_9999");
+    console.log("✅ PASSED Test 2: Token refresh works when expired.");
+  }
+
+  // 3. Tokens are not exposed to client / localStorage
+  {
+    const publicStatus = await getPublicStravaStatus();
+    assert.strictEqual(publicStatus.connected, true);
+    assert.strictEqual("accessToken" in publicStatus, false, "accessToken must never be in public status");
+    assert.strictEqual("refreshToken" in publicStatus, false, "refreshToken must never be in public status");
+
+    // Check localStorage contains no Strava tokens
+    for (const key of Object.keys(storageMock)) {
+      const val = storageMock.getItem(key) || "";
+      assert.strictEqual(val.includes("mock_access_token"), false);
+      assert.strictEqual(val.includes("mock_refresh_token"), false);
+    }
+    console.log("✅ PASSED Test 3: Tokens are not exposed to client or localStorage.");
+  }
 
 // 4. Strava bikes are loaded
 {
@@ -592,8 +598,8 @@ storageMock.clear();
   saveStoredCache(dataset);
 
   // Disconnect Strava
-  clearStravaAuth();
-  assert.strictEqual(getStravaAuth(), null);
+  await clearStravaAuth();
+  assert.strictEqual(await getStravaAuth(), null);
 
   // Read stored cache
   const loaded = loadStoredCacheResult();
@@ -645,7 +651,7 @@ storageMock.clear();
   const bikesBefore = JSON.stringify(dataset.bikes);
 
   // Setup OAuth
-  saveStravaAuth({
+  await saveStravaAuth({
     accessToken: "test_token",
     refreshToken: "test_refresh",
     expiresAt: Math.floor(Date.now() / 1000) + 3600,
@@ -699,3 +705,9 @@ storageMock.clear();
 }
 
 console.log("\n🎉 ALL 27 / 27 STRAVA INTEGRATION TESTS PASSED SUCCESSFULLY!\n");
+}
+
+runTests().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

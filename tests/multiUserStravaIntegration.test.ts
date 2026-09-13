@@ -26,10 +26,15 @@ import {
   consumeOAuthState, 
   getPublicUserStravaStatus, 
   getAllConnectedUserIds,
-  normalizeUserId 
+  normalizeUserId,
+  setCustomStorageAdapterForTest,
+  MemoryTokenStorageAdapter 
 } from "../src/lib/strava/stravaTokenStore";
 import { createEmptyVaultData } from "../src/constants/defaultData";
 import { validateVaultData, saveStoredCache, loadStoredCacheResult, setActiveStorageKey } from "../src/lib/storage/storageService";
+
+// Isolate token store in memory for tests
+setCustomStorageAdapterForTest(new MemoryTokenStorageAdapter());
 
 // Mock localStorage for Node environment
 const storageMock = (() => {
@@ -78,8 +83,8 @@ async function runTests() {
     connectedAt: new Date().toISOString(),
   };
 
-  saveUserStravaAuth(recordA);
-  const storedA = getUserStravaAuth(USER_A);
+  await saveUserStravaAuth(recordA);
+  const storedA = await getUserStravaAuth(USER_A);
   assert.strictEqual(storedA !== null, true);
   assert.strictEqual(storedA?.athleteName, "Petr Zahrádka");
   assert.strictEqual(storedA?.stravaAthleteId, 10001);
@@ -98,8 +103,8 @@ async function runTests() {
     connectedAt: new Date().toISOString(),
   };
 
-  saveUserStravaAuth(recordB);
-  const storedB = getUserStravaAuth(USER_B);
+  await saveUserStravaAuth(recordB);
+  const storedB = await getUserStravaAuth(USER_B);
   assert.strictEqual(storedB !== null, true);
   assert.strictEqual(storedB?.athleteName, "Eliška Zahrádková");
   assert.strictEqual(storedB?.stravaAthleteId, 20002);
@@ -108,13 +113,13 @@ async function runTests() {
 
 // 3. Both connections coexist
 {
-  const allUserIds = getAllConnectedUserIds();
+  const allUserIds = await getAllConnectedUserIds();
   assert.strictEqual(allUserIds.includes(USER_A), true);
   assert.strictEqual(allUserIds.includes(USER_B), true);
   assert.strictEqual(allUserIds.length >= 2, true);
 
-  const authA = getUserStravaAuth(USER_A);
-  const authB = getUserStravaAuth(USER_B);
+  const authA = await getUserStravaAuth(USER_A);
+  const authB = await getUserStravaAuth(USER_B);
   assert.strictEqual(authA?.stravaAthleteId, 10001);
   assert.strictEqual(authB?.stravaAthleteId, 20002);
   console.log("✅ PASSED Test 3: Both connections coexist independently.");
@@ -122,7 +127,7 @@ async function runTests() {
 
 // 4. User A cannot retrieve User B's Strava integration
 {
-  const requestedAuthForA = getUserStravaAuth(USER_A);
+  const requestedAuthForA = await getUserStravaAuth(USER_A);
   assert.notStrictEqual(requestedAuthForA?.accessToken, "user_b_access_token_222");
   assert.strictEqual(requestedAuthForA?.stravaAthleteId, 10001);
   console.log("✅ PASSED Test 4: User A cannot retrieve User B's Strava integration.");
@@ -130,7 +135,7 @@ async function runTests() {
 
 // 5. User B cannot retrieve User A's Strava integration
 {
-  const requestedAuthForB = getUserStravaAuth(USER_B);
+  const requestedAuthForB = await getUserStravaAuth(USER_B);
   assert.notStrictEqual(requestedAuthForB?.accessToken, "user_a_access_token_111");
   assert.strictEqual(requestedAuthForB?.stravaAthleteId, 20002);
   console.log("✅ PASSED Test 5: User B cannot retrieve User A's Strava integration.");
@@ -253,19 +258,19 @@ async function runTests() {
 // 10. Switching Google users clears previous in-memory Strava state
 {
   let activeUser = USER_A;
-  let inMemoryStatus = getPublicUserStravaStatus(activeUser);
+  let inMemoryStatus = await getPublicUserStravaStatus(activeUser);
   assert.strictEqual(inMemoryStatus.athleteName, "Petr Zahrádka");
 
   // User switches to User B
   activeUser = USER_B;
-  inMemoryStatus = getPublicUserStravaStatus(activeUser);
+  inMemoryStatus = await getPublicUserStravaStatus(activeUser);
   assert.strictEqual(inMemoryStatus.athleteName, "Eliška Zahrádková");
   assert.strictEqual(inMemoryStatus.athleteId, "20002");
 
   // User switches to non-connected User C
   const USER_C = "karel@example.com";
   activeUser = USER_C;
-  inMemoryStatus = getPublicUserStravaStatus(activeUser);
+  inMemoryStatus = await getPublicUserStravaStatus(activeUser);
   assert.strictEqual(inMemoryStatus.connected, false);
   assert.strictEqual(inMemoryStatus.athleteName, undefined);
   console.log("✅ PASSED Test 10: Switching Google users clears previous in-memory Strava state.");
@@ -291,8 +296,8 @@ async function runTests() {
 
 // 12. Refresh tokens remain isolated per user
 {
-  const authA = getUserStravaAuth(USER_A);
-  const authB = getUserStravaAuth(USER_B);
+  const authA = await getUserStravaAuth(USER_A);
+  const authB = await getUserStravaAuth(USER_B);
 
   assert.strictEqual(authA?.refreshToken, "user_a_refresh_token_111");
   assert.strictEqual(authB?.refreshToken, "user_b_refresh_token_222");
@@ -302,15 +307,15 @@ async function runTests() {
 
 // 13. Token refresh updates only the correct user's integration
 {
-  const authA = getUserStravaAuth(USER_A)!;
+  const authA = (await getUserStravaAuth(USER_A))!;
   const updatedA: StravaIntegrationRecord = {
     ...authA,
     accessToken: "user_a_NEW_access_token_999",
   };
-  saveUserStravaAuth(updatedA);
+  await saveUserStravaAuth(updatedA);
 
-  const freshA = getUserStravaAuth(USER_A)!;
-  const freshB = getUserStravaAuth(USER_B)!;
+  const freshA = (await getUserStravaAuth(USER_A))!;
+  const freshB = (await getUserStravaAuth(USER_B))!;
 
   assert.strictEqual(freshA.accessToken, "user_a_NEW_access_token_999");
   // User B's token remains completely untouched!
@@ -320,10 +325,10 @@ async function runTests() {
 
 // 14. Disconnecting User A's Strava does not affect User B
 {
-  clearUserStravaAuth(USER_A);
+  await clearUserStravaAuth(USER_A);
 
-  const statusA = getPublicUserStravaStatus(USER_A);
-  const statusB = getPublicUserStravaStatus(USER_B);
+  const statusA = await getPublicUserStravaStatus(USER_A);
+  const statusB = await getPublicUserStravaStatus(USER_B);
 
   assert.strictEqual(statusA.connected, false);
   assert.strictEqual(statusB.connected, true);
@@ -335,17 +340,17 @@ async function runTests() {
 {
   const USER_NEW = "novy.uzivatel@example.com";
   // User initiates authorization -> creates secure state
-  const stateToken = createOAuthState(USER_NEW);
+  const stateToken = await createOAuthState(USER_NEW);
   assert.strictEqual(typeof stateToken === "string", true);
   assert.strictEqual(stateToken.length >= 32, true);
 
   // When callback arrives with this state, consumeOAuthState returns the exact bound user
-  const result = consumeOAuthState(stateToken);
+  const result = await consumeOAuthState(stateToken);
   assert.strictEqual(result.valid, true);
   assert.strictEqual(result.bikeVaultUserId, USER_NEW);
 
   // Once consumed, the state cannot be reused (CSRF / replay protection)
-  const replayResult = consumeOAuthState(stateToken);
+  const replayResult = await consumeOAuthState(stateToken);
   assert.strictEqual(replayResult.valid, false);
   assert.strictEqual(replayResult.error?.includes("Neplatný nebo již použitý"), true);
 
@@ -369,7 +374,7 @@ async function runTests() {
 // 16. Re-authentication with a different Strava athlete cannot silently replace an existing integration
 {
   const USER_EXISTING = "existing@example.com";
-  saveUserStravaAuth({
+  await saveUserStravaAuth({
     bikeVaultUserId: USER_EXISTING,
     stravaAthleteId: 30003,
     athleteName: "Původní Sportovec",
@@ -379,7 +384,7 @@ async function runTests() {
     connectedAt: new Date().toISOString(),
   });
 
-  const existingAuth = getUserStravaAuth(USER_EXISTING)!;
+  const existingAuth = (await getUserStravaAuth(USER_EXISTING))!;
   assert.strictEqual(existingAuth.stravaAthleteId, 30003);
 
   // New OAuth callback returns different athlete 40004

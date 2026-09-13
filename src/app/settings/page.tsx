@@ -26,6 +26,7 @@ import { StravaManageBikesModal } from "@/components/settings/StravaManageBikesM
 import { BikeModal } from "@/components/garage/BikeModal";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { PublicStravaStatus } from "@/lib/strava/stravaTokenStore";
+import { getValidAccessToken } from "@/lib/google/googleAuth";
 import { Bike } from "@/types/vault";
 
 export const dynamic = "force-dynamic";
@@ -73,11 +74,25 @@ export default function SettingsPage() {
     }
   }, [searchParams]);
 
+  const getStravaHeaders = useCallback((contentTypeJson = false): Record<string, string> => {
+    const headers: Record<string, string> = {
+      "x-bikevault-user-id": currentUserId,
+    };
+    if (contentTypeJson) {
+      headers["Content-Type"] = "application/json";
+    }
+    const token = getValidAccessToken();
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    return headers;
+  }, [currentUserId]);
+
   const loadStatus = useCallback(async () => {
     setLoadingStatus(true);
     try {
       const res = await fetch("/api/strava/status", {
-        headers: { "x-bikevault-user-id": currentUserId },
+        headers: getStravaHeaders(),
       });
       if (res.ok) {
         const json = await res.json();
@@ -88,7 +103,7 @@ export default function SettingsPage() {
     } finally {
       setLoadingStatus(false);
     }
-  }, [currentUserId]);
+  }, [getStravaHeaders]);
 
   useEffect(() => {
     loadStatus();
@@ -98,7 +113,7 @@ export default function SettingsPage() {
   const handleConnectStrava = async () => {
     try {
       const res = await fetch("/api/strava/auth", {
-        headers: { "x-bikevault-user-id": currentUserId },
+        headers: getStravaHeaders(),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -121,10 +136,7 @@ export default function SettingsPage() {
     try {
       const res = await fetch("/api/strava/disconnect", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-bikevault-user-id": currentUserId,
-        },
+        headers: getStravaHeaders(true),
         body: JSON.stringify({ userId: currentUserId }),
       });
       if (!res.ok) {
@@ -165,10 +177,7 @@ export default function SettingsPage() {
       const gearIds = linkedBikes.map((b) => b.stravaGearId as string);
       const res = await fetch("/api/strava/sync", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-bikevault-user-id": currentUserId,
-        },
+        headers: getStravaHeaders(true),
         body: JSON.stringify({ gearIds, userId: currentUserId }),
       });
 
