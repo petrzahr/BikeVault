@@ -48,7 +48,7 @@ declare global {
   }
 }
 
-export const GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file";
+export const GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file email";
 const AUTH_STORAGE_KEY = "bikevault_google_auth_v1";
 
 /**

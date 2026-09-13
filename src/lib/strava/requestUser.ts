@@ -4,6 +4,10 @@ import { normalizeUserId, DEFAULT_USER_ID } from "./stravaTokenStore";
 // Cache verified Google user tokens (5-minute TTL) to minimize latency
 const tokenVerificationCache = new Map<string, { email: string; expiresAt: number }>();
 
+export function clearTokenVerificationCacheForTest(): void {
+  tokenVerificationCache.clear();
+}
+
 export class UnauthorizedError extends Error {
   constructor(message = "Neautorizovaný požadavek: Chybí platné ověření účtu Google.") {
     super(message);
@@ -12,14 +16,75 @@ export class UnauthorizedError extends Error {
 }
 
 /**
+ * Validates a Google access token with Google server-side APIs.
+ *
+ * Strategies:
+ * 1. Google Drive API about.get:
+ *    Matches BikeVault's core OAuth scope (https://www.googleapis.com/auth/drive.file).
+ *    Cryptographically validates the token on Google servers and returns user.emailAddress.
+ * 2. Google OAuth2 userinfo:
+ *    Matches standard OpenID / email scopes.
+ * 3. Google OAuth2 tokeninfo:
+ *    General token validation inspector.
+ */
+async function verifyGoogleTokenWithGoogle(googleToken: string): Promise<string | null> {
+  // Strategy 1: Google Drive about.get (primary for BikeVault's drive.file scope)
+  try {
+    const driveRes = await fetch("https://www.googleapis.com/drive/v3/about?fields=user", {
+      headers: { Authorization: `Bearer ${googleToken}` },
+    });
+    if (driveRes.ok) {
+      const driveData = (await driveRes.json()) as { user?: { emailAddress?: string } };
+      if (driveData?.user?.emailAddress) {
+        return normalizeUserId(driveData.user.emailAddress);
+      }
+    }
+  } catch (err) {
+    console.warn("[requestUser] Google Drive about.get validation error:", err);
+  }
+
+  // Strategy 2: Google OAuth2 userinfo (for tokens with email/profile/openid scopes)
+  try {
+    const userinfoRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${googleToken}` },
+    });
+    if (userinfoRes.ok) {
+      const userInfo = (await userinfoRes.json()) as { email?: string };
+      if (userInfo?.email) {
+        return normalizeUserId(userInfo.email);
+      }
+    }
+  } catch (err) {
+    console.warn("[requestUser] Google userinfo validation error:", err);
+  }
+
+  // Strategy 3: Google OAuth2 tokeninfo (token inspector)
+  try {
+    const tokeninfoRes = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(googleToken)}`
+    );
+    if (tokeninfoRes.ok) {
+      const tokenInfo = (await tokeninfoRes.json()) as { email?: string };
+      if (tokenInfo?.email) {
+        return normalizeUserId(tokenInfo.email);
+      }
+    }
+  } catch (err) {
+    console.warn("[requestUser] Google tokeninfo validation error:", err);
+  }
+
+  return null;
+}
+
+/**
  * Validates the caller's Google access token server-side with Google Identity / Drive.
- * Scopes server operations to the verified Google email address.
+ * Scopes server operations strictly to the verified Google email address.
  * Never blindly trusts client-provided identity headers in production.
  */
 export async function resolveAuthenticatedUserId(request: NextRequest): Promise<string> {
   const authHeader = request.headers.get("authorization");
 
-  if (authHeader && authHeader.startsWith("Bearer ")) {
+  if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
     const googleToken = authHeader.substring(7).trim();
 
     if (googleToken) {
@@ -29,26 +94,14 @@ export async function resolveAuthenticatedUserId(request: NextRequest): Promise<
         return normalizeUserId(cached.email);
       }
 
-      // 2. Verify with Google OAuth2 userinfo
-      try {
-        const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: { Authorization: `Bearer ${googleToken}` },
+      // 2. Verify with Google APIs
+      const verifiedEmail = await verifyGoogleTokenWithGoogle(googleToken);
+      if (verifiedEmail) {
+        tokenVerificationCache.set(googleToken, {
+          email: verifiedEmail,
+          expiresAt: Date.now() + 5 * 60 * 1000,
         });
-
-        if (res.ok) {
-          const userInfo = (await res.json()) as { email?: string; sub?: string };
-          if (userInfo.email) {
-            const verifiedEmail = normalizeUserId(userInfo.email);
-            // Cache verified user identity for 5 minutes
-            tokenVerificationCache.set(googleToken, {
-              email: verifiedEmail,
-              expiresAt: Date.now() + 5 * 60 * 1000,
-            });
-            return verifiedEmail;
-          }
-        }
-      } catch (err) {
-        console.warn("[requestUser] Google token validation network error:", err);
+        return verifiedEmail;
       }
     }
   }

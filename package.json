@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "tsx tests/domain.test.ts && tsx tests/productionInitializationAndDataIsolation.test.ts && tsx tests/bikeEditingAndFormImprovements.test.ts && tsx tests/stravaIntegration.test.ts && tsx tests/multiUserStravaIntegration.test.ts && tsx tests/kvTokenStorageAdapter.test.ts"
+    "test": "tsx tests/domain.test.ts && tsx tests/productionInitializationAndDataIsolation.test.ts && tsx tests/bikeEditingAndFormImprovements.test.ts && tsx tests/stravaIntegration.test.ts && tsx tests/multiUserStravaIntegration.test.ts && tsx tests/kvTokenStorageAdapter.test.ts && tsx tests/googleTokenValidation.test.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

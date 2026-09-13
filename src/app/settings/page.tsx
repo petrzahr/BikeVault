@@ -26,7 +26,7 @@ import { StravaManageBikesModal } from "@/components/settings/StravaManageBikesM
 import { BikeModal } from "@/components/garage/BikeModal";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { PublicStravaStatus } from "@/lib/strava/stravaTokenStore";
-import { getValidAccessToken } from "@/lib/google/googleAuth";
+import { getValidAccessToken, loginToGoogle } from "@/lib/google/googleAuth";
 import { Bike } from "@/types/vault";
 
 export const dynamic = "force-dynamic";
@@ -112,8 +112,23 @@ export default function SettingsPage() {
   // Connect flow: redirect to /api/strava/auth
   const handleConnectStrava = async () => {
     try {
+      let token = getValidAccessToken();
+      if (!token) {
+        // Token might have expired during the session; prompt re-auth
+        try {
+          token = await loginToGoogle();
+        } catch {
+          throw new Error("Pro propojení se Stravou je vyžadováno platné přihlášení k účtu Google.");
+        }
+      }
+
+      const headers = getStravaHeaders();
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const res = await fetch("/api/strava/auth", {
-        headers: getStravaHeaders(),
+        headers,
       });
       const json = await res.json();
       if (!res.ok) {
