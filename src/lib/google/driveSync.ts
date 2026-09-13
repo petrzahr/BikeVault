@@ -1,10 +1,12 @@
 /**
  * Google Drive Synchronizační vrstva pro BikeVault
  * Stahuje a ukládá soubor bikevault_data.json přes Google Drive API v3.
+ * Google Drive je autoritativním zdrojem pravdy.
  */
 
 import { BikeVaultData } from "@/types/vault";
 import { clearStoredAuth } from "./googleAuth";
+import { validateVaultData } from "../storage/storageService";
 
 export const BIKEVAULT_DATA_FILENAME = "bikevault_data.json";
 
@@ -13,6 +15,15 @@ export interface DriveFileInfo {
   name: string;
   modifiedTime?: string;
   size?: string;
+}
+
+export class CorruptedCloudDataError extends Error {
+  public readonly rawPayload?: unknown;
+  constructor(message: string, rawPayload?: unknown) {
+    super(message);
+    this.name = "CorruptedCloudDataError";
+    this.rawPayload = rawPayload;
+  }
 }
 
 /**
@@ -47,7 +58,8 @@ export async function findVaultFile(token: string): Promise<DriveFileInfo | null
 }
 
 /**
- * Stáhne a naparsuje obsah souboru z Google Disku
+ * Stáhne, naparsuje a zvaliduje autoritativní obsah souboru z Google Disku.
+ * Pokud je soubor poškozený nebo neodpovídá schématu, vyhodí CorruptedCloudDataError.
  */
 export async function downloadVaultData(token: string, fileId: string): Promise<BikeVaultData> {
   const url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
@@ -68,9 +80,22 @@ export async function downloadVaultData(token: string, fileId: string): Promise<
     throw new Error(`Nepodařilo se stáhnout data z Google Disku (HTTP ${res.status}): ${errorText}`);
   }
 
-  const content = await res.json();
-  if (!content || typeof content !== "object") {
-    throw new Error("Data stažená z Google Disku nejsou ve validním formátu JSON.");
+  let content: unknown;
+  try {
+    content = await res.json();
+  } catch (parseErr) {
+    throw new CorruptedCloudDataError(
+      "Data stažená z Google Disku nejsou ve validním formátu JSON. Soubor je pravděpodobně poškozen.",
+      parseErr
+    );
+  }
+
+  const validation = validateVaultData(content);
+  if (!validation.valid) {
+    throw new CorruptedCloudDataError(
+      `Data stažená z Google Disku neobsahují platné schéma BikeVault: ${validation.errors.join("; ")}`,
+      content
+    );
   }
 
   return content as BikeVaultData;
@@ -101,13 +126,19 @@ function buildMultipartRequestBody(
 }
 
 /**
- * Uloží data na Google Drive (PATCH pokud existuje soubor, jinak POST)
+ * Uloží data na Google Drive (PATCH pokud existuje soubor, jinak POST).
+ * Před odesláním data striktně validuje, aby se na Google Drive nikdy nedostala poškozená data.
  */
 export async function uploadVaultData(
   token: string,
   vaultData: BikeVaultData,
   existingFileId?: string
 ): Promise<DriveFileInfo> {
+  const validation = validateVaultData(vaultData);
+  if (!validation.valid) {
+    throw new Error(`Zápis na Google Disk zamítnut: Data nejsou platná (${validation.errors.join("; ")})`);
+  }
+
   const payloadJson = JSON.stringify(vaultData, null, 2);
   const boundary = `-------BikeVaultBoundary${Date.now()}`;
 
@@ -152,25 +183,4 @@ export async function uploadVaultData(
 
   const result = await res.json();
   return result as DriveFileInfo;
-}
-
-/**
- * Sloučí data z cloudu a lokální paměti
- * Pokud je cloud novější než lokál, použije cloud. Pokud je lokál novější, ponechá lokál.
- */
-export function mergeVaultData(cloudData: BikeVaultData, localData: BikeVaultData): BikeVaultData {
-  if (JSON.stringify(cloudData) === JSON.stringify(localData)) {
-    return cloudData;
-  }
-
-  const cloudTime = new Date(cloudData.updatedAt || 0).getTime();
-  const localTime = new Date(localData.updatedAt || 0).getTime();
-
-  // Cloud je novější nebo stejný
-  if (cloudTime >= localTime) {
-    return cloudData;
-  }
-
-  // Lokál je novější (uživatel provedl změny offline před připojením)
-  return localData;
 }
