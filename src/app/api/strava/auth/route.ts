@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildAuthorizeUrl, getStravaConfig } from "@/lib/strava/stravaApi";
+import { resolveRequestUserId } from "@/lib/strava/requestUser";
 
 export const dynamic = "force-dynamic";
 
@@ -16,15 +17,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const authorizeUrl = buildAuthorizeUrl();
+    const userId = resolveRequestUserId(request);
+    const authorizeUrl = buildAuthorizeUrl(userId);
 
-    // If client requested direct redirect
     const url = new URL(request.url);
     if (url.searchParams.get("redirect") === "1") {
       return NextResponse.redirect(authorizeUrl);
     }
 
-    return NextResponse.json({ url: authorizeUrl });
+    return NextResponse.json({ url });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Chyba při inicializaci Strava OAuth." },

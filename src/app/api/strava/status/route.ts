@@ -1,12 +1,14 @@
-import { NextResponse } from "next/server";
-import { getPublicStravaStatus } from "@/lib/strava/stravaTokenStore";
+import { NextRequest, NextResponse } from "next/server";
+import { getPublicUserStravaStatus } from "@/lib/strava/stravaTokenStore";
 import { getStravaConfig } from "@/lib/strava/stravaApi";
+import { resolveRequestUserId } from "@/lib/strava/requestUser";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const status = getPublicStravaStatus();
+    const userId = resolveRequestUserId(request);
+    const status = getPublicUserStravaStatus(userId);
     const config = getStravaConfig();
 
     return NextResponse.json({

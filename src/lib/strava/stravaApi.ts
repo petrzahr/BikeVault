@@ -1,9 +1,12 @@
 import {
-  getStravaAuth,
-  saveStravaAuth,
-  clearStravaAuth,
+  getUserStravaAuth,
+  saveUserStravaAuth,
+  clearUserStravaAuth,
   isTokenExpired,
-  StravaAuthData,
+  createOAuthState,
+  normalizeUserId,
+  DEFAULT_USER_ID,
+  StravaIntegrationRecord,
 } from "./stravaTokenStore";
 import { metersToKm } from "../domain/stravaSync";
 
@@ -40,28 +43,38 @@ export function getStravaConfig() {
 }
 
 /**
- * Builds the Strava OAuth 2.0 authorization URL.
+ * Builds the Strava OAuth 2.0 authorization URL with a secure state token bound to bikeVaultUserId.
  */
-export function buildAuthorizeUrl(): string {
+export function buildAuthorizeUrl(bikeVaultUserId?: string | null): string {
   const { clientId, redirectUri } = getStravaConfig();
+  const userId = normalizeUserId(bikeVaultUserId);
+  const state = createOAuthState(userId);
+
   const params = new URLSearchParams({
     client_id: clientId,
     response_type: "code",
     redirect_uri: redirectUri,
     approval_prompt: "auto",
     scope: REQUIRED_SCOPES,
+    state,
   });
   return `${STRAVA_OAUTH_AUTHORIZE}?${params.toString()}`;
 }
 
 /**
- * Exchanges authorization code for access and refresh tokens.
+ * Exchanges authorization code for access and refresh tokens, saving them for the specified BikeVault user.
+ * Enforces athlete integrity check: prevents silent replacement if a different athlete is returned.
  */
-export async function exchangeCodeForTokens(code: string): Promise<StravaAuthData> {
+export async function exchangeCodeForTokens(
+  code: string,
+  bikeVaultUserId?: string | null
+): Promise<StravaIntegrationRecord> {
   const { clientId, clientSecret } = getStravaConfig();
   if (!clientId || !clientSecret) {
     throw new Error("Strava API není na serveru nakonfigurována (chybí STRAVA_CLIENT_ID nebo STRAVA_CLIENT_SECRET).");
   }
+
+  const userId = normalizeUserId(bikeVaultUserId);
 
   const response = await fetch(STRAVA_OAUTH_TOKEN, {
     method: "POST",
@@ -81,29 +94,45 @@ export async function exchangeCodeForTokens(code: string): Promise<StravaAuthDat
 
   const data = await response.json();
   const athlete = data.athlete || {};
+  const athleteId = athlete.id || data.athlete_id || "unknown";
   const athleteName = [athlete.firstname, athlete.lastname].filter(Boolean).join(" ") || athlete.username || "Strava sportovec";
 
-  const authData: StravaAuthData = {
+  // Athlete Integrity Check:
+  // If this user already has an active integration with a DIFFERENT Strava athlete ID, do NOT silently replace!
+  const existing = getUserStravaAuth(userId);
+  if (existing && existing.stravaAthleteId && String(existing.stravaAthleteId) !== String(athleteId)) {
+    throw new Error(
+      `Účet uživatele '${userId}' je již propojen se Strava sportovcem '${existing.athleteName || existing.stravaAthleteId}' (ID: ${existing.stravaAthleteId}). Před propojením jiného sportovce (ID: ${athleteId}) nejprve odpojte stávající integraci.`
+    );
+  }
+
+  const authRecord: StravaIntegrationRecord = {
+    bikeVaultUserId: userId,
     accessToken: data.access_token,
     refreshToken: data.refresh_token,
     expiresAt: data.expires_at,
-    athleteId: athlete.id || data.athlete_id || "unknown",
+    stravaAthleteId: athleteId,
     athleteName,
     connectedAt: new Date().toISOString(),
   };
 
-  saveStravaAuth(authData);
-  return authData;
+  saveUserStravaAuth(authRecord);
+  return authRecord;
 }
 
 /**
- * Refreshes an expired access token using the stored refresh token.
+ * Refreshes an expired access token using the stored refresh token for a specific BikeVault user.
  */
-export async function refreshAccessToken(refreshToken: string): Promise<StravaAuthData> {
+export async function refreshAccessToken(
+  refreshToken: string,
+  bikeVaultUserId?: string | null
+): Promise<StravaIntegrationRecord> {
   const { clientId, clientSecret } = getStravaConfig();
   if (!clientId || !clientSecret) {
     throw new Error("Strava API není na serveru nakonfigurována.");
   }
+
+  const userId = normalizeUserId(bikeVaultUserId);
 
   const response = await fetch(STRAVA_OAUTH_TOKEN, {
     method: "POST",
@@ -118,7 +147,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<StravaAu
 
   if (!response.ok) {
     if (response.status === 400 || response.status === 401) {
-      clearStravaAuth();
+      clearUserStravaAuth(userId);
       throw new Error("Platnost Strava tokenu vypršela nebo byl přístup odvolán. Připojte prosím Stravu znovu.");
     }
     const errorBody = await response.text();
@@ -126,33 +155,35 @@ export async function refreshAccessToken(refreshToken: string): Promise<StravaAu
   }
 
   const data = await response.json();
-  const current = getStravaAuth();
+  const current = getUserStravaAuth(userId);
 
-  const updatedAuth: StravaAuthData = {
+  const updatedAuth: StravaIntegrationRecord = {
+    bikeVaultUserId: userId,
     accessToken: data.access_token,
     refreshToken: data.refresh_token || refreshToken,
     expiresAt: data.expires_at,
-    athleteId: current?.athleteId || "unknown",
+    stravaAthleteId: current?.stravaAthleteId || "unknown",
     athleteName: current?.athleteName,
     connectedAt: current?.connectedAt || new Date().toISOString(),
     lastSyncAt: current?.lastSyncAt,
   };
 
-  saveStravaAuth(updatedAuth);
+  saveUserStravaAuth(updatedAuth);
   return updatedAuth;
 }
 
 /**
- * Gets a valid access token, refreshing if necessary.
+ * Gets a valid access token for a specific BikeVault user, auto-refreshing if necessary.
  */
-export async function getValidAccessToken(): Promise<string> {
-  const auth = getStravaAuth();
+export async function getValidAccessToken(bikeVaultUserId?: string | null): Promise<string> {
+  const userId = normalizeUserId(bikeVaultUserId);
+  const auth = getUserStravaAuth(userId);
   if (!auth) {
-    throw new Error("Strava není připojena. Nejprve připojte svůj účet Strava.");
+    throw new Error(`Strava není připojena pro uživatele '${userId}'. Nejprve připojte svůj účet Strava.`);
   }
 
   if (isTokenExpired(auth)) {
-    const refreshed = await refreshAccessToken(auth.refreshToken);
+    const refreshed = await refreshAccessToken(auth.refreshToken, userId);
     return refreshed.accessToken;
   }
 
@@ -160,10 +191,13 @@ export async function getValidAccessToken(): Promise<string> {
 }
 
 /**
- * Loads all athlete bikes from Strava API and enriches with /gear/{id} details.
+ * Loads all athlete bikes from Strava API for a specific BikeVault user.
  */
-export async function getAthleteBikesFromStrava(): Promise<StravaBikeSummary[]> {
-  const accessToken = await getValidAccessToken();
+export async function getAthleteBikesFromStrava(
+  bikeVaultUserId?: string | null
+): Promise<StravaBikeSummary[]> {
+  const userId = normalizeUserId(bikeVaultUserId);
+  const accessToken = await getValidAccessToken(userId);
 
   // 1. Fetch athlete profile to get bike gear list
   const athleteRes = await fetch(`${STRAVA_API_BASE}/athlete`, {
@@ -211,7 +245,6 @@ export async function getAthleteBikesFromStrava(): Promise<StravaBikeSummary[]> 
           isPrimary: Boolean(gear.primary),
         });
       } else {
-        // Fallback to basic gear info from athlete
         const distanceMeters = Number(b.distance || 0);
         enrichedBikes.push({
           id: b.id,
@@ -237,10 +270,14 @@ export async function getAthleteBikesFromStrava(): Promise<StravaBikeSummary[]> 
 }
 
 /**
- * Fetches current mileage in km for a specific Strava gear ID.
+ * Fetches current mileage in km for a specific Strava gear ID for the given BikeVault user.
  */
-export async function getGearMileageFromStrava(gearId: string): Promise<{ distanceMeters: number; distanceKm: number }> {
-  const accessToken = await getValidAccessToken();
+export async function getGearMileageFromStrava(
+  gearId: string,
+  bikeVaultUserId?: string | null
+): Promise<{ distanceMeters: number; distanceKm: number }> {
+  const userId = normalizeUserId(bikeVaultUserId);
+  const accessToken = await getValidAccessToken(userId);
 
   const res = await fetch(`${STRAVA_API_BASE}/gear/${gearId}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
@@ -265,10 +302,11 @@ export async function getGearMileageFromStrava(gearId: string): Promise<{ distan
 }
 
 /**
- * Disconnects / deauthorizes Strava token if possible, then clears local token store.
+ * Disconnects / deauthorizes Strava token for a specific BikeVault user and clears local store.
  */
-export async function disconnectStrava(): Promise<void> {
-  const auth = getStravaAuth();
+export async function disconnectStrava(bikeVaultUserId?: string | null): Promise<void> {
+  const userId = normalizeUserId(bikeVaultUserId);
+  const auth = getUserStravaAuth(userId);
   if (auth && auth.accessToken) {
     try {
       await fetch(STRAVA_OAUTH_DEAUTHORIZE, {
@@ -277,8 +315,8 @@ export async function disconnectStrava(): Promise<void> {
         body: new URLSearchParams({ access_token: auth.accessToken }),
       });
     } catch (err) {
-      console.warn("[Strava] Failed to call deauthorize API on Strava:", err);
+      console.warn(`[Strava] Failed to call deauthorize API on Strava for user '${userId}':`, err);
     }
   }
-  clearStravaAuth();
+  clearUserStravaAuth(userId);
 }

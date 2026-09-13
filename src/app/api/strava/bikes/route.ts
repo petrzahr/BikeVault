@@ -1,11 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAthleteBikesFromStrava } from "@/lib/strava/stravaApi";
+import { resolveRequestUserId } from "@/lib/strava/requestUser";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const bikes = await getAthleteBikesFromStrava();
+    const userId = resolveRequestUserId(request);
+    const bikes = await getAthleteBikesFromStrava(userId);
     return NextResponse.json({ bikes });
   } catch (error) {
     const status = (error as { status?: number })?.status || 500;

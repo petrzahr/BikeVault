@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGearMileageFromStrava } from "@/lib/strava/stravaApi";
-import { updateLastSyncTime } from "@/lib/strava/stravaTokenStore";
+import { updateUserLastSyncTime } from "@/lib/strava/stravaTokenStore";
+import { resolveRequestUserId } from "@/lib/strava/requestUser";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { gearId, gearIds } = body as { gearId?: string; gearIds?: string[] };
+    const { gearId, gearIds, userId: bodyUserId } = body as {
+      gearId?: string;
+      gearIds?: string[];
+      userId?: string;
+    };
 
+    const userId = bodyUserId || resolveRequestUserId(request);
     const idsToSync = gearIds || (gearId ? [gearId] : []);
 
     if (idsToSync.length === 0) {
@@ -22,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     for (const id of idsToSync) {
       try {
-        const mileage = await getGearMileageFromStrava(id);
+        const mileage = await getGearMileageFromStrava(id, userId);
         results[id] = mileage;
       } catch (err) {
         results[id] = {
@@ -34,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     const nowIso = new Date().toISOString();
-    updateLastSyncTime(nowIso);
+    updateUserLastSyncTime(userId, nowIso);
 
     return NextResponse.json({
       success: true,

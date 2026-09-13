@@ -193,7 +193,7 @@ storageMock.clear();
     accessToken: "mock_access_token_12345",
     refreshToken: "mock_refresh_token_67890",
     expiresAt: Math.floor(Date.now() / 1000) + 21600, // +6 hours
-    athleteId: 987654,
+    stravaAthleteId: 987654,
     athleteName: "Petr Zahrádka",
     connectedAt: new Date().toISOString(),
   };
@@ -212,7 +212,7 @@ storageMock.clear();
     accessToken: "expired_token",
     refreshToken: "valid_refresh_token",
     expiresAt: Math.floor(Date.now() / 1000) - 300, // expired 5 mins ago
-    athleteId: 987654,
+    stravaAthleteId: 987654,
     connectedAt: new Date().toISOString(),
   };
   saveStravaAuth(expiredTokens);
@@ -624,7 +624,7 @@ storageMock.clear();
     accessToken: "expired_token",
     refreshToken: "revoked_refresh_token",
     expiresAt: Math.floor(Date.now() / 1000) - 1000,
-    athleteId: 12345,
+    stravaAthleteId: 12345,
     connectedAt: new Date().toISOString(),
   };
 
@@ -649,7 +649,7 @@ storageMock.clear();
     accessToken: "test_token",
     refreshToken: "test_refresh",
     expiresAt: Math.floor(Date.now() / 1000) + 3600,
-    athleteId: 999,
+    stravaAthleteId: 999,
     connectedAt: new Date().toISOString(),
   });
 

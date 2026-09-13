@@ -24,12 +24,14 @@ interface StravaManageBikesModalProps {
   isOpen: boolean;
   onClose: () => void;
   onImportBike: (stravaBike: StravaBikeSummary) => void;
+  userId?: string;
 }
 
 export function StravaManageBikesModal({
   isOpen,
   onClose,
   onImportBike,
+  userId,
 }: StravaManageBikesModalProps) {
   const { data, linkBikeToStrava, unlinkBikeFromStrava, syncBikeFromStrava } = useVault();
 
@@ -53,7 +55,9 @@ export function StravaManageBikesModal({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/strava/bikes");
+      const res = await fetch("/api/strava/bikes", {
+        headers: userId ? { "x-bikevault-user-id": userId } : {},
+      });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.error || `Chyba při načítání kol (${res.status})`);
@@ -65,7 +69,7 @@ export function StravaManageBikesModal({
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (isOpen) {
@@ -98,8 +102,11 @@ export function StravaManageBikesModal({
       // First fetch fresh mileage from Strava API
       const res = await fetch("/api/strava/sync", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gearId: stravaBike.id }),
+        headers: {
+          "Content-Type": "application/json",
+          ...(userId ? { "x-bikevault-user-id": userId } : {}),
+        },
+        body: JSON.stringify({ gearId: stravaBike.id, userId }),
       });
 
       if (!res.ok) {

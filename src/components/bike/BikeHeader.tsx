@@ -54,7 +54,8 @@ interface BikeHeaderProps {
 }
 
 export function BikeHeader({ bike }: BikeHeaderProps) {
-  const { syncBikeFromStrava } = useVault();
+  const { syncBikeFromStrava, user } = useVault();
+  const currentUserId = user?.emailAddress || "default_user";
   const pathname = usePathname();
   const [isPressureModalOpen, setIsPressureModalOpen] = useState(false);
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
@@ -74,8 +75,11 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
     try {
       const res = await fetch("/api/strava/sync", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gearId: bike.stravaGearId }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-bikevault-user-id": currentUserId,
+        },
+        body: JSON.stringify({ gearId: bike.stravaGearId, userId: currentUserId }),
       });
 
       if (!res.ok) {

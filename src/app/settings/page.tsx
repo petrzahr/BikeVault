@@ -35,7 +35,8 @@ export default function SettingsPage() {
   const initialTab = searchParams.get("tab") === "integrations" ? "integrations" : "preferences";
   const [activeTab, setActiveTab] = useState<"preferences" | "integrations">(initialTab);
 
-  const { data, syncBikeFromStrava } = useVault();
+  const { data, user, syncBikeFromStrava } = useVault();
+  const currentUserId = user?.emailAddress || "default_user";
 
   // Strava status
   const [stravaStatus, setStravaStatus] = useState<PublicStravaStatus & { isConfigured?: boolean }>({
@@ -75,7 +76,9 @@ export default function SettingsPage() {
   const loadStatus = useCallback(async () => {
     setLoadingStatus(true);
     try {
-      const res = await fetch("/api/strava/status");
+      const res = await fetch("/api/strava/status", {
+        headers: { "x-bikevault-user-id": currentUserId },
+      });
       if (res.ok) {
         const json = await res.json();
         setStravaStatus(json);
@@ -85,7 +88,7 @@ export default function SettingsPage() {
     } finally {
       setLoadingStatus(false);
     }
-  }, []);
+  }, [currentUserId]);
 
   useEffect(() => {
     loadStatus();
@@ -94,7 +97,9 @@ export default function SettingsPage() {
   // Connect flow: redirect to /api/strava/auth
   const handleConnectStrava = async () => {
     try {
-      const res = await fetch("/api/strava/auth");
+      const res = await fetch("/api/strava/auth", {
+        headers: { "x-bikevault-user-id": currentUserId },
+      });
       const json = await res.json();
       if (!res.ok) {
         throw new Error(json.error || "Chyba při přípravě autorizace Strava.");
@@ -114,7 +119,14 @@ export default function SettingsPage() {
   const handleConfirmDisconnect = async () => {
     setDisconnecting(true);
     try {
-      const res = await fetch("/api/strava/disconnect", { method: "POST" });
+      const res = await fetch("/api/strava/disconnect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-bikevault-user-id": currentUserId,
+        },
+        body: JSON.stringify({ userId: currentUserId }),
+      });
       if (!res.ok) {
         const json = await res.json();
         throw new Error(json.error || "Chyba při odpojování účtu Strava.");
@@ -153,8 +165,11 @@ export default function SettingsPage() {
       const gearIds = linkedBikes.map((b) => b.stravaGearId as string);
       const res = await fetch("/api/strava/sync", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gearIds }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-bikevault-user-id": currentUserId,
+        },
+        body: JSON.stringify({ gearIds, userId: currentUserId }),
       });
 
       if (!res.ok) {
@@ -539,6 +554,7 @@ export default function SettingsPage() {
         isOpen={isManageBikesOpen}
         onClose={() => setIsManageBikesOpen(false)}
         onImportBike={handleStartImportBike}
+        userId={currentUserId}
       />
 
       {/* Import Bike into BikeVault Modal */}

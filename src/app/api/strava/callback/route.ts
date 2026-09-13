@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { exchangeCodeForTokens } from "@/lib/strava/stravaApi";
+import { consumeOAuthState } from "@/lib/strava/stravaTokenStore";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+  const state = url.searchParams.get("state");
   const error = url.searchParams.get("error");
-  const scope = url.searchParams.get("scope");
 
   const baseUrl = url.origin;
 
@@ -17,15 +18,22 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Validate that user didn't uncheck profile:read_all
-  if (scope && !scope.includes("profile:read_all") && !scope.includes("read_all")) {
-    console.warn("[Strava Callback] Warning: granted scope does not contain profile:read_all:", scope);
+  // Validate and consume the one-time state token to resolve the initiating user
+  const stateValidation = consumeOAuthState(state);
+  if (!stateValidation.valid || !stateValidation.bikeVaultUserId) {
+    return NextResponse.redirect(
+      `${baseUrl}/settings?tab=integrations&strava_error=${encodeURIComponent(
+        stateValidation.error || "Neplatný bezpečnostní stav relace."
+      )}`
+    );
   }
 
   try {
-    await exchangeCodeForTokens(code);
+    await exchangeCodeForTokens(code, stateValidation.bikeVaultUserId);
     return NextResponse.redirect(
-      `${baseUrl}/settings?tab=integrations&strava_connected=true`
+      `${baseUrl}/settings?tab=integrations&strava_connected=true&userId=${encodeURIComponent(
+        stateValidation.bikeVaultUserId
+      )}`
     );
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : "Chyba při výměně Strava kódu.";
