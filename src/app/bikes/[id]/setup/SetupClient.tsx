@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { updateBikeSetupAction, createSetupSnapshotAction } from "@/app/actions/setup";
+import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
 import { 
   Gauge, 
@@ -17,12 +17,11 @@ import {
 } from "lucide-react";
 import { t, formatDateCs, formatPsi, formatBar } from "@/lib/i18n";
 import { formatClicksFromClosed } from "@/lib/domain/setup";
-import { useRouter } from "next/navigation";
 
 interface SetupClientProps {
   bike: any;
-  initialSetup: any;
-  snapshots: any[];
+  initialSetup?: any;
+  snapshots?: any[];
   forkComp?: any;
   shockComp?: any;
   frontTireComp?: any;
@@ -31,14 +30,16 @@ interface SetupClientProps {
 
 export function SetupClient({
   bike,
-  initialSetup,
-  snapshots,
+  initialSetup: propSetup,
+  snapshots: propSnapshots,
   forkComp,
   shockComp,
   frontTireComp,
   rearTireComp,
 }: SetupClientProps) {
-  const router = useRouter();
+  const { saveSetup, saveSetupSnapshot, getBikeSetup, getBikeSnapshots } = useVault();
+  const initialSetup = propSetup ?? getBikeSetup(bike.id);
+  const snapshots = propSnapshots ?? getBikeSnapshots(bike.id);
 
   // Vidlice
   const [forkPressure, setForkPressure] = useState(initialSetup?.forkPressurePsi ? String(initialSetup.forkPressurePsi) : "76");
@@ -86,7 +87,7 @@ export function SetupClient({
     setSuccessMsg(null);
 
     try {
-      await updateBikeSetupAction(bike.id, {
+      saveSetup(bike.id, {
         forkPressurePsi: forkPressure ? parseFloat(forkPressure) : null,
         forkSagPercent: forkSag ? parseInt(forkSag, 10) : null,
         forkReboundClicks: forkRebound ? parseInt(forkRebound, 10) : null,
@@ -117,9 +118,9 @@ export function SetupClient({
 
       setSuccessMsg("Nastavení kola bylo úspěšně uloženo.");
       setTimeout(() => setSuccessMsg(null), 4000);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Došlo k chybě při ukládání nastavení.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Došlo k chybě při ukládání nastavení.";
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -130,13 +131,38 @@ export function SetupClient({
     if (!snapshotName.trim()) return;
 
     try {
-      await createSetupSnapshotAction(bike.id, snapshotName, snapshotNote);
+      const snapshotData = {
+        forkPressurePsi: forkPressure ? parseFloat(forkPressure) : null,
+        forkSagPercent: forkSag ? parseInt(forkSag, 10) : null,
+        forkReboundClicks: forkRebound ? parseInt(forkRebound, 10) : null,
+        forkLscClicks: forkLsc ? parseInt(forkLsc, 10) : null,
+        forkHscClicks: forkHsc ? parseInt(forkHsc, 10) : null,
+        forkVolumeSpacers: forkTokens ? parseInt(forkTokens, 10) : null,
+        forkTravelMm: forkTravel ? parseInt(forkTravel, 10) : null,
+        forkNotes: forkNotes.trim() || null,
+        shockPressurePsi: shockPressure ? parseFloat(shockPressure) : null,
+        shockSagPercent: shockSag ? parseInt(shockSag, 10) : null,
+        shockReboundClicks: shockRebound ? parseInt(shockRebound, 10) : null,
+        shockLscClicks: shockLsc ? parseInt(shockLsc, 10) : null,
+        shockHscClicks: shockHsc ? parseInt(shockHsc, 10) : null,
+        shockVolumeSpacers: shockTokens ? parseInt(shockTokens, 10) : null,
+        shockNotes: shockNotes.trim() || null,
+        frontTirePressureBar: frontPressure ? parseFloat(frontPressure) : null,
+        frontTireInsert: frontInsert.trim() || null,
+        frontTireNotes: frontNotes.trim() || null,
+        rearTirePressureBar: rearPressure ? parseFloat(rearPressure) : null,
+        rearTireInsert: rearInsert.trim() || null,
+        rearTireNotes: rearNotes.trim() || null,
+        generalNotes: generalNotes.trim() || null,
+      };
+
+      saveSetupSnapshot(bike.id, snapshotName.trim(), snapshotData, snapshotNote.trim() || undefined);
       setIsSnapshotModalOpen(false);
       setSnapshotName("");
       setSnapshotNote("");
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Nepodařilo se vytvořit snímek nastavení.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Nepodařilo se vytvořit snímek nastavení.";
+      alert(msg);
     }
   };
 

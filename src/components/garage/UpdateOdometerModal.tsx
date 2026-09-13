@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { recordOdometerSnapshotAction } from "@/app/actions/bikes";
+import { useVault } from "@/context/VaultContext";
 import { X, Check, SlidersHorizontal, AlertTriangle } from "lucide-react";
 import { t, formatKm, formatMinutes } from "@/lib/i18n";
 
@@ -24,6 +24,7 @@ export function UpdateOdometerModal({
   currentMinutes,
   onSuccess,
 }: UpdateOdometerModalProps) {
+  const { updateOdometer } = useVault();
   const [totalKmStr, setTotalKmStr] = useState<string>(String(currentKm || "0"));
   const [hoursStr, setHoursStr] = useState<string>(String(Math.floor(currentMinutes / 60)));
   const [minutesStr, setMinutesStr] = useState<string>(String(currentMinutes % 60));
@@ -62,7 +63,7 @@ export function UpdateOdometerModal({
 
     setLoading(true);
     try {
-      await recordOdometerSnapshotAction(
+      const res = await updateOdometer(
         bikeId,
         newKm,
         newMinutes,
@@ -70,10 +71,15 @@ export function UpdateOdometerModal({
         note.trim() || undefined,
         allowCorrection
       );
+      if (!res.success) {
+        setError(res.error || "Došlo k chybě při ukládání stavu počítadla.");
+        return;
+      }
       onClose();
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      setError(err?.message || "Došlo k chybě při ukládání stavu počítadla.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Došlo k chybě při ukládání stavu počítadla.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

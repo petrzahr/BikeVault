@@ -20,28 +20,35 @@ import {
   HelpCircle
 } from "lucide-react";
 import { t, formatDateCs, formatKm, formatMinutes, formatCzk } from "@/lib/i18n";
-import { 
-  createServiceEventAction, 
-  toggleServiceScheduleActiveAction, 
-  deleteServiceScheduleAction 
-} from "@/app/actions/maintenance";
+import { useVault } from "@/context/VaultContext";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
-import { useRouter } from "next/navigation";
 
 interface BikeServiceClientProps {
   bike: any;
-  schedulesWithStatus: any[];
-  serviceEvents: any[];
-  installedComponents: any[];
+  schedulesWithStatus?: any[];
+  serviceEvents?: any[];
+  installedComponents?: any[];
 }
 
 export function BikeServiceClient({
   bike,
-  schedulesWithStatus,
-  serviceEvents,
-  installedComponents,
+  schedulesWithStatus: propSchedulesWithStatus,
+  serviceEvents: propServiceEvents,
+  installedComponents: propInstalledComponents,
 }: BikeServiceClientProps) {
-  const router = useRouter();
+  const { 
+    data,
+    toggleServiceScheduleActive, 
+    deleteServiceSchedule, 
+    createServiceEvent, 
+    getBikeServiceSchedulesWithStatus, 
+    getBikeServiceEvents, 
+    getBikeInstalledComponents 
+  } = useVault();
+
+  const schedulesWithStatus = propSchedulesWithStatus ?? getBikeServiceSchedulesWithStatus(bike.id);
+  const serviceEvents = propServiceEvents ?? getBikeServiceEvents(bike.id);
+  const installedComponents = propInstalledComponents ?? getBikeInstalledComponents(bike.id);
 
   // Plan modal state (Create / Edit)
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
@@ -73,22 +80,25 @@ export function BikeServiceClient({
     setIsPlanModalOpen(true);
   };
 
-  const handleToggleActive = async (scheduleId: string, currentActive: boolean) => {
+  const handleToggleActive = (scheduleId: string, _currentActive?: boolean) => {
     try {
-      await toggleServiceScheduleActiveAction(scheduleId, !currentActive);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Chyba při změně stavu plánu.");
+      toggleServiceScheduleActive(scheduleId);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při změně stavu plánu.";
+      alert(msg);
     }
   };
 
-  const handleDeletePlan = async (scheduleId: string) => {
+  const handleDeletePlan = (scheduleId: string) => {
     if (!confirm("Opravdu chcete tento servisní plán smazat?")) return;
     try {
-      await deleteServiceScheduleAction(scheduleId);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Plán nelze smazat.");
+      const res = deleteServiceSchedule(scheduleId);
+      if (!res.success) {
+        alert(res.message || "Plán nelze smazat.");
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Plán nelze smazat.";
+      alert(msg);
     }
   };
 
@@ -123,24 +133,31 @@ export function BikeServiceClient({
     if (!serviceName.trim()) return;
 
     setLoading(true);
+    const partsPrice = parseFloat(partsCost || "0");
+    const laborPrice = parseFloat(laborCost || "0");
     try {
-      await createServiceEventAction({
+      createServiceEvent({
         bikeId: bike.id,
-        serviceScheduleId: selectedScheduleId || undefined,
-        componentId: selectedComponentId || undefined,
-        name: serviceName.trim(),
+        serviceScheduleId: selectedScheduleId || null,
+        componentId: selectedComponentId || null,
+        eventType: "MAINTENANCE",
         serviceDate,
-        executionType,
-        serviceProvider: serviceProvider.trim() || undefined,
-        partsCost: parseFloat(partsCost || "0"),
-        laborCost: parseFloat(laborCost || "0"),
-        notes: notes.trim() || undefined,
+        bikeKm: Number(bike.currentKm),
+        bikeMinutes: bike.currentMinutes,
+        performedBy: executionType === "DIY" ? "SELF" : "SHOP",
+        shopName: executionType === "WORKSHOP" ? serviceProvider.trim() : null,
+        description: serviceName.trim(),
+        partsPrice,
+        laborPrice,
+        totalPrice: partsPrice + laborPrice,
+        currency: "CZK",
+        notes: notes.trim() || null,
       });
 
       setIsRecordModalOpen(false);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Chyba při zápisu servisu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při zápisu servisu.";
+      alert(msg);
     } finally {
       setLoading(false);
     }

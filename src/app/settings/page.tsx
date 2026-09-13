@@ -89,16 +89,20 @@ export default function SettingsPage() {
 
         <div className="space-y-2.5 text-xs text-slate-600">
           <div className="flex justify-between py-2 border-b border-slate-100">
-            <span>Uživatelský režim</span>
-            <span className="font-semibold text-slate-900">Single-User (Bez autentizace — přímý vstup)</span>
+            <span>Architektura</span>
+            <span className="font-semibold text-blue-700">Bezserverová klientská (Single-Page App)</span>
           </div>
           <div className="flex justify-between py-2 border-b border-slate-100">
-            <span>Databázový engine</span>
-            <span className="font-semibold text-blue-700 font-mono">PostgreSQL 16 (PGlite persistent engine)</span>
+            <span>Cloudové úložiště</span>
+            <span className="font-semibold text-slate-900 font-mono">Google Drive (bikevault_data.json)</span>
           </div>
           <div className="flex justify-between py-2 border-b border-slate-100">
-            <span>Perzistentní úložiště dat</span>
-            <span className="font-semibold text-slate-900 font-mono">.data/pgdata</span>
+            <span>Lokální vyrovnávací paměť</span>
+            <span className="font-semibold text-slate-900 font-mono">Web Storage (localStorage)</span>
+          </div>
+          <div className="flex justify-between py-2 border-b border-slate-100">
+            <span>Autentizace</span>
+            <span className="font-semibold text-slate-900">Google Identity Services (OAuth 2.0)</span>
           </div>
           <div className="flex justify-between py-2 border-b border-slate-100">
             <span>Integritní pravidla</span>
@@ -106,7 +110,7 @@ export default function SettingsPage() {
           </div>
           <div className="flex justify-between py-2">
             <span>Verze aplikace</span>
-            <span className="font-semibold text-slate-700 font-mono">0.1.0 MVP</span>
+            <span className="font-semibold text-slate-700 font-mono">1.0.0 (Cloud Sync)</span>
           </div>
         </div>
       </div>

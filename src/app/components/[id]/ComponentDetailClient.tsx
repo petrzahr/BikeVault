@@ -22,32 +22,39 @@ import {
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
-import { 
-  toggleServiceScheduleActiveAction, 
-  deleteServiceScheduleAction, 
-  createServiceEventAction 
-} from "@/app/actions/maintenance";
+import { useVault } from "@/context/VaultContext";
 
 interface ComponentDetailClientProps {
   componentData: {
     component: any;
     category: any;
-    activeInstallation: any | null;
+    activeInstallation?: any | null;
     installationHistory: any[];
   };
-  schedulesWithStatus: any[];
-  serviceEvents: any[];
-  allBikes: any[];
+  schedulesWithStatus?: any[];
+  serviceEvents?: any[];
+  allBikes?: any[];
 }
 
 export function ComponentDetailClient({
   componentData,
-  schedulesWithStatus,
-  serviceEvents,
-  allBikes,
+  schedulesWithStatus: propSchedulesWithStatus,
+  serviceEvents: propServiceEvents,
+  allBikes: propAllBikes,
 }: ComponentDetailClientProps) {
-  const router = useRouter();
+  const { 
+    toggleServiceScheduleActive, 
+    deleteServiceSchedule, 
+    createServiceEvent, 
+    getComponentServiceSchedules, 
+    getComponentServiceEvents, 
+    getGarageBikes 
+  } = useVault();
+
   const { component, category, activeInstallation, installationHistory } = componentData;
+  const schedulesWithStatus = propSchedulesWithStatus ?? getComponentServiceSchedules(component.id);
+  const serviceEvents = propServiceEvents ?? getComponentServiceEvents(component.id);
+  const allBikes = propAllBikes ?? getGarageBikes();
 
   // Modals state
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
@@ -65,7 +72,7 @@ export function ComponentDetailClient({
   const [notes, setNotes] = useState("");
   const [recordLoading, setRecordLoading] = useState(false);
 
-  const activeBike = activeInstallation?.bike || null;
+  const activeBike = activeInstallation?.bike;
 
   const handleOpenCreateSchedule = () => {
     setEditingSchedule(null);
@@ -77,22 +84,25 @@ export function ComponentDetailClient({
     setIsScheduleModalOpen(true);
   };
 
-  const handleToggleActive = async (scheduleId: string, currentActive: boolean) => {
+  const handleToggleActive = (scheduleId: string, _currentActive?: boolean) => {
     try {
-      await toggleServiceScheduleActiveAction(scheduleId, !currentActive);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Chyba při změně stavu plánu.");
+      toggleServiceScheduleActive(scheduleId);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při změně stavu plánu.";
+      alert(msg);
     }
   };
 
-  const handleDeleteSchedule = async (scheduleId: string) => {
+  const handleDeleteSchedule = (scheduleId: string) => {
     if (!confirm("Opravdu chcete tento servisní plán smazat?")) return;
     try {
-      await deleteServiceScheduleAction(scheduleId);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Plán nelze smazat.");
+      const res = deleteServiceSchedule(scheduleId);
+      if (!res.success) {
+        alert(res.message || "Plán nelze smazat.");
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Plán nelze smazat.";
+      alert(msg);
     }
   };
 
@@ -120,25 +130,32 @@ export function ComponentDetailClient({
     }
 
     setRecordLoading(true);
+    const partsPrice = parseFloat(partsCost || "0");
+    const laborPrice = parseFloat(laborCost || "0");
     try {
       const bikeIdToUse = activeBike?.id || allBikes[0]?.id;
-      await createServiceEventAction({
+      createServiceEvent({
         bikeId: bikeIdToUse,
         componentId: component.id,
-        serviceScheduleId: selectedScheduleForRecord?.id || undefined,
-        name: serviceName.trim(),
+        serviceScheduleId: selectedScheduleForRecord?.id || null,
+        eventType: "MAINTENANCE",
         serviceDate,
-        executionType,
-        serviceProvider: serviceProvider.trim() || undefined,
-        partsCost: parseFloat(partsCost || "0"),
-        laborCost: parseFloat(laborCost || "0"),
-        notes: notes.trim() || undefined,
+        bikeKm: activeBike ? Number(activeBike.currentKm) : 0,
+        bikeMinutes: activeBike ? activeBike.currentMinutes : 0,
+        performedBy: executionType === "DIY" ? "SELF" : "SHOP",
+        shopName: executionType === "WORKSHOP" ? serviceProvider.trim() : null,
+        description: serviceName.trim(),
+        partsPrice,
+        laborPrice,
+        totalPrice: partsPrice + laborPrice,
+        currency: "CZK",
+        notes: notes.trim() || null,
       });
 
       setIsRecordModalOpen(false);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Chyba při zápisu servisu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při zápisu servisu.";
+      alert(msg);
     } finally {
       setRecordLoading(false);
     }

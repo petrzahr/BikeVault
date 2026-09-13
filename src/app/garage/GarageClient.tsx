@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useVault } from "@/context/VaultContext";
 import { Plus, Warehouse, Bike as BikeIcon, History, Archive } from "lucide-react";
 import { BikeCard } from "@/components/garage/BikeCard";
 import { AddBikeModal } from "@/components/garage/AddBikeModal";
@@ -8,19 +9,24 @@ import { t, formatKm, formatMinutes, formatCzk } from "@/lib/i18n";
 import { useRouter } from "next/navigation";
 
 interface GarageClientProps {
-  initialBikes: any[];
-  allTransactions: any[];
-  serviceSchedulesWithStatus: any[];
+  initialBikes?: any[];
+  allTransactions?: any[];
+  serviceSchedulesWithStatus?: any[];
 }
 
 export function GarageClient({
-  initialBikes,
-  allTransactions,
-  serviceSchedulesWithStatus,
-}: GarageClientProps) {
+  initialBikes: propBikes,
+  allTransactions: propTransactions,
+  serviceSchedulesWithStatus: propServiceSchedules,
+}: GarageClientProps = {}) {
+  const { data, getServiceScheduleStatuses } = useVault();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"ACTIVE" | "SOLD" | "ARCHIVED">("ACTIVE");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const initialBikes = propBikes ?? data.bikes;
+  const allTransactions = propTransactions ?? data.financialTransactions;
+  const serviceSchedulesWithStatus = propServiceSchedules ?? getServiceScheduleStatuses();
 
   // Filter bikes by tab
   const filteredBikes = initialBikes.filter((b) => {
@@ -36,18 +42,18 @@ export function GarageClient({
 
   // Build service summary map per bike
   const getBikeServiceSummary = (bikeId: string) => {
-    const bikeSchedules = serviceSchedulesWithStatus.filter((s) => s.schedule.bikeId === bikeId);
+    const bikeSchedules = serviceSchedulesWithStatus.filter((s: { schedule?: { bikeId?: string | null }; status?: { urgency: string } }) => s.schedule?.bikeId === bikeId);
     if (bikeSchedules.length === 0) return undefined;
 
     // Pick most urgent
-    const overdue = bikeSchedules.find((s) => s.status.urgency === "OVERDUE");
+    const overdue = bikeSchedules.find((s: { status?: { urgency: string } }) => s.status?.urgency === "OVERDUE");
     if (overdue) {
       return {
         urgency: "OVERDUE" as const,
         text: `${overdue.schedule.name}: ${overdue.status.summaryTextCs}`,
       };
     }
-    const dueSoon = bikeSchedules.find((s) => s.status.urgency === "DUE_SOON");
+    const dueSoon = bikeSchedules.find((s: { status?: { urgency: string } }) => s.status?.urgency === "DUE_SOON");
     if (dueSoon) {
       return {
         urgency: "DUE_SOON" as const,

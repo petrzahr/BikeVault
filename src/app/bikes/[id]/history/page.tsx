@@ -1,10 +1,8 @@
-import React from "react";
-import { notFound } from "next/navigation";
-import { getBikeById, getBikeOdometerEntries } from "@/app/actions/bikes";
-import { getBikeServiceEvents } from "@/app/actions/maintenance";
+"use client";
+
+import React, { use } from "react";
+import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
-import { db, schema } from "@/db";
-import { eq, sql } from "drizzle-orm";
 import { formatDateCs, formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
 import { 
   History, 
@@ -15,54 +13,61 @@ import {
   ArrowRight, 
   Layers 
 } from "lucide-react";
+import Link from "next/link";
 
 interface BikeHistoryPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = "force-dynamic";
+export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
+  const { id } = use(params);
+  const { data, getBike, getBikeServiceEvents } = useVault();
+  const bike = getBike(id);
 
-export default async function BikeHistoryPage({ params }: BikeHistoryPageProps) {
-  const { id } = await params;
-  const bike = await getBikeById(id);
-  if (!bike) notFound();
+  if (!bike) {
+    return (
+      <div className="p-12 text-center text-slate-500">
+        <h2 className="text-lg font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
+        <Link href="/garage" className="text-blue-600 hover:underline text-sm">
+          Zpět do Garáže
+        </Link>
+      </div>
+    );
+  }
 
   // Load all historical installations on this bike
-  const installations = await db
-    .select({
-      installation: schema.componentInstallations,
-      component: schema.components,
-      category: schema.componentCategories,
-    })
-    .from(schema.componentInstallations)
-    .innerJoin(schema.components, eq(schema.componentInstallations.componentId, schema.components.id))
-    .innerJoin(schema.componentCategories, eq(schema.components.categoryId, schema.componentCategories.id))
-    .where(eq(schema.componentInstallations.bikeId, id))
-    .orderBy(sql`${schema.componentInstallations.installedAt} DESC`);
+  const installations = data.componentInstallations
+    .filter((i) => i.bikeId === id)
+    .sort((a, b) => new Date(b.installedAt).getTime() - new Date(a.installedAt).getTime());
 
-  const serviceEvents = await getBikeServiceEvents(id);
-  const odometerEntries = await getBikeOdometerEntries(id);
+  const serviceEvents = getBikeServiceEvents(id);
+  const odometerEntries = data.odometerEntries.filter((o) => o.bikeId === id);
 
   // Group into unified chronological timeline
   const timelineItems: any[] = [];
 
   for (const inst of installations) {
+    const comp = data.components.find((c) => c.id === inst.componentId);
+    const cat = data.categories.find((c) => c.id === comp?.categoryId);
+    const compName = comp ? `${comp.manufacturer} ${comp.model}` : "Komponent";
+    const catName = cat?.nameCs || "";
+
     timelineItems.push({
-      date: new Date(inst.installation.installedAt),
+      date: new Date(inst.installedAt),
       type: "INSTALLATION",
-      title: `Montáž: ${inst.component.manufacturer} ${inst.component.model}`,
-      subtitle: `${inst.category.nameCs} • při ${formatKm(inst.installation.installedBikeKm)}`,
+      title: `Montáž: ${compName}`,
+      subtitle: `${catName} • při ${formatKm(inst.installedBikeKm)}`,
       badge: "Komponent",
       badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
       icon: Layers,
     });
 
-    if (inst.installation.removedAt) {
+    if (inst.removedAt) {
       timelineItems.push({
-        date: new Date(inst.installation.removedAt),
+        date: new Date(inst.removedAt),
         type: "REMOVAL",
-        title: `Demontáž: ${inst.component.manufacturer} ${inst.component.model}`,
-        subtitle: `Ukončení montáže při ${formatKm(inst.installation.removedBikeKm)}`,
+        title: `Demontáž: ${compName}`,
+        subtitle: `Ukončení montáže při ${formatKm(inst.removedBikeKm || 0)}`,
         badge: "Demontáž",
         badgeColor: "bg-slate-100 text-slate-700 border-slate-200",
         icon: Layers,
@@ -72,10 +77,10 @@ export default async function BikeHistoryPage({ params }: BikeHistoryPageProps) 
 
   for (const item of serviceEvents) {
     timelineItems.push({
-      date: new Date(item.event.serviceDate),
+      date: new Date(item.serviceDate),
       type: "SERVICE",
-      title: `Servis: ${item.event.name}`,
-      subtitle: `${item.event.serviceProvider || "Svépomocí"} • ${formatCzk(Number(item.event.partsCost) + Number(item.event.laborCost))}`,
+      title: `Servis: ${item.description}`,
+      subtitle: `${item.shopName || (item.performedBy === "SELF" ? "Svépomocí" : "Servis")} • ${formatCzk(Number(item.totalPrice || 0))}`,
       badge: "Servis",
       badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
       icon: Wrench,
@@ -93,7 +98,7 @@ export default async function BikeHistoryPage({ params }: BikeHistoryPageProps) 
         badgeColor: "bg-slate-100 text-slate-700 border-slate-200",
         icon: SlidersHorizontal,
       });
-    } else if (odo.entryType === "SNAPSHOT" || odo.entryType === "RIDE") {
+    } else if (odo.entryType === "RIDE") {
       const deltaKmNum = Number(odo.deltaKm);
       const isDeltaPositive = deltaKmNum >= 0;
       const deltaKmText = isDeltaPositive ? `+${formatKm(odo.deltaKm)}` : formatKm(odo.deltaKm);

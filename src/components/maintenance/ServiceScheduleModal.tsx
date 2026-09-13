@@ -13,13 +13,9 @@ import {
   HelpCircle,
   Sliders
 } from "lucide-react";
-import { 
-  createServiceScheduleAction, 
-  updateServiceScheduleAction 
-} from "@/app/actions/maintenance";
+import { useVault } from "@/context/VaultContext";
 import { PREDEFINED_SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/domain/serviceTemplates";
 import { formatKm } from "@/lib/i18n";
-import { useRouter } from "next/navigation";
 
 interface ServiceScheduleModalProps {
   isOpen: boolean;
@@ -40,7 +36,7 @@ export function ServiceScheduleModal({
   preselectedBikeId,
   preselectedComponentId,
 }: ServiceScheduleModalProps) {
-  const router = useRouter();
+  const { createServiceSchedule, updateServiceSchedule } = useVault();
   const isEditing = Boolean(scheduleToEdit);
 
   // Form states
@@ -190,7 +186,7 @@ export function ServiceScheduleModal({
 
     try {
       if (isEditing) {
-        await updateServiceScheduleAction(scheduleToEdit.id, {
+        updateServiceSchedule(scheduleToEdit.id, {
           name: name.trim(),
           bikeId: bikeId || null,
           componentId: appliesTo === "COMPONENT" ? componentId || null : null,
@@ -206,7 +202,7 @@ export function ServiceScheduleModal({
           lastServiceBikeHours: startingPointType === "HISTORICAL" && lastServiceHours ? parseFloat(lastServiceHours) : undefined,
         });
       } else {
-        await createServiceScheduleAction({
+        createServiceSchedule({
           name: name.trim(),
           bikeId: bikeId || null,
           componentId: appliesTo === "COMPONENT" ? componentId || null : null,
@@ -218,7 +214,7 @@ export function ServiceScheduleModal({
           warningThresholdHours: warningHours ? parseFloat(warningHours) : null,
           warningThresholdKm: warningKm ? parseFloat(warningKm) : null,
           notes: notes.trim() || null,
-          startingPointType,
+          isActive: true,
           lastServiceDate: startingPointType === "HISTORICAL" ? lastServiceDate : null,
           lastServiceBikeKm: startingPointType === "HISTORICAL" && lastServiceKm ? parseFloat(lastServiceKm) : null,
           lastServiceBikeHours: startingPointType === "HISTORICAL" && lastServiceHours ? parseFloat(lastServiceHours) : null,
@@ -226,9 +222,9 @@ export function ServiceScheduleModal({
       }
 
       onClose();
-      router.refresh();
-    } catch (err: any) {
-      setError(err?.message || "Došlo k chybě při ukládání servisního plánu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Došlo k chybě při ukládání servisního plánu.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

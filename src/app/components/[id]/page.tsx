@@ -1,31 +1,29 @@
-import React from "react";
-import { notFound } from "next/navigation";
-import { getComponentById } from "@/app/actions/components";
-import { getComponentServiceSchedules, getComponentServiceEvents } from "@/app/actions/maintenance";
-import { getGarageBikes } from "@/app/actions/bikes";
+"use client";
+
+import React, { use } from "react";
+import { useVault } from "@/context/VaultContext";
 import { ComponentDetailClient } from "./ComponentDetailClient";
+import Link from "next/link";
 
 interface ComponentPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = "force-dynamic";
+export default function ComponentDetailPage({ params }: ComponentPageProps) {
+  const { id } = use(params);
+  const { getComponentById } = useVault();
+  const compData = getComponentById(id);
 
-export default async function ComponentDetailPage({ params }: ComponentPageProps) {
-  const { id } = await params;
-  const compData = await getComponentById(id);
-  if (!compData) notFound();
+  if (!compData) {
+    return (
+      <div className="p-12 text-center text-slate-500">
+        <h2 className="text-lg font-bold text-slate-800 mb-2">Komponent nenalezen</h2>
+        <Link href="/components" className="text-blue-600 hover:underline text-sm">
+          Zpět na přehled komponentů
+        </Link>
+      </div>
+    );
+  }
 
-  const schedulesWithStatus = await getComponentServiceSchedules(id);
-  const serviceEvents = await getComponentServiceEvents(id);
-  const allBikes = await getGarageBikes("ACTIVE");
-
-  return (
-    <ComponentDetailClient
-      componentData={compData}
-      schedulesWithStatus={schedulesWithStatus}
-      serviceEvents={serviceEvents}
-      allBikes={allBikes}
-    />
-  );
+  return <ComponentDetailClient componentData={compData} />;
 }

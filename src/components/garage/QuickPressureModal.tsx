@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { quickUpdateTirePressureAction } from "@/app/actions/setup";
+import { useVault } from "@/context/VaultContext";
 import { X, Gauge, Check, Plus, Minus } from "lucide-react";
 import { t } from "@/lib/i18n";
 
@@ -24,6 +24,7 @@ export function QuickPressureModal({
   initialRearBar = 1.75,
   onSuccess,
 }: QuickPressureModalProps) {
+  const { saveSetup } = useVault();
   const [front, setFront] = useState<number>(initialFrontBar);
   const [rear, setRear] = useState<number>(initialRearBar);
   const [loading, setLoading] = useState(false);
@@ -41,7 +42,10 @@ export function QuickPressureModal({
   const handleSave = async () => {
     setLoading(true);
     try {
-      await quickUpdateTirePressureAction(bikeId, front, rear);
+      saveSetup(bikeId, {
+        frontTirePressureBar: front,
+        rearTirePressureBar: rear,
+      });
       onClose();
       if (onSuccess) onSuccess();
     } catch (err) {

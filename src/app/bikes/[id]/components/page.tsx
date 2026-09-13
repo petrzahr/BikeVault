@@ -1,38 +1,29 @@
-import React from "react";
-import { notFound } from "next/navigation";
-import { getBikeById, getGarageBikes } from "@/app/actions/bikes";
-import { 
-  getBikeInstalledComponents, 
-  getComponentCategories, 
-  getStorageComponentsWithCategory 
-} from "@/app/actions/components";
+"use client";
+
+import React, { use } from "react";
+import { useVault } from "@/context/VaultContext";
 import { BikeComponentsClient } from "./BikeComponentsClient";
+import Link from "next/link";
 
 interface BikeComponentsPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = "force-dynamic";
+export default function BikeComponentsPage({ params }: BikeComponentsPageProps) {
+  const { id } = use(params);
+  const { getBike } = useVault();
+  const bike = getBike(id);
 
-export default async function BikeComponentsPage({ params }: BikeComponentsPageProps) {
-  const { id } = await params;
-  const bike = await getBikeById(id);
-  if (!bike) notFound();
+  if (!bike) {
+    return (
+      <div className="p-12 text-center text-slate-500">
+        <h2 className="text-lg font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
+        <Link href="/garage" className="text-blue-600 hover:underline text-sm">
+          Zpět do Garáže
+        </Link>
+      </div>
+    );
+  }
 
-  const installedComponents = await getBikeInstalledComponents(id);
-  const allBikes = await getGarageBikes("ACTIVE");
-  const categories = await getComponentCategories();
-
-  // Storage components with category info (available to install or quick-replace)
-  const storageComponents = await getStorageComponentsWithCategory();
-
-  return (
-    <BikeComponentsClient
-      bike={bike}
-      installedComponents={installedComponents}
-      allBikes={allBikes}
-      storageComponents={storageComponents}
-      categories={categories}
-    />
-  );
+  return <BikeComponentsClient bike={bike} />;
 }

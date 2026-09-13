@@ -1,6 +1,7 @@
+"use client";
+
 import React from "react";
-import { db, schema } from "@/db";
-import { sql, eq } from "drizzle-orm";
+import { useVault } from "@/context/VaultContext";
 import { 
   Coins, 
   TrendingDown, 
@@ -12,19 +13,16 @@ import {
 } from "lucide-react";
 import { t, formatCzk, formatDateCs } from "@/lib/i18n";
 
-export const dynamic = "force-dynamic";
-
-export default async function GlobalFinancesPage() {
-  const transactions = await db
-    .select({
-      tx: schema.financialTransactions,
-      bike: schema.bikes,
-      component: schema.components,
-    })
-    .from(schema.financialTransactions)
-    .leftJoin(schema.bikes, eq(schema.financialTransactions.bikeId, schema.bikes.id))
-    .leftJoin(schema.components, eq(schema.financialTransactions.componentId, schema.components.id))
-    .orderBy(sql`${schema.financialTransactions.transactionDate} DESC`);
+export default function GlobalFinancesPage() {
+  const { data } = useVault();
+  const transactions = data.financialTransactions
+    .slice()
+    .sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime())
+    .map((tx) => ({
+      tx,
+      bike: tx.bikeId ? data.bikes.find((b) => b.id === tx.bikeId) : null,
+      component: tx.componentId ? data.components.find((c) => c.id === tx.componentId) : null,
+    }));
 
   let totalExpenses = 0;
   let totalIncomes = 0;

@@ -1,14 +1,10 @@
-import React from "react";
+"use client";
+
+import React, { use } from "react";
 import { notFound } from "next/navigation";
-import { getBikeById, getBikeOdometerEntries } from "@/app/actions/bikes";
-import { getBikeSetup } from "@/app/actions/setup";
-import { getBikeInstalledComponents } from "@/app/actions/components";
-import { getBikeServiceSchedules } from "@/app/actions/maintenance";
+import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
-import { db, schema } from "@/db";
-import { eq } from "drizzle-orm";
 import { calculateTco } from "@/lib/domain/finance";
-import { evaluateServiceSchedule } from "@/lib/domain/maintenance";
 import { formatClicksFromClosed } from "@/lib/domain/setup";
 import { 
   formatKm, 
@@ -37,22 +33,34 @@ interface BikeOverviewPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = "force-dynamic";
+export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
+  const { id } = use(params);
+  const { 
+    data, 
+    getBike, 
+    getBikeSetup, 
+    getBikeInstalledComponents, 
+    getBikeServiceSchedulesWithStatus 
+  } = useVault();
 
-export default async function BikeOverviewPage({ params }: BikeOverviewPageProps) {
-  const { id } = await params;
-  const bike = await getBikeById(id);
-  if (!bike) notFound();
+  const bike = getBike(id);
+  if (!bike) {
+    return (
+      <div className="p-12 text-center text-slate-500">
+        <h2 className="text-lg font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
+        <Link href="/garage" className="text-blue-600 hover:underline text-sm">
+          Zpět do Garáže
+        </Link>
+      </div>
+    );
+  }
 
   // Load transactions for this bike
-  const txs = await db
-    .select()
-    .from(schema.financialTransactions)
-    .where(eq(schema.financialTransactions.bikeId, id));
+  const txs = data.financialTransactions.filter((t) => t.bikeId === id);
 
   // Compute TCO
   const tco = calculateTco({
-    transactions: txs.map((t) => ({ type: t.type as any, amount: Number(t.amount) })),
+    transactions: txs.map((t) => ({ type: t.type, amount: Number(t.amount) })),
     currentKm: Number(bike.currentKm),
     currentMinutes: bike.currentMinutes,
     purchaseDate: bike.purchaseDate,
@@ -60,29 +68,12 @@ export default async function BikeOverviewPage({ params }: BikeOverviewPageProps
   });
 
   // Load setup, installed components, schedules, and odometer entries
-  const setup = await getBikeSetup(id);
-  const installedComponents = await getBikeInstalledComponents(id);
-  const schedules = await getBikeServiceSchedules(id);
-  const odometerEntries = await getBikeOdometerEntries(id);
-
-  // Evaluate maintenance
-  const evaluatedSchedules = schedules.map((s) => {
-    return {
-      schedule: s,
-      status: evaluateServiceSchedule(
-        {
-          intervalKm: s.intervalKm ? Number(s.intervalKm) : null,
-          intervalHours: s.intervalHours ? Number(s.intervalHours) : null,
-          intervalMonths: s.intervalMonths,
-          lastServiceDate: s.lastServiceDate,
-          lastServiceBikeKm: s.lastServiceBikeKm ? Number(s.lastServiceBikeKm) : null,
-          lastServiceBikeHours: s.lastServiceBikeHours ? Number(s.lastServiceBikeHours) : null,
-        },
-        Number(bike.currentKm),
-        bike.currentMinutes
-      ),
-    };
-  });
+  const setup = getBikeSetup(id);
+  const installedComponents = getBikeInstalledComponents(id);
+  const evaluatedSchedules = getBikeServiceSchedulesWithStatus(id);
+  const odometerEntries = data.odometerEntries
+    .filter((o) => o.bikeId === id)
+    .sort((a, b) => new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime());
 
   const overdueSchedules = evaluatedSchedules.filter((s) => s.status.urgency === "OVERDUE");
   const dueSoonSchedules = evaluatedSchedules.filter((s) => s.status.urgency === "DUE_SOON");

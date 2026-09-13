@@ -1,32 +1,39 @@
-import React from "react";
-import { notFound } from "next/navigation";
-import { getBikeById } from "@/app/actions/bikes";
+"use client";
+
+import React, { use } from "react";
+import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
-import { db, schema } from "@/db";
-import { eq, sql } from "drizzle-orm";
 import { calculateTco } from "@/lib/domain/finance";
 import { formatCzk, formatDateCs, t } from "@/lib/i18n";
 import { Coins, TrendingDown, TrendingUp, Calendar, Tag } from "lucide-react";
+import Link from "next/link";
 
 interface BikeFinancesPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = "force-dynamic";
+export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
+  const { id } = use(params);
+  const { data, getBike } = useVault();
+  const bike = getBike(id);
 
-export default async function BikeFinancesPage({ params }: BikeFinancesPageProps) {
-  const { id } = await params;
-  const bike = await getBikeById(id);
-  if (!bike) notFound();
+  if (!bike) {
+    return (
+      <div className="p-12 text-center text-slate-500">
+        <h2 className="text-lg font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
+        <Link href="/garage" className="text-blue-600 hover:underline text-sm">
+          Zpět do Garáže
+        </Link>
+      </div>
+    );
+  }
 
-  const transactions = await db
-    .select()
-    .from(schema.financialTransactions)
-    .where(eq(schema.financialTransactions.bikeId, id))
-    .orderBy(sql`${schema.financialTransactions.transactionDate} DESC`);
+  const transactions = data.financialTransactions
+    .filter((t) => t.bikeId === id)
+    .sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime());
 
   const tco = calculateTco({
-    transactions: transactions.map((t) => ({ type: t.type as any, amount: Number(t.amount) })),
+    transactions: transactions.map((t) => ({ type: t.type, amount: Number(t.amount) })),
     currentKm: Number(bike.currentKm),
     currentMinutes: bike.currentMinutes,
     purchaseDate: bike.purchaseDate,

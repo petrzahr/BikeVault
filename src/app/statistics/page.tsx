@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { db, schema } from "@/db";
+import { useVault } from "@/context/VaultContext";
 import { 
   BarChart3, 
   TrendingUp, 
@@ -11,12 +13,11 @@ import {
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
 
-export const dynamic = "force-dynamic";
-
-export default async function StatisticsPage() {
-  const bikes = await db.select().from(schema.bikes);
-  const components = await db.select().from(schema.components);
-  const transactions = await db.select().from(schema.financialTransactions);
+export default function StatisticsPage() {
+  const { data } = useVault();
+  const bikes = data.bikes;
+  const components = data.components;
+  const transactions = data.financialTransactions;
 
   const totalKm = bikes.reduce((sum, b) => sum + Number(b.currentKm || 0), 0);
   const totalMinutes = bikes.reduce((sum, b) => sum + (b.currentMinutes || 0), 0);

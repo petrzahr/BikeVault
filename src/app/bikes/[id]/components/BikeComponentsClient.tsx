@@ -16,33 +16,41 @@ import {
 } from "lucide-react";
 import { t, formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
 import { calculateInstallationUsage } from "@/lib/domain/odometer";
-import { 
-  removeComponentAction, 
-  transferComponentAction, 
-  installComponentAction,
-  quickReplaceComponentAction
-} from "@/app/actions/components";
+import { useVault } from "@/context/VaultContext";
 import { findStorageReplacements } from "@/lib/domain/replacement";
 import { QuickReplaceModal } from "@/components/garage/QuickReplaceModal";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface BikeComponentsClientProps {
   bike: any;
-  installedComponents: any[];
-  allBikes: any[];
-  storageComponents: any[];
-  categories: any[];
+  installedComponents?: any[];
+  allBikes?: any[];
+  storageComponents?: any[];
+  categories?: any[];
 }
 
 export function BikeComponentsClient({
   bike,
-  installedComponents,
-  allBikes,
-  storageComponents,
-  categories,
+  installedComponents: propInstalledComponents,
+  allBikes: propAllBikes,
+  storageComponents: propStorageComponents,
+  categories: propCategories,
 }: BikeComponentsClientProps) {
-  const router = useRouter();
+  const { 
+    data, 
+    removeComponent, 
+    transferComponent, 
+    installComponent, 
+    quickReplaceComponent, 
+    getBikeInstalledComponents, 
+    getStorageComponents, 
+    getGarageBikes 
+  } = useVault();
+
+  const installedComponents = propInstalledComponents ?? getBikeInstalledComponents(bike.id);
+  const allBikes = propAllBikes ?? getGarageBikes();
+  const storageComponents = propStorageComponents ?? getStorageComponents();
+  const categories = propCategories ?? data.categories;
 
   // Modals state
   const [selectedInst, setSelectedInst] = useState<any>(null);
@@ -75,7 +83,7 @@ export function BikeComponentsClient({
     if (!selectedReplaceItem) return;
     setReplaceLoading(true);
     try {
-      await quickReplaceComponentAction(
+      quickReplaceComponent(
         bike.id,
         selectedReplaceItem.installation.id,
         replacementComponentId
@@ -83,9 +91,9 @@ export function BikeComponentsClient({
       setIsReplaceOpen(false);
       setSelectedReplaceItem(null);
       setReplaceCandidates([]);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Chyba při výměně komponentu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při výměně komponentu.";
+      alert(msg);
     } finally {
       setReplaceLoading(false);
     }
@@ -97,7 +105,7 @@ export function BikeComponentsClient({
     if (!selectedInst) return;
     setLoading(true);
     try {
-      await removeComponentAction(
+      removeComponent(
         selectedInst.installation.id,
         disposition,
         salePrice ? parseFloat(salePrice) : undefined,
@@ -105,9 +113,9 @@ export function BikeComponentsClient({
       );
       setIsRemoveOpen(false);
       setSelectedInst(null);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Chyba při demontáži komponentu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při demontáži komponentu.";
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -118,16 +126,16 @@ export function BikeComponentsClient({
     if (!selectedInst || !targetBikeId) return;
     setLoading(true);
     try {
-      await transferComponentAction(
+      transferComponent(
         selectedInst.installation.id,
         targetBikeId,
         targetSlot || selectedInst.installation.slot
       );
       setIsTransferOpen(false);
       setSelectedInst(null);
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Chyba při přesunu komponentu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při přesunu komponentu.";
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -138,12 +146,12 @@ export function BikeComponentsClient({
     if (!selectedStorageCompId || !installSlot) return;
     setLoading(true);
     try {
-      await installComponentAction(bike.id, selectedStorageCompId, installSlot);
+      installComponent(bike.id, selectedStorageCompId, installSlot);
       setIsInstallOpen(false);
       setSelectedStorageCompId("");
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Chyba při montáži komponentu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při montáži komponentu.";
+      alert(msg);
     } finally {
       setLoading(false);
     }

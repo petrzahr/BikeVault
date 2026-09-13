@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { createBikeAction } from "@/app/actions/bikes";
 import { X, Bike, Check, Sparkles } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { useVault } from "@/context/VaultContext";
 
 interface AddBikeModalProps {
   isOpen: boolean;
@@ -12,6 +12,7 @@ interface AddBikeModalProps {
 }
 
 export function AddBikeModal({ isOpen, onClose, onSuccess }: AddBikeModalProps) {
+  const { addBike } = useVault();
   const [selectedPreset, setSelectedPreset] = useState<string>("mtbFull");
   const [name, setName] = useState("");
   const [manufacturer, setManufacturer] = useState("");
@@ -75,8 +76,9 @@ export function AddBikeModal({ isOpen, onClose, onSuccess }: AddBikeModalProps) 
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!name.trim() || !manufacturer.trim() || !model.trim()) {
       setError("Vyplňte prosím název, výrobce a model kola.");
       return;
@@ -86,7 +88,7 @@ export function AddBikeModal({ isOpen, onClose, onSuccess }: AddBikeModalProps) 
     setError(null);
 
     try {
-      await createBikeAction({
+      addBike({
         name,
         manufacturer,
         model,
@@ -98,6 +100,8 @@ export function AddBikeModal({ isOpen, onClose, onSuccess }: AddBikeModalProps) 
         serialNumber,
         purchaseDate,
         purchasePrice: parseFloat(purchasePrice || "0"),
+        currency: "CZK",
+        status: "ACTIVE",
         initialKm: parseFloat(initialKm || "0"),
         initialHours: parseFloat(initialHours || "0"),
         imageUrl: imageUrl.trim() || undefined,
@@ -106,8 +110,8 @@ export function AddBikeModal({ isOpen, onClose, onSuccess }: AddBikeModalProps) 
 
       onClose();
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      setError(err?.message || "Nepodařilo se vytvořit kolo.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Nepodařilo se vytvořit kolo.");
     } finally {
       setLoading(false);
     }

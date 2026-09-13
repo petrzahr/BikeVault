@@ -12,17 +12,21 @@ import {
   Bike as BikeIcon
 } from "lucide-react";
 import { t, formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
-import { createComponentAction } from "@/app/actions/components";
-import { useRouter } from "next/navigation";
+import { useVault } from "@/context/VaultContext";
 import Link from "next/link";
 
 interface ComponentsClientProps {
-  initialComponents: any[];
-  categories: any[];
+  initialComponents?: any[];
+  categories?: any[];
 }
 
-export function ComponentsClient({ initialComponents, categories }: ComponentsClientProps) {
-  const router = useRouter();
+export function ComponentsClient({
+  initialComponents: propComponents,
+  categories: propCategories,
+}: ComponentsClientProps = {}) {
+  const { data, addComponent, getAllComponents } = useVault();
+  const initialComponents = propComponents ?? getAllComponents();
+  const categories = propCategories ?? data.categories;
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -64,16 +68,17 @@ export function ComponentsClient({ initialComponents, categories }: ComponentsCl
 
     setLoading(true);
     try {
-      await createComponentAction({
+      addComponent({
         categoryId,
-        manufacturer,
-        model,
+        manufacturer: manufacturer.trim(),
+        model: model.trim(),
         variant: variant.trim() || undefined,
         serialNumber: serialNumber.trim() || undefined,
         purchaseDate,
         purchasePrice: purchasePrice ? parseFloat(purchasePrice) : undefined,
+        currency: "CZK",
         initialKm: initialKm ? parseFloat(initialKm) : 0,
-        initialHours: initialHours ? parseFloat(initialHours) : 0,
+        initialMinutes: Math.round((initialHours ? parseFloat(initialHours) : 0) * 60),
         wheelDiameter: wheelDiameter.trim() || undefined,
         tireWidth: tireWidth.trim() || undefined,
         tireCasing: tireCasing.trim() || undefined,
@@ -87,9 +92,9 @@ export function ComponentsClient({ initialComponents, categories }: ComponentsCl
       setVariant("");
       setPurchasePrice("");
       setNotes("");
-      router.refresh();
-    } catch (err: any) {
-      alert(err?.message || "Chyba při zakládání komponentu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při zakládání komponentu.";
+      alert(msg);
     } finally {
       setLoading(false);
     }
