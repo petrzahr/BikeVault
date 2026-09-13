@@ -26,9 +26,9 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
 
   if (!bike) {
     return (
-      <div className="p-12 text-center text-slate-500">
-        <h2 className="text-lg font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
-        <Link href="/garage" className="text-blue-600 hover:underline text-sm">
+      <div className="p-12 text-center text-slate-500 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+        <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
+        <Link href="/garage" className="text-sky-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
         </Link>
       </div>
@@ -58,7 +58,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       title: `Montáž: ${compName}`,
       subtitle: `${catName} • při ${formatKm(inst.installedBikeKm)}`,
       badge: "Komponent",
-      badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+      badgeColor: "bg-sky-50 text-sky-700 border-sky-200/80",
       icon: Layers,
     });
 
@@ -69,7 +69,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Demontáž: ${compName}`,
         subtitle: `Ukončení montáže při ${formatKm(inst.removedBikeKm || 0)}`,
         badge: "Demontáž",
-        badgeColor: "bg-slate-100 text-slate-700 border-slate-200",
+        badgeColor: "bg-slate-100 text-slate-700 border-slate-200/80",
         icon: Layers,
       });
     }
@@ -82,7 +82,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       title: `Servis: ${item.description}`,
       subtitle: `${item.shopName || (item.performedBy === "SELF" ? "Svépomocí" : "Servis")} • ${formatCzk(Number(item.totalPrice || 0))}`,
       badge: "Servis",
-      badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
+      badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
       icon: Wrench,
     });
   }
@@ -95,7 +95,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Výchozí stav počítadla: ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${odo.note || "Zavedení kola do garáže"}`,
         badge: "Výchozí stav",
-        badgeColor: "bg-slate-100 text-slate-700 border-slate-200",
+        badgeColor: "bg-slate-100 text-slate-700 border-slate-200/80",
         icon: SlidersHorizontal,
       });
     } else if (odo.entryType === "RIDE") {
@@ -110,7 +110,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Odečet počítadla: ${formatKm(odo.resultingKm)} (${deltaKmText})`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} (${deltaMinText})${odo.note ? ` • ${odo.note}` : ""}`,
         badge: "Stav počítadla",
-        badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
         icon: SlidersHorizontal,
       });
     } else if (odo.entryType === "CORRECTION") {
@@ -120,7 +120,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Korekce počítadla na ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${odo.note || "Manuální oprava"}`,
         badge: "Korekce",
-        badgeColor: "bg-purple-50 text-purple-700 border-purple-200",
+        badgeColor: "bg-purple-50 text-purple-700 border-purple-200/80",
         icon: History,
       });
     }
@@ -130,16 +130,18 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
   timelineItems.sort((a, b) => b.date.getTime() - a.date.getTime());
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       <BikeHeader bike={bike} />
 
-      <div className="border-b border-slate-200 pb-4">
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-          Časová osa a životopis kola
-        </h2>
-        <p className="text-xs text-slate-500">
-          Kompletní chronologie od nákupu, přes upgrady dílů, servisní zásahy až po odečty stavu tachometru
-        </p>
+      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            Časová osa a životopis kola
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Kompletní chronologie od nákupu, přes upgrady dílů, servisní zásahy až po odečty stavu tachometru
+          </p>
+        </div>
       </div>
 
       {/* TIMELINE */}
@@ -149,17 +151,17 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
           return (
             <div key={idx} className="relative group">
               {/* Dot */}
-              <div className="absolute -left-6 sm:-left-8 top-1 w-6 h-6 rounded-full bg-white border-2 border-slate-300 group-hover:border-blue-600 transition-colors flex items-center justify-center text-slate-500 group-hover:text-blue-600 shadow-sm">
+              <div className="absolute -left-6 sm:-left-8 top-1 w-6 h-6 rounded-full bg-white border-2 border-slate-300 group-hover:border-sky-600 transition-colors flex items-center justify-center text-slate-500 group-hover:text-sky-600 shadow-sm">
                 <Icon className="w-3 h-3" />
               </div>
 
               {/* Card */}
-              <div className="bg-white border border-slate-200 hover:border-slate-300 p-4 rounded-xl transition-all shadow-sm">
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold border ${item.badgeColor}`}>
+              <div className="bg-white border border-slate-200/80 hover:border-slate-300 p-4 sm:p-5 rounded-2xl transition-all shadow-sm">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${item.badgeColor}`}>
                     {item.badge}
                   </span>
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-xs tabular-nums text-slate-400">
                     {formatDateCs(item.date)}
                   </span>
                 </div>
@@ -167,7 +169,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
                 <h4 className="text-sm font-bold text-slate-900">
                   {item.title}
                 </h4>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5 tabular-nums">
                   {item.subtitle}
                 </p>
               </div>

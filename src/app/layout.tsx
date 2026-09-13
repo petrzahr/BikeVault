@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
-import { Navigation } from "@/components/layout/Navigation";
+import { AppShell } from "@/components/layout/AppShell";
 import { VaultProvider } from "@/context/VaultContext";
 import { AuthGate } from "@/components/auth/AuthGate";
 
@@ -22,23 +22,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="cs">
+    <html lang="cs" className="h-full bg-slate-50">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
         <Script
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"
         />
       </head>
-      <body className="bg-slate-50 text-slate-900 min-h-screen antialiased">
+      <body className="h-full text-slate-800 antialiased selection:bg-sky-100 selection:text-sky-900 bg-slate-50">
         <VaultProvider>
           <AuthGate>
-            <Navigation />
-            <main className="md:pl-64 pb-20 md:pb-8 min-h-screen">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-                {children}
-              </div>
-            </main>
+            <AppShell>
+              {children}
+            </AppShell>
           </AuthGate>
         </VaultProvider>
       </body>

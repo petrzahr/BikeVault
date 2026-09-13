@@ -2,18 +2,15 @@
 
 import React, { useState } from "react";
 import { 
-  Layers, 
   Plus, 
   Search, 
-  Archive, 
-  CheckCircle2, 
-  DollarSign, 
-  X,
-  Bike as BikeIcon
+  Loader2,
+  Check
 } from "lucide-react";
-import { t, formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
+import { t, formatCzk } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import Link from "next/link";
+import { Modal } from "@/components/common/Modal";
 
 interface ComponentsClientProps {
   initialComponents?: any[];
@@ -101,72 +98,72 @@ export function ComponentsClient({
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              {t("nav.components")}
-            </h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 font-mono text-xs font-semibold">
-              {initialComponents.length} celkem
-            </span>
+    <div className="space-y-5 pb-12">
+      {/* Horní akční lišta ve stylu CashPilot */}
+      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-lg font-bold text-slate-900">{t("nav.components")}</h2>
+              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold tabular-nums border border-slate-200">
+                {initialComponents.length} celkem
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Centrální sklad, inventář a kompletní životní cyklus všech fyzických dílů
+            </p>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
-            Centrální sklad, inventář a kompletní životní cyklus všech fyzických dílů
-          </p>
+
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors cursor-pointer self-start sm:self-auto"
+          >
+            <Plus className="w-4 h-4" />
+            <span>{t("components.addComponent")}</span>
+          </button>
         </div>
 
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all flex items-center gap-2 self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>{t("components.addComponent")}</span>
-        </button>
-      </div>
+        {/* Panel filtrů a vyhledávání */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
+          <div className="flex gap-1 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scrollbar-none">
+            {[
+              { id: "ALL", label: t("common.all") },
+              { id: "INSTALLED", label: t("components.installed") },
+              { id: "IN_STORAGE", label: t("components.inStorage") },
+              { id: "SOLD", label: t("components.sold") },
+              { id: "DISCARDED", label: t("components.discarded") },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setFilterStatus(tab.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  filterStatus === tab.id
+                    ? "bg-white text-slate-900 shadow-sm font-bold"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-          {[
-            { id: "ALL", label: t("common.all") },
-            { id: "INSTALLED", label: t("components.installed") },
-            { id: "IN_STORAGE", label: t("components.inStorage") },
-            { id: "SOLD", label: t("components.sold") },
-            { id: "DISCARDED", label: t("components.discarded") },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setFilterStatus(tab.id)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                filterStatus === tab.id
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t("common.search")}
-            className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-slate-900 text-xs focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-          />
+          <div className="relative w-full sm:w-64">
+            <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t("common.search")}
+              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Components Grid */}
+      {/* Grid komponentů */}
       {filtered.length === 0 ? (
-        <div className="p-12 text-center bg-white border border-slate-200 rounded-2xl shadow-sm">
-          <p className="text-slate-500 text-sm">Nebyly nalezeny žádné odpovídající komponenty.</p>
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center shadow-sm">
+          <p className="text-slate-400 text-sm">Nebyly nalezeny žádné odpovídající komponenty.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -177,7 +174,7 @@ export function ComponentsClient({
 
             let statusBadge = {
               text: t("components.inStorage"),
-              style: "bg-blue-50 text-blue-700 border-blue-200",
+              style: "bg-sky-50 text-sky-700 border-sky-200",
             };
             if (comp.status === "INSTALLED") {
               statusBadge = {
@@ -192,21 +189,21 @@ export function ComponentsClient({
             } else if (comp.status === "DISCARDED") {
               statusBadge = {
                 text: t("components.discarded"),
-                style: "bg-red-50 text-red-700 border-red-200",
+                style: "bg-rose-50 text-rose-700 border-rose-200",
               };
             }
 
             return (
               <div
                 key={comp.id}
-                className="bg-white border border-slate-200 hover:border-slate-300 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm transition-all"
+                className="bg-white border border-slate-200/80 hover:border-slate-300 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[11px] font-semibold text-slate-600 px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-200">
+                    <span className="text-[11px] font-semibold text-slate-700 px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-200">
                       {cat?.nameCs || "Díl"}
                     </span>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${statusBadge.style} truncate max-w-[180px]`}>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${statusBadge.style} truncate max-w-[180px]`}>
                       {statusBadge.text}
                     </span>
                   </div>
@@ -215,23 +212,23 @@ export function ComponentsClient({
                     {comp.manufacturer} {comp.model}
                   </h3>
                   {comp.variant && (
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 mt-0.5">
                       {comp.variant}
                     </p>
                   )}
 
                   {comp.tireCasing && (
-                    <p className="text-xs text-blue-700 font-mono mt-1 font-medium">
+                    <p className="text-xs text-sky-700 mt-1 font-medium">
                       {comp.tireCasing} • {comp.tireCompound || ""}
                     </p>
                   )}
                 </div>
 
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                  <span>Cena: <strong className="text-slate-900 font-mono">{formatCzk(comp.purchasePrice)}</strong></span>
+                  <span>Cena: <strong className="text-slate-900 tabular-nums font-bold">{formatCzk(comp.purchasePrice)}</strong></span>
                   <Link
                     href={`/components/${comp.id}`}
-                    className="text-blue-600 hover:text-blue-700 font-semibold inline-flex items-center gap-1"
+                    className="text-sky-600 hover:text-sky-700 font-semibold inline-flex items-center gap-1"
                   >
                     <span>Detail & Servis →</span>
                   </Link>
@@ -243,159 +240,156 @@ export function ComponentsClient({
       )}
 
       {/* MODAL: PŘIDAT NOVÝ KOMPONENT */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in overflow-y-auto">
-          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg my-8 overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-            <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Layers className="w-5 h-5 text-blue-600" />
-                <h3 className="text-base font-bold text-slate-900">{t("components.addComponent")}</h3>
-              </div>
-              <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-            </div>
-
-            <form onSubmit={handleCreate} className="p-6 space-y-4 overflow-y-auto flex-1">
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                  Kategorie komponentu *
-                </label>
-                <select
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-                >
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.nameCs}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                    Výrobce *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={manufacturer}
-                    onChange={(e) => setManufacturer(e.target.value)}
-                    placeholder="např. RockShox, SRAM, Shimano"
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                    Model *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                    placeholder="např. ZEB Ultimate, Eagle X0"
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                  Varianta / specifikace
-                </label>
-                <input
-                  type="text"
-                  value={variant}
-                  onChange={(e) => setVariant(e.target.value)}
-                  placeholder="např. 180mm 29 Slab Grey, 32z, 10-52z"
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                    Nákupní cena (Kč)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={purchasePrice}
-                    onChange={(e) => setPurchasePrice(e.target.value)}
-                    placeholder="0"
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-4 py-2 text-slate-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                    Datum nákupu
-                  </label>
-                  <input
-                    type="date"
-                    value={purchaseDate}
-                    onChange={(e) => setPurchaseDate(e.target.value)}
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Specifická pole pro pláště */}
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block">
-                  Specifikace pro pláště (volitelné)
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    value={tireCasing}
-                    onChange={(e) => setTireCasing(e.target.value)}
-                    placeholder="Kostra (např. DoubleDown, DH, EXO+)"
-                    className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-                  />
-                  <input
-                    type="text"
-                    value={tireCompound}
-                    onChange={(e) => setTireCompound(e.target.value)}
-                    placeholder="Směs (např. MaxxGrip, MaxxTerra)"
-                    className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                  Poznámka
-                </label>
-                <textarea
-                  rows={2}
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 rounded-xl p-3 text-slate-900 text-xs focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100"
-                >
-                  {t("common.cancel")}
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
-                >
-                  {loading ? t("common.loading") : "Založit díl do skladu"}
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title={t("components.addComponent")}
+        subtitle="Založení nového dílu do centrálního skladu"
+        maxWidth="max-w-lg"
+      >
+        <form onSubmit={handleCreate} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Kategorie komponentu *
+            </label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+            >
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nameCs}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
-      )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Výrobce *
+              </label>
+              <input
+                type="text"
+                required
+                value={manufacturer}
+                onChange={(e) => setManufacturer(e.target.value)}
+                placeholder="např. RockShox, SRAM, Shimano"
+                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Model *
+              </label>
+              <input
+                type="text"
+                required
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                placeholder="např. ZEB Ultimate, Eagle X0"
+                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Varianta / specifikace
+            </label>
+            <input
+              type="text"
+              value={variant}
+              onChange={(e) => setVariant(e.target.value)}
+              placeholder="např. 180mm 29 Slab Grey, 32z, 10-52z"
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Nákupní cena (Kč)
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={purchasePrice}
+                onChange={(e) => setPurchasePrice(e.target.value)}
+                placeholder="0"
+                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Datum nákupu
+              </label>
+              <input
+                type="date"
+                value={purchaseDate}
+                onChange={(e) => setPurchaseDate(e.target.value)}
+                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              />
+            </div>
+          </div>
+
+          {/* Specifická pole pro pláště */}
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-2">
+            <span className="text-xs font-semibold text-slate-700 block">
+              Specifikace pro pláště (volitelné)
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                type="text"
+                value={tireCasing}
+                onChange={(e) => setTireCasing(e.target.value)}
+                placeholder="Kostra (např. DoubleDown, DH, EXO+)"
+                className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+              />
+              <input
+                type="text"
+                value={tireCompound}
+                onChange={(e) => setTireCompound(e.target.value)}
+                placeholder="Směs (např. MaxxGrip, MaxxTerra)"
+                className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Poznámka
+            </label>
+            <textarea
+              rows={2}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            />
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(false)}
+              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+            >
+              {t("common.cancel")}
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+              <span>{loading ? t("common.loading") : "Založit díl do skladu"}</span>
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
+
+export default ComponentsClient;

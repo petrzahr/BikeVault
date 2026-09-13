@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { t, formatDateCs, formatPsi, formatBar } from "@/lib/i18n";
 import { formatClicksFromClosed } from "@/lib/domain/setup";
+import { Modal } from "@/components/common/Modal";
 
 interface SetupClientProps {
   bike: any;
@@ -167,34 +168,34 @@ export function SetupClient({
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       <BikeHeader bike={bike} />
 
       {/* Title & Actions Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             {t("setup.title")}
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 mt-0.5">
             {t("setup.subtitle")}
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
           <button
             type="button"
             onClick={() => setIsSnapshotModalOpen(true)}
-            className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 shadow-sm transition-all flex items-center gap-2"
+            className="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-2"
           >
-            <Camera className="w-4 h-4 text-blue-600" />
+            <Camera className="w-4 h-4 text-sky-600" />
             <span>{t("setup.saveSnapshot")}</span>
           </button>
         </div>
       </div>
 
       {successMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center gap-2 animate-fade-in shadow-sm">
+        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-semibold flex items-center gap-2 animate-fade-in shadow-sm">
           <Check className="w-4 h-4 text-emerald-600" />
           <span>{successMsg}</span>
         </div>
@@ -206,14 +207,14 @@ export function SetupClient({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* VIDLICE */}
           {bike.suspensionType !== "RIGID" && (
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 border border-blue-200/60 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/60 flex items-center justify-center font-bold text-xs">
                     V
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                       {t("setup.fork.title")}
                     </h3>
                     <p className="text-xs text-slate-500">
@@ -222,7 +223,7 @@ export function SetupClient({
                   </div>
                 </div>
 
-                <span className="text-[11px] text-blue-700 font-mono bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200 font-semibold">
+                <span className="text-[11px] text-sky-700 tabular-nums bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200/80 font-semibold">
                   {forkTravel} mm zdvih
                 </span>
               </div>
@@ -237,7 +238,7 @@ export function SetupClient({
                     step="0.5"
                     value={forkPressure}
                     onChange={(e) => setForkPressure(e.target.value)}
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                   />
                 </div>
 
@@ -249,7 +250,7 @@ export function SetupClient({
                     type="number"
                     value={forkSag}
                     onChange={(e) => setForkSag(e.target.value)}
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                   />
                 </div>
 
@@ -263,7 +264,7 @@ export function SetupClient({
                       min="0"
                       value={forkRebound}
                       onChange={(e) => setForkRebound(e.target.value)}
-                      className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
@@ -278,7 +279,7 @@ export function SetupClient({
                     min="0"
                     value={forkTokens}
                     onChange={(e) => setForkTokens(e.target.value)}
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                   />
                 </div>
 
@@ -292,7 +293,7 @@ export function SetupClient({
                       min="0"
                       value={forkLsc}
                       onChange={(e) => setForkLsc(e.target.value)}
-                      className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
@@ -308,7 +309,7 @@ export function SetupClient({
                       min="0"
                       value={forkHsc}
                       onChange={(e) => setForkHsc(e.target.value)}
-                      className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
@@ -324,7 +325,7 @@ export function SetupClient({
                   value={forkNotes}
                   onChange={(e) => setForkNotes(e.target.value)}
                   placeholder="např. ButterCups vložky, nastavení pro 82 kg jezdce"
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                 />
               </div>
             </div>
@@ -332,14 +333,14 @@ export function SetupClient({
 
           {/* TLUMIČ */}
           {bike.suspensionType === "FULL_SUSPENSION" && (
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 border border-blue-200/60 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/60 flex items-center justify-center font-bold text-xs">
                     T
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                       {t("setup.shock.title")}
                     </h3>
                     <p className="text-xs text-slate-500">
@@ -348,7 +349,7 @@ export function SetupClient({
                   </div>
                 </div>
 
-                <span className="text-[11px] text-blue-700 font-mono bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200 font-semibold">
+                <span className="text-[11px] text-sky-700 tabular-nums bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200/80 font-semibold">
                   Zadní tlumič
                 </span>
               </div>
@@ -363,7 +364,7 @@ export function SetupClient({
                     step="1"
                     value={shockPressure}
                     onChange={(e) => setShockPressure(e.target.value)}
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                   />
                 </div>
 
@@ -375,7 +376,7 @@ export function SetupClient({
                     type="number"
                     value={shockSag}
                     onChange={(e) => setShockSag(e.target.value)}
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                   />
                 </div>
 
@@ -389,7 +390,7 @@ export function SetupClient({
                       min="0"
                       value={shockRebound}
                       onChange={(e) => setShockRebound(e.target.value)}
-                      className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
@@ -404,7 +405,7 @@ export function SetupClient({
                     min="0"
                     value={shockTokens}
                     onChange={(e) => setShockTokens(e.target.value)}
-                    className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                   />
                 </div>
 
@@ -418,7 +419,7 @@ export function SetupClient({
                       min="0"
                       value={shockLsc}
                       onChange={(e) => setShockLsc(e.target.value)}
-                      className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
@@ -434,7 +435,7 @@ export function SetupClient({
                       min="0"
                       value={shockHsc}
                       onChange={(e) => setShockHsc(e.target.value)}
-                      className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
@@ -450,7 +451,7 @@ export function SetupClient({
                   value={shockNotes}
                   onChange={(e) => setShockNotes(e.target.value)}
                   placeholder="např. Hydraulic Bottom Out, 28% SAG"
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                 />
               </div>
             </div>
@@ -460,14 +461,14 @@ export function SetupClient({
         {/* PLÁŠTĚ GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Přední plášť */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3.5 shadow-sm">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-3.5 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center font-bold text-xs">
                   P
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                     {t("setup.tires.front")}
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -477,7 +478,7 @@ export function SetupClient({
               </div>
 
               {frontTireComp?.tireCasing && (
-                <span className="text-[11px] text-slate-600 font-mono bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+                <span className="text-[11px] text-slate-600 tabular-nums bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200/80 font-medium">
                   {frontTireComp.tireCasing}
                 </span>
               )}
@@ -493,7 +494,7 @@ export function SetupClient({
                   step="0.05"
                   value={frontPressure}
                   onChange={(e) => setFrontPressure(e.target.value)}
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                 />
               </div>
 
@@ -506,7 +507,7 @@ export function SetupClient({
                   value={frontInsert}
                   onChange={(e) => setFrontInsert(e.target.value)}
                   placeholder="např. Bez vložky, CushCore XC"
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                 />
               </div>
             </div>
@@ -520,20 +521,20 @@ export function SetupClient({
                 value={frontNotes}
                 onChange={(e) => setFrontNotes(e.target.value)}
                 placeholder="např. DD kostra, bez vložky, suchý bikepark"
-                className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
               />
             </div>
           </div>
 
           {/* Zadní plášť */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3.5 shadow-sm">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-3.5 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center font-bold text-xs">
                   Z
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                     {t("setup.tires.rear")}
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -543,7 +544,7 @@ export function SetupClient({
               </div>
 
               {rearTireComp?.tireCasing && (
-                <span className="text-[11px] text-slate-600 font-mono bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+                <span className="text-[11px] text-slate-600 tabular-nums bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200/80 font-medium">
                   {rearTireComp.tireCasing}
                 </span>
               )}
@@ -559,7 +560,7 @@ export function SetupClient({
                   step="0.05"
                   value={rearPressure}
                   onChange={(e) => setRearPressure(e.target.value)}
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 font-mono text-base focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                 />
               </div>
 
@@ -572,7 +573,7 @@ export function SetupClient({
                   value={rearInsert}
                   onChange={(e) => setRearInsert(e.target.value)}
                   placeholder="např. CushCore Pro, Tubolight"
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
                 />
               </div>
             </div>
@@ -586,14 +587,14 @@ export function SetupClient({
                 value={rearNotes}
                 onChange={(e) => setRearNotes(e.target.value)}
                 placeholder="např. DH kostra, CushCore Pro"
-                className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 focus:border-blue-600 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
               />
             </div>
           </div>
         </div>
 
         {/* Celková poznámka k nastavení */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-sm">
           <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
             {t("setup.generalNotes")}
           </label>
@@ -602,7 +603,7 @@ export function SetupClient({
             value={generalNotes}
             onChange={(e) => setGeneralNotes(e.target.value)}
             placeholder="např. Bikepark setup. Sucho, rychlé rozbité tratě. DD vpředu, DH vzadu, CushCore vzadu. Tlumič o 2 kliky pomalejší rebound než běžný trail setup."
-            className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 rounded-xl p-4 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"
+            className="w-full bg-white border border-slate-200/80 rounded-xl p-4 text-slate-900 text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm"
           />
         </div>
 
@@ -611,7 +612,7 @@ export function SetupClient({
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl shadow-sm transition-all flex items-center gap-2"
+            className="px-6 py-3 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white font-semibold text-xs rounded-xl shadow-sm shadow-sky-200 transition-all flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
             <span>{loading ? t("common.loading") : t("setup.save")}</span>
@@ -621,10 +622,10 @@ export function SetupClient({
 
       {/* HISTORIE SNÍMKŮ / PROFILY NASTAVENÍ */}
       {snapshots.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
           <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-            <History className="w-5 h-5 text-blue-600" />
-            <h3 className="text-base font-bold text-slate-900 uppercase tracking-wider">
+            <History className="w-4 h-4 text-sky-600" />
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               Uložené profily a snímky nastavení ({snapshots.length})
             </h3>
           </div>
@@ -633,13 +634,13 @@ export function SetupClient({
             {snapshots.map((snap) => (
               <div
                 key={snap.id}
-                className="p-4 bg-slate-50/80 rounded-xl border border-slate-200 space-y-2.5 text-xs hover:border-slate-300 transition-colors"
+                className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-2.5 text-xs hover:border-slate-300 transition-colors"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-blue-700">
+                  <span className="font-bold text-sm text-sky-700">
                     {snap.profileName || "Snímek nastavení"}
                   </span>
-                  <span className="text-slate-400 font-mono">
+                  <span className="text-slate-400 tabular-nums">
                     {formatDateCs(snap.createdAt)}
                   </span>
                 </div>
@@ -650,10 +651,10 @@ export function SetupClient({
                   </p>
                 )}
 
-                <div className="pt-2 border-t border-slate-200/80 text-slate-500 space-y-1">
-                  <div>Vidlice: <span className="text-slate-800 font-mono font-medium">{snap.snapshotData?.forkPressurePsi ? formatPsi(snap.snapshotData.forkPressurePsi) : "-"}</span></div>
-                  <div>Tlumič: <span className="text-slate-800 font-mono font-medium">{snap.snapshotData?.shockPressurePsi ? formatPsi(snap.snapshotData.shockPressurePsi) : "-"}</span></div>
-                  <div>Pláště: <span className="text-slate-800 font-mono font-medium">{formatBar(snap.snapshotData?.frontTirePressureBar)} / {formatBar(snap.snapshotData?.rearTirePressureBar)}</span></div>
+                <div className="pt-2 border-t border-slate-200/60 text-slate-500 space-y-1 tabular-nums">
+                  <div>Vidlice: <span className="text-slate-800 font-medium">{snap.snapshotData?.forkPressurePsi ? formatPsi(snap.snapshotData.forkPressurePsi) : "-"}</span></div>
+                  <div>Tlumič: <span className="text-slate-800 font-medium">{snap.snapshotData?.shockPressurePsi ? formatPsi(snap.snapshotData.shockPressurePsi) : "-"}</span></div>
+                  <div>Pláště: <span className="text-slate-800 font-medium">{formatBar(snap.snapshotData?.frontTirePressureBar)} / {formatBar(snap.snapshotData?.rearTirePressureBar)}</span></div>
                 </div>
               </div>
             ))}
@@ -662,71 +663,58 @@ export function SetupClient({
       )}
 
       {/* Modal: Uložit jako snímek / profil */}
-      {isSnapshotModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Camera className="w-5 h-5 text-blue-600" />
-                <h3 className="text-base font-bold text-slate-900">
-                  {t("setup.snapshotTitle")}
-                </h3>
-              </div>
-              <button
-                onClick={() => setIsSnapshotModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveSnapshot} className="p-5 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                  {t("setup.profileName")} *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={snapshotName}
-                  onChange={(e) => setSnapshotName(e.target.value)}
-                  placeholder={t("setup.profileNamePlaceholder")}
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                  Poznámka k profilu
-                </label>
-                <textarea
-                  rows={2}
-                  value={snapshotNote}
-                  onChange={(e) => setSnapshotNote(e.target.value)}
-                  placeholder="Pro jaké tratě, počasí nebo závod byl profil vytvořen"
-                  className="w-full bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsSnapshotModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100"
-                >
-                  {t("common.cancel")}
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
-                >
-                  Uložit profil
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={isSnapshotModalOpen}
+        onClose={() => setIsSnapshotModalOpen(false)}
+        title={t("setup.snapshotTitle")}
+        subtitle="Uložení aktuálního nastavení do historie pro snadné obnovení"
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleSaveSnapshot} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              {t("setup.profileName")} *
+            </label>
+            <input
+              type="text"
+              required
+              value={snapshotName}
+              onChange={(e) => setSnapshotName(e.target.value)}
+              placeholder={t("setup.profileNamePlaceholder")}
+              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm"
+            />
           </div>
-        </div>
-      )}
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              Poznámka k profilu
+            </label>
+            <textarea
+              rows={2}
+              value={snapshotNote}
+              onChange={(e) => setSnapshotNote(e.target.value)}
+              placeholder="Pro jaké tratě, počasí nebo závod byl profil vytvořen"
+              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm"
+            />
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setIsSnapshotModalOpen(false)}
+              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
+            >
+              {t("common.cancel")}
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-all"
+            >
+              Uložit profil
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

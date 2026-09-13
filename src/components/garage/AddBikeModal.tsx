@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Bike, Check, Sparkles } from "lucide-react";
+import { Sparkles, Check, Loader2 } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
+import { Modal } from "@/components/common/Modal";
 
 interface AddBikeModalProps {
   isOpen: boolean;
@@ -118,289 +119,276 @@ export function AddBikeModal({ isOpen, onClose, onSuccess }: AddBikeModalProps) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl my-8 overflow-hidden shadow-2xl flex flex-col max-h-[90vh] text-slate-900">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/70">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center">
-              <Bike className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900">{t("bike.addTitle")}</h3>
-              <p className="text-xs text-slate-500">Založení nového kola do virtuální garáže</p>
-            </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t("bike.addTitle")}
+      subtitle="Založení nového kola do virtuální garáže"
+      maxWidth="max-w-2xl"
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-medium">
+            {error}
           </div>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl hover:bg-slate-100 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        )}
+
+        {/* Presets */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+            <span>Rychlý výběr typu kola (Preset)</span>
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {[
+              { id: "mtbFull", label: t("bike.presets.mtbFull") },
+              { id: "mtbHardtail", label: t("bike.presets.mtbHardtail") },
+              { id: "gravelRigid", label: t("bike.presets.gravelRigid") },
+              { id: "gravelSuspension", label: t("bike.presets.gravelSuspension") },
+              { id: "road", label: t("bike.presets.road") },
+              { id: "emtbFull", label: t("bike.presets.emtbFull") },
+            ].map((p) => (
+              <button
+                type="button"
+                key={p.id}
+                onClick={() => handlePresetSelect(p.id)}
+                className={`px-3 py-2 text-xs font-medium rounded-xl border text-left transition-all ${
+                  selectedPreset === p.id
+                    ? "bg-sky-50 border-sky-300 text-sky-700 font-semibold shadow-xs"
+                    : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1">
-          {error && (
-            <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-medium">
-              {error}
-            </div>
-          )}
-
-          {/* Presets */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-              <span>Rychlý výběr typu kola (Preset)</span>
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {[
-                { id: "mtbFull", label: t("bike.presets.mtbFull") },
-                { id: "mtbHardtail", label: t("bike.presets.mtbHardtail") },
-                { id: "gravelRigid", label: t("bike.presets.gravelRigid") },
-                { id: "gravelSuspension", label: t("bike.presets.gravelSuspension") },
-                { id: "road", label: t("bike.presets.road") },
-                { id: "emtbFull", label: t("bike.presets.emtbFull") },
-              ].map((p) => (
-                <button
-                  type="button"
-                  key={p.id}
-                  onClick={() => handlePresetSelect(p.id)}
-                  className={`px-3 py-2 text-xs font-medium rounded-xl border text-left transition-all ${
-                    selectedPreset === p.id
-                      ? "bg-blue-50 border-blue-300 text-blue-700 font-semibold shadow-sm"
-                      : "bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Základní údaje */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                {t("bike.name")} *
-              </label>
-              <input
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="např. Propain Spindrift CF"
-                className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                {t("bike.manufacturer")} *
-              </label>
-              <input
-                type="text"
-                required
-                value={manufacturer}
-                onChange={(e) => setManufacturer(e.target.value)}
-                placeholder="např. Propain, Canyon, Trek"
-                className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                {t("bike.model")} *
-              </label>
-              <input
-                type="text"
-                required
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                placeholder="např. Spindrift CF, Grizl CF SL"
-                className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                {t("bike.modelYear")}
-              </label>
-              <input
-                type="number"
-                value={modelYear}
-                onChange={(e) => setModelYear(parseInt(e.target.value, 10))}
-                className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 font-mono shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                {t("bike.serialNumber")}
-              </label>
-              <input
-                type="text"
-                value={serialNumber}
-                onChange={(e) => setSerialNumber(e.target.value)}
-                placeholder="Výrobní číslo rámu"
-                className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 font-mono shadow-sm"
-              />
-            </div>
-          </div>
-
-          {/* Klasifikace */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                {t("bike.category")}
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-              >
-                <option value="MTB">MTB</option>
-                <option value="GRAVEL">Gravel</option>
-                <option value="ROAD">Silniční</option>
-                <option value="CYCLOCROSS">Cyklokros</option>
-                <option value="CITY_URBAN">Městské</option>
-                <option value="TOURING">Touring</option>
-                <option value="DIRT_PUMPTRACK">Dirt / Pumptrack</option>
-                <option value="OTHER">Jiné</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                {t("bike.suspensionType")}
-              </label>
-              <select
-                value={suspensionType}
-                onChange={(e) => setSuspensionType(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-              >
-                <option value="FULL_SUSPENSION">Celoodpružené</option>
-                <option value="FRONT_SUSPENSION">Pouze přední (Hardtail)</option>
-                <option value="RIGID">Pevné (Bez odpružení)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                {t("bike.driveType")}
-              </label>
-              <select
-                value={driveType}
-                onChange={(e) => setDriveType(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-              >
-                <option value="CONVENTIONAL">Klasické</option>
-                <option value="ELECTRIC">Elektrokolo (E-bike)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Nákup a výchozí počítadlo */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                {t("bike.purchaseDate")} *
-              </label>
-              <input
-                type="date"
-                required
-                value={purchaseDate}
-                onChange={(e) => setPurchaseDate(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                {t("bike.purchasePrice")} (Kč)
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={purchasePrice}
-                onChange={(e) => setPurchasePrice(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 font-mono shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                {t("bike.initialKm")}
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                min="0"
-                value={initialKm}
-                onChange={(e) => setInitialKm(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 font-mono shadow-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                {t("bike.initialHours")}
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={initialHours}
-                onChange={(e) => setInitialHours(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 font-mono shadow-sm"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              URL fotografie kola (volitelné)
+        {/* Základní údaje */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.name")} *
             </label>
             <input
-              type="url"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://..."
-              className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm"
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="např. Propain Spindrift CF"
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              {t("bike.notes")}
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.manufacturer")} *
             </label>
-            <textarea
-              rows={2}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Poznámka ke kolu, komponentům nebo určení"
-              className="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-slate-900 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm"
+            <input
+              type="text"
+              required
+              value={manufacturer}
+              onChange={(e) => setManufacturer(e.target.value)}
+              placeholder="např. Propain, Canyon, Trek"
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
             />
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-colors font-medium"
-            >
-              {t("common.cancel")}
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-sm transition-all flex items-center gap-2 active:scale-95"
-            >
-              <Check className="w-4 h-4" />
-              <span>{loading ? t("common.loading") : t("bike.save")}</span>
-            </button>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.model")} *
+            </label>
+            <input
+              type="text"
+              required
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              placeholder="např. Spindrift CF, Grizl CF SL"
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            />
           </div>
-        </form>
-      </div>
-    </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.modelYear")}
+            </label>
+            <input
+              type="number"
+              value={modelYear}
+              onChange={(e) => setModelYear(parseInt(e.target.value, 10))}
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.serialNumber")}
+            </label>
+            <input
+              type="text"
+              value={serialNumber}
+              onChange={(e) => setSerialNumber(e.target.value)}
+              placeholder="Výrobní číslo rámu"
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            />
+          </div>
+        </div>
+
+        {/* Klasifikace */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200/70">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.category")}
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+            >
+              <option value="MTB">MTB</option>
+              <option value="GRAVEL">Gravel</option>
+              <option value="ROAD">Silniční</option>
+              <option value="CYCLOCROSS">Cyklokros</option>
+              <option value="CITY_URBAN">Městské</option>
+              <option value="TOURING">Touring</option>
+              <option value="DIRT_PUMPTRACK">Dirt / Pumptrack</option>
+              <option value="OTHER">Jiné</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.suspensionType")}
+            </label>
+            <select
+              value={suspensionType}
+              onChange={(e) => setSuspensionType(e.target.value)}
+              className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+            >
+              <option value="FULL_SUSPENSION">Celoodpružené</option>
+              <option value="FRONT_SUSPENSION">Pouze přední (Hardtail)</option>
+              <option value="RIGID">Pevné (Bez odpružení)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.driveType")}
+            </label>
+            <select
+              value={driveType}
+              onChange={(e) => setDriveType(e.target.value)}
+              className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+            >
+              <option value="CONVENTIONAL">Klasické</option>
+              <option value="ELECTRIC">Elektrokolo (E-bike)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Nákup a výchozí počítadlo */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.purchaseDate")} *
+            </label>
+            <input
+              type="date"
+              required
+              value={purchaseDate}
+              onChange={(e) => setPurchaseDate(e.target.value)}
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.purchasePrice")} (Kč)
+            </label>
+            <input
+              type="number"
+              min="0"
+              value={purchasePrice}
+              onChange={(e) => setPurchasePrice(e.target.value)}
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.initialKm")}
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              value={initialKm}
+              onChange={(e) => setInitialKm(e.target.value)}
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("bike.initialHours")}
+            </label>
+            <input
+              type="number"
+              min="0"
+              value={initialHours}
+              onChange={(e) => setInitialHours(e.target.value)}
+              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">
+            URL fotografie kola (volitelné)
+          </label>
+          <input
+            type="url"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="https://..."
+            className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1">
+            {t("bike.notes")}
+          </label>
+          <textarea
+            rows={2}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Poznámka ke kolu, komponentům nebo určení"
+            className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+          >
+            {t("common.cancel")}
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+            <span>{loading ? t("common.loading") : t("bike.save")}</span>
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
+
+export default AddBikeModal;

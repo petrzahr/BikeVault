@@ -42,14 +42,14 @@ export default function GlobalFinancesPage() {
   const netTotal = totalExpenses - totalIncomes;
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
             {t("finances.title")}
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-0.5">
             Globální kniha výdajů a příjmů spojených s koly, komponenty a servisem
           </p>
         </div>
@@ -57,46 +57,52 @@ export default function GlobalFinancesPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">
               {t("finances.totalExpenses")}
             </span>
-            <TrendingDown className="w-4 h-4 text-rose-500" />
+            <div className="p-2 rounded-xl bg-rose-50 text-rose-600">
+              <TrendingDown className="w-4 h-4" />
+            </div>
           </div>
-          <span className="text-2xl font-bold text-slate-900 font-mono">
+          <span className="text-2xl font-bold text-slate-900 tabular-nums">
             {formatCzk(totalExpenses)}
           </span>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">
               {t("finances.totalIncomes")}
             </span>
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
+            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+              <TrendingUp className="w-4 h-4" />
+            </div>
           </div>
-          <span className="text-2xl font-bold text-emerald-600 font-mono">
+          <span className="text-2xl font-bold text-emerald-600 tabular-nums">
             {formatCzk(totalIncomes)}
           </span>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-blue-700">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-sky-700">
               {t("finances.netCost")} (TCO)
             </span>
-            <Coins className="w-4 h-4 text-blue-600" />
+            <div className="p-2 rounded-xl bg-sky-50 text-sky-600">
+              <Coins className="w-4 h-4" />
+            </div>
           </div>
-          <span className="text-2xl font-bold text-blue-700 font-mono">
+          <span className="text-2xl font-bold text-sky-700 tabular-nums">
             {formatCzk(netTotal)}
           </span>
         </div>
       </div>
 
       {/* Category breakdown */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
-        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
           Rozložení výdajů podle kategorií
         </h3>
 
@@ -104,14 +110,14 @@ export default function GlobalFinancesPage() {
           {Object.entries(categoryTotals).map(([catKey, total]) => {
             const percent = totalExpenses > 0 ? Math.round((total / totalExpenses) * 100) : 0;
             return (
-              <div key={catKey} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-xs text-slate-500 block mb-1">
+              <div key={catKey} className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/60">
+                <span className="text-xs text-slate-500 block mb-1 font-medium">
                   {t(`finances.categories.${catKey}`)}
                 </span>
-                <span className="text-lg font-bold text-slate-900 font-mono block">
+                <span className="text-lg font-bold text-slate-900 tabular-nums block">
                   {formatCzk(total)}
                 </span>
-                <span className="text-[11px] text-blue-700 font-semibold">
+                <span className="text-[11px] text-sky-700 font-semibold tabular-nums">
                   {percent} % výdajů
                 </span>
               </div>
@@ -121,54 +127,60 @@ export default function GlobalFinancesPage() {
       </div>
 
       {/* Unified Transaction Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+      <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
             Všechny finanční položky ({transactions.length})
           </h3>
         </div>
 
-        <div className="divide-y divide-slate-100">
-          {transactions.map((item) => {
-            const tx = item.tx;
-            const isExpense = tx.type === "EXPENSE";
-            const categoryKey = `finances.categories.${tx.category}`;
+        {transactions.length === 0 ? (
+          <div className="p-8 text-center text-xs text-slate-500">
+            Zatím nebyly zaznamenány žádné finanční transakce.
+          </div>
+        ) : (
+          <div className="divide-y divide-slate-100">
+            {transactions.map((item) => {
+              const tx = item.tx;
+              const isExpense = tx.type === "EXPENSE";
+              const categoryKey = `finances.categories.${tx.category}`;
 
-            return (
-              <div key={tx.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold border ${
-                      isExpense ? "bg-red-50 text-red-700 border-red-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                    }`}>
-                      {t(categoryKey)}
-                    </span>
-                    {item.bike && (
-                      <span className="text-xs text-blue-700 font-semibold">
-                        [{item.bike.name}]
+              return (
+                <div key={tx.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:bg-slate-50/50 transition-colors">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
+                        isExpense ? "bg-rose-50 text-rose-700 border-rose-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      }`}>
+                        {t(categoryKey)}
                       </span>
-                    )}
-                    <span className="text-sm font-bold text-slate-900">
-                      {tx.notes || t(categoryKey)}
+                      {item.bike && (
+                        <span className="text-xs text-sky-700 font-semibold">
+                          [{item.bike.name}]
+                        </span>
+                      )}
+                      <span className="text-sm font-semibold text-slate-900">
+                        {tx.notes || t(categoryKey)}
+                      </span>
+                    </div>
+
+                    <div className="text-slate-400 tabular-nums">
+                      {formatDateCs(tx.transactionDate)}
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className={`text-base font-bold tabular-nums ${
+                      isExpense ? "text-slate-900" : "text-emerald-600"
+                    }`}>
+                      {isExpense ? "-" : "+"}{formatCzk(tx.amount)}
                     </span>
                   </div>
-
-                  <div className="text-slate-400 font-mono">
-                    {formatDateCs(tx.transactionDate)}
-                  </div>
                 </div>
-
-                <div className="text-right">
-                  <span className={`text-base font-bold font-mono ${
-                    isExpense ? "text-slate-900" : "text-emerald-600"
-                  }`}>
-                    {isExpense ? "-" : "+"}{formatCzk(tx.amount)}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -46,9 +46,9 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
   const bike = getBike(id);
   if (!bike) {
     return (
-      <div className="p-12 text-center text-slate-500">
-        <h2 className="text-lg font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
-        <Link href="/garage" className="text-blue-600 hover:underline text-sm">
+      <div className="p-12 text-center text-slate-500 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+        <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
+        <Link href="/garage" className="text-sky-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
         </Link>
       </div>
@@ -85,7 +85,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
   const rearTireComp = installedComponents.find((c) => c.installation.slot === "REAR_TIRE")?.component;
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       <BikeHeader bike={bike} />
 
       {/* Service Alerts (if any overdue or due soon) */}
@@ -94,22 +94,22 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           {overdueSchedules.map((item) => (
             <div
               key={item.schedule.id}
-              className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-center justify-between gap-3 text-red-800"
+              className="p-4 rounded-2xl bg-rose-50/50 border border-rose-200/80 flex items-center justify-between gap-3 text-rose-800 shadow-sm"
             >
               <div className="flex items-center gap-3">
-                <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
                 <div>
-                  <h4 className="font-bold text-sm text-red-900">
+                  <h4 className="font-bold text-sm text-rose-900">
                     Servis po termínu: {item.schedule.name}
                   </h4>
-                  <p className="text-xs text-red-700">
+                  <p className="text-xs text-rose-700">
                     {item.status.summaryTextCs}
                   </p>
                 </div>
               </div>
               <Link
                 href={`/bikes/${bike.id}/service`}
-                className="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-800 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shadow-2xs"
+                className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl transition-colors whitespace-nowrap shadow-sm"
               >
                 Zapsat servis
               </Link>
@@ -119,7 +119,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           {dueSoonSchedules.map((item) => (
             <div
               key={item.schedule.id}
-              className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3 text-amber-900"
+              className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/80 flex items-center justify-between gap-3 text-amber-900 shadow-sm"
             >
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-amber-600 shrink-0" />
@@ -134,7 +134,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
               </div>
               <Link
                 href={`/bikes/${bike.id}/service`}
-                className="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shadow-2xs"
+                className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl transition-colors whitespace-nowrap shadow-sm"
               >
                 Detail
               </Link>
@@ -144,107 +144,107 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
       )}
 
       {/* METRICS & TCO GRID */}
-      <div>
-        <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
+      <div className="space-y-3">
+        <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
           Přehled provozu a nákladů (TCO)
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
           {/* Nájezd */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
             <span className="text-xs text-slate-500 block mb-1 font-medium">
               {t("bike.metrics.currentMileage")}
             </span>
-            <span className="text-xl font-bold text-slate-900 font-mono">
+            <span className="text-lg font-bold text-slate-900 tabular-nums">
               {formatKm(bike.currentKm)}
             </span>
           </div>
 
           {/* Hodiny */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
             <span className="text-xs text-slate-500 block mb-1 font-medium">
               {t("bike.metrics.ridingHours")}
             </span>
-            <span className="text-xl font-bold text-slate-900 font-mono">
+            <span className="text-lg font-bold text-slate-900 tabular-nums">
               {formatMinutes(bike.currentMinutes)}
             </span>
           </div>
 
           {/* Doba vlastnictví */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
             <span className="text-xs text-slate-500 block mb-1 font-medium">
               {t("bike.metrics.ownershipDuration")}
             </span>
-            <span className="text-xl font-bold text-slate-900 font-mono">
+            <span className="text-lg font-bold text-slate-900 tabular-nums">
               {tco.ownershipMonths} {tco.ownershipMonths === 1 ? "měsíc" : tco.ownershipMonths >= 2 && tco.ownershipMonths <= 4 ? "měsíce" : "měsíců"}
             </span>
           </div>
 
           {/* Čisté náklady */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm col-span-2 sm:col-span-1">
-            <span className="text-xs text-blue-600 font-semibold block mb-1">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all col-span-2 sm:col-span-1">
+            <span className="text-xs text-sky-600 font-semibold block mb-1">
               {t("bike.metrics.netCost")}
             </span>
-            <span className="text-xl font-bold text-blue-700 font-mono">
+            <span className="text-lg font-bold text-sky-700 tabular-nums">
               {formatCzk(tco.netOwnershipCost)}
             </span>
           </div>
 
           {/* Cena za km */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
             <span className="text-xs text-slate-500 block mb-1 font-medium">
               {t("bike.metrics.costPerKm")}
             </span>
-            <span className="text-xl font-bold text-slate-800 font-mono">
+            <span className="text-lg font-bold text-slate-800 tabular-nums">
               {tco.costPerKm !== null ? `${tco.costPerKm.toFixed(2)} Kč/km` : "-"}
             </span>
           </div>
 
           {/* Cena za hodinu */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
             <span className="text-xs text-slate-500 block mb-1 font-medium">
               {t("bike.metrics.costPerHour")}
             </span>
-            <span className="text-xl font-bold text-slate-800 font-mono">
+            <span className="text-lg font-bold text-slate-800 tabular-nums">
               {tco.costPerHour !== null ? `${formatCzk(tco.costPerHour)}/h` : "-"}
             </span>
           </div>
 
           {/* Cena za měsíc */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
             <span className="text-xs text-slate-500 block mb-1 font-medium">
               {t("bike.metrics.costPerMonth")}
             </span>
-            <span className="text-xl font-bold text-slate-800 font-mono">
+            <span className="text-lg font-bold text-slate-800 tabular-nums">
               {formatCzk(tco.costPerMonth)}/měsíc
             </span>
           </div>
 
           {/* Kupní cena */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
             <span className="text-xs text-slate-500 block mb-1 font-medium">
               {t("bike.metrics.purchasePrice")}
             </span>
-            <span className="text-lg font-bold text-slate-700 font-mono">
+            <span className="text-lg font-bold text-slate-700 tabular-nums">
               {formatCzk(bike.purchasePrice)}
             </span>
           </div>
 
           {/* Celkové výdaje */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
             <span className="text-xs text-slate-500 block mb-1 font-medium">
               {t("bike.metrics.totalExpenses")}
             </span>
-            <span className="text-lg font-bold text-slate-700 font-mono">
+            <span className="text-lg font-bold text-slate-700 tabular-nums">
               {formatCzk(tco.totalExpenses)}
             </span>
           </div>
 
           {/* Celkové příjmy */}
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
             <span className="text-xs text-slate-500 block mb-1 font-medium">
               {t("bike.metrics.totalIncomes")}
             </span>
-            <span className="text-lg font-bold text-emerald-600 font-mono">
+            <span className="text-lg font-bold text-emerald-600 tabular-nums">
               {formatCzk(tco.totalIncomes)}
             </span>
           </div>
@@ -254,18 +254,18 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
       {/* COMPACT BIKE SETUP SUMMARY & RECENT LOGS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Compact Setup Summary Card */}
-        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <Gauge className="w-5 h-5 text-blue-600" />
-                <h3 className="text-base font-bold text-slate-900 uppercase tracking-wider">
+                <Gauge className="w-4 h-4 text-sky-600" />
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                   {t("setup.title")}
                 </h3>
               </div>
               <Link
                 href={`/bikes/${bike.id}/setup`}
-                className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                className="text-xs font-semibold text-sky-600 hover:text-sky-700 flex items-center gap-1"
               >
                 <span>{t("setup.edit")}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -275,19 +275,19 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Vidlice */}
               {bike.suspensionType !== "RIGID" && (
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
                       Vidlice
                     </span>
-                    <span className="text-base font-mono font-bold text-slate-900">
+                    <span className="text-base font-bold text-slate-900 tabular-nums">
                       {setup?.forkPressurePsi ? formatPsi(setup.forkPressurePsi) : "- psi"}
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 font-medium truncate">
                     {forkComp ? `${forkComp.manufacturer} ${forkComp.model}` : "Neosazeno"}
                   </p>
-                  <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200">
+                  <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200/60 tabular-nums">
                     <div>Odskok: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup?.forkReboundClicks)}</span></div>
                     {setup?.forkLscClicks !== null && setup?.forkLscClicks !== undefined && (
                       <div>LSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkLscClicks)}</span></div>
@@ -301,32 +301,32 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
 
               {/* Tlumič */}
               {bike.suspensionType === "FULL_SUSPENSION" && (
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
                       Tlumič
                     </span>
-                    <span className="text-base font-mono font-bold text-slate-900">
+                    <span className="text-base font-bold text-slate-900 tabular-nums">
                       {setup?.shockPressurePsi ? formatPsi(setup.shockPressurePsi) : "- psi"}
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 font-medium truncate">
                     {shockComp ? `${shockComp.manufacturer} ${shockComp.model}` : "Neosazeno"}
                   </p>
-                  <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200">
-                    <div>SAG: <span className="text-slate-800 font-medium font-mono">{setup?.shockSagPercent ?? "-"} %</span></div>
+                  <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200/60 tabular-nums">
+                    <div>SAG: <span className="text-slate-800 font-medium">{setup?.shockSagPercent ?? "-"} %</span></div>
                     <div>Odskok: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup?.shockReboundClicks)}</span></div>
                   </div>
                 </div>
               )}
 
               {/* Přední plášť */}
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
                     Přední plášť
                   </span>
-                  <span className="text-base font-mono font-bold text-slate-900">
+                  <span className="text-base font-bold text-slate-900 tabular-nums">
                     {formatBar(setup?.frontTirePressureBar)}
                   </span>
                 </div>
@@ -341,12 +341,12 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
               </div>
 
               {/* Zadní plášť */}
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
                     Zadní plášť
                   </span>
-                  <span className="text-base font-mono font-bold text-slate-900">
+                  <span className="text-base font-bold text-slate-900 tabular-nums">
                     {formatBar(setup?.rearTirePressureBar)}
                   </span>
                 </div>
@@ -362,7 +362,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
             </div>
 
             {setup?.generalNotes && (
-              <div className="mt-4 p-3 bg-slate-50 rounded-xl text-xs text-slate-600 border border-slate-200">
+              <div className="mt-4 p-3 bg-slate-50/80 rounded-xl text-xs text-slate-600 border border-slate-200/60">
                 <span className="font-semibold text-slate-800 block mb-0.5">Poznámka k setupu:</span>
                 "{setup.generalNotes}"
               </div>
@@ -371,12 +371,12 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
         </div>
 
         {/* Recent Odometer Activity */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-5 h-5 text-slate-600" />
-                <h3 className="text-base font-bold text-slate-900 uppercase tracking-wider">
+                <SlidersHorizontal className="w-4 h-4 text-slate-600" />
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                   Poslední odečty počítadla
                 </h3>
               </div>
@@ -387,21 +387,21 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                 Zatím nebyly zaznamenány žádné odečty počítadla.
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {odometerEntries.slice(0, 5).map((entry) => {
                   const deltaKmNum = Number(entry.deltaKm);
                   const isDeltaPositive = deltaKmNum >= 0;
                   return (
                     <div
                       key={entry.id}
-                      className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-3 text-xs"
+                      className="p-3 bg-slate-50/80 rounded-xl border border-slate-200/60 flex items-center justify-between gap-3 text-xs"
                     >
                       <div>
                         <div className="flex items-center gap-2 mb-0.5">
-                          <span className="font-bold text-slate-900 font-mono">
+                          <span className="font-bold text-slate-900 tabular-nums">
                             {formatKm(entry.resultingKm)}
                           </span>
-                          <span className={`text-[11px] font-mono font-semibold ${
+                          <span className={`text-[11px] tabular-nums font-semibold ${
                             isDeltaPositive ? "text-emerald-700" : "text-amber-800"
                           }`}>
                             ({isDeltaPositive ? `+${formatKm(entry.deltaKm)}` : formatKm(entry.deltaKm)})
@@ -413,10 +413,10 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                       </div>
 
                       <div className="text-right">
-                        <span className="text-[11px] text-slate-500 block font-mono">
+                        <span className="text-[11px] text-slate-500 block tabular-nums">
                           {formatDateCs(entry.entryDate)}
                         </span>
-                        <span className="text-[10px] text-slate-400 font-mono">
+                        <span className="text-[10px] text-slate-400 tabular-nums">
                           {formatMinutes(entry.resultingMinutes)}
                         </span>
                       </div>
@@ -429,7 +429,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
 
           <Link
             href={`/bikes/${bike.id}/history`}
-            className="mt-4 pt-3 border-t border-slate-100 text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center justify-between"
+            className="mt-4 pt-3 border-t border-slate-100 text-xs font-semibold text-sky-600 hover:text-sky-700 flex items-center justify-between"
           >
             <span>Zobrazit celou historii</span>
             <ChevronRight className="w-3.5 h-3.5" />

@@ -74,19 +74,19 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 select-none">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/40 to-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 select-none">
       <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-200/60 p-7 sm:p-9 space-y-7">
         
         {/* Logo a hlavička */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/25 mb-1">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-600 to-sky-500 text-white shadow-lg shadow-sky-500/25 mb-1">
             <Bike className="w-9 h-9" />
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
               BikeVault
             </h1>
-            <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mt-0.5">
+            <p className="text-xs text-sky-600 font-bold uppercase tracking-wider mt-0.5">
               Vaše kola pod absolutní kontrolou
             </p>
           </div>
@@ -98,7 +98,7 @@ export const LoginScreen: React.FC = () => {
         {/* Přehled výhod */}
         <div className="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/60 space-y-3 text-xs text-slate-600">
           <div className="flex items-start gap-3">
-            <div className="p-1 rounded-lg bg-blue-100 text-blue-700 shrink-0 mt-0.5">
+            <div className="p-1 rounded-lg bg-sky-100 text-sky-700 shrink-0 mt-0.5">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
@@ -134,20 +134,20 @@ export const LoginScreen: React.FC = () => {
             className={`p-3.5 rounded-xl border flex items-start justify-between gap-2.5 text-xs ${
               isAccessDenied
                 ? "bg-amber-50 border-amber-200 text-amber-800"
-                : "bg-red-50 border-red-200 text-red-700"
+                : "bg-rose-50 border-rose-200 text-rose-700"
             }`}
           >
             <div className="flex items-start gap-2.5">
               {isAccessDenied ? (
                 <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
               )}
               <div className="space-y-0.5">
                 <span className="font-semibold block">
                   {isAccessDenied ? "Nemáte schválený přístup" : "Přihlášení se nezdařilo"}
                 </span>
-                <p className={isAccessDenied ? "text-amber-700 leading-relaxed" : "text-red-600 leading-relaxed"}>
+                <p className={isAccessDenied ? "text-amber-700 leading-relaxed" : "text-rose-600 leading-relaxed"}>
                   {isAccessDenied
                     ? "Aplikace BikeVault je momentálně dostupná pouze schváleným testovacím uživatelům. Pošlete žádost o přístup níže."
                     : displayError}
@@ -172,11 +172,11 @@ export const LoginScreen: React.FC = () => {
             type="button"
             onClick={handleLogin}
             disabled={isSyncing}
-            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold border border-slate-300 shadow-md shadow-slate-200/50 hover:border-blue-300 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm"
+            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold border border-slate-300 shadow-md shadow-slate-200/50 hover:border-sky-300 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm"
           >
             {isSyncing ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                <Loader2 className="w-5 h-5 animate-spin text-sky-600" />
                 <span>Přihlašuji a načítám data...</span>
               </>
             ) : (
@@ -212,7 +212,7 @@ export const LoginScreen: React.FC = () => {
             href={buildGmailComposeUrl()}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 active:scale-[0.99] cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 active:scale-[0.99] cursor-pointer"
           >
             <Mail className="w-4 h-4 text-slate-500 shrink-0" />
             <span>Požádat o přístup přes Gmail</span>
@@ -229,7 +229,7 @@ export const LoginScreen: React.FC = () => {
                 type="button"
                 onClick={handleCopyEmail}
                 title={`Zkopírovat adresu ${ACCESS_REQUEST_EMAIL}`}
-                className="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
+                className="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-sky-500 rounded"
               >
                 Zkopírovat kontaktní e-mail
               </button>

@@ -57,7 +57,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
   return (
     <>
-      <div className="space-y-4 border-b border-slate-200 pb-4 mb-6">
+      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm space-y-4 mb-6">
         {/* Top Back Link & Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <Link
@@ -72,7 +72,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setIsOdometerModalOpen(true)}
-              className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95"
+              className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-all flex items-center gap-1.5 active:scale-95"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>{t("odometer.updateOdometer")}</span>
@@ -80,7 +80,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsPressureModalOpen(true)}
-              className="px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 shadow-2xs transition-all flex items-center gap-1.5"
+              className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-1.5"
             >
               <Gauge className="w-3.5 h-3.5 text-slate-500" />
               <span>Tlaky</span>
@@ -91,13 +91,13 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         {/* Bike Title & Metadata */}
         <div>
           <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
               {bike.name}
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold">
+            <span className="px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-xs font-semibold">
               {bike.category} • {bike.discipline}
             </span>
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-xs font-medium">
+            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-medium">
               {bike.status === "ACTIVE" ? "Aktivní" : bike.status === "SOLD" ? "Prodáno" : "Archivováno"}
             </span>
           </div>
@@ -108,12 +108,12 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
               <span>{bike.manufacturer} {bike.model} {bike.modelYear ? `(${bike.modelYear})` : ""}</span>
             </span>
             {bike.serialNumber && (
-              <span className="flex items-center gap-1 font-mono">
+              <span className="flex items-center gap-1 tabular-nums">
                 <Hash className="w-3.5 h-3.5 text-slate-400" />
                 <span>SN: {bike.serialNumber}</span>
               </span>
             )}
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 tabular-nums">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
               <span>Nákup: {formatDateCs(bike.purchaseDate)}</span>
             </span>
@@ -121,23 +121,25 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         </div>
 
         {/* Sub-Navigation Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pt-2 scrollbar-none">
-          {tabs.map((tab) => {
-            const active = isTabActive(tab.href);
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                  active
-                    ? "bg-white text-blue-700 border border-slate-200 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                }`}
-              >
-                {tab.label}
-              </Link>
-            );
-          })}
+        <div className="pt-2">
+          <div className="inline-flex p-1 bg-slate-200/60 rounded-xl overflow-x-auto max-w-full">
+            {tabs.map((tab) => {
+              const active = isTabActive(tab.href);
+              return (
+                <Link
+                  key={tab.href}
+                  href={tab.href}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                    active
+                      ? "bg-white text-sky-700 shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  {tab.label}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
 

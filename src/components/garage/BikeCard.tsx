@@ -44,7 +44,6 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
   const [isPressureModalOpen, setIsPressureModalOpen] = useState(false);
 
-  // Status color styles
   const getServiceBadgeStyle = () => {
     if (!serviceSummary) {
       return {
@@ -55,7 +54,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
     switch (serviceSummary.urgency) {
       case "OVERDUE":
         return {
-          bg: "bg-red-50 text-red-700 border-red-200",
+          bg: "bg-rose-50 text-rose-700 border-rose-200",
           icon: AlertTriangle,
         };
       case "DUE_SOON":
@@ -77,7 +76,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
 
   return (
     <>
-      <div className="bg-white border border-slate-200 hover:border-slate-300 rounded-2xl overflow-hidden shadow-sm hover:shadow transition-all flex flex-col group">
+      <div className="bg-white border border-slate-200/80 hover:border-slate-300 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
         {/* Photo or Header visual */}
         <div className="relative h-44 bg-slate-100 overflow-hidden border-b border-slate-100">
           {bike.imageUrl ? (
@@ -93,13 +92,13 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
           )}
 
           {/* Top badges */}
-          <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-            <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-[11px] font-semibold tracking-wide text-slate-700 border border-slate-200/80 shadow-xs">
+          <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+            <span className="px-2.5 py-1 bg-white/95 backdrop-blur-xs rounded-xl text-[11px] font-semibold tracking-wide text-slate-700 border border-slate-200/80 shadow-xs">
               {bike.category} • {bike.discipline}
             </span>
 
             {bike.modelYear && (
-              <span className="px-2 py-0.5 bg-white/90 backdrop-blur-sm rounded-lg text-[11px] font-mono text-slate-600 border border-slate-200/80 shadow-xs">
+              <span className="px-2.5 py-1 bg-white/95 backdrop-blur-xs rounded-xl text-[11px] tabular-nums font-semibold text-slate-700 border border-slate-200/80 shadow-xs">
                 {bike.modelYear}
               </span>
             )}
@@ -110,21 +109,21 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
           {/* Header titles */}
           <div>
-            <h3 className="text-lg font-extrabold text-slate-900 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">
+            <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-snug group-hover:text-sky-600 transition-colors">
               {bike.name}
             </h3>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-slate-500 font-medium mt-0.5">
               {bike.manufacturer} {bike.model}
             </p>
           </div>
 
           {/* Key Metrics: Mileage & Hours */}
-          <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100">
+          <div className="grid grid-cols-2 gap-3 bg-slate-50/80 p-3 rounded-xl border border-slate-200/60">
             <div>
               <span className="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">
                 {t("bike.metrics.currentMileage")}
               </span>
-              <span className="text-base font-bold text-slate-900 font-mono">
+              <span className="text-base font-bold text-slate-900 tabular-nums">
                 {formatKm(bike.currentKm)}
               </span>
             </div>
@@ -132,7 +131,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
               <span className="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">
                 {t("bike.metrics.ridingHours")}
               </span>
-              <span className="text-base font-bold text-slate-900 font-mono">
+              <span className="text-base font-bold text-slate-900 tabular-nums">
                 {formatMinutes(bike.currentMinutes)}
               </span>
             </div>
@@ -146,7 +145,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
                 <Wrench className="w-3.5 h-3.5 text-slate-400" />
                 <span>{t("garage.card.nextService")}:</span>
               </span>
-              <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-medium flex items-center gap-1.5 ${badgeStyle.bg}`}>
+              <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-semibold flex items-center gap-1.5 ${badgeStyle.bg}`}>
                 <BadgeIcon className="w-3 h-3" />
                 <span>{serviceSummary?.text || t("garage.card.noServiceDue")}</span>
               </span>
@@ -158,7 +157,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
                 <Coins className="w-3.5 h-3.5 text-slate-400" />
                 <span>{t("garage.card.netCost")}:</span>
               </span>
-              <span className="font-bold text-slate-900 font-mono text-sm">
+              <span className="font-bold text-slate-900 tabular-nums text-sm">
                 {formatCzk(netCost ?? Number(bike.purchasePrice))}
               </span>
             </div>
@@ -169,7 +168,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
             <button
               onClick={() => setIsOdometerModalOpen(true)}
               title={t("garage.card.quickUpdate")}
-              className="flex-1 px-3 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 text-xs font-semibold rounded-xl border border-slate-200 transition-all flex items-center justify-center gap-1.5"
+              className="flex-1 px-3 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 text-xs font-semibold rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
               <span>{t("garage.card.quickUpdate")}</span>
@@ -178,14 +177,14 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
             <button
               onClick={() => setIsPressureModalOpen(true)}
               title="Upravit tlak"
-              className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200 transition-all flex items-center justify-center"
+              className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200 transition-colors flex items-center justify-center cursor-pointer"
             >
               <Gauge className="w-4 h-4" />
             </button>
 
             <Link
               href={`/bikes/${bike.id}`}
-              className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs transition-all flex items-center justify-center gap-1 text-xs font-semibold active:scale-95"
+              className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-sm shadow-sky-200 transition-colors flex items-center justify-center gap-1 text-xs font-semibold"
             >
               <span>{t("garage.card.details")}</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -212,3 +211,5 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
     </>
   );
 }
+
+export default BikeCard;

@@ -39,59 +39,67 @@ export default function StatisticsPage() {
   });
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="border-b border-slate-200 pb-6">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-          {t("nav.statistics")}
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Analytika nájezdu, životnosti komponentů a finančních metrik
-        </p>
+      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+            {t("nav.statistics")}
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Analytika nájezdu, životnosti komponentů a finančních metrik
+          </p>
+        </div>
       </div>
 
       {/* High-level stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">
               Celkem najeto na všech kolech
             </span>
-            <Compass className="w-4 h-4 text-blue-600" />
+            <div className="p-2 rounded-xl bg-sky-50 text-sky-600">
+              <Compass className="w-4 h-4" />
+            </div>
           </div>
-          <span className="text-2xl font-bold text-slate-900 font-mono">
+          <span className="text-2xl font-bold text-slate-900 tabular-nums">
             {formatKm(totalKm)}
           </span>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">
               Celkový čas v sedle
             </span>
-            <Layers className="w-4 h-4 text-indigo-600" />
+            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+              <Layers className="w-4 h-4" />
+            </div>
           </div>
-          <span className="text-2xl font-bold text-slate-900 font-mono">
+          <span className="text-2xl font-bold text-slate-900 tabular-nums">
             {formatMinutes(totalMinutes)}
           </span>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider">
               Celkem evidovaných komponentů
             </span>
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
           </div>
-          <span className="text-2xl font-bold text-slate-900 font-mono">
+          <span className="text-2xl font-bold text-slate-900 tabular-nums">
             {components.length}
           </span>
         </div>
       </div>
 
       {/* Srovnání kol podle nákladů na km */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
-        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
           Srovnání kol — Náklady a efektivita na km
         </h3>
 
@@ -99,13 +107,13 @@ export default function StatisticsPage() {
           {bikeCosts.map((item) => (
             <div
               key={item.bike.id}
-              className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+              className="p-4 bg-slate-50/80 border border-slate-200/60 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
             >
               <div>
                 <span className="text-sm font-bold text-slate-900 block">
                   {item.bike.name}
                 </span>
-                <span className="text-slate-500 font-mono">
+                <span className="text-slate-500 tabular-nums">
                   {formatKm(item.bike.currentKm)} • {formatMinutes(item.bike.currentMinutes)}
                 </span>
               </div>
@@ -115,7 +123,7 @@ export default function StatisticsPage() {
                   <span className="text-slate-500 uppercase tracking-wider block text-[10px] font-semibold">
                     Čisté náklady
                   </span>
-                  <span className="text-sm font-bold text-slate-900 font-mono">
+                  <span className="text-sm font-bold text-slate-900 tabular-nums">
                     {formatCzk(item.netCost)}
                   </span>
                 </div>
@@ -124,7 +132,7 @@ export default function StatisticsPage() {
                   <span className="text-slate-500 uppercase tracking-wider block text-[10px] font-semibold">
                     Cena za km
                   </span>
-                  <span className="text-sm font-bold text-blue-700 font-mono">
+                  <span className="text-sm font-bold text-sky-700 tabular-nums">
                     {item.costPerKm.toFixed(2)} Kč/km
                   </span>
                 </div>
@@ -136,11 +144,11 @@ export default function StatisticsPage() {
 
       {/* Odhadované průměrné životnosti opotřebitelných dílů */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-2 shadow-sm">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl space-y-2 shadow-sm hover:border-slate-300 transition-all">
           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
             Průměrná životnost řetězu
           </span>
-          <span className="text-2xl font-bold text-slate-900 font-mono">
+          <span className="text-2xl font-bold text-slate-900 tabular-nums">
             1 500 km
           </span>
           <p className="text-xs text-slate-500">
@@ -148,11 +156,11 @@ export default function StatisticsPage() {
           </p>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-2 shadow-sm">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl space-y-2 shadow-sm hover:border-slate-300 transition-all">
           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
             Průměrná životnost plášťů
           </span>
-          <span className="text-2xl font-bold text-slate-900 font-mono">
+          <span className="text-2xl font-bold text-slate-900 tabular-nums">
             1 200 – 1 800 km
           </span>
           <p className="text-xs text-slate-500">
@@ -160,11 +168,11 @@ export default function StatisticsPage() {
           </p>
         </div>
 
-        <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-2 shadow-sm">
+        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl space-y-2 shadow-sm hover:border-slate-300 transition-all">
           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
             Servisní interval odpružení
           </span>
-          <span className="text-2xl font-bold text-slate-900 font-mono">
+          <span className="text-2xl font-bold text-slate-900 tabular-nums">
             50 h / 200 h
           </span>
           <p className="text-xs text-slate-500">
