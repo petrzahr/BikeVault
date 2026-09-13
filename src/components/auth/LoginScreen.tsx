@@ -188,7 +188,7 @@ export const LoginScreen: React.FC = () => {
           </button>
 
           <p className="text-[11px] text-center text-slate-400">
-            Pro vstup do aplikace je vyžadováno přihlášení k vašemu Google účtu. Data se ukládají na soukromý Google Disk.
+            Pro vstup do aplikace je vyžadováno přihlášení k vašemu Google účtu.
           </p>
         </div>
 
