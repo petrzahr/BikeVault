@@ -6,8 +6,14 @@ import { VaultProvider } from "@/context/VaultContext";
 import { AuthGate } from "@/components/auth/AuthGate";
 
 export const metadata: Metadata = {
-  title: "BikeVault — Kompletní historie tvých kol",
+  title: "BikeVault - Vaše kola pod absolutní kontrolou",
   description: "Digitální servisní kniha, virtuální garáž, správa komponentů a sledování nákladů na vlastnictví jízdních kol s ukládáním na Google Drive.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -18,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="cs">
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <Script
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"

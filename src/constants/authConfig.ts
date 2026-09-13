@@ -8,7 +8,7 @@ export const ACCESS_REQUEST_EMAIL =
   "bikevault@byzahr.app";
 
 // Předmět e-mailu
-export const ACCESS_REQUEST_SUBJECT = "Žádost o přístup do aplikace BikeVault";
+export const ACCESS_REQUEST_SUBJECT = "Žádost o přístup do BikeVault";
 
 // Předvyplněné tělo e-mailu
 export const ACCESS_REQUEST_BODY = [

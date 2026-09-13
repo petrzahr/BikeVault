@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useVault } from "@/context/VaultContext";
 import { GoogleIcon } from "../common/GoogleIcon";
 import { Bike, ShieldCheck, Zap, Wrench, AlertCircle, AlertTriangle, Loader2, Mail, Check, RotateCcw } from "lucide-react";
-import { buildGmailComposeUrl, buildAccessRequestMailtoUrl, ACCESS_REQUEST_EMAIL } from "@/constants/authConfig";
+import { buildGmailComposeUrl, ACCESS_REQUEST_EMAIL } from "@/constants/authConfig";
 
 export const LoginScreen: React.FC = () => {
   const { login, syncStatus, syncError } = useVault();
@@ -74,100 +74,95 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col justify-center items-center p-4 sm:p-6 select-none relative overflow-hidden text-slate-100">
-      {/* Ambient decorative glow background */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-[400px] h-[400px] bg-cyan-600/10 blur-[100px] rounded-full pointer-events-none" />
-
-      <div className="max-w-md sm:max-w-lg w-full bg-slate-900/90 backdrop-blur-xl rounded-3xl border border-slate-800 shadow-2xl shadow-black/80 p-7 sm:p-9 space-y-7 relative z-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 select-none">
+      <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-200/60 p-7 sm:p-9 space-y-7">
+        
         {/* Logo a hlavička */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/25 mb-1">
             <Bike className="w-9 h-9" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
-              Bike<span className="text-blue-500">Vault</span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
+              BikeVault
             </h1>
-            <p className="text-xs text-blue-400 font-bold uppercase tracking-wider mt-0.5">
-              Váš digitální cyklistický deník a servisní kniha
+            <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mt-0.5">
+              Vaše kola pod absolutní kontrolou
             </p>
           </div>
-          <p className="text-sm text-slate-300 pt-1 leading-relaxed">
-            Mějte svá kola, komponenty, nastavení odpružení a servisní intervaly plně pod kontrolou. Data jsou bezpečně uložena v soukromém prostoru vašeho Google Disku.
+          <p className="text-sm text-slate-600 pt-1 leading-relaxed">
+            Mějte svá kola, komponenty, nastavení odpružení a servisní intervaly pod kontrolou. Data jsou bezpečně uložena v soukromém prostoru vašeho účtu Google.
           </p>
         </div>
 
         {/* Přehled výhod */}
-        <div className="bg-slate-800/60 rounded-2xl p-4 border border-slate-700/60 space-y-3 text-xs text-slate-300">
+        <div className="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/60 space-y-3 text-xs text-slate-600">
           <div className="flex items-start gap-3">
-            <div className="p-1.5 rounded-lg bg-blue-950/80 text-blue-400 border border-blue-800/60 shrink-0 mt-0.5">
+            <div className="p-1 rounded-lg bg-blue-100 text-blue-700 shrink-0 mt-0.5">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <span className="font-semibold text-slate-100 block">Soukromé úložiště Google Disk</span>
-              <span className="text-slate-400">Vaše cyklistická data jsou bezpečně uložena v neveřejném aplikačním prostoru vašeho účtu Google.</span>
+              <span className="font-semibold text-slate-800 block">Soukromé úložiště Google Disk</span>
+              <span>Vaše cyklistická data jsou bezpečně uložena v neveřejném aplikačním prostoru vašeho účtu Google.</span>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-1.5 rounded-lg bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 shrink-0 mt-0.5">
+            <div className="p-1 rounded-lg bg-emerald-100 text-emerald-700 shrink-0 mt-0.5">
               <Zap className="w-4 h-4" />
             </div>
             <div>
-              <span className="font-semibold text-slate-100 block">Automatická synchronizace</span>
-              <span className="text-slate-400">Aplikace pracuje bleskově s místní mezipamětí a všechny změny průběžně ukládá na pozadí.</span>
+              <span className="font-semibold text-slate-800 block">Automatická synchronizace</span>
+              <span>Aplikace pracuje rychle s místní mezipamětí a všechny změny průběžně ukládá na pozadí.</span>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-1.5 rounded-lg bg-indigo-950/80 text-indigo-400 border border-indigo-800/60 shrink-0 mt-0.5">
+            <div className="p-1 rounded-lg bg-indigo-100 text-indigo-700 shrink-0 mt-0.5">
               <Wrench className="w-4 h-4" />
             </div>
             <div>
-              <span className="font-semibold text-slate-100 block">Plánování servisu & životopis dílů</span>
-              <span className="text-slate-400">Sledujte servisní intervaly, motohodiny, nastavení odpružení a kompletní historii komponentů.</span>
+              <span className="font-semibold text-slate-800 block">Plánování servisu & životopis dílů</span>
+              <span>Sledujte servisní intervaly, motohodiny, nastavení odpružení a kompletní historii komponentů.</span>
             </div>
           </div>
         </div>
 
-        {/* Chybové hlášení / Stav zamítnutí přístupu */}
+        {/* Chybové hlášení při selhání přihlášení */}
         {displayError && (
           <div
-            className={`p-4 rounded-2xl border text-xs space-y-2 ${
+            className={`p-3.5 rounded-xl border flex items-start justify-between gap-2.5 text-xs ${
               isAccessDenied
-                ? "bg-amber-950/60 border-amber-800/80 text-amber-200"
-                : "bg-red-950/60 border-red-800/80 text-red-200"
+                ? "bg-amber-50 border-amber-200 text-amber-800"
+                : "bg-red-50 border-red-200 text-red-700"
             }`}
           >
             <div className="flex items-start gap-2.5">
               {isAccessDenied ? (
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
               )}
-              <div className="space-y-1">
-                <span className="font-bold block text-sm">
-                  {isAccessDenied ? "Neautorizovaný účet / Omezený přístup" : "Přihlášení se nezdařilo"}
+              <div className="space-y-0.5">
+                <span className="font-semibold block">
+                  {isAccessDenied ? "Nemáte schválený přístup" : "Přihlášení se nezdařilo"}
                 </span>
-                <p className="leading-relaxed">
+                <p className={isAccessDenied ? "text-amber-700 leading-relaxed" : "text-red-600 leading-relaxed"}>
                   {isAccessDenied
-                    ? "Aplikace BikeVault je momentálně v režimu privátního testování a váš Google účet nebyl autorizován. Pro přidání mezi testery využijte žádost o přístup níže."
+                    ? "Aplikace BikeVault je momentálně dostupná pouze schváleným testovacím uživatelům. Pošlete žádost o přístup níže."
                     : displayError}
                 </p>
               </div>
             </div>
 
-            <div className="pt-1 flex justify-end">
-              <button
-                type="button"
-                onClick={handleResetError}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors cursor-pointer"
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>Zkusit jiný účet</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleResetError}
+              title="Zkusit jiný účet"
+              className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-white/60 transition-colors shrink-0"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
           </div>
         )}
 
@@ -177,7 +172,7 @@ export const LoginScreen: React.FC = () => {
             type="button"
             onClick={handleLogin}
             disabled={isSyncing}
-            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 font-bold border border-transparent shadow-lg shadow-black/30 hover:shadow-xl transition-all active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm"
+            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold border border-slate-300 shadow-md shadow-slate-200/50 hover:border-blue-300 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm"
           >
             {isSyncing ? (
               <>
@@ -193,68 +188,59 @@ export const LoginScreen: React.FC = () => {
           </button>
 
           <p className="text-[11px] text-center text-slate-400">
-            Pro vstup do aplikace je vyžadováno přihlášení k vašemu Google účtu.
+            Pro vstup do aplikace je vyžadováno přihlášení k vašemu Google účtu. Data se ukládají na soukromý Google Disk.
           </p>
         </div>
 
         {/* Oddělovač */}
         <div className="relative flex items-center py-0.5">
-          <div className="flex-grow border-t border-slate-800" />
-          <span className="flex-shrink mx-3 text-xs font-medium text-slate-500">nebo</span>
-          <div className="flex-grow border-t border-slate-800" />
+          <div className="flex-grow border-t border-slate-200" />
+          <span className="flex-shrink mx-3 text-xs font-medium text-slate-400">nebo</span>
+          <div className="flex-grow border-t border-slate-200" />
         </div>
 
         {/* Žádost o přístup do testovacího režimu */}
         <div className="space-y-3 text-center sm:text-left">
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-slate-100">Nemáte přístup?</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h3 className="text-sm font-bold text-slate-800">Nemáte přístup?</h3>
+            <p className="text-xs text-slate-500 leading-relaxed">
               BikeVault je momentálně dostupný pouze schváleným testovacím uživatelům. Pošlete žádost o přístup a po schválení se budete moci přihlásit svým účtem Google.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <a
-              href={buildGmailComposeUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700/80 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 active:scale-[0.99] cursor-pointer"
-            >
-              <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-              <span>Požádat přes Gmail</span>
-            </a>
-
-            <a
-              href={buildAccessRequestMailtoUrl()}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 hover:text-white border border-slate-700/80 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 active:scale-[0.99] cursor-pointer"
-            >
-              <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-              <span>Otevřít v e-mailu</span>
-            </a>
-          </div>
+          <a
+            href={buildGmailComposeUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 active:scale-[0.99] cursor-pointer"
+          >
+            <Mail className="w-4 h-4 text-slate-500 shrink-0" />
+            <span>Požádat o přístup přes Gmail</span>
+          </a>
 
           <div className="flex flex-col items-center sm:items-start pt-0.5">
             {copiedEmail ? (
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
                 <Check className="w-3.5 h-3.5" />
-                <span>E-mailová adresa byla zkopírována.</span>
+                <span>E-mail zkopírován</span>
               </span>
             ) : (
               <button
                 type="button"
                 onClick={handleCopyEmail}
                 title={`Zkopírovat adresu ${ACCESS_REQUEST_EMAIL}`}
-                className="text-xs text-slate-400 hover:text-slate-200 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
+                className="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 rounded"
               >
-                Zkopírovat kontaktní e-mail ({ACCESS_REQUEST_EMAIL})
+                Zkopírovat kontaktní e-mail
               </button>
             )}
           </div>
         </div>
+
       </div>
 
       {/* Patička */}
-      <footer className="mt-8 text-center text-xs text-slate-500 font-medium">
+      <footer className="mt-8 text-center text-xs text-slate-400 font-medium">
         BikeVault &bull; Vaše kola pod absolutní kontrolou
       </footer>
     </div>
