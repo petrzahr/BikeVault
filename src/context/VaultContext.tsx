@@ -496,7 +496,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const updateBike = (id: string, updates: Partial<Bike>) => {
     mutateData((prev) => ({
       ...prev,
-      bikes: prev.bikes.map((b) => (b.id === id ? { ...b, ...updates, updatedAt: new Date().toISOString() } : b)),
+      bikes: prev.bikes.map((b) => (b.id === id ? { ...b, ...updates, id: b.id, updatedAt: new Date().toISOString() } : b)),
     }));
   };
 

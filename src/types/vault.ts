@@ -16,6 +16,7 @@ export interface Bike {
   manufacturer: string;
   model: string;
   modelYear?: number | null;
+  frameSize?: string | null;
   category: "MTB" | "GRAVEL" | "ROAD" | "E_BIKE" | "COMMUTER" | string;
   discipline: "ENDURO" | "TRAIL" | "DOWNHILL" | "XC" | "GRAVEL" | "ROAD" | string;
   suspensionType: "FULL_SUSPENSION" | "FRONT_SUSPENSION" | "RIGID" | string;
@@ -29,7 +30,10 @@ export interface Bike {
   soldPrice?: number | null;
   currentKm: number;
   currentMinutes: number;
+  weightKg?: number | null;
   imageUrl?: string | null;
+  uploadedImage?: string | null;
+  uploadedImageData?: string | null;
   notes?: string | null;
   createdAt: string;
   updatedAt: string;

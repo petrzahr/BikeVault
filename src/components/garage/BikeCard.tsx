@@ -16,6 +16,7 @@ import {
 import { formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
 import { UpdateOdometerModal } from "./UpdateOdometerModal";
 import { QuickPressureModal } from "./QuickPressureModal";
+import { resolveBikeImage } from "@/lib/domain/bikeImage";
 
 interface BikeCardProps {
   bike: {
@@ -30,7 +31,10 @@ interface BikeCardProps {
     currentKm: string | number;
     currentMinutes: number;
     purchasePrice: string | number;
+    weightKg?: number | null;
     imageUrl?: string | null;
+    uploadedImage?: string | null;
+    uploadedImageData?: string | null;
     status: string;
   };
   serviceSummary?: {
@@ -43,6 +47,9 @@ interface BikeCardProps {
 export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
   const [isPressureModalOpen, setIsPressureModalOpen] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+
+  const resolvedImage = resolveBikeImage(bike);
 
   const getServiceBadgeStyle = () => {
     if (!serviceSummary) {
@@ -79,10 +86,11 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
       <div className="bg-white border border-slate-200/80 hover:border-slate-300 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
         {/* Photo or Header visual */}
         <div className="relative h-44 bg-slate-100 overflow-hidden border-b border-slate-100">
-          {bike.imageUrl ? (
+          {resolvedImage && !imageFailed ? (
             <img
-              src={bike.imageUrl}
+              src={resolvedImage}
               alt={bike.name}
+              onError={() => setImageFailed(true)}
               className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300"
             />
           ) : (
