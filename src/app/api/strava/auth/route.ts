@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(authorizeUrl);
     }
 
-    return NextResponse.json({ url });
+    return NextResponse.json({ url: authorizeUrl });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Chyba při inicializaci Strava OAuth." },
