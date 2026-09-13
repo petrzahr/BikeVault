@@ -17,9 +17,10 @@ export interface BikeModalProps {
   onClose: () => void;
   onSuccess?: () => void;
   bikeToEdit?: Bike | null;
+  initialData?: Partial<Bike> & { initialKm?: number; initialHours?: number; stravaGearId?: string } | null;
 }
 
-export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit }: BikeModalProps) {
+export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData }: BikeModalProps) {
   const { addBike, updateBike } = useVault();
   const isEditMode = Boolean(bikeToEdit);
 
@@ -77,6 +78,38 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit }: BikeModalP
       setImageUrl(bikeToEdit.imageUrl || "");
       setNotes(bikeToEdit.notes || "");
       setStatus(bikeToEdit.status || "ACTIVE");
+    } else if (initialData) {
+      setName(initialData.name || "");
+      setManufacturer(initialData.manufacturer || "");
+      setModel(initialData.model || "");
+      setModelYear(initialData.modelYear ?? new Date().getFullYear());
+      setFrameSize(initialData.frameSize || "");
+      setCategory(initialData.category || "MTB");
+      setDiscipline(initialData.discipline || "ENDURO");
+      setSuspensionType(initialData.suspensionType || "FULL_SUSPENSION");
+      setDriveType(initialData.driveType || "CONVENTIONAL");
+      setSerialNumber(initialData.serialNumber || "");
+      setPurchaseDate(initialData.purchaseDate || new Date().toISOString().split("T")[0]);
+      setPurchasePrice(
+        initialData.purchasePrice !== undefined && initialData.purchasePrice !== null
+          ? String(initialData.purchasePrice)
+          : "0"
+      );
+      setInitialKm(
+        initialData.initialKm !== undefined ? String(initialData.initialKm) : "0"
+      );
+      setInitialHours(
+        initialData.initialHours !== undefined ? String(initialData.initialHours) : "0"
+      );
+      setWeightInput(
+        initialData.weightKg !== undefined && initialData.weightKg !== null
+          ? String(initialData.weightKg).replace(".", ",")
+          : ""
+      );
+      setUploadedImage(initialData.uploadedImage || null);
+      setImageUrl(initialData.imageUrl || "");
+      setNotes(initialData.notes || "");
+      setStatus(initialData.status || "ACTIVE");
     } else {
       setName("");
       setManufacturer("");
@@ -100,7 +133,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit }: BikeModalP
     }
     setError(null);
     setPreviewFailed(false);
-  }, [isOpen, bikeToEdit]);
+  }, [isOpen, bikeToEdit, initialData]);
 
   if (!isOpen) return null;
 
@@ -171,6 +204,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit }: BikeModalP
           imageUrl: imageUrl.trim() || null,
           notes: notes.trim() || null,
           status,
+          stravaGearId: bikeToEdit.stravaGearId,
         });
       } else {
         // CREATE MODE: založení nového kola
@@ -196,6 +230,8 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit }: BikeModalP
           uploadedImageData: uploadedImage || undefined,
           imageUrl: imageUrl.trim() || undefined,
           notes: notes.trim() || undefined,
+          stravaGearId: initialData?.stravaGearId || undefined,
+          initialOdometerSource: initialData?.stravaGearId ? "STRAVA" : "MANUAL",
         });
       }
 

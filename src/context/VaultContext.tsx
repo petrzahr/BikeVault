@@ -43,6 +43,7 @@ import {
   getInitialData,
 } from "@/lib/storage/storageService";
 import { recordOdometerSnapshot, calculateInstallationUsage } from "@/lib/domain/odometer";
+import { compareMileage, validateLinkConstraint } from "@/lib/domain/stravaSync";
 import { evaluateServiceSchedule, MaintenanceStatusResult } from "@/lib/domain/maintenance";
 import { areComponentsEquivalentReplacement, findStorageReplacements } from "@/lib/domain/replacement";
 
@@ -78,7 +79,13 @@ interface VaultContextType {
   exportCorruptedFile: () => void;
 
   // Bike actions
-  addBike: (bike: Omit<Bike, "id" | "currentKm" | "currentMinutes" | "createdAt" | "updatedAt"> & { initialKm?: number; initialHours?: number }) => string;
+  addBike: (
+    bike: Omit<Bike, "id" | "currentKm" | "currentMinutes" | "createdAt" | "updatedAt"> & {
+      initialKm?: number;
+      initialHours?: number;
+      initialOdometerSource?: "MANUAL" | "STRAVA" | string;
+    }
+  ) => string;
   updateBike: (id: string, updates: Partial<Bike>) => void;
   deleteBike: (id: string) => void;
   updateOdometer: (
@@ -87,8 +94,20 @@ interface VaultContextType {
     newTotalMinutes: number,
     recordedAt?: string,
     note?: string,
-    allowCorrection?: boolean
+    allowCorrection?: boolean,
+    source?: "MANUAL" | "STRAVA" | string
   ) => { success: boolean; error?: string };
+  linkBikeToStrava: (
+    bikeId: string,
+    stravaGearId: string,
+    updateMileage?: { stravaKm: number }
+  ) => { success: boolean; error?: string };
+  unlinkBikeFromStrava: (bikeId: string) => { success: boolean };
+  syncBikeFromStrava: (
+    bikeId: string,
+    stravaKm: number
+  ) => { success: boolean; type: "EQUAL" | "HIGHER" | "LOWER"; deltaKm: number; message: string };
+  getBikeByStravaGearId: (stravaGearId: string) => Bike | undefined;
   getServiceScheduleStatuses: () => EvaluatedServiceSchedule[];
 
   // Component actions
@@ -432,7 +451,13 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   };
 
   // --- BIKE MUTATIONS ---
-  const addBike = (bikeData: Omit<Bike, "id" | "currentKm" | "currentMinutes" | "createdAt" | "updatedAt"> & { initialKm?: number; initialHours?: number }): string => {
+  const addBike = (
+    bikeData: Omit<Bike, "id" | "currentKm" | "currentMinutes" | "createdAt" | "updatedAt"> & {
+      initialKm?: number;
+      initialHours?: number;
+      initialOdometerSource?: "MANUAL" | "STRAVA" | string;
+    }
+  ): string => {
     const bikeId = generateId("bike");
     const now = new Date().toISOString();
     const initialKm = Number(bikeData.initialKm || 0);
@@ -443,9 +468,12 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       id: bikeId,
       currentKm: initialKm,
       currentMinutes: initialMinutes,
+      stravaGearId: bikeData.stravaGearId || null,
       createdAt: now,
       updatedAt: now,
     };
+
+    const odoSource = bikeData.initialOdometerSource || (bikeData.stravaGearId ? "STRAVA" : "MANUAL");
 
     const initialOdo: BikeOdometerEntry = {
       id: generateId("odo"),
@@ -453,11 +481,12 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       recordedAt: now,
       entryDate: bikeData.purchaseDate || now.split("T")[0],
       entryType: "INITIAL",
+      source: odoSource,
       deltaKm: 0,
       deltaMinutes: 0,
       resultingKm: initialKm,
       resultingMinutes: initialMinutes,
-      note: "Výchozí stav tachometru",
+      note: bikeData.stravaGearId ? "Výchozí stav ze Stravy" : "Výchozí stav tachometru",
       createdAt: now,
     };
 
@@ -520,7 +549,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     newTotalMinutes: number,
     recordedAt?: string,
     note?: string,
-    allowCorrection = false
+    allowCorrection = false,
+    source: "MANUAL" | "STRAVA" | string = "MANUAL"
   ): { success: boolean; error?: string } => {
     const bike = data.bikes.find((b) => b.id === bikeId);
     if (!bike) return { success: false, error: "Kolo nebylo nalezeno" };
@@ -546,11 +576,12 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         recordedAt: recordedAt || now,
         entryDate,
         entryType: snapshot.isCorrection ? "CORRECTION" : "RIDE",
+        source,
         deltaKm: snapshot.deltaKm,
         deltaMinutes: snapshot.deltaMinutes,
         resultingKm: snapshot.resultingKm,
         resultingMinutes: snapshot.resultingMinutes,
-        note: note || (snapshot.isCorrection ? "Korekce stavu tachometru" : undefined),
+        note: note || (source === "STRAVA" ? "Synchronizace se Stravou" : snapshot.isCorrection ? "Korekce stavu tachometru" : undefined),
         createdAt: now,
       };
 
@@ -574,6 +605,118 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       const msg = err instanceof Error ? err.message : "Chyba při záznamu tachometru";
       return { success: false, error: msg };
     }
+  };
+
+  // --- STRAVA ACTIONS ---
+  const getBikeByStravaGearId = (stravaGearId: string): Bike | undefined => {
+    return data.bikes.find((b) => b.stravaGearId === stravaGearId.trim());
+  };
+
+  const linkBikeToStrava = (
+    bikeId: string,
+    stravaGearId: string,
+    updateMileage?: { stravaKm: number }
+  ): { success: boolean; error?: string } => {
+    const validation = validateLinkConstraint(data.bikes, bikeId, stravaGearId);
+    if (!validation.valid) {
+      return { success: false, error: validation.error };
+    }
+
+    const bike = data.bikes.find((b) => b.id === bikeId);
+    if (!bike) {
+      return { success: false, error: "Kolo nebylo nalezeno." };
+    }
+
+    const now = new Date().toISOString();
+
+    // If initial mileage update was requested and stravaKm is higher
+    if (updateMileage && updateMileage.stravaKm !== undefined) {
+      const comparison = compareMileage(bike.currentKm, updateMileage.stravaKm);
+      if (comparison.type === "HIGHER") {
+        updateOdometer(
+          bikeId,
+          comparison.stravaKm,
+          bike.currentMinutes,
+          now,
+          `Propojení se Stravou (+${comparison.deltaKm} km)`,
+          false,
+          "STRAVA"
+        );
+      }
+    }
+
+    // Update bike's stravaGearId
+    mutateData((prev) => ({
+      ...prev,
+      bikes: prev.bikes.map((b) =>
+        b.id === bikeId ? { ...b, stravaGearId: stravaGearId.trim(), updatedAt: now } : b
+      ),
+    }));
+
+    return { success: true };
+  };
+
+  const unlinkBikeFromStrava = (bikeId: string): { success: boolean } => {
+    mutateData((prev) => ({
+      ...prev,
+      bikes: prev.bikes.map((b) =>
+        b.id === bikeId ? { ...b, stravaGearId: null, updatedAt: new Date().toISOString() } : b
+      ),
+    }));
+    return { success: true };
+  };
+
+  const syncBikeFromStrava = (
+    bikeId: string,
+    stravaKm: number
+  ): { success: boolean; type: "EQUAL" | "HIGHER" | "LOWER"; deltaKm: number; message: string } => {
+    const bike = data.bikes.find((b) => b.id === bikeId);
+    if (!bike) {
+      return { success: false, type: "EQUAL", deltaKm: 0, message: "Kolo v BikeVault nebylo nalezeno." };
+    }
+
+    const comparison = compareMileage(bike.currentKm, stravaKm);
+
+    if (comparison.type === "EQUAL") {
+      return { success: true, type: "EQUAL", deltaKm: 0, message: "Nájezd je aktuální." };
+    }
+
+    if (comparison.type === "LOWER") {
+      // CRITICAL: NEVER automatically decrease mileage
+      return {
+        success: false,
+        type: "LOWER",
+        deltaKm: comparison.deltaKm,
+        message: comparison.message,
+      };
+    }
+
+    // HIGHER: update odometer
+    const res = updateOdometer(
+      bikeId,
+      comparison.stravaKm,
+      bike.currentMinutes,
+      new Date().toISOString(),
+      `Synchronizace se Stravou (+${comparison.deltaKm} km)`,
+      false,
+      "STRAVA"
+    );
+
+    if (!res.success) {
+      return {
+        success: false,
+        type: "HIGHER",
+        deltaKm: comparison.deltaKm,
+        message: res.error || "Chyba při ukládání odečtu ze Stravy.",
+      };
+    }
+
+    return {
+      success: true,
+      type: "HIGHER",
+      deltaKm: comparison.deltaKm,
+      message: `Nájezd úspěšně aktualizován na ${comparison.stravaKm} km (+${comparison.deltaKm} km).`,
+    };
   };
 
   // --- COMPONENT MUTATIONS ---
@@ -1292,6 +1435,10 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     updateBike,
     deleteBike,
     updateOdometer,
+    linkBikeToStrava,
+    unlinkBikeFromStrava,
+    syncBikeFromStrava,
+    getBikeByStravaGearId,
     addComponent,
     updateComponent,
     retireComponent,

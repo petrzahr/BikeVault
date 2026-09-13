@@ -35,6 +35,7 @@ export interface Bike {
   uploadedImage?: string | null;
   uploadedImageData?: string | null;
   notes?: string | null;
+  stravaGearId?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -45,6 +46,7 @@ export interface BikeOdometerEntry {
   recordedAt: string; // ISO string
   entryDate: string; // YYYY-MM-DD
   entryType: "RIDE" | "CORRECTION" | "INITIAL";
+  source?: "MANUAL" | "STRAVA" | string;
   deltaKm: number;
   deltaMinutes: number;
   resultingKm: number;

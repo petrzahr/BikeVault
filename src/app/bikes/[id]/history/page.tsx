@@ -88,14 +88,19 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
   }
 
   for (const odo of odometerEntries) {
+    const isStrava = odo.source === "STRAVA";
+    const sourceLabel = isStrava ? "Strava" : "Ručně";
+
     if (odo.entryType === "INITIAL") {
       timelineItems.push({
         date: new Date(odo.entryDate),
         type: "INITIAL",
         title: `Výchozí stav počítadla: ${formatKm(odo.resultingKm)}`,
-        subtitle: `${formatMinutes(odo.resultingMinutes)} • ${odo.note || "Zavedení kola do garáže"}`,
-        badge: "Výchozí stav",
-        badgeColor: "bg-slate-100 text-slate-700 border-slate-200/80",
+        subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Zavedení kola do garáže"}`,
+        badge: `Výchozí stav • ${sourceLabel}`,
+        badgeColor: isStrava
+          ? "bg-sky-50 text-sky-700 border-sky-200/80"
+          : "bg-slate-100 text-slate-700 border-slate-200/80",
         icon: SlidersHorizontal,
       });
     } else if (odo.entryType === "RIDE") {
@@ -108,9 +113,11 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         date: new Date(odo.entryDate),
         type: "SNAPSHOT",
         title: `Odečet počítadla: ${formatKm(odo.resultingKm)} (${deltaKmText})`,
-        subtitle: `${formatMinutes(odo.resultingMinutes)} (${deltaMinText})${odo.note ? ` • ${odo.note}` : ""}`,
-        badge: "Stav počítadla",
-        badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+        subtitle: `${formatMinutes(odo.resultingMinutes)} (${deltaMinText}) • ${sourceLabel}${odo.note ? ` • ${odo.note}` : ""}`,
+        badge: isStrava ? "Tachometr • Strava" : "Tachometr • Ručně",
+        badgeColor: isStrava
+          ? "bg-sky-50 text-sky-700 border-sky-200/80"
+          : "bg-emerald-50 text-emerald-700 border-emerald-200/80",
         icon: SlidersHorizontal,
       });
     } else if (odo.entryType === "CORRECTION") {
@@ -118,8 +125,8 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         date: new Date(odo.entryDate),
         type: "CORRECTION",
         title: `Korekce počítadla na ${formatKm(odo.resultingKm)}`,
-        subtitle: `${formatMinutes(odo.resultingMinutes)} • ${odo.note || "Manuální oprava"}`,
-        badge: "Korekce",
+        subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Manuální oprava"}`,
+        badge: `Korekce • ${sourceLabel}`,
         badgeColor: "bg-purple-50 text-purple-700 border-purple-200/80",
         icon: History,
       });

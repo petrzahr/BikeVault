@@ -397,7 +397,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                       className="p-3 bg-slate-50/80 rounded-xl border border-slate-200/60 flex items-center justify-between gap-3 text-xs"
                     >
                       <div>
-                        <div className="flex items-center gap-2 mb-0.5">
+                        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                           <span className="font-bold text-slate-900 tabular-nums">
                             {formatKm(entry.resultingKm)}
                           </span>
@@ -405,6 +405,13 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                             isDeltaPositive ? "text-emerald-700" : "text-amber-800"
                           }`}>
                             ({isDeltaPositive ? `+${formatKm(entry.deltaKm)}` : formatKm(entry.deltaKm)})
+                          </span>
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold border ${
+                            entry.source === "STRAVA"
+                              ? "bg-sky-50 text-sky-700 border-sky-200/70"
+                              : "bg-slate-100 text-slate-600 border-slate-200/70"
+                          }`}>
+                            {entry.source === "STRAVA" ? "Strava" : "Ručně"}
                           </span>
                         </div>
                         <p className="text-[11px] text-slate-500 truncate max-w-[180px]">
