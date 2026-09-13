@@ -81,6 +81,9 @@ export class KvTokenStorageAdapter implements StravaTokenStorageAdapter {
     }
 
     const data = await res.json();
+    if (data && typeof data === "object" && "error" in data && data.error) {
+      throw new Error(`[KvTokenStorageAdapter] Redis error: ${data.error}`);
+    }
     return data.result;
   }
 
@@ -107,19 +110,42 @@ export class KvTokenStorageAdapter implements StravaTokenStorageAdapter {
       bikeVaultUserId: userId,
     });
     await this.executeCommand(["SET", key, payload]);
+    try {
+      await this.executeCommand(["SADD", `${this.keyPrefix}:all_users`, userId]);
+    } catch {
+      // Non-critical if set tracking fails
+    }
   }
 
   async deleteUserAuth(bikeVaultUserId: string): Promise<void> {
     const key = `${this.keyPrefix}:integration:${bikeVaultUserId}`;
     await this.executeCommand(["DEL", key]);
+    try {
+      await this.executeCommand(["SREM", `${this.keyPrefix}:all_users`, bikeVaultUserId]);
+    } catch {
+      // Non-critical if set removal fails
+    }
   }
 
   async getAllUserIds(): Promise<string[]> {
-    const pattern = `${this.keyPrefix}:integration:*`;
-    const keys = (await this.executeCommand(["KEYS", pattern])) as string[] | null;
-    if (!Array.isArray(keys)) return [];
-    const prefixLen = `${this.keyPrefix}:integration:`.length;
-    return keys.map((k) => k.substring(prefixLen)).filter(Boolean);
+    try {
+      const members = (await this.executeCommand(["SMEMBERS", `${this.keyPrefix}:all_users`])) as string[] | null;
+      if (Array.isArray(members) && members.length > 0) {
+        return members.filter(Boolean);
+      }
+    } catch {
+      // Fallback to KEYS if SMEMBERS not available
+    }
+
+    try {
+      const pattern = `${this.keyPrefix}:integration:*`;
+      const keys = (await this.executeCommand(["KEYS", pattern])) as string[] | null;
+      if (!Array.isArray(keys)) return [];
+      const prefixLen = `${this.keyPrefix}:integration:`.length;
+      return keys.map((k) => k.substring(prefixLen)).filter(Boolean);
+    } catch {
+      return [];
+    }
   }
 
   async saveOAuthState(state: string, bikeVaultUserId: string, ttlSeconds: number): Promise<void> {
@@ -355,8 +381,11 @@ export function getStorageAdapter(): StravaTokenStorageAdapter {
   }
 
   // 1. Check for Vercel KV or Upstash Redis REST credentials
-  const kvUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const kvToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  const rawUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const rawToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  const kvUrl = rawUrl ? rawUrl.trim().replace(/^["']|["']$/g, "") : undefined;
+  const kvToken = rawToken ? rawToken.trim().replace(/^["']|["']$/g, "") : undefined;
 
   if (kvUrl && kvToken) {
     return new KvTokenStorageAdapter(kvUrl, kvToken);
