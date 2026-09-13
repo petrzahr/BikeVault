@@ -22,6 +22,22 @@ const config: Config = {
           800: "#075985",
           900: "#0c4a6e",
         },
+        // BikeVault global neutral palette: subtly darker & cooler than CashPilot
+        // CashPilot slate-50 is #f8fafc (98% L); BikeVault slate-50 is #edf2f7 (95% L)
+        // Clearly a light-theme palette, but distinctly cooler/grounded with increased card separation
+        slate: {
+          50: "#edf2f7",
+          100: "#e2e8f0",
+          200: "#cbd5e1",
+          300: "#b4c3d2",
+          400: "#8294a8",
+          500: "#56697e",
+          600: "#3c4d61",
+          700: "#27374a",
+          800: "#162334",
+          900: "#0c1726",
+          950: "#060d17",
+        },
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', "system-ui", "-apple-system", "sans-serif"],
@@ -31,4 +47,3 @@ const config: Config = {
   plugins: [],
 };
 export default config;
-

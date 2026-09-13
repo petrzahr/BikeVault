@@ -82,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Logo a záhlaví */}
           <div className="flex items-center justify-between">
             <Link href="/garage" onClick={onCloseMobile} className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 to-sky-500 text-white flex items-center justify-center shadow-md shadow-sky-500/20">
+              <div className="w-9 h-9 rounded-xl bg-slate-800 text-white flex items-center justify-center shadow-md shadow-slate-900/15">
                 <BikeIcon className="w-5 h-5" />
               </div>
               <div>

@@ -79,7 +79,7 @@ export const LoginScreen: React.FC = () => {
         
         {/* Logo a hlavička */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-600 to-sky-500 text-white shadow-lg shadow-sky-500/25 mb-1">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-800 text-white shadow-lg shadow-slate-900/20 mb-1">
             <Bike className="w-9 h-9" />
           </div>
           <div>

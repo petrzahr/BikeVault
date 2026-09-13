@@ -25,7 +25,7 @@ export function AuthGate({ children }: AuthGateProps) {
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-600 to-sky-500 text-white shadow-lg shadow-sky-500/25 flex items-center justify-center animate-pulse mb-3.5">
+        <div className="w-16 h-16 rounded-2xl bg-slate-800 text-white shadow-lg shadow-slate-900/20 flex items-center justify-center animate-pulse mb-3.5">
           <Bike className="w-8 h-8" />
         </div>
         <div className="text-slate-900 font-extrabold text-lg tracking-tight">
@@ -48,7 +48,7 @@ export function AuthGate({ children }: AuthGateProps) {
   if (!isInitialSyncDone) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-600 to-sky-500 text-white shadow-lg shadow-sky-500/25 flex items-center justify-center animate-pulse mb-3.5">
+        <div className="w-16 h-16 rounded-2xl bg-slate-800 text-white shadow-lg shadow-slate-900/20 flex items-center justify-center animate-pulse mb-3.5">
           <Bike className="w-8 h-8" />
         </div>
         <div className="text-slate-900 font-extrabold text-lg tracking-tight">
