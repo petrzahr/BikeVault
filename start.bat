@@ -18,6 +18,18 @@ echo   BikeVault - Kompletni historie tvych kol
 echo ========================================================
 echo.
 
+:: Automaticke cisteni starych zamku a ReadOnly priznaku (napr. z Google Drive)
+if exist ".data\pgdata\postmaster.pid" (
+    del /f /q ".data\pgdata\postmaster.pid" 2>nul
+)
+if exist ".data\pgdata\.s.PGSQL.5432.lock.out" (
+    del /f /q ".data\pgdata\.s.PGSQL.5432.lock.out" 2>nul
+)
+if exist ".data\pgdata" (
+    attrib -r ".data\pgdata" 2>nul
+    attrib -r ".data\pgdata\*.*" /s /d 2>nul
+)
+
 if not exist "node_modules\" (
     echo [INFO] Instaluji knihovny...
     call "%NODE_DIR%\npm.cmd" install

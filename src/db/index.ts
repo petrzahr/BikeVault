@@ -22,6 +22,20 @@ export function getClient(): PGlite {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
+  // Clean stale lock / pid files left from previous abnormal process termination
+  try {
+    const stalePid = path.join(dataDir, "postmaster.pid");
+    if (fs.existsSync(stalePid)) {
+      fs.unlinkSync(stalePid);
+    }
+    const staleLock = path.join(dataDir, ".s.PGSQL.5432.lock.out");
+    if (fs.existsSync(staleLock)) {
+      fs.unlinkSync(staleLock);
+    }
+  } catch (err) {
+    console.warn("Notice: Unable to clean stale db lock files:", err);
+  }
+
   const client = new PGlite(dataDir);
   const db = drizzle(client, { schema });
 
