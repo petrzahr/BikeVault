@@ -52,6 +52,8 @@ interface VaultContextType {
   user: GoogleUser | null;
   lastSyncedAt: Date | null;
   isLoaded: boolean;
+  isAuthenticated: boolean;
+  isInitialSyncDone: boolean;
 
   // Auth & Sync
   login: () => Promise<void>;
@@ -148,6 +150,8 @@ function generateId(prefix = "id"): string {
 export function VaultProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<BikeVaultData>(INITIAL_VAULT_DATA);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isInitialSyncDone, setIsInitialSyncDone] = useState(false);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("offline");
   const [syncError, setSyncError] = useState<string | null>(null);
   const [user, setUser] = useState<GoogleUser | null>(null);
@@ -157,46 +161,43 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const isInitialMount = useRef(true);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 1. Initial load from localStorage & check Google Auth
+  // 1. Initial load & check Google Auth
   useEffect(() => {
-    let initialData = INITIAL_VAULT_DATA;
-    try {
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed && typeof parsed === "object" && parsed.version) {
-          initialData = {
-            ...INITIAL_VAULT_DATA,
-            ...parsed,
-            categories: parsed.categories?.length ? parsed.categories : DEFAULT_CATEGORIES,
-            settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
-          };
-        }
-      } else {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(INITIAL_VAULT_DATA));
-      }
-    } catch (e) {
-      console.warn("Could not load from localStorage:", e);
-    }
-
-    setData(initialData);
-    setIsLoaded(true);
-
-    // Check stored Google auth
     const auth = getStoredAuth();
-    if (auth && isStoredTokenValid()) {
+    const valid = isStoredTokenValid();
+
+    if (auth && valid) {
+      setIsAuthenticated(true);
       if (auth.user) {
         setUser(auth.user);
       }
+      // Load cached data from localStorage if available
+      try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed === "object" && parsed.version) {
+            setData(parsed);
+          }
+        }
+      } catch (e) {
+        console.warn("Could not load from localStorage:", e);
+      }
+
+      setIsLoaded(true);
       // Trigger background sync from Drive
-      syncWithGoogleDrive(auth.accessToken, initialData);
+      syncWithGoogleDrive(auth.accessToken);
     } else {
+      // Not authenticated - require Google login
+      setIsAuthenticated(false);
+      setIsLoaded(true);
+      setIsInitialSyncDone(true);
       setSyncStatus("offline");
     }
   }, []);
 
   // Helper to sync with Google Drive
-  const syncWithGoogleDrive = async (token: string, currentLocalData: BikeVaultData) => {
+  const syncWithGoogleDrive = async (token: string) => {
     try {
       setSyncStatus("saving");
       setSyncError(null);
@@ -210,29 +211,36 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       if (fileInfo) {
         setDriveFileId(fileInfo.id);
         const cloudData = await downloadVaultData(token, fileInfo.id);
-        const merged = mergeVaultData(cloudData, currentLocalData);
 
-        setData(merged);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-
-        // If local was newer, update cloud
-        if (merged.updatedAt !== cloudData.updatedAt) {
-          await uploadVaultData(token, merged, fileInfo.id);
+        setData(cloudData);
+        try {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cloudData));
+        } catch (e) {
+          console.warn("Failed to write to localStorage:", e);
         }
 
         setLastSyncedAt(new Date());
         setSyncStatus("synced");
       } else {
-        // Create new file on Drive
-        const newFile = await uploadVaultData(token, currentLocalData);
+        // Create new file on Drive with INITIAL_VAULT_DATA
+        const newFile = await uploadVaultData(token, INITIAL_VAULT_DATA);
         setDriveFileId(newFile.id);
+        setData(INITIAL_VAULT_DATA);
+        try {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(INITIAL_VAULT_DATA));
+        } catch (e) {
+          console.warn("Failed to write to localStorage:", e);
+        }
+
         setLastSyncedAt(new Date());
         setSyncStatus("synced");
       }
+      setIsInitialSyncDone(true);
     } catch (err: unknown) {
       console.error("Sync error:", err);
       setSyncStatus("error");
       setSyncError(err instanceof Error ? err.message : String(err));
+      setIsInitialSyncDone(true);
     }
   };
 
@@ -240,6 +248,10 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
+      return;
+    }
+
+    if (!isAuthenticated || !isInitialSyncDone) {
       return;
     }
 
@@ -284,7 +296,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [data, driveFileId]);
+  }, [data, driveFileId, isAuthenticated, isInitialSyncDone]);
 
   // Update helper with automatic updatedAt timestamp
   const mutateData = useCallback((fn: (prev: BikeVaultData) => BikeVaultData) => {
@@ -301,14 +313,18 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const login = async () => {
     try {
       setSyncStatus("saving");
+      setSyncError(null);
       const token = await loginToGoogle();
       const profile = await fetchGoogleUserProfile(token);
       if (profile) setUser(profile);
-      await syncWithGoogleDrive(token, data);
+      setIsAuthenticated(true);
+      setIsInitialSyncDone(false);
+      await syncWithGoogleDrive(token);
     } catch (err: unknown) {
       setSyncStatus("error");
-      setSyncError(err instanceof Error ? err.message : String(err));
-      alert(err instanceof Error ? err.message : "Chyba při přihlášení ke Google Disku.");
+      const msg = err instanceof Error ? err.message : String(err);
+      setSyncError(msg);
+      throw err;
     }
   };
 
@@ -316,7 +332,15 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     await logoutFromGoogle();
     setUser(null);
     setDriveFileId(null);
+    setIsAuthenticated(false);
+    setIsInitialSyncDone(true);
     setSyncStatus("offline");
+    setData(INITIAL_VAULT_DATA);
+    try {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+    } catch (e) {
+      console.warn("Failed to clear localStorage:", e);
+    }
   };
 
   const syncNow = async () => {
@@ -325,7 +349,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       await login();
       return;
     }
-    await syncWithGoogleDrive(auth.accessToken, data);
+    await syncWithGoogleDrive(auth.accessToken);
   };
 
   const exportBackup = () => {
@@ -1218,6 +1242,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     user,
     lastSyncedAt,
     isLoaded,
+    isAuthenticated,
+    isInitialSyncDone,
     login,
     logout,
     syncNow,

@@ -52,38 +52,37 @@ export const GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.fi
 const AUTH_STORAGE_KEY = "bikevault_google_auth_v1";
 
 /**
- * Získá Client ID z proměnné prostředí nebo výchozí hodnotu
+ * Získá Client ID výhradně z proměnné prostředí process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
  */
 export function getGoogleClientId(): string {
-  if (typeof window !== "undefined") {
-    const fromStorage = localStorage.getItem("bikevault_custom_client_id");
-    if (fromStorage) return fromStorage;
+  const envId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  if (envId) {
+    return envId.replace(/^["']|["']$/g, "").trim();
   }
-  return (
-    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
-    "471929194107-leupf0slff3no70bl5u7104aaim5jcmf.apps.googleusercontent.com"
-  );
+  return "169480893579-apfcrv1uoe82gasbqgekvmb1874vmm5t.apps.googleusercontent.com";
 }
 
 /**
- * Uloží autentizaci do localStorage
+ * Uloží autentizaci do sessionStorage i localStorage
  */
 export function saveStoredAuth(auth: StoredAuthData): void {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(auth));
+    const serialized = JSON.stringify(auth);
+    sessionStorage.setItem(AUTH_STORAGE_KEY, serialized);
+    localStorage.setItem(AUTH_STORAGE_KEY, serialized);
   } catch (err) {
     console.error("Chyba při ukládání Google autentizace:", err);
   }
 }
 
 /**
- * Načte uloženou Google autentizaci
+ * Načte uloženou Google autentizaci (ze sessionStorage nebo localStorage)
  */
 export function getStoredAuth(): StoredAuthData | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    const raw = sessionStorage.getItem(AUTH_STORAGE_KEY) || localStorage.getItem(AUTH_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as StoredAuthData;
     if (!parsed.accessToken || typeof parsed.expiresAt !== "number") return null;
@@ -94,11 +93,12 @@ export function getStoredAuth(): StoredAuthData | null {
 }
 
 /**
- * Vymaže uloženou autentizaci
+ * Vymaže uloženou autentizaci ze všech úložišť
  */
 export function clearStoredAuth(): void {
   if (typeof window === "undefined") return;
   try {
+    sessionStorage.removeItem(AUTH_STORAGE_KEY);
     localStorage.removeItem(AUTH_STORAGE_KEY);
   } catch (err) {
     console.error("Chyba při mazání Google autentizace:", err);
