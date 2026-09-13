@@ -1,0 +1,264 @@
+{
+  "app": {
+    "name": "BikeVault",
+    "tagline": "Kompletní historie tvých kol.",
+    "philosophy": "Kompletní životopis kola a jeho komponentů od nákupu až po prodej."
+  },
+  "nav": {
+    "garage": "Garáž",
+    "components": "Komponenty",
+    "maintenance": "Servis",
+    "finances": "Finance",
+    "statistics": "Statistiky",
+    "settings": "Nastavení"
+  },
+  "bikeNav": {
+    "overview": "Přehled",
+    "components": "Komponenty",
+    "setup": "Nastavení",
+    "service": "Servis",
+    "finances": "Finance",
+    "history": "Historie"
+  },
+  "garage": {
+    "title": "Garáž",
+    "subtitle": "Aktivní kola ve vaší virtuální garáži",
+    "addBike": "Přidat kolo",
+    "emptyTitle": "V garáži zatím nemáte žádné kolo",
+    "emptyDesc": "Založte si své první kolo a začněte sledovat jeho kompletní servisní a komponentovou historii.",
+    "tabs": {
+      "active": "Aktivní kola",
+      "history": "Historie kol",
+      "sold": "Prodaná kola"
+    },
+    "card": {
+      "nextService": "Nejbližší servis",
+      "netCost": "Čisté náklady",
+      "noServiceDue": "Žádný servis v plánu",
+      "quickUpdate": "Aktualizovat nájezd",
+      "quickPressure": "Upravit tlak",
+      "details": "Detail kola"
+    }
+  },
+  "bike": {
+    "addTitle": "Přidat nové kolo",
+    "editTitle": "Upravit kolo",
+    "name": "Název kola",
+    "namePlaceholder": "např. Propain Spindrift CF",
+    "manufacturer": "Výrobce",
+    "manufacturerPlaceholder": "např. Propain",
+    "model": "Model",
+    "modelPlaceholder": "např. Spindrift CF",
+    "modelYear": "Modelový rok",
+    "category": "Kategorie",
+    "discipline": "Disciplína",
+    "suspensionType": "Konfigurace odpružení",
+    "driveType": "Typ pohonu",
+    "serialNumber": "Výrobní číslo rámu",
+    "purchaseDate": "Datum nákupu",
+    "purchasePrice": "Kupní cena",
+    "initialKm": "Výchozí stav kilometrů",
+    "initialHours": "Výchozí stav hodin",
+    "initialMinutes": "minut",
+    "notes": "Poznámka ke kolu",
+    "status": "Stav kola",
+    "save": "Uložit kolo",
+    "cancel": "Zrušit",
+    "metrics": {
+      "currentMileage": "Aktuální nájezd",
+      "ridingHours": "Odjeto hodin",
+      "ownershipDuration": "Doba vlastnictví",
+      "purchasePrice": "Kupní cena",
+      "totalExpenses": "Celkové výdaje",
+      "totalIncomes": "Celkové příjmy",
+      "netCost": "Čisté náklady",
+      "costPerKm": "Cena za kilometr",
+      "costPerHour": "Cena za hodinu",
+      "costPerMonth": "Cena za měsíc"
+    },
+    "presets": {
+      "mtbFull": "Celoodpružené MTB",
+      "mtbHardtail": "MTB Hardtail",
+      "gravelRigid": "Gravel (Pevný)",
+      "gravelSuspension": "Gravel s odpružením",
+      "road": "Silniční kolo",
+      "cyclocross": "Cyklokros",
+      "emtbFull": "Elektrokolo – celoodpružené MTB",
+      "emtbHardtail": "Elektrokolo – hardtail",
+      "custom": "Vlastní konfigurace"
+    },
+    "categories": {
+      "MTB": "Horské kolo (MTB)",
+      "GRAVEL": "Gravel",
+      "ROAD": "Silniční",
+      "CYCLOCROSS": "Cyklokros",
+      "TIME_TRIAL": "Časovka / Triatlon",
+      "CITY_URBAN": "Městské",
+      "TOURING": "Cestovní / Touring",
+      "DIRT_PUMPTRACK": "Dirt / Pumptrack",
+      "OTHER": "Jiné"
+    },
+    "disciplines": {
+      "ENDURO": "Enduro",
+      "TRAIL": "Trail",
+      "DOWNCOUNTRY": "Downcountry",
+      "CROSS_COUNTRY": "Cross-country (XC)",
+      "DOWNHILL": "Downhill (DH)",
+      "GRAVEL": "Gravel",
+      "ROAD": "Silnice",
+      "ALL_ROAD": "All-road",
+      "COMMUTE": "Dojíždění",
+      "DIRT_JUMP": "Dirt jump",
+      "GENERAL": "Všeobecné"
+    },
+    "suspensionTypes": {
+      "RIGID": "Bez odpružení (pevná vidlice)",
+      "FRONT_SUSPENSION": "Přední odpružení (Hardtail)",
+      "FULL_SUSPENSION": "Celoodpružené (Vidlice i tlumič)"
+    },
+    "driveTypes": {
+      "CONVENTIONAL": "Klasický pohon",
+      "ELECTRIC": "Elektrokolo (E-bike)"
+    },
+    "statuses": {
+      "ACTIVE": "Aktivní",
+      "INACTIVE": "Neaktivní",
+      "SOLD": "Prodáno",
+      "ARCHIVED": "Archivováno"
+    }
+  },
+  "odometer": {
+    "updateOdometer": "Aktualizovat nájezd",
+    "adjust": "Upravit stav počítadla",
+    "previousState": "Předchozí zaznamenaný stav",
+    "currentKm": "Aktuální kilometry",
+    "currentHours": "Aktuální počet hodin",
+    "minutes": "minut",
+    "difference": "Rozdíl",
+    "date": "Datum odečtu",
+    "note": "Poznámka ke stavu (volitelné)",
+    "saveStatus": "Uložit stav",
+    "saveAdjustment": "Uložit korekci",
+    "correctionReason": "Důvod korekce",
+    "history": "Historie odečtů počítadla"
+  },
+  "setup": {
+    "title": "Nastavení kola",
+    "subtitle": "Konfigurace odpružení, tlaků v pláštích a geometrie",
+    "edit": "Upravit nastavení",
+    "save": "Uložit nastavení",
+    "saveSnapshot": "Uložit jako snímek / profil",
+    "snapshotTitle": "Uložit profil nastavení",
+    "profileName": "Název profilu",
+    "profileNamePlaceholder": "např. Bikepark – sucho",
+    "fork": {
+      "title": "Vidlice",
+      "pressure": "Tlak vidlice",
+      "sag": "SAG (%)",
+      "rebound": "Odskok",
+      "lsc": "LSC (Nízkorychlostní komprese)",
+      "hsc": "HSC (Vysokorychlostní komprese)",
+      "lsr": "LSR (Nízkorychlostní odskok)",
+      "hsr": "HSR (Vysokorychlostní odskok)",
+      "tokens": "Tokeny / Volume spacery",
+      "travel": "Zdvih (mm)",
+      "clicksFromClosed": "kliků od zavřené polohy",
+      "notes": "Poznámka k vidlici"
+    },
+    "shock": {
+      "title": "Tlumič",
+      "pressure": "Tlak tlumiče",
+      "sag": "SAG (%)",
+      "rebound": "Odskok",
+      "lsc": "LSC (Nízkorychlostní komprese)",
+      "hsc": "HSC (Vysokorychlostní komprese)",
+      "lsr": "LSR (Nízkorychlostní odskok)",
+      "hsr": "HSR (Vysokorychlostní odskok)",
+      "tokens": "Tokeny / Volume spacery",
+      "notes": "Poznámka k tlumiči"
+    },
+    "tires": {
+      "title": "Pláště",
+      "front": "Přední plášť",
+      "rear": "Zadní plášť",
+      "pressure": "Tlak",
+      "insert": "Vložka (Insert)",
+      "notes": "Poznámka k plášti (směs, podmínky)"
+    },
+    "generalNotes": "Celková poznámka k nastavení"
+  },
+  "components": {
+    "title": "Komponenty",
+    "installed": "Namontováno",
+    "inStorage": "Skladem",
+    "sold": "Prodáno",
+    "damaged": "Poškozeno",
+    "discarded": "Vyřazeno",
+    "addComponent": "Přidat komponent",
+    "install": "Namontovat na kolo",
+    "remove": "Sundat do skladu",
+    "replace": "Vyměnit komponentu",
+    "transfer": "Přesunout na jiné kolo",
+    "lifecycle": "Životní cyklus",
+    "totalUsage": "Celkový nájezd"
+  },
+  "maintenance": {
+    "title": "Servis",
+    "dashboard": "Servisní dashboard",
+    "addService": "Zapsat servis",
+    "schedule": "Servisní plány",
+    "history": "Servisní kniha",
+    "statuses": {
+      "ok": "V pořádku",
+      "dueSoon": "Brzy servis",
+      "overdue": "Po termínu"
+    },
+    "groups": {
+      "overdue": "Po termínu",
+      "dueSoon": "Brzy",
+      "upcoming": "Později",
+      "completed": "Dokončeno"
+    },
+    "execution": {
+      "diy": "Svépomocí",
+      "workshop": "Odborný servis"
+    }
+  },
+  "finances": {
+    "title": "Finance",
+    "ledger": "Finanční přehled",
+    "totalExpenses": "Celkové výdaje",
+    "totalIncomes": "Celkové příjmy",
+    "netCost": "Čisté náklady",
+    "categories": {
+      "BIKE_PURCHASE": "Nákup kola",
+      "COMPONENT_PURCHASE": "Nákup komponentu",
+      "SERVICE_LABOR": "Servis — práce",
+      "SERVICE_PARTS": "Servis — díly",
+      "CONSUMABLES": "Spotřební materiál",
+      "ACCESSORIES": "Příslušenství",
+      "BIKE_SALE": "Prodej kola",
+      "COMPONENT_SALE": "Prodej komponentu",
+      "REFUND": "Vrácení peněz",
+      "OTHER": "Ostatní"
+    }
+  },
+  "common": {
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "confirm": "Potvrdit",
+    "edit": "Upravit",
+    "close": "Zavřít",
+    "search": "Hledat...",
+    "filter": "Filtrovat",
+    "all": "Vše",
+    "loading": "Načítání...",
+    "km": "km",
+    "hours": "h",
+    "minutes": "min",
+    "bar": "bar",
+    "psi": "psi",
+    "czk": "Kč"
+  }
+}
