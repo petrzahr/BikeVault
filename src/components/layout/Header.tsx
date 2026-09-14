@@ -26,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   const pathname = usePathname();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const {
+    appState,
     syncStatus,
     syncError,
     user,
@@ -33,6 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
     isAuthenticated,
     login,
     logout,
+    reauthorizeGoogleDrive,
     syncNow,
     exportBackup,
     importBackup,
@@ -153,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`relative inline-flex rounded-full h-2 w-2 ${
                       syncStatus === "saving"
                         ? "bg-sky-500"
-                        : syncStatus === "error"
+                        : syncStatus === "error" || appState === "scopeInsufficient"
                         ? "bg-amber-500"
                         : "bg-emerald-500"
                     }`}
@@ -162,6 +164,8 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="hidden sm:inline">
                   {syncStatus === "saving"
                     ? "Ukládám..."
+                    : appState === "scopeInsufficient"
+                    ? "Chybí oprávnění"
                     : syncStatus === "error"
                     ? "Chyba"
                     : "Synchronizováno"}
@@ -239,18 +243,33 @@ export const Header: React.FC<HeaderProps> = ({
 
                   {/* Tlačítka synchronizace a zálohy */}
                   <div className="space-y-1.5 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        syncNow();
-                        setMenuOpen(false);
-                      }}
-                      disabled={syncStatus === "saving"}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold transition-colors cursor-pointer"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
-                      <span>Synchronizovat nyní</span>
-                    </button>
+                    {appState === "scopeInsufficient" ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          reauthorizeGoogleDrive();
+                          setMenuOpen(false);
+                        }}
+                        disabled={syncStatus === "saving"}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold transition-colors cursor-pointer shadow-sm"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
+                        <span>Obnovit oprávnění Google</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          syncNow();
+                          setMenuOpen(false);
+                        }}
+                        disabled={syncStatus === "saving"}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold transition-colors cursor-pointer"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
+                        <span>Synchronizovat nyní</span>
+                      </button>
+                    )}
 
                     <div className="grid grid-cols-2 gap-1.5 pt-1">
                       <button

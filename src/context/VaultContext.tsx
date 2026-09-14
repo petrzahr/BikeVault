@@ -23,10 +23,12 @@ import {
 import {
   getStoredAuth,
   isStoredTokenValid,
+  hasDriveScope,
   loginToGoogle,
   logoutFromGoogle,
   fetchGoogleUserProfile,
   GoogleUser,
+  InsufficientDriveScopeError,
 } from "@/lib/google/googleAuth";
 import {
   findVaultFile,
@@ -48,7 +50,13 @@ import { evaluateServiceSchedule, MaintenanceStatusResult } from "@/lib/domain/m
 import { areComponentsEquivalentReplacement, findStorageReplacements } from "@/lib/domain/replacement";
 
 export type SyncStatus = "synced" | "saving" | "offline" | "error";
-export type AppState = "authLoading" | "cloudLoading" | "ready" | "loadError" | "syncError";
+export type AppState =
+  | "authLoading"
+  | "cloudLoading"
+  | "ready"
+  | "loadError"
+  | "syncError"
+  | "scopeInsufficient";
 
 export interface EvaluatedServiceSchedule {
   schedule: ServiceSchedule;
@@ -73,6 +81,7 @@ interface VaultContextType {
   // Auth & Sync
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  reauthorizeGoogleDrive: () => Promise<void>;
   syncNow: () => Promise<void>;
   exportBackup: () => void;
   importBackup: (jsonContent: string) => Promise<boolean>;
@@ -238,7 +247,17 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     } catch (err: unknown) {
       console.error("Sync error:", err);
       const isCorrupted = err instanceof CorruptedCloudDataError;
-      const errorMsg = err instanceof Error ? err.message : String(err);
+      const isScopeError =
+        err instanceof InsufficientDriveScopeError ||
+        (err instanceof Error &&
+          (err.message.includes("ACCESS_TOKEN_SCOPE_INSUFFICIENT") ||
+            err.message.includes("insufficient_scope") ||
+            err.message.includes("insufficientPermissions") ||
+            err.message.includes("Insufficient Permission")));
+
+      const errorMsg = isScopeError
+        ? "BikeVault potřebuje znovu povolit přístup ke svým datům na Google Disku."
+        : err instanceof Error ? err.message : String(err);
 
       setSyncStatus("error");
       setSyncError(errorMsg);
@@ -253,6 +272,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
             typeof err.rawPayload === "string" ? err.rawPayload : JSON.stringify(err.rawPayload, null, 2)
           );
         }
+      } else if (isScopeError) {
+        setAppState("scopeInsufficient");
       } else {
         setAppState((prev) => (prev === "ready" ? "ready" : "syncError"));
       }
@@ -269,6 +290,17 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       if (auth.user) {
         setUser(auth.user);
       }
+
+      // Pokud token v úložišti postrádá drive scope, přejdeme do stavu scopeInsufficient
+      if (auth.scopes && !hasDriveScope(auth.scopes)) {
+        setAppState("scopeInsufficient");
+        setSyncStatus("error");
+        setSyncError("BikeVault potřebuje znovu povolit přístup ke svým datům na Google Disku.");
+        setIsLoaded(true);
+        setIsInitialSyncDone(true);
+        return;
+      }
+
       setAppState("cloudLoading");
 
       // Load cached data from local cache for instant UI response (no flicker)
@@ -399,6 +431,36 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     setData(createEmptyVaultData());
     // 4. Clear local cache
     clearStoredCache();
+  };
+
+  const reauthorizeGoogleDrive = async () => {
+    try {
+      setSyncStatus("saving");
+      setSyncError(null);
+      setLoadErrorDetail(null);
+      setAppState("cloudLoading");
+      // Prompt "consent" forces Google to display permission screen for drive.file
+      const token = await loginToGoogle("consent");
+      const profile = await fetchGoogleUserProfile(token);
+      if (profile) setUser(profile);
+      setIsAuthenticated(true);
+      setIsInitialSyncDone(false);
+      await syncWithGoogleDrive(token);
+    } catch (err: unknown) {
+      setSyncStatus("error");
+      const isScopeError =
+        err instanceof InsufficientDriveScopeError ||
+        (err instanceof Error &&
+          (err.message.includes("ACCESS_TOKEN_SCOPE_INSUFFICIENT") ||
+            err.message.includes("insufficient_scope") ||
+            err.message.includes("Insufficient Permission")));
+      const msg = isScopeError
+        ? "BikeVault potřebuje znovu povolit přístup ke svým datům na Google Disku."
+        : err instanceof Error ? err.message : String(err);
+      setSyncError(msg);
+      setAppState("scopeInsufficient");
+      throw err;
+    }
   };
 
   const syncNow = async () => {
@@ -1427,6 +1489,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     corruptedRawPayload,
     login,
     logout,
+    reauthorizeGoogleDrive,
     syncNow,
     exportBackup,
     importBackup,

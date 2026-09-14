@@ -1,7 +1,7 @@
 "use client";
 
 import React, { ReactNode } from "react";
-import { Bike, Loader2, AlertTriangle, Download, LogOut } from "lucide-react";
+import { Bike, Loader2, AlertTriangle, Download, LogOut, RefreshCw } from "lucide-react";
 import { useVault } from "@/context/VaultContext";
 import { LoginScreen } from "./LoginScreen";
 
@@ -15,9 +15,11 @@ export function AuthGate({ children }: AuthGateProps) {
     isAuthenticated,
     isInitialSyncDone,
     appState,
+    syncStatus,
     loadErrorDetail,
     corruptedRawPayload,
     exportCorruptedFile,
+    reauthorizeGoogleDrive,
     logout,
   } = useVault();
 
@@ -106,6 +108,59 @@ export function AuthGate({ children }: AuthGateProps) {
             >
               <LogOut className="w-4 h-4" />
               <span>Odhlásit se a zkusit znovu</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 5. Re-consent Gate: scopeInsufficient
+  // The token is missing the drive.file scope. Must re-authorize before proceeding.
+  if (appState === "scopeInsufficient") {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
+        <div className="max-w-md w-full bg-white rounded-2xl border border-amber-200 shadow-xl p-6 sm:p-8 text-center">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 mb-4 shadow-sm">
+            <AlertTriangle className="w-7 h-7" />
+          </div>
+          <h2 className="text-lg font-bold text-slate-900 mb-2">
+            Vyžadováno oprávnění k Disku
+          </h2>
+          <p className="text-xs text-slate-600 leading-relaxed mb-4">
+            BikeVault potřebuje znovu povolit přístup ke svým datům na Google Disku.
+          </p>
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-left text-[11px] text-slate-600 mb-5 space-y-1">
+            <p className="font-semibold text-slate-800">Proč je to potřeba?</p>
+            <p>
+              Aplikace ukládá data přímo na váš osobní Google Disk do souboru{" "}
+              <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono text-[10px]">
+                bikevault_data.json
+              </code>
+              . Bez tohoto oprávnění nelze data načíst ani bezpečně ukládat.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2.5">
+            <button
+              type="button"
+              disabled={syncStatus === "saving"}
+              onClick={() => reauthorizeGoogleDrive()}
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-sky-600 hover:bg-sky-700 disabled:bg-sky-400 text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
+            >
+              {syncStatus === "saving" ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
+              <span>Obnovit oprávnění Google</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => logout()}
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Odhlásit se</span>
             </button>
           </div>
         </div>

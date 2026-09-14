@@ -26,7 +26,28 @@ export interface GoogleUser {
 export interface StoredAuthData {
   accessToken: string;
   expiresAt: number; // Unix timestamp v ms
+  scopes?: string;
   user?: GoogleUser;
+}
+
+export class InsufficientDriveScopeError extends Error {
+  constructor(message: string = "BikeVault potřebuje znovu povolit přístup ke svým datům na Google Disku.") {
+    super(message);
+    this.name = "InsufficientDriveScopeError";
+  }
+}
+
+/**
+ * Ověří, zda předaný řetězec scopes obsahuje oprávnění k souborům na Google Disku.
+ */
+export function hasDriveScope(scopes?: string | null): boolean {
+  if (!scopes) return false;
+  const list = scopes.split(/\s+/).filter(Boolean);
+  return list.some(
+    (s) =>
+      s === "https://www.googleapis.com/auth/drive.file" ||
+      s === "https://www.googleapis.com/auth/drive"
+  );
 }
 
 declare global {
@@ -48,7 +69,7 @@ declare global {
   }
 }
 
-export const GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file email";
+export const GOOGLE_DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file";
 const AUTH_STORAGE_KEY = "bikevault_google_auth_v1";
 
 /**
@@ -107,10 +128,12 @@ export function clearStoredAuth(): void {
 
 /**
  * Zkontroluje, zda máme platný (neexpirovaný) access token (s rezervou 60s)
+ * a zda token obsahuje potřebné oprávnění k Disku.
  */
 export function isStoredTokenValid(): boolean {
   const auth = getStoredAuth();
   if (!auth) return false;
+  if (auth.scopes && !hasDriveScope(auth.scopes)) return false;
   return auth.expiresAt > Date.now() + 60000;
 }
 
@@ -187,6 +210,7 @@ export async function getOrCreateTokenClient(): Promise<GoogleTokenClient> {
         saveStoredAuth({
           accessToken: response.access_token,
           expiresAt,
+          scopes: response.scope,
           user: current?.user,
         });
 
@@ -217,7 +241,17 @@ export async function loginToGoogle(prompt: string = "select_account"): Promise<
   const tokenClient = await getOrCreateTokenClient();
 
   return new Promise((resolve, reject) => {
-    currentResolve = (response) => resolve(response.access_token);
+    currentResolve = (response) => {
+      if (response.scope && !hasDriveScope(response.scope)) {
+        reject(
+          new InsufficientDriveScopeError(
+            "BikeVault potřebuje povolit přístup ke svým datům na Google Disku."
+          )
+        );
+        return;
+      }
+      resolve(response.access_token);
+    };
     currentReject = (err) => reject(err);
 
     try {

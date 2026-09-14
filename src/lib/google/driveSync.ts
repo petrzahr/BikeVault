@@ -5,8 +5,10 @@
  */
 
 import { BikeVaultData } from "@/types/vault";
-import { clearStoredAuth } from "./googleAuth";
+import { clearStoredAuth, InsufficientDriveScopeError } from "./googleAuth";
 import { validateVaultData } from "../storage/storageService";
+
+export { InsufficientDriveScopeError };
 
 export const BIKEVAULT_DATA_FILENAME = "bikevault_data.json";
 
@@ -26,6 +28,17 @@ export class CorruptedCloudDataError extends Error {
   }
 }
 
+export function isScopeInsufficientError(status: number, errorText: string, wwwAuthHeader?: string | null): boolean {
+  if (status !== 403) return false;
+  const combined = `${errorText} ${wwwAuthHeader || ""}`.toLowerCase();
+  return (
+    combined.includes("insufficient") ||
+    combined.includes("access_token_scope_insufficient") ||
+    combined.includes("insufficientpermissions") ||
+    combined.includes("insufficient_scope")
+  );
+}
+
 /**
  * Vyhledá soubor bikevault_data.json na Disku uživatele
  */
@@ -42,6 +55,15 @@ export async function findVaultFile(token: string): Promise<DriveFileInfo | null
   if (res.status === 401) {
     clearStoredAuth();
     throw new Error("Platnost přihlášení k Google Disku vypršela. Přihlaste se prosím znovu.");
+  }
+
+  if (res.status === 403) {
+    const errorText = await res.text().catch(() => "");
+    const wwwAuth = res.headers?.get?.("www-authenticate");
+    if (isScopeInsufficientError(res.status, errorText, wwwAuth)) {
+      throw new InsufficientDriveScopeError();
+    }
+    throw new Error(`Chyba při hledání souboru na Google Disku (HTTP 403): ${errorText}`);
   }
 
   if (!res.ok) {
@@ -73,6 +95,15 @@ export async function downloadVaultData(token: string, fileId: string): Promise<
   if (res.status === 401) {
     clearStoredAuth();
     throw new Error("Platnost přihlášení k Google Disku vypršela. Přihlaste se prosím znovu.");
+  }
+
+  if (res.status === 403) {
+    const errorText = await res.text().catch(() => "");
+    const wwwAuth = res.headers?.get?.("www-authenticate");
+    if (isScopeInsufficientError(res.status, errorText, wwwAuth)) {
+      throw new InsufficientDriveScopeError();
+    }
+    throw new Error(`Nepodařilo se stáhnout data z Google Disku (HTTP 403): ${errorText}`);
   }
 
   if (!res.ok) {
@@ -174,6 +205,15 @@ export async function uploadVaultData(
   if (res.status === 401) {
     clearStoredAuth();
     throw new Error("Platnost přihlášení k Google Disku vypršela. Přihlaste se prosím znovu.");
+  }
+
+  if (res.status === 403) {
+    const errorText = await res.text().catch(() => "");
+    const wwwAuth = res.headers?.get?.("www-authenticate");
+    if (isScopeInsufficientError(res.status, errorText, wwwAuth)) {
+      throw new InsufficientDriveScopeError();
+    }
+    throw new Error(`Nepodařilo se uložit data na Google Disk (HTTP 403): ${errorText}`);
   }
 
   if (!res.ok) {
