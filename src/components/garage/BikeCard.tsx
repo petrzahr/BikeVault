@@ -8,16 +8,14 @@ import {
   Coins, 
   ArrowUpRight, 
   SlidersHorizontal, 
-  Gauge, 
+  Settings, 
   AlertTriangle, 
   CheckCircle2, 
   Clock 
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
 import { UpdateOdometerModal } from "./UpdateOdometerModal";
-import { QuickPressureModal } from "./QuickPressureModal";
 import { resolveBikeImage } from "@/lib/domain/bikeImage";
-import { buttonClass } from "@/lib/ui";
 import { useVault } from "@/context/VaultContext";
 import { bikeKindLabel, resolveLists } from "@/lib/bikeLists";
 
@@ -47,9 +45,11 @@ interface BikeCardProps {
   netCost?: number;
 }
 
+const iconButtonClass =
+  "p-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200 transition-colors flex items-center justify-center cursor-pointer";
+
 export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
-  const [isPressureModalOpen, setIsPressureModalOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const { data } = useVault();
   const lists = resolveLists(data.settings);
@@ -180,30 +180,32 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
           </div>
 
           {/* Quick Actions & Detail Link */}
-          <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
             <button
               onClick={() => setIsOdometerModalOpen(true)}
               title={t("garage.card.quickUpdate")}
-              className={buttonClass("secondary", "md")}
+              aria-label={t("garage.card.quickUpdate")}
+              className={iconButtonClass}
             >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
-              <span>{t("garage.card.quickUpdate")}</span>
-            </button>
-
-            <button
-              onClick={() => setIsPressureModalOpen(true)}
-              title="Upravit tlak"
-              className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200 transition-colors flex items-center justify-center cursor-pointer"
-            >
-              <Gauge className="w-4 h-4" />
+              <SlidersHorizontal className="w-4 h-4" />
             </button>
 
             <Link
-              href={`/bikes/${bike.id}`}
-              className={buttonClass("primary", "md")}
+              href={`/bikes/${bike.id}/setup`}
+              title="Nastavení kola"
+              aria-label="Nastavení kola"
+              className={iconButtonClass}
             >
-              <span>{t("garage.card.details")}</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <Settings className="w-4 h-4" />
+            </Link>
+
+            <Link
+              href={`/bikes/${bike.id}`}
+              title={t("garage.card.details")}
+              aria-label={t("garage.card.details")}
+              className="p-2 bg-navy-600 hover:bg-navy-700 text-white rounded-xl border border-navy-600 transition-colors flex items-center justify-center cursor-pointer"
+            >
+              <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -218,12 +220,6 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
         currentMinutes={bike.currentMinutes}
       />
 
-      <QuickPressureModal
-        isOpen={isPressureModalOpen}
-        onClose={() => setIsPressureModalOpen(false)}
-        bikeId={bike.id}
-        bikeName={bike.name}
-      />
     </>
   );
 }
