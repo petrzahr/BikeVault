@@ -270,9 +270,9 @@ export function GarageClient({
                   setDraggedId(null);
                   setOverId(null);
                 }}
-                className="absolute top-3 left-3 z-10 p-1.5 rounded-lg bg-white/90 border border-slate-200 text-slate-400 hover:text-slate-700 shadow-sm cursor-grab active:cursor-grabbing"
+                className="absolute top-3.5 left-2.5 z-10 py-1 text-slate-500 hover:text-slate-900 transition-colors cursor-grab active:cursor-grabbing"
               >
-                <GripVertical className="w-4 h-4" />
+                <GripVertical className="w-4 h-5 drop-shadow-[0_0_2px_rgba(255,255,255,0.9)]" />
               </div>
             </div>
           ))}

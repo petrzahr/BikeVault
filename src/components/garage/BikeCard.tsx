@@ -105,7 +105,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
           )}
 
           {/* Top badges */}
-          <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+          <div className="absolute top-3 left-9 right-3 flex items-center justify-between pointer-events-none">
             <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-xl text-[11px] font-semibold tracking-wide text-slate-700 border border-slate-200/80 shadow-sm">
               {bike.category} • {bike.discipline}
             </span>
