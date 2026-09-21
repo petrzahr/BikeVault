@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onOpenAddBikeModal();
               onCloseMobile();
             }}
-            className={buttonClass("primary", "md", "w-full")}
+            className={buttonClass("primary", "md", "w-full text-xs font-bold text-white")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat nové kolo</span>
@@ -123,7 +123,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onOpenAddComponentModal();
               onCloseMobile();
             }}
-            className={buttonClass("primary", "md", "w-full")}
+            className={buttonClass("primary", "md", "w-full text-xs font-bold text-white")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat komponent</span>
