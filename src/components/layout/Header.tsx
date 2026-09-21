@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { GoogleIcon } from "@/components/common/GoogleIcon";
 import { buttonClass } from "@/lib/ui";
+import { StravaStatusBadge } from "@/components/layout/StravaStatusBadge";
 
 interface HeaderProps {
   onToggleMobileMenu: () => void;
@@ -126,6 +127,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Pravá strana: Google Disk tlačítko / stavový indikátor */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <StravaStatusBadge />
           {!isDriveConnected ? (
             <button
               type="button"
