@@ -318,7 +318,7 @@ export function StravaManageBikesModal({
                           <button
                             onClick={() => {
                               setLinkingStravaBike(sb);
-                              setSelectedVaultBikeId(availableVaultBikes[0]?.id || "");
+                              setSelectedVaultBikeId("");
                               setSyncMileageOnLink(true);
                               setError(null);
                             }}
@@ -381,6 +381,7 @@ export function StravaManageBikesModal({
                     onChange={(e) => setSelectedVaultBikeId(e.target.value)}
                     className="w-full px-3 py-2 bg-white rounded-lg border border-slate-200/80 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-navy-500"
                   >
+                    <option value="">—</option>
                     {availableVaultBikes.map((b) => (
                       <option key={b.id} value={b.id}>
                         {b.name} ({b.manufacturer} {b.model}) — {formatKm(b.currentKm)}

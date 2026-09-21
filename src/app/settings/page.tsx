@@ -532,8 +532,8 @@ export default function SettingsPage() {
               Seznamy voleb
             </h3>
             <p className="text-xs text-slate-500">
-              Upravte položky nabízené ve formuláři kola. Přejmenování se projeví i u již
-              založených kol, odebrání položky kola nezmění.
+              Upravte položky nabízené ve formulářích kol a komponent. Seznamy se řadí abecedně.
+              Přejmenování se projeví i u již založených záznamů, odebrání položky je nezmění.
             </p>
             <OptionListsEditor />
           </div>

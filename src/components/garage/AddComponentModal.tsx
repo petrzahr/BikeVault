@@ -7,6 +7,7 @@ import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import { Modal } from "@/components/common/Modal";
 import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+import { sortCategoriesAz } from "@/lib/bikeLists";
 
 interface AddComponentModalProps {
   isOpen: boolean;
@@ -16,10 +17,10 @@ interface AddComponentModalProps {
 export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, onClose }) => {
   const { data, addComponent } = useVault();
   const { toast } = useFeedback();
-  const categories = data.categories;
+  const categories = sortCategoriesAz(data.categories);
 
   const [categoryId, setCategoryId] = useState("");
-  const effectiveCategoryId = categoryId || categories[0]?.id || "";
+  const effectiveCategoryId = categoryId;
   const [manufacturer, setManufacturer] = useState("");
   const [model, setModel] = useState("");
   const [variant, setVariant] = useState("");
@@ -89,8 +90,10 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
           <select
             value={effectiveCategoryId}
             onChange={(e) => setCategoryId(e.target.value)}
+            required
             className={inputClass}
           >
+            <option value="">—</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.nameCs}

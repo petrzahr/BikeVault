@@ -22,6 +22,8 @@ export interface BikeModalProps {
   initialData?: Partial<Bike> & { initialKm?: number; initialHours?: number; stravaGearId?: string } | null;
 }
 
+const EMPTY_LABEL = "—";
+
 export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData }: BikeModalProps) {
   const { data, addBike, updateBike } = useVault();
   const lists = resolveLists(data.settings);
@@ -32,14 +34,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
   const [model, setModel] = useState("");
   const [modelYear, setModelYear] = useState<number | string>(new Date().getFullYear());
   const [frameSize, setFrameSize] = useState("");
-  const [category, setCategory] = useState("MTB");
-  const [discipline, setDiscipline] = useState("ENDURO");
+  const [category, setCategory] = useState("");
+  const [discipline, setDiscipline] = useState("");
   // Zachová i uloženou hodnotu, která už v seznamu není, aby se při úpravě tiše nepřepsala
   const withCurrent = (options: ListOption[], current: string) =>
-    options.some((o) => o.value === current) ? options : [...options, { value: current, label: current }];
+    !current || options.some((o) => o.value === current) ? options : [...options, { value: current, label: current }];
   const disciplineOptions = withCurrent(lists.disciplines[category] ?? [], discipline);
-  const [suspensionType, setSuspensionType] = useState("FULL_SUSPENSION");
-  const [driveType, setDriveType] = useState("CONVENTIONAL");
+  const [suspensionType, setSuspensionType] = useState("");
+  const [driveType, setDriveType] = useState("");
   const [serialNumber, setSerialNumber] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split("T")[0]);
   const [purchasePrice, setPurchasePrice] = useState<string>("95000");
@@ -65,10 +67,10 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
       setModel(bikeToEdit.model || "");
       setModelYear(bikeToEdit.modelYear ?? "");
       setFrameSize(bikeToEdit.frameSize || "");
-      setCategory(bikeToEdit.category || "MTB");
-      setDiscipline(bikeToEdit.discipline || "ENDURO");
-      setSuspensionType(bikeToEdit.suspensionType || "FULL_SUSPENSION");
-      setDriveType(bikeToEdit.driveType || "CONVENTIONAL");
+      setCategory(bikeToEdit.category || "");
+      setDiscipline(bikeToEdit.discipline || "");
+      setSuspensionType(bikeToEdit.suspensionType || "");
+      setDriveType(bikeToEdit.driveType || "");
       setSerialNumber(bikeToEdit.serialNumber || "");
       setPurchaseDate(bikeToEdit.purchaseDate || new Date().toISOString().split("T")[0]);
       setPurchasePrice(
@@ -91,10 +93,10 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
       setModel(initialData.model || "");
       setModelYear(initialData.modelYear ?? new Date().getFullYear());
       setFrameSize(initialData.frameSize || "");
-      setCategory(initialData.category || "MTB");
-      setDiscipline(initialData.discipline || "ENDURO");
-      setSuspensionType(initialData.suspensionType || "FULL_SUSPENSION");
-      setDriveType(initialData.driveType || "CONVENTIONAL");
+      setCategory(initialData.category || "");
+      setDiscipline(initialData.discipline || "");
+      setSuspensionType(initialData.suspensionType || "");
+      setDriveType(initialData.driveType || "");
       setSerialNumber(initialData.serialNumber || "");
       setPurchaseDate(initialData.purchaseDate || new Date().toISOString().split("T")[0]);
       setPurchasePrice(
@@ -123,10 +125,10 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
       setModel("");
       setModelYear(new Date().getFullYear());
       setFrameSize("");
-      setCategory("MTB");
-      setDiscipline("ENDURO");
-      setSuspensionType("FULL_SUSPENSION");
-      setDriveType("CONVENTIONAL");
+      setCategory("");
+      setDiscipline("");
+      setSuspensionType("");
+      setDriveType("");
       setSerialNumber("");
       setPurchaseDate(new Date().toISOString().split("T")[0]);
       setPurchasePrice("95000");
@@ -393,10 +395,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 const next = e.target.value;
                 setCategory(next);
                 const allowed = lists.disciplines[next] ?? [];
-                if (allowed.length > 0 && !allowed.some((o) => o.value === discipline)) setDiscipline(allowed[0].value);
+                if (!allowed.some((o) => o.value === discipline)) setDiscipline("");
               }}
               className={inputClass}
             >
+              <option value="">{EMPTY_LABEL}</option>
               {withCurrent(lists.bikeCategories, category).map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
@@ -414,6 +417,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               onChange={(e) => setDiscipline(e.target.value)}
               className={inputClass}
             >
+              <option value="">{EMPTY_LABEL}</option>
               {disciplineOptions.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
@@ -431,6 +435,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               onChange={(e) => setSuspensionType(e.target.value)}
               className={inputClass}
             >
+              <option value="">{EMPTY_LABEL}</option>
               {withCurrent(lists.suspensionTypes, suspensionType).map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
@@ -448,6 +453,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               onChange={(e) => setDriveType(e.target.value)}
               className={inputClass}
             >
+              <option value="">{EMPTY_LABEL}</option>
               {withCurrent(lists.driveTypes, driveType).map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}

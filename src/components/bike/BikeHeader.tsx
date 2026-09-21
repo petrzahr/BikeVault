@@ -29,7 +29,7 @@ import { getValidAccessToken } from "@/lib/google/googleAuth";
 import { resolveBikeImage, formatWeightCs } from "@/lib/domain/bikeImage";
 import { Bike } from "@/types/vault";
 import { buttonClass } from "@/lib/ui";
-import { labelFor, resolveLists } from "@/lib/bikeLists";
+import { bikeKindLabel, resolveLists } from "@/lib/bikeLists";
 
 interface BikeHeaderProps {
   bike: {
@@ -258,9 +258,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
                   <span>Strava propojeno</span>
                 </span>
               )}
-              <span className="px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700 border border-navy-200/80 text-xs font-semibold">
-                {labelFor(lists.bikeCategories, bike.category)} • {labelFor(lists.disciplines[bike.category], bike.discipline)}
-              </span>
+              {bikeKindLabel(lists, bike) && (<span className="px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700 border border-navy-200/80 text-xs font-semibold">{bikeKindLabel(lists, bike)}</span>)}
               <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-medium">
                 {bike.status === "ACTIVE" ? "Aktivní" : bike.status === "SOLD" ? "Prodáno" : "Archivováno"}
               </span>

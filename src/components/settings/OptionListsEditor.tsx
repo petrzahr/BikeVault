@@ -4,17 +4,18 @@ import React, { useEffect, useState } from "react";
 import { Plus, Trash2, RotateCcw } from "lucide-react";
 import { useVault } from "@/context/VaultContext";
 import type { CustomLists, ListOption } from "@/types/vault";
-import { makeOptionValue, resolveLists } from "@/lib/bikeLists";
+import { makeOptionValue, resolveLists, sortCategoriesAz } from "@/lib/bikeLists";
 import { buttonClass, inputClass } from "@/lib/ui";
 
 interface OptionRowProps {
   option: ListOption;
   canDelete: boolean;
+  deleteHint?: string;
   onRename: (label: string) => void;
   onDelete: () => void;
 }
 
-function OptionRow({ option, canDelete, onRename, onDelete }: OptionRowProps) {
+function OptionRow({ option, canDelete, deleteHint, onRename, onDelete }: OptionRowProps) {
   const [draft, setDraft] = useState(option.label);
   useEffect(() => setDraft(option.label), [option.label]);
 
@@ -37,7 +38,7 @@ function OptionRow({ option, canDelete, onRename, onDelete }: OptionRowProps) {
         type="button"
         onClick={onDelete}
         disabled={!canDelete}
-        title={canDelete ? "Odebrat" : "Poslední položku nelze odebrat"}
+        title={canDelete ? "Odebrat" : deleteHint ?? "Poslední položku nelze odebrat"}
         className={buttonClass("ghost", "md", "shrink-0 disabled:opacity-40 disabled:pointer-events-none")}
       >
         <Trash2 className="w-4 h-4" />
@@ -112,6 +113,57 @@ function OptionList({ title, options, isCustomized, onChange, onReset }: OptionL
   );
 }
 
+function ComponentCategoriesList() {
+  const { data, addCategory, renameCategory, deleteCategory } = useVault();
+  const [newName, setNewName] = useState("");
+  const categories = sortCategoriesAz(data.categories);
+  const usedIds = new Set(data.components.map((comp) => comp.categoryId));
+
+  const add = () => {
+    if (!newName.trim()) return;
+    addCategory(newName);
+    setNewName("");
+  };
+
+  return (
+    <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-2.5">
+      <span className="text-xs font-semibold text-slate-700">Kategorie komponent</span>
+
+      {categories.map((c) => {
+        const canDelete = !c.isSystem && !usedIds.has(c.id);
+        return (
+          <OptionRow
+            key={c.id}
+            option={{ value: c.id, label: c.nameCs }}
+            canDelete={canDelete}
+            deleteHint={c.isSystem ? "Systémovou kategorii nelze odebrat" : "Kategorii používá komponent"}
+            onRename={(label) => renameCategory(c.id, label)}
+            onDelete={() => deleteCategory(c.id)}
+          />
+        );
+      })}
+
+      <div className="flex items-center gap-2 pt-1">
+        <input
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), add())}
+          placeholder="Nová kategorie…"
+          className={inputClass}
+        />
+        <button
+          type="button"
+          onClick={add}
+          disabled={!newName.trim()}
+          className={buttonClass("secondary", "md", "shrink-0 disabled:opacity-40 disabled:pointer-events-none")}
+        >
+          <Plus className="w-4 h-4" />
+          <span>Přidat</span>
+        </button>
+      </div>
+    </div>
+  );
+}
 export function OptionListsEditor() {
   const { data, updateSettings } = useVault();
   const custom: CustomLists = data.settings.customLists ?? {};
@@ -183,6 +235,8 @@ export function OptionListsEditor() {
         onChange={(next) => save({ driveTypes: next })}
         onReset={() => reset("driveTypes")}
       />
+
+      <ComponentCategoriesList />
     </div>
   );
 }

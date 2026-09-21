@@ -346,7 +346,7 @@ export function ServiceScheduleModal({
                 <option value="">-- Bez vazby na konkrétní kolo --</option>
                 {bikes.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {b.name} ({b.category})
+                    {b.name}{b.category ? ` (${b.category})` : ""}
                   </option>
                 ))}
               </select>

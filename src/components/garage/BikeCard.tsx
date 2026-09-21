@@ -19,7 +19,7 @@ import { QuickPressureModal } from "./QuickPressureModal";
 import { resolveBikeImage } from "@/lib/domain/bikeImage";
 import { buttonClass } from "@/lib/ui";
 import { useVault } from "@/context/VaultContext";
-import { labelFor, resolveLists } from "@/lib/bikeLists";
+import { bikeKindLabel, resolveLists } from "@/lib/bikeLists";
 
 interface BikeCardProps {
   bike: {
@@ -53,6 +53,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const { data } = useVault();
   const lists = resolveLists(data.settings);
+  const kindLabel = bikeKindLabel(lists, bike);
 
   const resolvedImage = resolveBikeImage(bike);
 
@@ -110,9 +111,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
 
           {/* Top badges */}
           <div className="absolute top-3 left-9 right-3 flex items-center justify-between pointer-events-none">
-            <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-xl text-[11px] font-semibold tracking-wide text-slate-700 border border-slate-200/80 shadow-sm">
-              {labelFor(lists.bikeCategories, bike.category)} • {labelFor(lists.disciplines[bike.category], bike.discipline)}
-            </span>
+            {kindLabel ? (<span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-xl text-[11px] font-semibold tracking-wide text-slate-700 border border-slate-200/80 shadow-sm">{kindLabel}</span>) : <span />}
 
             {bike.modelYear && (
               <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-xl text-[11px] tabular-nums font-semibold text-slate-700 border border-slate-200/80 shadow-sm">

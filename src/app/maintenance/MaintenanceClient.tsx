@@ -608,7 +608,7 @@ export function MaintenanceClient({
               <option value="">-- Vyberte kolo --</option>
               {bikes.map((b) => (
                 <option key={b.id} value={b.id}>
-                  {b.name} ({b.category})
+                  {b.name}{b.category ? ` (${b.category})` : ""}
                 </option>
               ))}
             </select>

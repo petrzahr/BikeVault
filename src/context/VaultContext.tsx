@@ -106,6 +106,9 @@ interface VaultContextType {
   ) => string;
   updateBike: (id: string, updates: Partial<Bike>) => void;
   reorderBikes: (orderedIds: string[]) => void;
+  addCategory: (nameCs: string) => void;
+  renameCategory: (id: string, nameCs: string) => void;
+  deleteCategory: (id: string) => void;
   deleteBike: (id: string, disposition?: BikeComponentsDisposition) => void;
   deleteOdometerEntry: (entryId: string) => { success: boolean; error?: string };
   clearAllData: () => void;
@@ -625,6 +628,51 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const addCategory = (nameCs: string) => {
+    const name = nameCs.trim();
+    if (!name) return;
+    mutateData((prev) => {
+      const slug =
+        name
+          .normalize("NFD")
+          .replace(/[̀-ͯ]/g, "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9]+/g, "_")
+          .replace(/^_+|_+$/g, "") || "CUSTOM";
+      let code = slug;
+      let i = 2;
+      while (prev.categories.some((c) => c.code === code)) code = `${slug}_${i++}`;
+      const category: ComponentCategory = {
+        id: `cat-custom-${code.toLowerCase()}`,
+        code,
+        nameCs: name,
+        nameEn: name,
+        defaultSlot: code,
+        isSystem: false,
+        sortOrder: 50,
+      };
+      return { ...prev, categories: [...prev.categories, category] };
+    });
+  };
+
+  const renameCategory = (id: string, nameCs: string) => {
+    const name = nameCs.trim();
+    if (!name) return;
+    mutateData((prev) => ({
+      ...prev,
+      categories: prev.categories.map((c) => (c.id === id ? { ...c, nameCs: name, nameEn: c.isSystem ? c.nameEn : name } : c)),
+    }));
+  };
+
+  // Systémové kategorie a kategorie používané komponentem nelze smazat.
+  const deleteCategory = (id: string) => {
+    mutateData((prev) => {
+      const category = prev.categories.find((c) => c.id === id);
+      if (!category || category.isSystem) return prev;
+      if (prev.components.some((comp) => comp.categoryId === id)) return prev;
+      return { ...prev, categories: prev.categories.filter((c) => c.id !== id) };
+    });
+  };
   const deleteBike = (id: string, disposition: BikeComponentsDisposition = "STORAGE") => {
     mutateData((prev) => deleteBikeFromData(prev, id, disposition));
   };
@@ -1540,6 +1588,9 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     addBike,
     updateBike,
     reorderBikes,
+    addCategory,
+    renameCategory,
+    deleteCategory,
     deleteBike,
     deleteOdometerEntry,
     clearAllData,

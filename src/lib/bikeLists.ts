@@ -60,13 +60,23 @@ export interface ResolvedLists {
   disciplines: Record<string, ListOption[]>;
 }
 
+/** Řazení A–Z podle českých pravidel (bez ohledu na velikost písmen). */
+export function compareCs(a: string, b: string): number {
+  return a.localeCompare(b, "cs", { sensitivity: "base", numeric: true });
+}
+
+export function sortOptions(options: ListOption[]): ListOption[] {
+  return [...options].sort((a, b) => compareCs(a.label, b.label));
+}
+
 export function resolveLists(settings?: Pick<UserSettings, "customLists"> | null): ResolvedLists {
   const c: CustomLists = settings?.customLists ?? {};
+  const disciplines = { ...DEFAULT_DISCIPLINES, ...(c.disciplines ?? {}) };
   return {
-    bikeCategories: c.bikeCategories ?? DEFAULT_BIKE_CATEGORIES,
-    suspensionTypes: c.suspensionTypes ?? DEFAULT_SUSPENSION_TYPES,
-    driveTypes: c.driveTypes ?? DEFAULT_DRIVE_TYPES,
-    disciplines: { ...DEFAULT_DISCIPLINES, ...(c.disciplines ?? {}) },
+    bikeCategories: sortOptions(c.bikeCategories ?? DEFAULT_BIKE_CATEGORIES),
+    suspensionTypes: sortOptions(c.suspensionTypes ?? DEFAULT_SUSPENSION_TYPES),
+    driveTypes: sortOptions(c.driveTypes ?? DEFAULT_DRIVE_TYPES),
+    disciplines: Object.fromEntries(Object.entries(disciplines).map(([k, v]) => [k, sortOptions(v)])),
   };
 }
 
@@ -88,4 +98,19 @@ export function makeOptionValue(label: string, existing: ListOption[]): string {
   let i = 2;
   while (existing.some((o) => o.value === value)) value = `${base}_${i++}`;
   return value;
+}
+
+/** "Kategorie • Disciplína" bez prázdných částí (prázdný výběr = prázdný řetězec). */
+export function bikeKindLabel(
+  lists: ResolvedLists,
+  bike: { category?: string | null; discipline?: string | null },
+): string {
+  const category = bike.category ? labelFor(lists.bikeCategories, bike.category) : "";
+  const discipline = bike.discipline ? labelFor(lists.disciplines[bike.category ?? ""], bike.discipline) : "";
+  return [category, discipline].filter(Boolean).join(" • ");
+}
+
+/** Kategorie komponent seřazené A–Z podle českého názvu (pro dropdowny). */
+export function sortCategoriesAz<T extends { nameCs: string }>(categories: T[]): T[] {
+  return [...categories].sort((a, b) => compareCs(a.nameCs, b.nameCs));
 }

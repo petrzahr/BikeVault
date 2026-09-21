@@ -23,6 +23,7 @@ import { QuickReplaceModal } from "@/components/garage/QuickReplaceModal";
 import { Modal } from "@/components/common/Modal";
 import Link from "next/link";
 import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+import { sortCategoriesAz } from "@/lib/bikeLists";
 
 interface BikeComponentsClientProps {
   bike: any;
@@ -54,7 +55,7 @@ export function BikeComponentsClient({
   const installedComponents = propInstalledComponents ?? getBikeInstalledComponents(bike.id);
   const allBikes = propAllBikes ?? getGarageBikes();
   const storageComponents = propStorageComponents ?? getStorageComponents();
-  const categories = propCategories ?? data.categories;
+  const categories = sortCategoriesAz(propCategories ?? data.categories);
 
   // Modals state
   const [selectedInst, setSelectedInst] = useState<any>(null);
@@ -79,7 +80,7 @@ export function BikeComponentsClient({
 
   // Form states for Install
   const [selectedStorageCompId, setSelectedStorageCompId] = useState<string>("");
-  const [installSlot, setInstallSlot] = useState<string>("CHAIN");
+  const [installSlot, setInstallSlot] = useState<string>("");
 
   const [loading, setLoading] = useState(false);
 
@@ -466,7 +467,7 @@ export function BikeComponentsClient({
                 <option value="">-- Vyberte cílové kolo --</option>
                 {otherBikes.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {b.name} ({b.category})
+                    {b.name}{b.category ? ` (${b.category})` : ""}
                   </option>
                 ))}
               </select>
@@ -482,6 +483,7 @@ export function BikeComponentsClient({
               onChange={(e) => setTargetSlot(e.target.value)}
               className={inputClass}
             >
+              <option value="">— Ponechat původní pozici —</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.defaultSlot || c.code}>
                   {c.nameCs}
@@ -559,8 +561,10 @@ export function BikeComponentsClient({
             <select
               value={installSlot}
               onChange={(e) => setInstallSlot(e.target.value)}
+              required
               className={inputClass}
             >
+              <option value="">—</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.defaultSlot || c.code}>
                   {c.nameCs}
