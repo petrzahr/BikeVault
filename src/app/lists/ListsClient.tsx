@@ -14,8 +14,12 @@ interface ListRowData {
   deleteHint?: string;
 }
 
+const compactInput =
+  "w-full px-2.5 py-1 bg-white rounded-md border border-slate-200 text-xs text-slate-900 " +
+  "placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-navy-500/30 focus:border-navy-500";
+
 const iconButton =
-  "p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer " +
+  "p-1 rounded-md text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer " +
   "disabled:opacity-30 disabled:pointer-events-none";
 
 /** Textové pole pro přejmenování / přidání; potvrzení Enterem nebo opuštěním pole, Esc ruší. */
@@ -52,7 +56,7 @@ function InlineInput({
         if (e.key === "Enter") finish(true);
         if (e.key === "Escape") finish(false);
       }}
-      className={inputClass}
+      className={compactInput}
     />
   );
 }
@@ -69,7 +73,7 @@ function ListRow({
   const [editing, setEditing] = useState(false);
 
   return (
-    <div className="flex items-center justify-between gap-2 px-3 py-2 bg-slate-50/80 rounded-xl min-h-[44px]">
+    <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-slate-50/80 rounded-lg min-h-[36px]">
       {editing ? (
         <InlineInput
           initial={row.label}
@@ -80,12 +84,12 @@ function ListRow({
           onCancel={() => setEditing(false)}
         />
       ) : (
-        <span className="text-sm text-slate-700 truncate">{row.label}</span>
+        <span className="text-xs font-medium text-slate-700 truncate">{row.label}</span>
       )}
       {!editing && (
         <div className="flex items-center shrink-0">
           <button type="button" onClick={() => setEditing(true)} title="Přejmenovat" className={iconButton}>
-            <Pencil className="w-4 h-4" />
+            <Pencil className="w-3.5 h-3.5" />
           </button>
           <button
             type="button"
@@ -94,7 +98,7 @@ function ListRow({
             title={row.canDelete ? "Odebrat" : row.deleteHint}
             className={iconButton}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
@@ -130,8 +134,8 @@ function ListCard({
   const [renaming, setRenaming] = useState(false);
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 flex flex-col">
-      <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-100 min-h-[44px]">
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 flex flex-col">
+      <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100 min-h-[36px]">
         {renaming && onRenameTitle ? (
           <InlineInput
             initial={title}
@@ -142,28 +146,28 @@ function ListCard({
             onCancel={() => setRenaming(false)}
           />
         ) : (
-          <h3 className="text-base font-bold text-slate-900 truncate">{title}</h3>
+          <h3 className="text-sm font-bold text-slate-900 truncate">{title}</h3>
         )}
         {!renaming && (
           <div className="flex items-center shrink-0">
             <button type="button" onClick={() => setAdding(true)} title="Přidat položku" className={iconButton}>
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
             </button>
             {onRenameTitle && (
               <button type="button" onClick={() => setRenaming(true)} title="Přejmenovat" className={iconButton}>
-                <Pencil className="w-4 h-4" />
+                <Pencil className="w-3.5 h-3.5" />
               </button>
             )}
             {onDeleteTitle && (
               <button type="button" onClick={onDeleteTitle} title="Odebrat" className={iconButton}>
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
         )}
       </div>
 
-      <div className="space-y-2 pt-3">
+      <div className="space-y-1.5 pt-2.5">
         {rows.length === 0 && !adding && <p className="text-xs text-slate-400 px-1 py-2">{emptyText}</p>}
         {rows.map((row) => (
           <ListRow
