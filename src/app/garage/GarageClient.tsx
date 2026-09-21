@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useVault } from "@/context/VaultContext";
-import { Plus, Warehouse, Bike as BikeIcon, Clock } from "lucide-react";
+import { Plus, Warehouse, Bike as BikeIcon, Clock, GripVertical } from "lucide-react";
 import { BikeCard } from "@/components/garage/BikeCard";
 import { AddBikeModal } from "@/components/garage/AddBikeModal";
 import { t, formatKm, formatMinutes } from "@/lib/i18n";
@@ -230,11 +230,6 @@ export function GarageClient({
           {filteredBikes.map((bike) => (
             <div
               key={bike.id}
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.effectAllowed = "move";
-                setDraggedId(bike.id);
-              }}
               onDragOver={(e) => {
                 if (!draggedId) return;
                 e.preventDefault();
@@ -249,7 +244,7 @@ export function GarageClient({
                 setDraggedId(null);
                 setOverId(null);
               }}
-              className={`cursor-grab active:cursor-grabbing rounded-2xl transition-all ${
+              className={`relative rounded-2xl transition-all ${
                 draggedId === bike.id ? "opacity-40" : ""
               } ${
                 overId === bike.id && draggedId !== bike.id
@@ -262,6 +257,23 @@ export function GarageClient({
                 serviceSummary={getBikeServiceSummary(bike.id)}
                 netCost={getBikeNetCost(bike.id)}
               />
+              <div
+                draggable
+                title="Přetažením změníte pořadí"
+                onDragStart={(e) => {
+                  const card = e.currentTarget.parentElement;
+                  if (card) e.dataTransfer.setDragImage(card, 24, 24);
+                  e.dataTransfer.effectAllowed = "move";
+                  setDraggedId(bike.id);
+                }}
+                onDragEnd={() => {
+                  setDraggedId(null);
+                  setOverId(null);
+                }}
+                className="absolute top-3 left-3 z-10 p-1.5 rounded-lg bg-white/90 border border-slate-200 text-slate-400 hover:text-slate-700 shadow-sm cursor-grab active:cursor-grabbing"
+              >
+                <GripVertical className="w-4 h-4" />
+              </div>
             </div>
           ))}
         </div>
