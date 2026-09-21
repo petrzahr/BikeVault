@@ -245,7 +245,7 @@ export function SetupClient({
 
                 <div>
                   <label className={labelClass}>
-                    {t("setup.fork.sag")} (%)
+                    {t("setup.fork.sag")}
                   </label>
                   <input
                     type="number"
@@ -371,7 +371,7 @@ export function SetupClient({
 
                 <div>
                   <label className={labelClass}>
-                    {t("setup.shock.sag")} (%)
+                    {t("setup.shock.sag")}
                   </label>
                   <input
                     type="number"

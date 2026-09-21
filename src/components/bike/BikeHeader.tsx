@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { 
   Bike as BikeIcon, 
   SlidersHorizontal, 
-  Gauge, 
   ArrowLeft,
   Calendar,
   Tag,
@@ -21,7 +20,6 @@ import {
 } from "lucide-react";
 import { t, formatDateCs } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
-import { QuickPressureModal } from "@/components/garage/QuickPressureModal";
 import { UpdateOdometerModal } from "@/components/garage/UpdateOdometerModal";
 import { BikeModal } from "@/components/garage/BikeModal";
 import { DeleteBikeModal } from "@/components/garage/DeleteBikeModal";
@@ -65,7 +63,6 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isPressureModalOpen, setIsPressureModalOpen] = useState(false);
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -178,19 +175,12 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsOdometerModalOpen(true)}
-              className={buttonClass("primary", "md")}
+              className={buttonClass("secondary", "md")}
             >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
               <span>{t("odometer.updateOdometer")}</span>
             </button>
 
-            <button
-              onClick={() => setIsPressureModalOpen(true)}
-              className={buttonClass("secondary", "md")}
-            >
-              <Gauge className="w-3.5 h-3.5 text-slate-500" />
-              <span>Tlaky</span>
-            </button>
 
             <button
               onClick={() => setIsDeleteModalOpen(true)}
@@ -318,12 +308,6 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         </div>
       </div>
 
-      <QuickPressureModal
-        isOpen={isPressureModalOpen}
-        onClose={() => setIsPressureModalOpen(false)}
-        bikeId={bike.id}
-        bikeName={bike.name}
-      />
 
       <UpdateOdometerModal
         isOpen={isOdometerModalOpen}
