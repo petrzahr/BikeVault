@@ -6,6 +6,7 @@ import { Plus, Warehouse, Bike as BikeIcon, Clock } from "lucide-react";
 import { BikeCard } from "@/components/garage/BikeCard";
 import { AddBikeModal } from "@/components/garage/AddBikeModal";
 import { t, formatKm, formatMinutes } from "@/lib/i18n";
+import { buttonClass } from "@/lib/ui";
 
 interface GarageClientProps {
   initialBikes?: any[];
@@ -102,7 +103,7 @@ export function GarageClient({
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors cursor-pointer self-start sm:self-auto"
+            className={buttonClass("primary", "md", "flex items-center gap-1.5 self-start sm:self-auto")}
           >
             <Plus className="w-4 h-4" />
             <span>{t("garage.addBike")}</span>
@@ -149,7 +150,7 @@ export function GarageClient({
         <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-semibold">Celkový nájezd garáže</span>
-            <div className="p-1.5 rounded-lg bg-sky-50 text-sky-600">
+            <div className="p-1.5 rounded-lg bg-brand-50 text-brand-600">
               <BikeIcon className="w-4 h-4" />
             </div>
           </div>
@@ -203,7 +204,7 @@ export function GarageClient({
           {activeTab === "ACTIVE" && (
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors"
+              className={buttonClass("primary", "md", "mt-4 inline-flex items-center gap-1.5")}
             >
               <Plus className="w-4 h-4" />
               <span>Přidat první kolo</span>

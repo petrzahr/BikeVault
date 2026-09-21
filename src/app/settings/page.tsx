@@ -30,6 +30,7 @@ import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { PublicStravaStatus } from "@/lib/strava/stravaTokenStore";
 import { getValidAccessToken, loginToGoogle } from "@/lib/google/googleAuth";
 import { Bike } from "@/types/vault";
+import { buttonClass } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -275,7 +276,7 @@ export default function SettingsPage() {
             onClick={() => setActiveTab("preferences")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
               activeTab === "preferences"
-                ? "bg-white text-slate-900 shadow-xs"
+                ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -285,7 +286,7 @@ export default function SettingsPage() {
             onClick={() => setActiveTab("integrations")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === "integrations"
-                ? "bg-white text-slate-900 shadow-xs"
+                ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -300,7 +301,7 @@ export default function SettingsPage() {
       {/* Status Notifications */}
       {statusMessage && (
         <div
-          className={`p-4 rounded-xl text-xs flex items-start gap-3 border shadow-xs animate-fade-in ${
+          className={`p-4 rounded-xl text-xs flex items-start gap-3 border shadow-sm animate-fade-in ${
             statusMessage.type === "success"
               ? "bg-emerald-50/80 border-emerald-200/80 text-emerald-800"
               : "bg-rose-50/80 border-rose-200/80 text-rose-800"
@@ -328,7 +329,7 @@ export default function SettingsPage() {
           <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-5 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black tracking-wider text-sm shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black tracking-wider text-sm shadow-sm">
                   ST
                 </div>
                 <div>
@@ -363,7 +364,7 @@ export default function SettingsPage() {
             {/* Content based on state */}
             {loadingStatus ? (
               <div className="py-8 text-center text-slate-400 text-xs">
-                <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-sky-600" />
+                <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-brand-600" />
                 <span>Ověřuji stav spojení se Stravou...</span>
               </div>
             ) : !stravaStatus.connected ? (
@@ -392,7 +393,7 @@ export default function SettingsPage() {
                 <div className="pt-2">
                   <button
                     onClick={handleConnectStrava}
-                    className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                    className={buttonClass("dark", "lg", "flex items-center gap-2")}
                   >
                     <span>Připojit Stravu</span>
                     <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
@@ -439,15 +440,15 @@ export default function SettingsPage() {
                   <button
                     onClick={handleSyncAllBikes}
                     disabled={syncingAll}
-                    className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-95"
+                    className={buttonClass("dark", "md", "flex items-center gap-1.5")}
                   >
-                    <RefreshCw className={`w-3.5 h-3.5 ${syncingAll ? "animate-spin text-sky-400" : ""}`} />
+                    <RefreshCw className={`w-3.5 h-3.5 ${syncingAll ? "animate-spin text-brand-400" : ""}`} />
                     <span>{syncingAll ? "Synchronizuji..." : "Synchronizovat"}</span>
                   </button>
 
                   <button
                     onClick={() => setIsManageBikesOpen(true)}
-                    className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                    className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
                     <span>Spravovat kola</span>
@@ -479,7 +480,7 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                  <Globe className="w-4 h-4 text-sky-600" />
+                  <Globe className="w-4 h-4 text-brand-600" />
                   <span>Jazyk rozhraní</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
@@ -505,7 +506,7 @@ export default function SettingsPage() {
 
               <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                  <Gauge className="w-4 h-4 text-sky-600" />
+                  <Gauge className="w-4 h-4 text-brand-600" />
                   <span>Jednotka tlaku v pláštích</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
@@ -518,7 +519,7 @@ export default function SettingsPage() {
 
               <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                  <Gauge className="w-4 h-4 text-indigo-600" />
+                  <Gauge className="w-4 h-4 text-brand-600" />
                   <span>Jednotka tlaku odpružení</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
@@ -534,7 +535,7 @@ export default function SettingsPage() {
           {/* Technical & Database Info */}
           <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
             <div className="flex items-center gap-2 text-slate-900">
-              <Database className="w-4 h-4 text-sky-600" />
+              <Database className="w-4 h-4 text-brand-600" />
               <h3 className="text-xs font-bold uppercase tracking-wider">
                 Systémové informace BikeVault
               </h3>
@@ -543,7 +544,7 @@ export default function SettingsPage() {
             <div className="space-y-2.5 text-xs text-slate-600 divide-y divide-slate-100">
               <div className="flex justify-between py-2">
                 <span>Architektura</span>
-                <span className="font-semibold text-sky-700">Next.js App Router (Hybrid Cloud)</span>
+                <span className="font-semibold text-brand-700">Next.js App Router (Hybrid Cloud)</span>
               </div>
               <div className="flex justify-between py-2">
                 <span>Cloudové úložiště</span>
@@ -575,8 +576,8 @@ export default function SettingsPage() {
           </div>
 
           {/* Danger zone */}
-          <div className="bg-white border border-red-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
-            <div className="flex items-center gap-2 text-red-700">
+          <div className="bg-white border border-rose-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2 text-rose-700">
               <Trash2 className="w-4 h-4" />
               <h3 className="text-xs font-bold uppercase tracking-wider">Nebezpečná zóna</h3>
             </div>
@@ -586,7 +587,7 @@ export default function SettingsPage() {
               </p>
               <button
                 onClick={() => setIsClearAllOpen(true)}
-                className="px-3.5 py-2 bg-white hover:bg-red-50 text-red-600 text-xs font-semibold rounded-xl border border-red-200 transition-colors cursor-pointer shrink-0"
+                className="px-3.5 py-2 bg-white hover:bg-rose-50 text-rose-600 text-xs font-semibold rounded-xl border border-rose-200 transition-colors cursor-pointer shrink-0"
               >
                 Smazat všechna data
               </button>
@@ -631,7 +632,7 @@ export default function SettingsPage() {
 
       {/* Disconnect Confirmation Dialog */}
       {isDisconnectConfirmOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl border border-slate-200/80 space-y-4 animate-scale-in">
             <h3 className="text-base font-bold text-slate-900">
               Odpojit účet Strava?
@@ -650,7 +651,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleConfirmDisconnect}
                 disabled={disconnecting}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                className={buttonClass("danger", "md", "flex items-center gap-1.5")}
               >
                 {disconnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unlink className="w-3.5 h-3.5" />}
                 <span>{disconnecting ? "Odpojuji..." : "Potvrdit odpojení"}</span>

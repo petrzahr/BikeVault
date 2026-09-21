@@ -2,12 +2,14 @@
 
 import React, { useState } from "react";
 import { useVault } from "@/context/VaultContext";
+import { useFeedback } from "@/components/common/Feedback";
 import { GoogleIcon } from "../common/GoogleIcon";
 import { Bike, ShieldCheck, Zap, Wrench, AlertCircle, AlertTriangle, Loader2, Mail, Check, RotateCcw } from "lucide-react";
 import { buildGmailComposeUrl, ACCESS_REQUEST_EMAIL } from "@/constants/authConfig";
 
 export const LoginScreen: React.FC = () => {
   const { login, syncStatus, syncError } = useVault();
+  const { toast } = useFeedback();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -67,14 +69,12 @@ export const LoginScreen: React.FC = () => {
         setTimeout(() => setCopiedEmail(false), 3000);
       }
     } catch {
-      if (typeof window !== "undefined") {
-        window.prompt("Zkopírujte si prosím kontaktní e-mail:", ACCESS_REQUEST_EMAIL);
-      }
+      toast(`Zkopírujte si prosím kontaktní e-mail: ${ACCESS_REQUEST_EMAIL}`, "info");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/40 to-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 select-none">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-brand-50/40 to-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 select-none">
       <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-200/60 p-7 sm:p-9 space-y-7">
         
         {/* Logo a hlavička */}
@@ -86,7 +86,7 @@ export const LoginScreen: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
               BikeVault
             </h1>
-            <p className="text-xs text-sky-600 font-bold uppercase tracking-wider mt-0.5">
+            <p className="text-xs text-brand-600 font-bold uppercase tracking-wider mt-0.5">
               Vaše kola pod absolutní kontrolou
             </p>
           </div>
@@ -98,7 +98,7 @@ export const LoginScreen: React.FC = () => {
         {/* Přehled výhod */}
         <div className="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/60 space-y-3 text-xs text-slate-600">
           <div className="flex items-start gap-3">
-            <div className="p-1 rounded-lg bg-sky-100 text-sky-700 shrink-0 mt-0.5">
+            <div className="p-1 rounded-lg bg-brand-100 text-brand-700 shrink-0 mt-0.5">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
@@ -118,7 +118,7 @@ export const LoginScreen: React.FC = () => {
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-1 rounded-lg bg-indigo-100 text-indigo-700 shrink-0 mt-0.5">
+            <div className="p-1 rounded-lg bg-brand-100 text-brand-700 shrink-0 mt-0.5">
               <Wrench className="w-4 h-4" />
             </div>
             <div>
@@ -172,11 +172,11 @@ export const LoginScreen: React.FC = () => {
             type="button"
             onClick={handleLogin}
             disabled={isSyncing}
-            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold border border-slate-300 shadow-md shadow-slate-200/50 hover:border-sky-300 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm"
+            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold border border-slate-300 shadow-md shadow-slate-200/50 hover:border-brand-300 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm"
           >
             {isSyncing ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin text-sky-600" />
+                <Loader2 className="w-5 h-5 animate-spin text-brand-600" />
                 <span>Přihlašuji a načítám data...</span>
               </>
             ) : (
@@ -212,7 +212,7 @@ export const LoginScreen: React.FC = () => {
             href={buildGmailComposeUrl()}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 active:scale-[0.99] cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 active:scale-[0.99] cursor-pointer"
           >
             <Mail className="w-4 h-4 text-slate-500 shrink-0" />
             <span>Požádat o přístup přes Gmail</span>
@@ -229,7 +229,7 @@ export const LoginScreen: React.FC = () => {
                 type="button"
                 onClick={handleCopyEmail}
                 title={`Zkopírovat adresu ${ACCESS_REQUEST_EMAIL}`}
-                className="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-sky-500 rounded"
+                className="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-brand-500 rounded"
               >
                 Zkopírovat kontaktní e-mail
               </button>

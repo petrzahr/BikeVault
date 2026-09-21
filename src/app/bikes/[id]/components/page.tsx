@@ -18,7 +18,7 @@ export default function BikeComponentsPage({ params }: BikeComponentsPageProps) 
     return (
       <div className="p-12 text-center text-slate-500">
         <h2 className="text-lg font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
-        <Link href="/garage" className="text-blue-600 hover:underline text-sm">
+        <Link href="/garage" className="text-brand-600 hover:underline text-sm">
           Zpět do Garáže
         </Link>
       </div>

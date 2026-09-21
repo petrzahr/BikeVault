@@ -24,6 +24,8 @@ import { t, formatDateCs, formatCzk, formatKm, formatMinutes } from "@/lib/i18n"
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
 import { Modal } from "@/components/common/Modal";
 import { useVault } from "@/context/VaultContext";
+import { useFeedback } from "@/components/common/Feedback";
+import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 interface MaintenanceClientProps {
   allSchedules?: any[];
@@ -46,6 +48,7 @@ export function MaintenanceClient({
     getAllConfiguredSchedulesWithStatus, 
     getGarageBikes 
   } = useVault();
+  const { toast, confirm } = useFeedback();
 
   const allSchedules = propAllSchedules ?? getAllConfiguredSchedulesWithStatus();
   const bikes = propBikes ?? getGarageBikes("ACTIVE");
@@ -118,20 +121,20 @@ export function MaintenanceClient({
       toggleServiceScheduleActive(scheduleId);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Chyba při změně stavu plánu.";
-      alert(msg);
+      toast(msg, "error");
     }
   };
 
-  const handleDeletePlan = (scheduleId: string) => {
-    if (!confirm("Opravdu chcete tento servisní plán smazat?")) return;
+  const handleDeletePlan = async (scheduleId: string) => {
+    if (!(await confirm({ message: "Opravdu chcete tento servisní plán smazat?", confirmText: "Smazat", isDestructive: true }))) return;
     try {
       const res = deleteServiceSchedule(scheduleId);
       if (!res.success) {
-        alert(res.message || "Plán nelze smazat.");
+        toast(res.message || "Plán nelze smazat.", "error");
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Plán nelze smazat.";
-      alert(msg);
+      toast(msg, "error");
     }
   };
 
@@ -185,7 +188,7 @@ export function MaintenanceClient({
       setIsRecordModalOpen(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Chyba při zápisu servisu.";
-      alert(msg);
+      toast(msg, "error");
     } finally {
       setRecordLoading(false);
     }
@@ -214,15 +217,15 @@ export function MaintenanceClient({
         <div className="flex items-center gap-2.5 self-start sm:self-auto flex-wrap">
           <button
             onClick={() => handleOpenRecordModal()}
-            className="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/80 text-xs font-semibold rounded-xl shadow-sm transition-all flex items-center gap-2"
+            className={buttonClass("secondary", "lg", "flex items-center gap-2")}
           >
-            <Wrench className="w-4 h-4 text-sky-600" />
+            <Wrench className="w-4 h-4 text-brand-600" />
             <span>Zapsat servis bez plánu</span>
           </button>
 
           <button
             onClick={handleOpenCreatePlan}
-            className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-all flex items-center gap-2"
+            className={buttonClass("primary", "lg", "flex items-center gap-2")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat servisní plán</span>
@@ -272,7 +275,7 @@ export function MaintenanceClient({
                   </span>
                   <button
                     onClick={() => handleOpenRecordModal(item)}
-                    className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+                    className={buttonClass("danger", "sm")}
                   >
                     Zapsat servis →
                   </button>
@@ -377,7 +380,7 @@ export function MaintenanceClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-sky-600" />
+              <Sliders className="w-4 h-4 text-brand-600" />
               <span>Správa servisních plánů ({allSchedules.length})</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -387,7 +390,7 @@ export function MaintenanceClient({
 
           <button
             onClick={handleOpenCreatePlan}
-            className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-all flex items-center gap-1.5 self-start sm:self-auto"
+            className={buttonClass("primary", "md", "flex items-center gap-1.5 self-start sm:self-auto")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat plán</span>
@@ -423,7 +426,7 @@ export function MaintenanceClient({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Hledat plán, kolo nebo díl..."
-              className="w-full bg-white border border-slate-200/80 rounded-xl pl-9 pr-4 py-1.5 text-slate-900 text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 shadow-sm"
+              className={cn(inputClass, "pl-9 pr-4")}
             />
           </div>
         </div>
@@ -462,7 +465,7 @@ export function MaintenanceClient({
                       </span>
 
                       {item.bike && (
-                        <span className="text-xs text-sky-700 font-semibold flex items-center gap-1">
+                        <span className="text-xs text-brand-700 font-semibold flex items-center gap-1">
                           <BikeIcon className="w-3 h-3" />
                           <span>{item.bike.name}</span>
                         </span>
@@ -493,7 +496,7 @@ export function MaintenanceClient({
                   <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto">
                     <button
                       onClick={() => handleOpenRecordModal(item)}
-                      className="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1 transition-colors shadow-sm"
+                      className={buttonClass("primary", "sm", "flex items-center gap-1")}
                     >
                       <Wrench className="w-3.5 h-3.5" />
                       <span>Zapsat servis</span>
@@ -553,7 +556,7 @@ export function MaintenanceClient({
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm font-bold text-slate-900">{item.event.name || item.event.description}</span>
                     {item.bike && (
-                      <span className="text-xs text-sky-700 font-medium">({item.bike.name})</span>
+                      <span className="text-xs text-brand-700 font-medium">({item.bike.name})</span>
                     )}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-slate-500 tabular-nums">
@@ -596,14 +599,14 @@ export function MaintenanceClient({
       >
         <form onSubmit={handleSaveServiceEvent} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Kolo *
             </label>
             <select
               required
               value={selectedBikeId}
               onChange={(e) => setSelectedBikeId(e.target.value)}
-              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+              className={inputClass}
             >
               <option value="">-- Vyberte kolo --</option>
               {bikes.map((b) => (
@@ -615,7 +618,7 @@ export function MaintenanceClient({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Název servisního úkonu *
             </label>
             <input
@@ -624,13 +627,13 @@ export function MaintenanceClient({
               value={serviceName}
               onChange={(e) => setServiceName(e.target.value)}
               placeholder="např. Výměna ložisek v náboji"
-              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+              className={inputClass}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              <label className={labelClass}>
                 Datum provedení
               </label>
               <input
@@ -638,12 +641,12 @@ export function MaintenanceClient({
                 required
                 value={serviceDate}
                 onChange={(e) => setServiceDate(e.target.value)}
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+                className={inputClass}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              <label className={labelClass}>
                 Provedení
               </label>
               <select
@@ -654,7 +657,7 @@ export function MaintenanceClient({
                   if (val === "DIY") setServiceProvider("Svépomocí");
                   else setServiceProvider("");
                 }}
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+                className={inputClass}
               >
                 <option value="DIY">Svépomocí</option>
                 <option value="WORKSHOP">Odborný servis / Dílna</option>
@@ -663,7 +666,7 @@ export function MaintenanceClient({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Mechanik / Název servisu
             </label>
             <input
@@ -671,13 +674,13 @@ export function MaintenanceClient({
               value={serviceProvider}
               onChange={(e) => setServiceProvider(e.target.value)}
               placeholder="např. Svépomocí, Bikeclinic, Kolofix"
-              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+              className={inputClass}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              <label className={labelClass}>
                 Cena dílů (Kč)
               </label>
               <input
@@ -686,12 +689,12 @@ export function MaintenanceClient({
                 value={partsCost}
                 onChange={(e) => setPartsCost(e.target.value)}
                 placeholder="0"
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 tabular-nums text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+                className={cn(inputClass, "tabular-nums")}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              <label className={labelClass}>
                 Cena práce (Kč)
               </label>
               <input
@@ -700,13 +703,13 @@ export function MaintenanceClient({
                 value={laborCost}
                 onChange={(e) => setLaborCost(e.target.value)}
                 placeholder="0"
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 tabular-nums text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+                className={cn(inputClass, "tabular-nums")}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Poznámka k servisu
             </label>
             <textarea
@@ -714,7 +717,7 @@ export function MaintenanceClient({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Popis provedených prací, použitých těsnění a olejů..."
-              className="w-full bg-white border border-slate-200/80 rounded-xl p-3 text-slate-900 text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm"
+              className={inputClass}
             />
           </div>
 
@@ -722,14 +725,14 @@ export function MaintenanceClient({
             <button
               type="button"
               onClick={() => setIsRecordModalOpen(false)}
-              className="px-4 py-2 border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl shadow-sm transition-all"
+              className={buttonClass("secondary", "md")}
             >
               Zrušit
             </button>
             <button
               type="submit"
               disabled={recordLoading}
-              className="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-all"
+              className={buttonClass("primary", "lg")}
             >
               {recordLoading ? "Ukládám..." : "Zapsat servis"}
             </button>

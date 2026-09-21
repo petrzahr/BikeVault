@@ -3,6 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { VaultProvider } from "@/context/VaultContext";
+import { FeedbackProvider } from "@/components/common/Feedback";
 import { AuthGate } from "@/components/auth/AuthGate";
 
 export const metadata: Metadata = {
@@ -36,14 +37,16 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
       </head>
-      <body className="h-full text-slate-800 antialiased selection:bg-sky-100 selection:text-sky-900 bg-slate-50">
-        <VaultProvider>
-          <AuthGate>
-            <AppShell>
-              {children}
-            </AppShell>
-          </AuthGate>
-        </VaultProvider>
+      <body className="h-full text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900 bg-slate-50">
+        <FeedbackProvider>
+          <VaultProvider>
+            <AuthGate>
+              <AppShell>
+                {children}
+              </AppShell>
+            </AuthGate>
+          </VaultProvider>
+        </FeedbackProvider>
       </body>
     </html>
   );

@@ -18,7 +18,7 @@ export default function ComponentDetailPage({ params }: ComponentPageProps) {
     return (
       <div className="p-12 text-center text-slate-500">
         <h2 className="text-lg font-bold text-slate-800 mb-2">Komponent nenalezen</h2>
-        <Link href="/components" className="text-blue-600 hover:underline text-sm">
+        <Link href="/components" className="text-brand-600 hover:underline text-sm">
           Zpět na přehled komponentů
         </Link>
       </div>

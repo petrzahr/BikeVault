@@ -5,6 +5,7 @@ import { useVault } from "@/context/VaultContext";
 import { Check, AlertTriangle, Loader2 } from "lucide-react";
 import { t, formatKm, formatMinutes } from "@/lib/i18n";
 import { Modal } from "@/components/common/Modal";
+import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 interface UpdateOdometerModalProps {
   isOpen: boolean;
@@ -96,7 +97,7 @@ export function UpdateOdometerModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-medium">
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium">
             {error}
           </div>
         )}
@@ -122,7 +123,7 @@ export function UpdateOdometerModal({
 
         {/* New cumulative kilometers */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
+          <label className={labelClass}>
             {t("odometer.currentKm")} *
           </label>
           <div className="relative">
@@ -134,7 +135,7 @@ export function UpdateOdometerModal({
               value={totalKmStr}
               onChange={(e) => setTotalKmStr(e.target.value)}
               placeholder="2847.0"
-              className="w-full pl-3.5 pr-12 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums font-semibold"
+              className={cn(inputClass, "pr-12 tabular-nums")}
             />
             <span className="absolute right-3.5 top-2 text-slate-400 text-xs font-medium pointer-events-none">km</span>
           </div>
@@ -142,7 +143,7 @@ export function UpdateOdometerModal({
 
         {/* New cumulative hours */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
+          <label className={labelClass}>
             {t("odometer.currentHours")} *
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -154,7 +155,7 @@ export function UpdateOdometerModal({
                 value={hoursStr}
                 onChange={(e) => setHoursStr(e.target.value)}
                 placeholder="186"
-                className="w-full pl-3.5 pr-8 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums font-semibold"
+                className={cn(inputClass, "pr-8 tabular-nums")}
               />
               <span className="absolute right-3.5 top-2 text-slate-400 text-xs font-medium pointer-events-none">h</span>
             </div>
@@ -166,7 +167,7 @@ export function UpdateOdometerModal({
                 value={minutesStr}
                 onChange={(e) => setMinutesStr(e.target.value)}
                 placeholder="0"
-                className="w-full pl-3.5 pr-11 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums font-semibold"
+                className={cn(inputClass, "pr-11 tabular-nums")}
               />
               <span className="absolute right-3.5 top-2 text-slate-400 text-xs font-medium pointer-events-none">min</span>
             </div>
@@ -175,7 +176,7 @@ export function UpdateOdometerModal({
 
         {/* Date */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
+          <label className={labelClass}>
             {t("odometer.date")}
           </label>
           <input
@@ -183,13 +184,13 @@ export function UpdateOdometerModal({
             required
             value={entryDate}
             onChange={(e) => setEntryDate(e.target.value)}
-            className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            className={inputClass}
           />
         </div>
 
         {/* Note */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
+          <label className={labelClass}>
             {t("odometer.note")}
           </label>
           <input
@@ -197,7 +198,7 @@ export function UpdateOdometerModal({
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="např. Pravidelný odečet před servisem, po týdnu ježdění"
-            className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            className={inputClass}
           />
         </div>
 
@@ -216,7 +217,7 @@ export function UpdateOdometerModal({
                 type="checkbox"
                 checked={allowCorrection}
                 onChange={(e) => setAllowCorrection(e.target.checked)}
-                className="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500"
+                className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500"
               />
               <span>Potvrdit korekci stavu počítadla</span>
             </label>
@@ -228,14 +229,14 @@ export function UpdateOdometerModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+            className={buttonClass("secondary", "lg")}
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading || (isDecreasing && !allowCorrection)}
-            className="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className={buttonClass("primary", "lg", "flex items-center gap-2")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{loading ? t("common.loading") : t("odometer.saveStatus")}</span>

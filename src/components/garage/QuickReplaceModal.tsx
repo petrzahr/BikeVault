@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { formatKm, formatMinutes, formatDateCs, formatCzk } from "@/lib/i18n";
 import { Modal } from "@/components/common/Modal";
+import { buttonClass } from "@/lib/ui";
 
 interface QuickReplaceModalProps {
   isOpen: boolean;
@@ -84,7 +85,7 @@ export function QuickReplaceModal({
               <p className="text-xs text-slate-600 mt-0.5">{currentComp.variant}</p>
             )}
             {currentComp.tireCasing && (
-              <p className="text-xs text-sky-700 mt-0.5">
+              <p className="text-xs text-brand-700 mt-0.5">
                 {currentComp.wheelDiameter && `${currentComp.wheelDiameter}" `}
                 {currentComp.tireWidth} • {currentComp.tireCasing} • {currentComp.tireCompound}
               </p>
@@ -104,12 +105,12 @@ export function QuickReplaceModal({
           </div>
 
           {matchingCandidates.length === 1 ? (
-            <div className="p-3.5 bg-sky-50/60 border border-sky-200 rounded-xl">
+            <div className="p-3.5 bg-brand-50/60 border border-brand-200 rounded-xl">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <span className="text-xs font-bold text-sky-950">
+                <span className="text-xs font-bold text-brand-950">
                   {matchingCandidates[0].component.manufacturer} {matchingCandidates[0].component.model}
                 </span>
-                <span className="text-[10px] text-sky-700 bg-sky-100/70 px-2 py-0.5 rounded-md font-semibold">
+                <span className="text-[10px] text-brand-700 bg-brand-100/70 px-2 py-0.5 rounded-md font-semibold">
                   SKLADEM
                 </span>
               </div>
@@ -146,7 +147,7 @@ export function QuickReplaceModal({
                     key={c.id}
                     className={`flex items-start gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
                       isSelected
-                        ? "bg-sky-50/70 border-sky-500 text-slate-900 font-medium shadow-xs"
+                        ? "bg-brand-50/70 border-brand-500 text-slate-900 font-medium shadow-sm"
                         : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100/60"
                     }`}
                   >
@@ -156,7 +157,7 @@ export function QuickReplaceModal({
                       value={c.id}
                       checked={isSelected}
                       onChange={() => setSelectedReplacementId(c.id)}
-                      className="mt-0.5 text-sky-600 focus:ring-sky-500"
+                      className="mt-0.5 text-brand-600 focus:ring-brand-500"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
@@ -222,14 +223,14 @@ export function QuickReplaceModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+            className={buttonClass("secondary", "lg")}
           >
             Zrušit
           </button>
           <button
             type="submit"
             disabled={loading || !selectedReplacementId}
-            className="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className={buttonClass("primary", "lg", "flex items-center gap-2")}
           >
             {loading ? (
               <>

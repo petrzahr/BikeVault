@@ -16,6 +16,7 @@ import { useVault } from "@/context/VaultContext";
 import { PREDEFINED_SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/domain/serviceTemplates";
 import { formatKm } from "@/lib/i18n";
 import { Modal } from "@/components/common/Modal";
+import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 interface ServiceScheduleModalProps {
   isOpen: boolean;
@@ -250,7 +251,7 @@ export function ServiceScheduleModal({
         {!isEditing && (
           <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 space-y-2">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-              <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+              <Sparkles className="w-3.5 h-3.5 text-brand-600" />
               <span>Rychlé předvyplnění z doporučené šablony:</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -259,7 +260,7 @@ export function ServiceScheduleModal({
                   key={tmpl.id}
                   type="button"
                   onClick={() => handleApplyTemplate(tmpl)}
-                  className="px-2.5 py-1 bg-white hover:bg-sky-50 hover:text-sky-700 hover:border-sky-200 text-slate-700 border border-slate-200 rounded-lg text-xs transition-colors cursor-pointer"
+                  className={buttonClass("secondary", "sm")}
                 >
                   {tmpl.name}
                 </button>
@@ -270,7 +271,7 @@ export function ServiceScheduleModal({
 
         {/* Název plánu */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
+          <label className={labelClass}>
             Název servisního plánu *
           </label>
           <input
@@ -279,20 +280,20 @@ export function ServiceScheduleModal({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="např. Servis spodních nohou vidlice"
-            className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            className={inputClass}
           />
         </div>
 
         {/* Vztahuje se k */}
         <div className="space-y-2">
-          <label className="block text-xs font-semibold text-slate-700">
+          <label className={labelClass}>
             Vztahuje se k *
           </label>
           <div className="grid grid-cols-2 gap-3">
             <label
               className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
                 appliesTo === "BIKE"
-                  ? "bg-sky-50/70 border-sky-500 text-sky-900 font-semibold"
+                  ? "bg-brand-50/70 border-brand-500 text-brand-900 font-semibold"
                   : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
               }`}
             >
@@ -302,10 +303,10 @@ export function ServiceScheduleModal({
                 value="BIKE"
                 checked={appliesTo === "BIKE"}
                 onChange={() => setAppliesTo("BIKE")}
-                className="text-sky-600 focus:ring-sky-500"
+                className="text-brand-600 focus:ring-brand-500"
               />
               <div className="flex items-center gap-1.5">
-                <BikeIcon className="w-4 h-4 text-sky-600" />
+                <BikeIcon className="w-4 h-4 text-brand-600" />
                 <span>Celé kolo</span>
               </div>
             </label>
@@ -313,7 +314,7 @@ export function ServiceScheduleModal({
             <label
               className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
                 appliesTo === "COMPONENT"
-                  ? "bg-sky-50/70 border-sky-500 text-sky-900 font-semibold"
+                  ? "bg-brand-50/70 border-brand-500 text-brand-900 font-semibold"
                   : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
               }`}
             >
@@ -323,10 +324,10 @@ export function ServiceScheduleModal({
                 value="COMPONENT"
                 checked={appliesTo === "COMPONENT"}
                 onChange={() => setAppliesTo("COMPONENT")}
-                className="text-sky-600 focus:ring-sky-500"
+                className="text-brand-600 focus:ring-brand-500"
               />
               <div className="flex items-center gap-1.5">
-                <Layers className="w-4 h-4 text-sky-600" />
+                <Layers className="w-4 h-4 text-brand-600" />
                 <span>Konkrétní komponenta</span>
               </div>
             </label>
@@ -334,13 +335,13 @@ export function ServiceScheduleModal({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Kolo
               </label>
               <select
                 value={bikeId}
                 onChange={(e) => setBikeId(e.target.value)}
-                className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+                className={inputClass}
               >
                 <option value="">-- Bez vazby na konkrétní kolo --</option>
                 {bikes.map((b) => (
@@ -353,14 +354,14 @@ export function ServiceScheduleModal({
 
             {appliesTo === "COMPONENT" && (
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className={labelClass}>
                   Komponenta
                 </label>
                 <select
                   value={componentId}
                   onChange={(e) => setComponentId(e.target.value)}
                   required={appliesTo === "COMPONENT"}
-                  className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+                  className={inputClass}
                 >
                   <option value="">-- Vyberte komponentu --</option>
                   {components.map((c) => (
@@ -377,17 +378,17 @@ export function ServiceScheduleModal({
         {/* Intervaly */}
         <div className="space-y-3 pt-2 border-t border-slate-100">
           <div className="flex items-center justify-between">
-            <label className="block text-xs font-semibold text-slate-700">
+            <label className={labelClass}>
               Nastavení servisního intervalu
             </label>
-            <span className="text-[11px] text-sky-700 font-semibold bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">
+            <span className="text-[11px] text-brand-700 font-semibold bg-brand-50 px-2.5 py-0.5 rounded-full border border-brand-200">
               Podle toho, co nastane dříve
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Podle hodin
               </label>
               <div className="relative">
@@ -398,14 +399,14 @@ export function ServiceScheduleModal({
                   value={intervalHours}
                   onChange={(e) => setIntervalHours(e.target.value)}
                   placeholder="např. 50"
-                  className="w-full pl-3 pr-8 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums font-semibold"
+                  className={cn(inputClass, "pl-3 pr-8 tabular-nums")}
                 />
                 <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none">h</span>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Podle kilometrů
               </label>
               <div className="relative">
@@ -416,14 +417,14 @@ export function ServiceScheduleModal({
                   value={intervalKm}
                   onChange={(e) => setIntervalKm(e.target.value)}
                   placeholder="např. 1000"
-                  className="w-full pl-3 pr-10 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums font-semibold"
+                  className={cn(inputClass, "pl-3 pr-10 tabular-nums")}
                 />
                 <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none">km</span>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Podle času
               </label>
               <div className="relative">
@@ -434,7 +435,7 @@ export function ServiceScheduleModal({
                   value={intervalMonths}
                   onChange={(e) => setIntervalMonths(e.target.value)}
                   placeholder="např. 12"
-                  className="w-full pl-3 pr-12 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums font-semibold"
+                  className={cn(inputClass, "pl-3 pr-12 tabular-nums")}
                 />
                 <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none">měs.</span>
               </div>
@@ -444,7 +445,7 @@ export function ServiceScheduleModal({
           {/* Upozornění s předstihem */}
           <div className="grid grid-cols-2 gap-3 pt-1">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Upozornit s předstihem (h)
               </label>
               <input
@@ -453,12 +454,12 @@ export function ServiceScheduleModal({
                 value={warningHours}
                 onChange={(e) => setWarningHours(e.target.value)}
                 placeholder="např. 10"
-                className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+                className={cn(inputClass, "tabular-nums")}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Upozornit s předstihem (km)
               </label>
               <input
@@ -467,7 +468,7 @@ export function ServiceScheduleModal({
                 value={warningKm}
                 onChange={(e) => setWarningKm(e.target.value)}
                 placeholder="např. 100"
-                className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+                className={cn(inputClass, "tabular-nums")}
               />
             </div>
           </div>
@@ -475,7 +476,7 @@ export function ServiceScheduleModal({
 
         {/* Výchozí bod */}
         <div className="space-y-2 pt-2 border-t border-slate-100">
-          <label className="block text-xs font-semibold text-slate-700">
+          <label className={labelClass}>
             Výchozí bod plánu
           </label>
 
@@ -483,7 +484,7 @@ export function ServiceScheduleModal({
             <label
               className={`flex items-start gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
                 startingPointType === "CURRENT_STATE"
-                  ? "bg-sky-50/70 border-sky-500 text-sky-950 font-medium"
+                  ? "bg-brand-50/70 border-brand-500 text-brand-950 font-medium"
                   : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
               }`}
             >
@@ -493,7 +494,7 @@ export function ServiceScheduleModal({
                 value="CURRENT_STATE"
                 checked={startingPointType === "CURRENT_STATE"}
                 onChange={() => setStartingPointType("CURRENT_STATE")}
-                className="text-sky-600 focus:ring-sky-500 mt-0.5"
+                className="text-brand-600 focus:ring-brand-500 mt-0.5"
               />
               <div>
                 <span className="font-bold block text-slate-900">
@@ -508,7 +509,7 @@ export function ServiceScheduleModal({
             <label
               className={`flex items-start gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
                 startingPointType === "HISTORICAL"
-                  ? "bg-sky-50/70 border-sky-500 text-sky-950 font-medium"
+                  ? "bg-brand-50/70 border-brand-500 text-brand-950 font-medium"
                   : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
               }`}
             >
@@ -518,7 +519,7 @@ export function ServiceScheduleModal({
                 value="HISTORICAL"
                 checked={startingPointType === "HISTORICAL"}
                 onChange={() => setStartingPointType("HISTORICAL")}
-                className="text-sky-600 focus:ring-sky-500 mt-0.5"
+                className="text-brand-600 focus:ring-brand-500 mt-0.5"
               />
               <div className="w-full">
                 <span className="font-bold block text-slate-900">
@@ -531,18 +532,18 @@ export function ServiceScheduleModal({
                 {startingPointType === "HISTORICAL" && (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 bg-white rounded-xl border border-slate-200 mt-2">
                     <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-1">
+                      <label className={labelClass}>
                         Datum servisu
                       </label>
                       <input
                         type="date"
                         value={lastServiceDate}
                         onChange={(e) => setLastServiceDate(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                        className={inputClass}
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-1">
+                      <label className={labelClass}>
                         Stav tachometru (km)
                       </label>
                       <input
@@ -551,11 +552,11 @@ export function ServiceScheduleModal({
                         value={lastServiceKm}
                         onChange={(e) => setLastServiceKm(e.target.value)}
                         placeholder={String(currentKmNum)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-900 tabular-nums text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                        className={cn(inputClass, "tabular-nums")}
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-semibold text-slate-500 mb-1">
+                      <label className={labelClass}>
                         Stav hodin (h)
                       </label>
                       <input
@@ -564,7 +565,7 @@ export function ServiceScheduleModal({
                         value={lastServiceHours}
                         onChange={(e) => setLastServiceHours(e.target.value)}
                         placeholder={String(currentHoursNum)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-900 tabular-nums text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                        className={cn(inputClass, "tabular-nums")}
                       />
                     </div>
                   </div>
@@ -602,7 +603,7 @@ export function ServiceScheduleModal({
 
               <div>
                 <span className="text-slate-500 block text-[11px]">Příští servis při</span>
-                <span className="tabular-nums font-bold text-sky-700">
+                <span className="tabular-nums font-bold text-brand-700">
                   {nextTargetHours !== null ? `${nextTargetHours} h` : ""}{nextTargetHours !== null && nextTargetKm !== null ? " / " : ""}{nextTargetKm !== null ? `${nextTargetKm} km` : ""}
                 </span>
               </div>
@@ -612,7 +613,7 @@ export function ServiceScheduleModal({
 
         {/* Poznámky */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
+          <label className={labelClass}>
             Poznámka k plánu
           </label>
           <textarea
@@ -620,7 +621,7 @@ export function ServiceScheduleModal({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Instrukce pro mechanika, typ použitého těsnění nebo oleje..."
-            className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            className={inputClass}
           />
         </div>
 
@@ -629,14 +630,14 @@ export function ServiceScheduleModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+            className={buttonClass("secondary", "lg")}
           >
             Zrušit
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className={buttonClass("primary", "lg", "flex items-center gap-2")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{isEditing ? "Uložit změny plánu" : "Vytvořit servisní plán"}</span>

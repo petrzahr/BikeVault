@@ -1,5 +1,6 @@
 ﻿import React from 'react';
 import { Modal } from './Modal';
+import { Button } from './Button';
 import { AlertTriangle } from 'lucide-react';
 
 interface ConfirmationModalProps {
@@ -26,7 +27,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth="max-w-md">
       <div className="flex items-start gap-3">
-        <div className={`p-2 rounded-xl shrink-0 ${isDestructive ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}>
+        <div className={`p-2 rounded-xl shrink-0 ${isDestructive ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'}`}>
           <AlertTriangle className="w-6 h-6" />
         </div>
         <div className="text-sm text-slate-600 space-y-2">
@@ -34,27 +35,19 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         </div>
       </div>
       <div className="mt-6 flex justify-end gap-3">
-        <button
-          type="button"
-          onClick={onClose}
-          className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
-        >
+        <Button variant="secondary" size="lg" onClick={onClose}>
           {cancelText}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant={isDestructive ? 'danger' : 'primary'}
+          size="lg"
           onClick={() => {
             onConfirm();
             onClose();
           }}
-          className={`px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors ${
-            isDestructive 
-              ? 'bg-red-600 hover:bg-red-700 shadow-sm shadow-red-200' 
-              : 'bg-sky-600 hover:bg-sky-700 shadow-sm shadow-sky-200'
-          }`}
         >
           {confirmText}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

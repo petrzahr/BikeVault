@@ -9,8 +9,10 @@ import {
 } from "lucide-react";
 import { t, formatCzk } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
+import { useFeedback } from "@/components/common/Feedback";
 import Link from "next/link";
 import { Modal } from "@/components/common/Modal";
+import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 interface ComponentsClientProps {
   initialComponents?: any[];
@@ -22,6 +24,7 @@ export function ComponentsClient({
   categories: propCategories,
 }: ComponentsClientProps = {}) {
   const { data, addComponent, getAllComponents } = useVault();
+  const { toast } = useFeedback();
   const initialComponents = propComponents ?? getAllComponents();
   const categories = propCategories ?? data.categories;
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
@@ -91,7 +94,7 @@ export function ComponentsClient({
       setNotes("");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Chyba při zakládání komponentu.";
-      alert(msg);
+      toast(msg, "error");
     } finally {
       setLoading(false);
     }
@@ -116,7 +119,7 @@ export function ComponentsClient({
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors cursor-pointer self-start sm:self-auto"
+            className={buttonClass("primary", "md", "flex items-center gap-1.5 self-start sm:self-auto")}
           >
             <Plus className="w-4 h-4" />
             <span>{t("components.addComponent")}</span>
@@ -154,7 +157,7 @@ export function ComponentsClient({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("common.search")}
-              className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={cn(inputClass, "pl-8 pr-3")}
             />
           </div>
         </div>
@@ -174,7 +177,7 @@ export function ComponentsClient({
 
             let statusBadge = {
               text: t("components.inStorage"),
-              style: "bg-sky-50 text-sky-700 border-sky-200",
+              style: "bg-brand-50 text-brand-700 border-brand-200",
             };
             if (comp.status === "INSTALLED") {
               statusBadge = {
@@ -218,7 +221,7 @@ export function ComponentsClient({
                   )}
 
                   {comp.tireCasing && (
-                    <p className="text-xs text-sky-700 mt-1 font-medium">
+                    <p className="text-xs text-brand-700 mt-1 font-medium">
                       {comp.tireCasing} • {comp.tireCompound || ""}
                     </p>
                   )}
@@ -228,7 +231,7 @@ export function ComponentsClient({
                   <span>Cena: <strong className="text-slate-900 tabular-nums font-bold">{formatCzk(comp.purchasePrice)}</strong></span>
                   <Link
                     href={`/components/${comp.id}`}
-                    className="text-sky-600 hover:text-sky-700 font-semibold inline-flex items-center gap-1"
+                    className="text-brand-600 hover:text-brand-700 font-semibold inline-flex items-center gap-1"
                   >
                     <span>Detail & Servis →</span>
                   </Link>
@@ -249,13 +252,13 @@ export function ComponentsClient({
       >
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               Kategorie komponentu *
             </label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+              className={inputClass}
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -267,7 +270,7 @@ export function ComponentsClient({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Výrobce *
               </label>
               <input
@@ -276,11 +279,11 @@ export function ComponentsClient({
                 value={manufacturer}
                 onChange={(e) => setManufacturer(e.target.value)}
                 placeholder="např. RockShox, SRAM, Shimano"
-                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Model *
               </label>
               <input
@@ -289,13 +292,13 @@ export function ComponentsClient({
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
                 placeholder="např. ZEB Ultimate, Eagle X0"
-                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                className={inputClass}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               Varianta / specifikace
             </label>
             <input
@@ -303,13 +306,13 @@ export function ComponentsClient({
               value={variant}
               onChange={(e) => setVariant(e.target.value)}
               placeholder="např. 180mm 29 Slab Grey, 32z, 10-52z"
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Nákupní cena (Kč)
               </label>
               <input
@@ -318,18 +321,18 @@ export function ComponentsClient({
                 value={purchasePrice}
                 onChange={(e) => setPurchasePrice(e.target.value)}
                 placeholder="0"
-                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+                className={cn(inputClass, "tabular-nums")}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Datum nákupu
               </label>
               <input
                 type="date"
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
-                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                className={inputClass}
               />
             </div>
           </div>
@@ -345,27 +348,27 @@ export function ComponentsClient({
                 value={tireCasing}
                 onChange={(e) => setTireCasing(e.target.value)}
                 placeholder="Kostra (např. DoubleDown, DH, EXO+)"
-                className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20"
               />
               <input
                 type="text"
                 value={tireCompound}
                 onChange={(e) => setTireCompound(e.target.value)}
                 placeholder="Směs (např. MaxxGrip, MaxxTerra)"
-                className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               Poznámka
             </label>
             <textarea
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
@@ -373,14 +376,14 @@ export function ComponentsClient({
             <button
               type="button"
               onClick={() => setIsAddModalOpen(false)}
-              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+              className={buttonClass("secondary", "lg")}
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className={buttonClass("primary", "lg", "flex items-center gap-2")}
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               <span>{loading ? t("common.loading") : "Založit díl do skladu"}</span>

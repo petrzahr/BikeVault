@@ -12,6 +12,7 @@ import {
   Gauge
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
+import { PageHeader } from "@/components/common/PageHeader";
 
 export default function StatisticsPage() {
   const { data } = useVault();
@@ -41,16 +42,7 @@ export default function StatisticsPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            {t("nav.statistics")}
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Analytika nájezdu, životnosti komponentů a finančních metrik
-          </p>
-        </div>
-      </div>
+      <PageHeader title={t("nav.statistics")} subtitle="Analytika nájezdu, životnosti komponentů a finančních metrik" />
 
       {/* High-level stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -59,7 +51,7 @@ export default function StatisticsPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">
               Celkem najeto na všech kolech
             </span>
-            <div className="p-2 rounded-xl bg-sky-50 text-sky-600">
+            <div className="p-2 rounded-xl bg-brand-50 text-brand-600">
               <Compass className="w-4 h-4" />
             </div>
           </div>
@@ -73,7 +65,7 @@ export default function StatisticsPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">
               Celkový čas v sedle
             </span>
-            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+            <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
               <Layers className="w-4 h-4" />
             </div>
           </div>
@@ -132,7 +124,7 @@ export default function StatisticsPage() {
                   <span className="text-slate-500 uppercase tracking-wider block text-[10px] font-semibold">
                     Cena za km
                   </span>
-                  <span className="text-sm font-bold text-sky-700 tabular-nums">
+                  <span className="text-sm font-bold text-brand-700 tabular-nums">
                     {item.costPerKm.toFixed(2)} Kč/km
                   </span>
                 </div>

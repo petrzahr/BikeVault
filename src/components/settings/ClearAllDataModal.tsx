@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Modal } from "@/components/common/Modal";
+import { buttonClass } from "@/lib/ui";
 
 const CONFIRM_WORD = "SMAZAT";
 
@@ -32,7 +33,7 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Smazat všechna data" maxWidth="max-w-md">
       <div className="flex items-start gap-3">
-        <div className="p-2 rounded-xl shrink-0 bg-red-50 text-red-600">
+        <div className="p-2 rounded-xl shrink-0 bg-rose-50 text-rose-600">
           <AlertTriangle className="w-6 h-6" />
         </div>
         <div className="text-sm text-slate-600 space-y-2">
@@ -46,7 +47,7 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
 
       <div className="mt-5 space-y-1.5">
         <label htmlFor="clear-all-confirm" className="block text-xs font-semibold text-slate-700">
-          Pro potvrzení napište <span className="font-mono text-red-600">{CONFIRM_WORD}</span>
+          Pro potvrzení napište <span className="font-mono text-rose-600">{CONFIRM_WORD}</span>
         </label>
         <input
           id="clear-all-confirm"
@@ -54,7 +55,7 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
           autoComplete="off"
-          className="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400"
+          className="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-400"
         />
       </div>
 
@@ -62,7 +63,7 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
         <button
           type="button"
           onClick={handleClose}
-          className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+          className={buttonClass("secondary", "lg")}
         >
           Zrušit
         </button>
@@ -70,7 +71,7 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
           type="button"
           onClick={handleConfirm}
           disabled={!canConfirm}
-          className="px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors bg-red-600 hover:bg-red-700 shadow-sm shadow-red-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          className={buttonClass("danger", "lg")}
         >
           Smazat všechna data
         </button>

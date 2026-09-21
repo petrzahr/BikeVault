@@ -16,6 +16,7 @@ import {
   Bike as BikeIcon 
 } from "lucide-react";
 import { t, formatKm, formatCzk } from "@/lib/i18n";
+import { buttonClass } from "@/lib/ui";
 
 export type NavScreen = "garage" | "components" | "maintenance" | "finances" | "statistics" | "settings";
 
@@ -68,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobilní backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs z-40 md:hidden"
+          className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-40 md:hidden"
           onClick={onCloseMobile}
         />
       )}
@@ -109,7 +110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onOpenAddBikeModal();
               onCloseMobile();
             }}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl shadow-sm shadow-sky-300 transition-all hover:shadow-md hover:shadow-sky-400/20 cursor-pointer"
+            className={buttonClass("primary", "lg", "w-full flex items-center justify-center gap-2")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat nové kolo</span>
@@ -127,11 +128,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={onCloseMobile}
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                     active
-                      ? "bg-sky-50 text-sky-700 shadow-xs"
+                      ? "bg-brand-50 text-brand-700 shadow-sm"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}
                 >
-                  <span className={active ? "text-sky-600" : "text-slate-400"}>
+                  <span className={active ? "text-brand-600" : "text-slate-400"}>
                     <Icon className="w-4 h-4" />
                   </span>
                   <span>{item.label}</span>
@@ -167,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             <div className="flex items-center justify-between text-slate-600">
               <span className="truncate pr-2" title="Vyžaduje servis">Vyžaduje servis</span>
-              <span className={`shrink-0 font-medium tabular-nums ${overdueCount > 0 ? "text-red-600 font-bold" : "text-emerald-700"}`}>
+              <span className={`shrink-0 font-medium tabular-nums ${overdueCount > 0 ? "text-rose-600 font-bold" : "text-emerald-700"}`}>
                 {overdueCount > 0 ? `${overdueCount} po termínu` : "V pořádku"}
               </span>
             </div>

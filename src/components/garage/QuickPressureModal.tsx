@@ -5,6 +5,7 @@ import { useVault } from "@/context/VaultContext";
 import { Check, Plus, Minus, Loader2 } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { Modal } from "@/components/common/Modal";
+import { buttonClass } from "@/lib/ui";
 
 interface QuickPressureModalProps {
   isOpen: boolean;
@@ -71,7 +72,7 @@ export function QuickPressureModal({
             <span className="text-xs font-semibold text-slate-700">
               Přední plášť
             </span>
-            <span className="text-xs tabular-nums text-sky-600 font-semibold">
+            <span className="text-xs tabular-nums text-brand-600 font-semibold">
               {(front * 14.5038).toFixed(1)} psi
             </span>
           </div>
@@ -79,7 +80,7 @@ export function QuickPressureModal({
             <button
               type="button"
               onClick={() => handleAdjust("front", -0.05)}
-              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-xs flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
+              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
             >
               <Minus className="w-4 h-4" />
             </button>
@@ -89,7 +90,7 @@ export function QuickPressureModal({
             <button
               type="button"
               onClick={() => handleAdjust("front", +0.05)}
-              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-xs flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
+              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -102,7 +103,7 @@ export function QuickPressureModal({
             <span className="text-xs font-semibold text-slate-700">
               Zadní plášť
             </span>
-            <span className="text-xs tabular-nums text-sky-600 font-semibold">
+            <span className="text-xs tabular-nums text-brand-600 font-semibold">
               {(rear * 14.5038).toFixed(1)} psi
             </span>
           </div>
@@ -110,7 +111,7 @@ export function QuickPressureModal({
             <button
               type="button"
               onClick={() => handleAdjust("rear", -0.05)}
-              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-xs flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
+              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
             >
               <Minus className="w-4 h-4" />
             </button>
@@ -120,7 +121,7 @@ export function QuickPressureModal({
             <button
               type="button"
               onClick={() => handleAdjust("rear", +0.05)}
-              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-xs flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
+              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -131,7 +132,7 @@ export function QuickPressureModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+            className={buttonClass("secondary", "lg")}
           >
             {t("common.cancel")}
           </button>
@@ -139,7 +140,7 @@ export function QuickPressureModal({
             type="button"
             onClick={handleSave}
             disabled={loading}
-            className="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className={buttonClass("primary", "lg", "flex items-center gap-2")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{loading ? t("common.loading") : t("common.save")}</span>

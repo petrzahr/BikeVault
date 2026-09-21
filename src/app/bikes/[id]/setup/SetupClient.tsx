@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useVault } from "@/context/VaultContext";
+import { useFeedback } from "@/components/common/Feedback";
 import { BikeHeader } from "@/components/bike/BikeHeader";
 import { 
   Gauge, 
@@ -19,6 +20,7 @@ import { t, formatDateCs, formatPsi, formatBar } from "@/lib/i18n";
 import { formatClicksFromClosed } from "@/lib/domain/setup";
 import { Modal } from "@/components/common/Modal";
 import { DeleteButton } from "@/components/common/DeleteButton";
+import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 interface SetupClientProps {
   bike: any;
@@ -40,6 +42,7 @@ export function SetupClient({
   rearTireComp,
 }: SetupClientProps) {
   const { saveSetup, saveSetupSnapshot, deleteSetupSnapshot, getBikeSetup, getBikeSnapshots } = useVault();
+  const { toast } = useFeedback();
   const initialSetup = propSetup ?? getBikeSetup(bike.id);
   const snapshots = propSnapshots ?? getBikeSnapshots(bike.id);
 
@@ -122,7 +125,7 @@ export function SetupClient({
       setTimeout(() => setSuccessMsg(null), 4000);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Došlo k chybě při ukládání nastavení.";
-      alert(msg);
+      toast(msg, "error");
     } finally {
       setLoading(false);
     }
@@ -164,7 +167,7 @@ export function SetupClient({
       setSnapshotNote("");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Nepodařilo se vytvořit snímek nastavení.";
-      alert(msg);
+      toast(msg, "error");
     }
   };
 
@@ -187,9 +190,9 @@ export function SetupClient({
           <button
             type="button"
             onClick={() => setIsSnapshotModalOpen(true)}
-            className="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-2"
+            className={buttonClass("secondary", "lg", "flex items-center gap-2")}
           >
-            <Camera className="w-4 h-4 text-sky-600" />
+            <Camera className="w-4 h-4 text-brand-600" />
             <span>{t("setup.saveSnapshot")}</span>
           </button>
         </div>
@@ -211,7 +214,7 @@ export function SetupClient({
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/60 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-xl bg-brand-50 text-brand-700 border border-brand-200/60 flex items-center justify-center font-bold text-xs">
                     V
                   </div>
                   <div>
@@ -224,14 +227,14 @@ export function SetupClient({
                   </div>
                 </div>
 
-                <span className="text-[11px] text-sky-700 tabular-nums bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200/80 font-semibold">
+                <span className="text-[11px] text-brand-700 tabular-nums bg-brand-50 px-2.5 py-1 rounded-full border border-brand-200/80 font-semibold">
                   {forkTravel} mm zdvih
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     {t("setup.fork.pressure")} (psi)
                   </label>
                   <input
@@ -239,24 +242,24 @@ export function SetupClient({
                     step="0.5"
                     value={forkPressure}
                     onChange={(e) => setForkPressure(e.target.value)}
-                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                    className={cn(inputClass, "tabular-nums")}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     {t("setup.fork.sag")} (%)
                   </label>
                   <input
                     type="number"
                     value={forkSag}
                     onChange={(e) => setForkSag(e.target.value)}
-                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                    className={cn(inputClass, "tabular-nums")}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     {t("setup.fork.rebound")} (odskok)
                   </label>
                   <div className="relative">
@@ -265,14 +268,14 @@ export function SetupClient({
                       min="0"
                       value={forkRebound}
                       onChange={(e) => setForkRebound(e.target.value)}
-                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                      className={cn(inputClass, "tabular-nums")}
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     {t("setup.fork.tokens")}
                   </label>
                   <input
@@ -280,12 +283,12 @@ export function SetupClient({
                     min="0"
                     value={forkTokens}
                     onChange={(e) => setForkTokens(e.target.value)}
-                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                    className={cn(inputClass, "tabular-nums")}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     LSC (pomalá komprese)
                   </label>
                   <div className="relative">
@@ -294,14 +297,14 @@ export function SetupClient({
                       min="0"
                       value={forkLsc}
                       onChange={(e) => setForkLsc(e.target.value)}
-                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                      className={cn(inputClass, "tabular-nums")}
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     HSC (rychlá komprese)
                   </label>
                   <div className="relative">
@@ -310,7 +313,7 @@ export function SetupClient({
                       min="0"
                       value={forkHsc}
                       onChange={(e) => setForkHsc(e.target.value)}
-                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                      className={cn(inputClass, "tabular-nums")}
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
@@ -318,7 +321,7 @@ export function SetupClient({
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                <label className={labelClass}>
                   {t("setup.fork.notes")}
                 </label>
                 <input
@@ -326,7 +329,7 @@ export function SetupClient({
                   value={forkNotes}
                   onChange={(e) => setForkNotes(e.target.value)}
                   placeholder="např. ButterCups vložky, nastavení pro 82 kg jezdce"
-                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                  className={inputClass}
                 />
               </div>
             </div>
@@ -337,7 +340,7 @@ export function SetupClient({
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/60 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-xl bg-brand-50 text-brand-700 border border-brand-200/60 flex items-center justify-center font-bold text-xs">
                     T
                   </div>
                   <div>
@@ -350,14 +353,14 @@ export function SetupClient({
                   </div>
                 </div>
 
-                <span className="text-[11px] text-sky-700 tabular-nums bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200/80 font-semibold">
+                <span className="text-[11px] text-brand-700 tabular-nums bg-brand-50 px-2.5 py-1 rounded-full border border-brand-200/80 font-semibold">
                   Zadní tlumič
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     {t("setup.shock.pressure")} (psi)
                   </label>
                   <input
@@ -365,24 +368,24 @@ export function SetupClient({
                     step="1"
                     value={shockPressure}
                     onChange={(e) => setShockPressure(e.target.value)}
-                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                    className={cn(inputClass, "tabular-nums")}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     {t("setup.shock.sag")} (%)
                   </label>
                   <input
                     type="number"
                     value={shockSag}
                     onChange={(e) => setShockSag(e.target.value)}
-                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                    className={cn(inputClass, "tabular-nums")}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     {t("setup.shock.rebound")} (odskok)
                   </label>
                   <div className="relative">
@@ -391,14 +394,14 @@ export function SetupClient({
                       min="0"
                       value={shockRebound}
                       onChange={(e) => setShockRebound(e.target.value)}
-                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                      className={cn(inputClass, "tabular-nums")}
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     {t("setup.shock.tokens")}
                   </label>
                   <input
@@ -406,12 +409,12 @@ export function SetupClient({
                     min="0"
                     value={shockTokens}
                     onChange={(e) => setShockTokens(e.target.value)}
-                    className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                    className={cn(inputClass, "tabular-nums")}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     LSC (pomalá komprese)
                   </label>
                   <div className="relative">
@@ -420,14 +423,14 @@ export function SetupClient({
                       min="0"
                       value={shockLsc}
                       onChange={(e) => setShockLsc(e.target.value)}
-                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                      className={cn(inputClass, "tabular-nums")}
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <label className={labelClass}>
                     HSC (rychlá komprese)
                   </label>
                   <div className="relative">
@@ -436,7 +439,7 @@ export function SetupClient({
                       min="0"
                       value={shockHsc}
                       onChange={(e) => setShockHsc(e.target.value)}
-                      className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                      className={cn(inputClass, "tabular-nums")}
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
                   </div>
@@ -444,7 +447,7 @@ export function SetupClient({
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                <label className={labelClass}>
                   {t("setup.shock.notes")}
                 </label>
                 <input
@@ -452,7 +455,7 @@ export function SetupClient({
                   value={shockNotes}
                   onChange={(e) => setShockNotes(e.target.value)}
                   placeholder="např. Hydraulic Bottom Out, 28% SAG"
-                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                  className={inputClass}
                 />
               </div>
             </div>
@@ -487,7 +490,7 @@ export function SetupClient({
 
             <div className="grid grid-cols-2 gap-3.5">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                <label className={labelClass}>
                   Tlak (bar)
                 </label>
                 <input
@@ -495,12 +498,12 @@ export function SetupClient({
                   step="0.05"
                   value={frontPressure}
                   onChange={(e) => setFrontPressure(e.target.value)}
-                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                  className={cn(inputClass, "tabular-nums")}
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                <label className={labelClass}>
                   {t("setup.tires.insert")}
                 </label>
                 <input
@@ -508,13 +511,13 @@ export function SetupClient({
                   value={frontInsert}
                   onChange={(e) => setFrontInsert(e.target.value)}
                   placeholder="např. Bez vložky, CushCore XC"
-                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                  className={inputClass}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+              <label className={labelClass}>
                 {t("setup.tires.notes")}
               </label>
               <input
@@ -522,7 +525,7 @@ export function SetupClient({
                 value={frontNotes}
                 onChange={(e) => setFrontNotes(e.target.value)}
                 placeholder="např. DD kostra, bez vložky, suchý bikepark"
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                className={inputClass}
               />
             </div>
           </div>
@@ -553,7 +556,7 @@ export function SetupClient({
 
             <div className="grid grid-cols-2 gap-3.5">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                <label className={labelClass}>
                   Tlak (bar)
                 </label>
                 <input
@@ -561,12 +564,12 @@ export function SetupClient({
                   step="0.05"
                   value={rearPressure}
                   onChange={(e) => setRearPressure(e.target.value)}
-                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 tabular-nums text-base focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                  className={cn(inputClass, "tabular-nums")}
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                <label className={labelClass}>
                   {t("setup.tires.insert")}
                 </label>
                 <input
@@ -574,13 +577,13 @@ export function SetupClient({
                   value={rearInsert}
                   onChange={(e) => setRearInsert(e.target.value)}
                   placeholder="např. CushCore Pro, Tubolight"
-                  className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                  className={inputClass}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+              <label className={labelClass}>
                 {t("setup.tires.notes")}
               </label>
               <input
@@ -588,7 +591,7 @@ export function SetupClient({
                 value={rearNotes}
                 onChange={(e) => setRearNotes(e.target.value)}
                 placeholder="např. DH kostra, CushCore Pro"
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 shadow-sm transition-all"
+                className={inputClass}
               />
             </div>
           </div>
@@ -596,7 +599,7 @@ export function SetupClient({
 
         {/* Celková poznámka k nastavení */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-sm">
-          <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+          <label className={labelClass}>
             {t("setup.generalNotes")}
           </label>
           <textarea
@@ -604,7 +607,7 @@ export function SetupClient({
             value={generalNotes}
             onChange={(e) => setGeneralNotes(e.target.value)}
             placeholder="např. Bikepark setup. Sucho, rychlé rozbité tratě. DD vpředu, DH vzadu, CushCore vzadu. Tlumič o 2 kliky pomalejší rebound než běžný trail setup."
-            className="w-full bg-white border border-slate-200/80 rounded-xl p-4 text-slate-900 text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm"
+            className={inputClass}
           />
         </div>
 
@@ -613,7 +616,7 @@ export function SetupClient({
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white font-semibold text-xs rounded-xl shadow-sm shadow-sky-200 transition-all flex items-center gap-2"
+            className={buttonClass("primary", "md", "flex items-center gap-2")}
           >
             <Save className="w-4 h-4" />
             <span>{loading ? t("common.loading") : t("setup.save")}</span>
@@ -625,7 +628,7 @@ export function SetupClient({
       {snapshots.length > 0 && (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
           <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-            <History className="w-4 h-4 text-sky-600" />
+            <History className="w-4 h-4 text-brand-600" />
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               Uložené profily a snímky nastavení ({snapshots.length})
             </h3>
@@ -638,7 +641,7 @@ export function SetupClient({
                 className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-2.5 text-xs hover:border-slate-300 transition-colors"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-sky-700">
+                  <span className="font-bold text-sm text-brand-700">
                     {snap.profileName || "Snímek nastavení"}
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -680,7 +683,7 @@ export function SetupClient({
       >
         <form onSubmit={handleSaveSnapshot} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               {t("setup.profileName")} *
             </label>
             <input
@@ -689,12 +692,12 @@ export function SetupClient({
               value={snapshotName}
               onChange={(e) => setSnapshotName(e.target.value)}
               placeholder={t("setup.profileNamePlaceholder")}
-              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm"
+              className={inputClass}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Poznámka k profilu
             </label>
             <textarea
@@ -702,7 +705,7 @@ export function SetupClient({
               value={snapshotNote}
               onChange={(e) => setSnapshotNote(e.target.value)}
               placeholder="Pro jaké tratě, počasí nebo závod byl profil vytvořen"
-              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm"
+              className={inputClass}
             />
           </div>
 
@@ -710,13 +713,13 @@ export function SetupClient({
             <button
               type="button"
               onClick={() => setIsSnapshotModalOpen(false)}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
+              className={buttonClass("ghost", "md")}
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-all"
+              className={buttonClass("primary", "lg")}
             >
               Uložit profil
             </button>

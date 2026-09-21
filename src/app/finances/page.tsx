@@ -13,6 +13,7 @@ import {
   Layers 
 } from "lucide-react";
 import { t, formatCzk, formatDateCs } from "@/lib/i18n";
+import { PageHeader } from "@/components/common/PageHeader";
 
 export default function GlobalFinancesPage() {
   const { data, deleteTransaction } = useVault();
@@ -45,16 +46,7 @@ export default function GlobalFinancesPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            {t("finances.title")}
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Globální kniha výdajů a příjmů spojených s koly, komponenty a servisem
-          </p>
-        </div>
-      </div>
+      <PageHeader title={t("finances.title")} subtitle="Globální kniha výdajů a příjmů spojených s koly, komponenty a servisem" />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -88,14 +80,14 @@ export default function GlobalFinancesPage() {
 
         <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-sky-700">
+            <span className="text-xs font-semibold uppercase tracking-wider text-brand-700">
               {t("finances.netCost")} (TCO)
             </span>
-            <div className="p-2 rounded-xl bg-sky-50 text-sky-600">
+            <div className="p-2 rounded-xl bg-brand-50 text-brand-600">
               <Coins className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-2xl font-bold text-sky-700 tabular-nums">
+          <span className="text-2xl font-bold text-brand-700 tabular-nums">
             {formatCzk(netTotal)}
           </span>
         </div>
@@ -118,7 +110,7 @@ export default function GlobalFinancesPage() {
                 <span className="text-lg font-bold text-slate-900 tabular-nums block">
                   {formatCzk(total)}
                 </span>
-                <span className="text-[11px] text-sky-700 font-semibold tabular-nums">
+                <span className="text-[11px] text-brand-700 font-semibold tabular-nums">
                   {percent} % výdajů
                 </span>
               </div>
@@ -156,7 +148,7 @@ export default function GlobalFinancesPage() {
                         {t(categoryKey)}
                       </span>
                       {item.bike && (
-                        <span className="text-xs text-sky-700 font-semibold">
+                        <span className="text-xs text-brand-700 font-semibold">
                           [{item.bike.name}]
                         </span>
                       )}

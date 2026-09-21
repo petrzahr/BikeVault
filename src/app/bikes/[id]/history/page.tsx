@@ -2,6 +2,7 @@
 
 import React, { use, useState } from "react";
 import { useVault } from "@/context/VaultContext";
+import { useFeedback } from "@/components/common/Feedback";
 import { BikeHeader } from "@/components/bike/BikeHeader";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 import { formatDateCs, formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
@@ -24,6 +25,7 @@ interface BikeHistoryPageProps {
 export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
   const { id } = use(params);
   const { data, getBike, getBikeServiceEvents, deleteOdometerEntry, deleteServiceEvent } = useVault();
+  const { toast } = useFeedback();
   const bike = getBike(id);
   const [pendingDelete, setPendingDelete] = useState<{
     kind: "SERVICE" | "ODOMETER";
@@ -37,7 +39,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       deleteServiceEvent(pendingDelete.id);
     } else {
       const res = deleteOdometerEntry(pendingDelete.id);
-      if (!res.success) alert(res.error || "Záznam nelze smazat.");
+      if (!res.success) toast(res.error || "Záznam nelze smazat.", "error");
     }
   };
 
@@ -45,7 +47,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
     return (
       <div className="p-12 text-center text-slate-500 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
         <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
-        <Link href="/garage" className="text-sky-600 hover:underline text-xs font-semibold">
+        <Link href="/garage" className="text-brand-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
         </Link>
       </div>
@@ -79,7 +81,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       title: `Montáž: ${compName}`,
       subtitle: `${catName} • při ${formatKm(inst.installedBikeKm)}`,
       badge: "Komponent",
-      badgeColor: "bg-sky-50 text-sky-700 border-sky-200/80",
+      badgeColor: "bg-brand-50 text-brand-700 border-brand-200/80",
       icon: Layers,
     });
 
@@ -103,7 +105,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       title: `Servis: ${item.description}`,
       subtitle: `${item.shopName || (item.performedBy === "SELF" ? "Svépomocí" : "Servis")} • ${formatCzk(Number(item.totalPrice || 0))}`,
       badge: "Servis",
-      badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
+      badgeColor: "bg-brand-50 text-brand-700 border-brand-200/80",
       icon: Wrench,
       onDelete: () => setPendingDelete({ kind: "SERVICE", id: item.id, label: `servisní záznam „${item.description}“ včetně navázané platby` }),
     });
@@ -121,7 +123,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Zavedení kola do garáže"}`,
         badge: `Výchozí stav • ${sourceLabel}`,
         badgeColor: isStrava
-          ? "bg-sky-50 text-sky-700 border-sky-200/80"
+          ? "bg-brand-50 text-brand-700 border-brand-200/80"
           : "bg-slate-100 text-slate-700 border-slate-200/80",
         icon: SlidersHorizontal,
       });
@@ -138,7 +140,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         subtitle: `${formatMinutes(odo.resultingMinutes)} (${deltaMinText}) • ${sourceLabel}${odo.note ? ` • ${odo.note}` : ""}`,
         badge: isStrava ? "Tachometr • Strava" : "Tachometr • Ručně",
         badgeColor: isStrava
-          ? "bg-sky-50 text-sky-700 border-sky-200/80"
+          ? "bg-brand-50 text-brand-700 border-brand-200/80"
           : "bg-emerald-50 text-emerald-700 border-emerald-200/80",
         icon: SlidersHorizontal,
         onDelete: odo.id === deletableOdometerId
@@ -186,7 +188,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
           return (
             <div key={idx} className="relative group">
               {/* Dot */}
-              <div className="absolute -left-6 sm:-left-8 top-1 w-6 h-6 rounded-full bg-white border-2 border-slate-300 group-hover:border-sky-600 transition-colors flex items-center justify-center text-slate-500 group-hover:text-sky-600 shadow-sm">
+              <div className="absolute -left-6 sm:-left-8 top-1 w-6 h-6 rounded-full bg-white border-2 border-slate-300 group-hover:border-brand-600 transition-colors flex items-center justify-center text-slate-500 group-hover:text-brand-600 shadow-sm">
                 <Icon className="w-3 h-3" />
               </div>
 
@@ -211,7 +213,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
                   <div className="mt-2 flex justify-end">
                     <button
                       onClick={item.onDelete}
-                      className="px-2 py-1 text-[11px] font-semibold text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                      className="px-2 py-1 text-[11px] font-semibold text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                       title="Smazat záznam"
                     >
                       <Trash2 className="w-3 h-3" />

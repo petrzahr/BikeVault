@@ -19,8 +19,10 @@ import {
 import { formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
 import { useVault } from "@/context/VaultContext";
+import { useFeedback } from "@/components/common/Feedback";
 import { Modal } from "@/components/common/Modal";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 interface ComponentDetailClientProps {
   componentData: {
@@ -49,6 +51,7 @@ export function ComponentDetailClient({
     getGarageBikes,
     deleteComponent
   } = useVault();
+  const { toast, confirm } = useFeedback();
   const router = useRouter();
 
   const { component, category, activeInstallation, installationHistory } = componentData;
@@ -96,20 +99,20 @@ export function ComponentDetailClient({
       toggleServiceScheduleActive(scheduleId);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Chyba při změně stavu plánu.";
-      alert(msg);
+      toast(msg, "error");
     }
   };
 
-  const handleDeleteSchedule = (scheduleId: string) => {
-    if (!confirm("Opravdu chcete tento servisní plán smazat?")) return;
+  const handleDeleteSchedule = async (scheduleId: string) => {
+    if (!(await confirm({ message: "Opravdu chcete tento servisní plán smazat?", confirmText: "Smazat", isDestructive: true }))) return;
     try {
       const res = deleteServiceSchedule(scheduleId);
       if (!res.success) {
-        alert(res.message || "Plán nelze smazat.");
+        toast(res.message || "Plán nelze smazat.", "error");
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Plán nelze smazat.";
-      alert(msg);
+      toast(msg, "error");
     }
   };
 
@@ -132,7 +135,7 @@ export function ComponentDetailClient({
   const handleSaveServiceEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!serviceName.trim()) {
-      alert("Zadejte název servisního úkonu.");
+      toast("Zadejte název servisního úkonu.", "error");
       return;
     }
 
@@ -162,7 +165,7 @@ export function ComponentDetailClient({
       setIsRecordModalOpen(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Chyba při zápisu servisu.";
-      alert(msg);
+      toast(msg, "error");
     } finally {
       setRecordLoading(false);
     }
@@ -195,7 +198,7 @@ export function ComponentDetailClient({
                   <span>Osazeno na: {activeBike.name}</span>
                 </span>
               ) : (
-                <span className="px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 text-xs font-semibold">
+                <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200 text-xs font-semibold">
                   Skladem
                 </span>
               )}
@@ -212,21 +215,21 @@ export function ComponentDetailClient({
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <button
               onClick={() => handleOpenRecordModal()}
-              className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
             >
-              <Wrench className="w-3.5 h-3.5 text-sky-600" />
+              <Wrench className="w-3.5 h-3.5 text-brand-600" />
               <span>Zapsat servis</span>
             </button>
             <button
               onClick={handleOpenCreateSchedule}
-              className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+              className={buttonClass("primary", "md", "flex items-center gap-1.5")}
             >
               <Plus className="w-4 h-4" />
               <span>Přidat plán</span>
             </button>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className="px-3 py-2 bg-white hover:bg-red-50 text-slate-500 hover:text-red-600 border border-slate-200 text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-2 bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 text-xs font-semibold rounded-xl shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
               title="Smazat komponentu"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -263,7 +266,7 @@ export function ComponentDetailClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <Clock className="w-5 h-5 text-sky-600" />
+              <Clock className="w-5 h-5 text-brand-600" />
               <span>Servisní plány komponenty ({schedulesWithStatus.length})</span>
             </h2>
             <p className="text-xs text-slate-500">
@@ -273,7 +276,7 @@ export function ComponentDetailClient({
 
           <button
             onClick={handleOpenCreateSchedule}
-            className="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+            className={buttonClass("primary", "sm", "flex items-center gap-1.5 self-start sm:self-auto")}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Přidat plán</span>
@@ -287,7 +290,7 @@ export function ComponentDetailClient({
             </p>
             <button
               onClick={handleOpenCreateSchedule}
-              className="px-4 py-2 bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 text-xs font-semibold rounded-xl transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 bg-brand-50 text-brand-700 border border-brand-200 hover:bg-brand-100 text-xs font-semibold rounded-xl transition-colors inline-flex items-center gap-1.5 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Vytvořit první plán</span>
@@ -383,13 +386,13 @@ export function ComponentDetailClient({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleOpenEditSchedule(sched)}
-                        className="px-3 py-1.5 text-xs text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl font-medium transition-colors cursor-pointer"
+                        className={buttonClass("secondary", "sm")}
                       >
                         Upravit
                       </button>
                       <button
                         onClick={() => handleOpenRecordModal(item)}
-                        className="px-3 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-xs transition-colors cursor-pointer"
+                        className={buttonClass("primary", "sm")}
                       >
                         Zapsat servis
                       </button>
@@ -405,7 +408,7 @@ export function ComponentDetailClient({
       {/* HISTORIE SERVISU SEKCE */}
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2 border-b border-slate-200 pb-3">
-          <Wrench className="w-5 h-5 text-sky-600" />
+          <Wrench className="w-5 h-5 text-brand-600" />
           <span>Servisní deník komponenty ({serviceEvents.length})</span>
         </h2>
 
@@ -446,7 +449,7 @@ export function ComponentDetailClient({
       {/* HISTORIE INSTALACÍ SEKCE */}
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2 border-b border-slate-200 pb-3">
-          <BikeIcon className="w-5 h-5 text-sky-600" />
+          <BikeIcon className="w-5 h-5 text-brand-600" />
           <span>Historie osazení na kolech ({installationHistory.length})</span>
         </h2>
 
@@ -500,7 +503,7 @@ export function ComponentDetailClient({
       >
         <form onSubmit={handleSaveServiceEvent} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               Název servisního úkonu *
             </label>
             <input
@@ -509,13 +512,13 @@ export function ComponentDetailClient({
               value={serviceName}
               onChange={(e) => setServiceName(e.target.value)}
               placeholder="např. Výměna těsnění a oleje"
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Datum provedení
               </label>
               <input
@@ -523,12 +526,12 @@ export function ComponentDetailClient({
                 required
                 value={serviceDate}
                 onChange={(e) => setServiceDate(e.target.value)}
-                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+                className={inputClass}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Provedení
               </label>
               <select
@@ -539,7 +542,7 @@ export function ComponentDetailClient({
                   if (val === "DIY") setServiceProvider("Svépomocí");
                   else setServiceProvider("");
                 }}
-                className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+                className={inputClass}
               >
                 <option value="DIY">Svépomocí</option>
                 <option value="WORKSHOP">Odborný servis / Dílna</option>
@@ -548,7 +551,7 @@ export function ComponentDetailClient({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               Mechanik / Název servisu
             </label>
             <input
@@ -556,13 +559,13 @@ export function ComponentDetailClient({
               value={serviceProvider}
               onChange={(e) => setServiceProvider(e.target.value)}
               placeholder="např. Svépomocí, Bikeclinic, Kolofix"
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Cena dílů (Kč)
               </label>
               <input
@@ -571,12 +574,12 @@ export function ComponentDetailClient({
                 value={partsCost}
                 onChange={(e) => setPartsCost(e.target.value)}
                 placeholder="0"
-                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+                className={cn(inputClass, "tabular-nums")}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Cena práce (Kč)
               </label>
               <input
@@ -585,13 +588,13 @@ export function ComponentDetailClient({
                 value={laborCost}
                 onChange={(e) => setLaborCost(e.target.value)}
                 placeholder="0"
-                className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+                className={cn(inputClass, "tabular-nums")}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               Poznámka k servisu
             </label>
             <textarea
@@ -599,7 +602,7 @@ export function ComponentDetailClient({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Popis provedených prací, použitých těsnění a olejů..."
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
@@ -607,14 +610,14 @@ export function ComponentDetailClient({
             <button
               type="button"
               onClick={() => setIsRecordModalOpen(false)}
-              className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+              className={buttonClass("secondary", "lg")}
             >
               Zrušit
             </button>
             <button
               type="submit"
               disabled={recordLoading}
-              className="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className={buttonClass("primary", "lg", "flex items-center gap-2")}
             >
               {recordLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               <span>Zapsat servis</span>

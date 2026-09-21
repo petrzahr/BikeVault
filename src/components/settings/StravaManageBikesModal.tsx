@@ -20,6 +20,7 @@ import { compareMileage } from "@/lib/domain/stravaSync";
 import { formatKm } from "@/lib/i18n";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { getValidAccessToken } from "@/lib/google/googleAuth";
+import { buttonClass, labelClass } from "@/lib/ui";
 
 interface StravaManageBikesModalProps {
   isOpen: boolean;
@@ -214,9 +215,9 @@ export function StravaManageBikesModal({
           <button
             onClick={loadStravaBikes}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200/80 transition-colors disabled:opacity-50 cursor-pointer"
+            className={buttonClass("secondary", "sm", "inline-flex items-center gap-1.5")}
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-sky-600" : "text-slate-500"}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-brand-600" : "text-slate-500"}`} />
             <span>Obnovit ze Stravy</span>
           </button>
         </div>
@@ -224,7 +225,7 @@ export function StravaManageBikesModal({
         {/* Loading state */}
         {loading && stravaBikes.length === 0 ? (
           <div className="py-12 text-center text-slate-500 space-y-2">
-            <Loader2 className="w-6 h-6 animate-spin mx-auto text-sky-600" />
+            <Loader2 className="w-6 h-6 animate-spin mx-auto text-brand-600" />
             <p className="text-xs">Načítám kola z vašeho profilu Strava...</p>
           </div>
         ) : stravaBikes.length === 0 ? (
@@ -246,7 +247,7 @@ export function StravaManageBikesModal({
                   key={sb.id}
                   className={`p-4 rounded-xl border transition-all ${
                     isLinked
-                      ? "bg-sky-50/30 border-sky-200/80"
+                      ? "bg-brand-50/30 border-brand-200/80"
                       : "bg-white border-slate-200/80 hover:border-slate-300 shadow-sm"
                   }`}
                 >
@@ -274,8 +275,8 @@ export function StravaManageBikesModal({
 
                       {/* Linked Status */}
                       {isLinked && linkedBike ? (
-                        <div className="pt-1 flex items-center gap-1.5 text-xs text-sky-800 font-medium">
-                          <Link2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                        <div className="pt-1 flex items-center gap-1.5 text-xs text-brand-800 font-medium">
+                          <Link2 className="w-3.5 h-3.5 text-brand-600 shrink-0" />
                           <span>Propojeno s: </span>
                           <span className="font-bold text-slate-900">{linkedBike.name}</span>
                           <span className="text-slate-400 text-[11px] tabular-nums">
@@ -297,9 +298,9 @@ export function StravaManageBikesModal({
                           <button
                             onClick={() => handleSyncBike(sb)}
                             disabled={isSyncing}
-                            className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200/80 shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                            className={buttonClass("secondary", "sm", "flex items-center gap-1.5")}
                           >
-                            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin text-sky-600" : "text-slate-500"}`} />
+                            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin text-brand-600" : "text-slate-500"}`} />
                             <span>Synchronizovat</span>
                           </button>
 
@@ -321,7 +322,7 @@ export function StravaManageBikesModal({
                               setSyncMileageOnLink(true);
                               setError(null);
                             }}
-                            className="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200/80 shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                            className={buttonClass("secondary", "sm", "flex items-center gap-1.5")}
                           >
                             <Link2 className="w-3.5 h-3.5 text-slate-500" />
                             <span>Propojit s existujícím</span>
@@ -332,7 +333,7 @@ export function StravaManageBikesModal({
                               onImportBike(sb);
                               onClose();
                             }}
-                            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                            className={buttonClass("dark", "sm", "flex items-center gap-1.5")}
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span>Importovat</span>
@@ -372,13 +373,13 @@ export function StravaManageBikesModal({
             ) : (
               <div className="space-y-3 text-xs">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                  <label className={labelClass}>
                     Vyberte kolo z BikeVault:
                   </label>
                   <select
                     value={selectedVaultBikeId}
                     onChange={(e) => setSelectedVaultBikeId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white rounded-lg border border-slate-200/80 text-xs text-slate-900 font-medium focus:outline-hidden focus:ring-2 focus:ring-sky-500"
+                    className="w-full px-3 py-2 bg-white rounded-lg border border-slate-200/80 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-brand-500"
                   >
                     {availableVaultBikes.map((b) => (
                       <option key={b.id} value={b.id}>
@@ -415,7 +416,7 @@ export function StravaManageBikesModal({
                               type="checkbox"
                               checked={syncMileageOnLink}
                               onChange={(e) => setSyncMileageOnLink(e.target.checked)}
-                              className="rounded text-sky-600 focus:ring-sky-500"
+                              className="rounded text-brand-600 focus:ring-brand-500"
                             />
                             <span>Aktualizovat na {formatKm(linkingStravaBike.distanceKm)}</span>
                           </label>
@@ -441,7 +442,7 @@ export function StravaManageBikesModal({
                   </button>
                   <button
                     onClick={handleConfirmLink}
-                    className="px-4 py-1.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
+                    className={buttonClass("primary", "sm")}
                   >
                     Potvrdit propojení
                   </button>
@@ -470,7 +471,7 @@ export function StravaManageBikesModal({
               </button>
               <button
                 onClick={handleConfirmUnlink}
-                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
+                className={buttonClass("danger", "sm")}
               >
                 Potvrdit odpojení
               </button>

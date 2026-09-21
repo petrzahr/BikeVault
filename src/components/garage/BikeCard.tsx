@@ -17,6 +17,7 @@ import { formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
 import { UpdateOdometerModal } from "./UpdateOdometerModal";
 import { QuickPressureModal } from "./QuickPressureModal";
 import { resolveBikeImage } from "@/lib/domain/bikeImage";
+import { buttonClass } from "@/lib/ui";
 
 interface BikeCardProps {
   bike: {
@@ -101,12 +102,12 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
 
           {/* Top badges */}
           <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-            <span className="px-2.5 py-1 bg-white/95 backdrop-blur-xs rounded-xl text-[11px] font-semibold tracking-wide text-slate-700 border border-slate-200/80 shadow-xs">
+            <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-xl text-[11px] font-semibold tracking-wide text-slate-700 border border-slate-200/80 shadow-sm">
               {bike.category} • {bike.discipline}
             </span>
 
             {bike.modelYear && (
-              <span className="px-2.5 py-1 bg-white/95 backdrop-blur-xs rounded-xl text-[11px] tabular-nums font-semibold text-slate-700 border border-slate-200/80 shadow-xs">
+              <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-xl text-[11px] tabular-nums font-semibold text-slate-700 border border-slate-200/80 shadow-sm">
                 {bike.modelYear}
               </span>
             )}
@@ -117,7 +118,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
           {/* Header titles */}
           <div>
-            <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-snug group-hover:text-sky-600 transition-colors">
+            <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-snug group-hover:text-brand-600 transition-colors">
               {bike.name}
             </h3>
             <p className="text-xs text-slate-500 font-medium mt-0.5">
@@ -176,7 +177,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
             <button
               onClick={() => setIsOdometerModalOpen(true)}
               title={t("garage.card.quickUpdate")}
-              className="flex-1 px-3 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 text-xs font-semibold rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              className={buttonClass("secondary", "md", "flex-1 flex items-center justify-center gap-1.5")}
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
               <span>{t("garage.card.quickUpdate")}</span>
@@ -192,7 +193,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
 
             <Link
               href={`/bikes/${bike.id}`}
-              className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-sm shadow-sky-200 transition-colors flex items-center justify-center gap-1 text-xs font-semibold"
+              className="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-sm shadow-brand-200 transition-colors flex items-center justify-center gap-1 text-xs font-semibold"
             >
               <span>{t("garage.card.details")}</span>
               <ArrowUpRight className="w-3.5 h-3.5" />

@@ -28,6 +28,7 @@ import { DeleteBikeModal } from "@/components/garage/DeleteBikeModal";
 import { getValidAccessToken } from "@/lib/google/googleAuth";
 import { resolveBikeImage, formatWeightCs } from "@/lib/domain/bikeImage";
 import { Bike } from "@/types/vault";
+import { buttonClass } from "@/lib/ui";
 
 interface BikeHeaderProps {
   bike: {
@@ -157,17 +158,17 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
               <button
                 onClick={handleSyncWithStrava}
                 disabled={isSyncingStrava}
-                className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-95"
+                className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
                 title="Synchronizovat nájezd se Stravou"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${isSyncingStrava ? "animate-spin text-sky-600" : "text-slate-500"}`} />
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncingStrava ? "animate-spin text-brand-600" : "text-slate-500"}`} />
                 <span>Synchronizovat</span>
               </button>
             )}
 
             <button
               onClick={() => setIsEditModalOpen(true)}
-              className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+              className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
             >
               <Pencil className="w-3.5 h-3.5 text-slate-500" />
               <span>Upravit kolo</span>
@@ -175,7 +176,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsOdometerModalOpen(true)}
-              className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+              className={buttonClass("primary", "md", "flex items-center gap-1.5")}
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>{t("odometer.updateOdometer")}</span>
@@ -183,7 +184,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsPressureModalOpen(true)}
-              className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+              className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
             >
               <Gauge className="w-3.5 h-3.5 text-slate-500" />
               <span>Tlaky</span>
@@ -191,7 +192,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className="px-3 py-2 bg-white hover:bg-red-50 text-slate-500 hover:text-red-600 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-2 bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
               title="Smazat kolo"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -203,7 +204,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         {/* Strava Notification Banner if any */}
         {stravaSyncNotice && (
           <div
-            className={`p-3 rounded-xl text-xs flex items-start gap-2.5 border shadow-xs animate-fade-in ${
+            className={`p-3 rounded-xl text-xs flex items-start gap-2.5 border shadow-sm animate-fade-in ${
               stravaSyncNotice.type === "success"
                 ? "bg-emerald-50/80 border-emerald-200/80 text-emerald-800"
                 : stravaSyncNotice.type === "warning"
@@ -229,7 +230,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         {/* Bike Title, Image & Metadata */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           {/* Bike Photo Thumbnail / Placeholder */}
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-xs shrink-0 flex items-center justify-center">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-sm shrink-0 flex items-center justify-center">
             {resolvedImage && !imageFailed ? (
               <img
                 src={resolvedImage}
@@ -250,12 +251,12 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
                 {bike.name}
               </h1>
               {bike.stravaGearId && (
-                <span className="px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-xs font-semibold flex items-center gap-1">
-                  <Link2 className="w-3 h-3 text-sky-600" />
+                <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200/80 text-xs font-semibold flex items-center gap-1">
+                  <Link2 className="w-3 h-3 text-brand-600" />
                   <span>Strava propojeno</span>
                 </span>
               )}
-              <span className="px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-xs font-semibold">
+              <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200/80 text-xs font-semibold">
                 {bike.category} • {bike.discipline}
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-medium">
@@ -305,7 +306,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
                   href={tab.href}
                   className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                     active
-                      ? "bg-white text-sky-700 shadow-sm"
+                      ? "bg-white text-brand-700 shadow-sm"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >

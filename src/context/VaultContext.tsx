@@ -44,6 +44,7 @@ import {
   exportCorruptedRawData,
   getInitialData,
 } from "@/lib/storage/storageService";
+import { useFeedback } from "@/components/common/Feedback";
 import { recordOdometerSnapshot, calculateInstallationUsage } from "@/lib/domain/odometer";
 import { compareMileage, validateLinkConstraint, validateNewBikeGearId } from "@/lib/domain/stravaSync";
 import {
@@ -203,6 +204,7 @@ function generateId(prefix = "id"): string {
 }
 
 export function VaultProvider({ children }: { children: ReactNode }) {
+  const { toast } = useFeedback();
   const [data, setData] = useState<BikeVaultData>(getInitialData());
   const [appState, setAppState] = useState<AppState>("authLoading");
   const [isLoaded, setIsLoaded] = useState(false);
@@ -519,7 +521,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       }
       return true;
     } catch (e) {
-      alert("Chyba při importu zálohy: " + (e instanceof Error ? e.message : String(e)));
+      toast("Chyba při importu zálohy: " + (e instanceof Error ? e.message : String(e)), "error");
       return false;
     }
   };

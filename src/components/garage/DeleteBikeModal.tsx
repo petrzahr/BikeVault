@@ -5,6 +5,7 @@ import { AlertTriangle } from "lucide-react";
 import { Modal } from "@/components/common/Modal";
 import { useVault } from "@/context/VaultContext";
 import { BikeComponentsDisposition } from "@/lib/domain/deletion";
+import { buttonClass } from "@/lib/ui";
 
 interface DeleteBikeModalProps {
   isOpen: boolean;
@@ -29,7 +30,7 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Smazat kolo" maxWidth="max-w-md">
       <div className="flex items-start gap-3">
-        <div className="p-2 rounded-xl shrink-0 bg-red-50 text-red-600">
+        <div className="p-2 rounded-xl shrink-0 bg-rose-50 text-rose-600">
           <AlertTriangle className="w-6 h-6" />
         </div>
         <div className="text-sm text-slate-600 space-y-2">
@@ -46,7 +47,7 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
           <legend className="text-xs font-semibold text-slate-700 mb-2">
             Co udělat s komponenty na kole ({installedCount})?
           </legend>
-          <label className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50/50">
+          <label className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50/50">
             <input
               type="radio"
               name="components-disposition"
@@ -59,7 +60,7 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
               Komponenty zůstanou v evidenci a půjdou namontovat na jiné kolo.
             </span>
           </label>
-          <label className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer has-[:checked]:border-red-500 has-[:checked]:bg-red-50/50">
+          <label className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50/50">
             <input
               type="radio"
               name="components-disposition"
@@ -79,14 +80,14 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+          className={buttonClass("secondary", "lg")}
         >
           Zrušit
         </button>
         <button
           type="button"
           onClick={handleConfirm}
-          className="px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors bg-red-600 hover:bg-red-700 shadow-sm shadow-red-200"
+          className={buttonClass("danger", "lg")}
         >
           Smazat kolo
         </button>

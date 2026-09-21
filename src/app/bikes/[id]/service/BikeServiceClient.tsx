@@ -21,8 +21,10 @@ import {
 } from "lucide-react";
 import { t, formatDateCs, formatKm, formatMinutes, formatCzk } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
+import { useFeedback } from "@/components/common/Feedback";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
 import { Modal } from "@/components/common/Modal";
+import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 interface BikeServiceClientProps {
   bike: any;
@@ -46,6 +48,7 @@ export function BikeServiceClient({
     getBikeServiceEvents, 
     getBikeInstalledComponents 
   } = useVault();
+  const { toast, confirm } = useFeedback();
 
   const schedulesWithStatus = propSchedulesWithStatus ?? getBikeServiceSchedulesWithStatus(bike.id);
   const serviceEvents = propServiceEvents ?? getBikeServiceEvents(bike.id);
@@ -86,20 +89,20 @@ export function BikeServiceClient({
       toggleServiceScheduleActive(scheduleId);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Chyba při změně stavu plánu.";
-      alert(msg);
+      toast(msg, "error");
     }
   };
 
-  const handleDeletePlan = (scheduleId: string) => {
-    if (!confirm("Opravdu chcete tento servisní plán smazat?")) return;
+  const handleDeletePlan = async (scheduleId: string) => {
+    if (!(await confirm({ message: "Opravdu chcete tento servisní plán smazat?", confirmText: "Smazat", isDestructive: true }))) return;
     try {
       const res = deleteServiceSchedule(scheduleId);
       if (!res.success) {
-        alert(res.message || "Plán nelze smazat.");
+        toast(res.message || "Plán nelze smazat.", "error");
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Plán nelze smazat.";
-      alert(msg);
+      toast(msg, "error");
     }
   };
 
@@ -158,7 +161,7 @@ export function BikeServiceClient({
       setIsRecordModalOpen(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Chyba při zápisu servisu.";
-      alert(msg);
+      toast(msg, "error");
     } finally {
       setLoading(false);
     }
@@ -182,16 +185,16 @@ export function BikeServiceClient({
         <div className="flex items-center gap-2.5 self-start sm:self-auto flex-wrap">
           <button
             onClick={handleOpenRecordWithoutPlan}
-            className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/80 text-xs font-semibold rounded-xl shadow-sm transition-all flex items-center gap-1.5"
+            className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
             title="Jednorázový servis mimo pravidelný plán"
           >
-            <Wrench className="w-3.5 h-3.5 text-sky-600" />
+            <Wrench className="w-3.5 h-3.5 text-brand-600" />
             <span>Zapsat servis bez plánu</span>
           </button>
 
           <button
             onClick={handleOpenCreatePlan}
-            className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-all flex items-center gap-1.5"
+            className={buttonClass("primary", "md", "flex items-center gap-1.5")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat servisní plán</span>
@@ -207,7 +210,7 @@ export function BikeServiceClient({
           </h3>
           <button
             onClick={handleOpenCreatePlan}
-            className="text-xs font-semibold text-sky-600 hover:text-sky-700 inline-flex items-center gap-1"
+            className="text-xs font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Přidat plán</span>
@@ -221,7 +224,7 @@ export function BikeServiceClient({
             </p>
             <button
               onClick={handleOpenCreatePlan}
-              className="px-4 py-2 bg-sky-50 text-sky-700 border border-sky-200/80 hover:bg-sky-100 text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-1.5"
+              className="px-4 py-2 bg-brand-50 text-brand-700 border border-brand-200/80 hover:bg-brand-100 text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Vytvořit první servisní plán</span>
@@ -295,7 +298,7 @@ export function BikeServiceClient({
                     </h4>
 
                     {comp ? (
-                      <p className="text-xs text-sky-700 font-medium flex items-center gap-1">
+                      <p className="text-xs text-brand-700 font-medium flex items-center gap-1">
                         <Layers className="w-3 h-3" />
                         <span>Komponent: {comp.manufacturer} {comp.model}</span>
                       </p>
@@ -323,7 +326,7 @@ export function BikeServiceClient({
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                     <button
                       onClick={() => handleOpenModalWithSchedule(sched)}
-                      className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 shadow-sm"
+                      className={buttonClass("primary", "sm", "flex items-center gap-1.5")}
                     >
                       <Wrench className="w-3.5 h-3.5" />
                       <span>Zapsat servis</span>
@@ -390,7 +393,7 @@ export function BikeServiceClient({
                         {ev.name || ev.description}
                       </span>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border ${
-                        ev.executionType === "DIY" || ev.performedBy === "SELF" ? "bg-sky-50 text-sky-700 border-sky-200/80" : "bg-purple-50 text-purple-700 border-purple-200/80"
+                        ev.executionType === "DIY" || ev.performedBy === "SELF" ? "bg-brand-50 text-brand-700 border-brand-200/80" : "bg-purple-50 text-purple-700 border-purple-200/80"
                       }`}>
                         {ev.executionType === "DIY" || ev.performedBy === "SELF" ? "Svépomocí" : "Dílna"}
                       </span>
@@ -459,7 +462,7 @@ export function BikeServiceClient({
       >
         <form onSubmit={handleRecordService} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Název servisního úkonu *
             </label>
             <input
@@ -468,13 +471,13 @@ export function BikeServiceClient({
               value={serviceName}
               onChange={(e) => setServiceName(e.target.value)}
               placeholder="např. Servis spodních nohou vidlice"
-              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+              className={inputClass}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              <label className={labelClass}>
                 Datum provedení
               </label>
               <input
@@ -482,12 +485,12 @@ export function BikeServiceClient({
                 required
                 value={serviceDate}
                 onChange={(e) => setServiceDate(e.target.value)}
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+                className={inputClass}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              <label className={labelClass}>
                 Provedení
               </label>
               <select
@@ -498,7 +501,7 @@ export function BikeServiceClient({
                   if (val === "DIY") setServiceProvider("Svépomocí");
                   else setServiceProvider("");
                 }}
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+                className={inputClass}
               >
                 <option value="DIY">Svépomocí</option>
                 <option value="WORKSHOP">Odborný servis / Dílna</option>
@@ -507,7 +510,7 @@ export function BikeServiceClient({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Mechanik / Název servisu
             </label>
             <input
@@ -515,13 +518,13 @@ export function BikeServiceClient({
               value={serviceProvider}
               onChange={(e) => setServiceProvider(e.target.value)}
               placeholder="např. Svépomocí, Bikeclinic, Kolofix"
-              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+              className={inputClass}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              <label className={labelClass}>
                 Cena dílů (Kč)
               </label>
               <input
@@ -530,12 +533,12 @@ export function BikeServiceClient({
                 value={partsCost}
                 onChange={(e) => setPartsCost(e.target.value)}
                 placeholder="0"
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 tabular-nums text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+                className={cn(inputClass, "tabular-nums")}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+              <label className={labelClass}>
                 Cena práce (Kč)
               </label>
               <input
@@ -544,20 +547,20 @@ export function BikeServiceClient({
                 value={laborCost}
                 onChange={(e) => setLaborCost(e.target.value)}
                 placeholder="0"
-                className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-900 tabular-nums text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+                className={cn(inputClass, "tabular-nums")}
               />
             </div>
           </div>
 
           {/* Týká se komponenty */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Vztahuje se ke komponentě (volitelné)
             </label>
             <select
               value={selectedComponentId}
               onChange={(e) => setSelectedComponentId(e.target.value)}
-              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+              className={inputClass}
             >
               <option value="">-- Pouze celé kolo --</option>
               {installedComponents.map((item) => (
@@ -569,13 +572,13 @@ export function BikeServiceClient({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Propojený servisní plán (resetuje interval)
             </label>
             <select
               value={selectedScheduleId}
               onChange={(e) => setSelectedScheduleId(e.target.value)}
-              className="w-full bg-white border border-slate-200/80 rounded-xl px-3.5 py-2 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+              className={inputClass}
             >
               <option value="">-- Bez plánu (jednorázový servis) --</option>
               {schedulesWithStatus.map((s) => (
@@ -587,7 +590,7 @@ export function BikeServiceClient({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+            <label className={labelClass}>
               Poznámka k servisu
             </label>
             <textarea
@@ -595,7 +598,7 @@ export function BikeServiceClient({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Popis provedených prací, použitých těsnění a olejů..."
-              className="w-full bg-white border border-slate-200/80 rounded-xl p-3 text-slate-900 text-xs focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all shadow-sm"
+              className={inputClass}
             />
           </div>
 
@@ -603,14 +606,14 @@ export function BikeServiceClient({
             <button
               type="button"
               onClick={() => setIsRecordModalOpen(false)}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition-colors"
+              className={buttonClass("ghost", "md")}
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl shadow-sm shadow-sky-200 transition-all"
+              className={buttonClass("primary", "lg")}
             >
               {loading ? t("common.loading") : "Zapsat servis"}
             </button>

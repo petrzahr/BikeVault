@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 import { Bike, Loader2, AlertTriangle, Download, LogOut, RefreshCw } from "lucide-react";
 import { useVault } from "@/context/VaultContext";
 import { LoginScreen } from "./LoginScreen";
+import { buttonClass } from "@/lib/ui";
 
 interface AuthGateProps {
   children: ReactNode;
@@ -31,10 +32,10 @@ export function AuthGate({ children }: AuthGateProps) {
           <Bike className="w-8 h-8" />
         </div>
         <div className="text-slate-900 font-extrabold text-lg tracking-tight">
-          Bike<span className="text-sky-600">Vault</span>
+          Bike<span className="text-brand-600">Vault</span>
         </div>
         <div className="flex items-center gap-2 text-slate-500 text-xs mt-2.5 font-medium">
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-600" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-600" />
           <span>Ověřuji přihlášení...</span>
         </div>
       </div>
@@ -54,10 +55,10 @@ export function AuthGate({ children }: AuthGateProps) {
           <Bike className="w-8 h-8" />
         </div>
         <div className="text-slate-900 font-extrabold text-lg tracking-tight">
-          Bike<span className="text-sky-600">Vault</span>
+          Bike<span className="text-brand-600">Vault</span>
         </div>
         <div className="flex items-center gap-2 text-slate-500 text-xs mt-2.5 font-medium">
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-600" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-600" />
           <span>Načítám data z Google Disku...</span>
         </div>
       </div>
@@ -95,7 +96,7 @@ export function AuthGate({ children }: AuthGateProps) {
               <button
                 type="button"
                 onClick={exportCorruptedFile}
-                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all"
+                className={buttonClass("primary", "lg", "w-full inline-flex items-center justify-center gap-2")}
               >
                 <Download className="w-4 h-4" />
                 <span>Stáhnout původní data pro kontrolu</span>
@@ -104,7 +105,7 @@ export function AuthGate({ children }: AuthGateProps) {
             <button
               type="button"
               onClick={() => logout()}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-all"
+              className={buttonClass("secondary", "lg", "w-full inline-flex items-center justify-center gap-2")}
             >
               <LogOut className="w-4 h-4" />
               <span>Odhlásit se a zkusit znovu</span>
@@ -145,7 +146,7 @@ export function AuthGate({ children }: AuthGateProps) {
               type="button"
               disabled={syncStatus === "saving"}
               onClick={() => reauthorizeGoogleDrive()}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-sky-600 hover:bg-sky-700 disabled:bg-sky-400 text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
+              className={buttonClass("primary", "lg", "w-full inline-flex items-center justify-center gap-2")}
             >
               {syncStatus === "saving" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -157,7 +158,7 @@ export function AuthGate({ children }: AuthGateProps) {
             <button
               type="button"
               onClick={() => logout()}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+              className={buttonClass("secondary", "lg", "w-full inline-flex items-center justify-center gap-2")}
             >
               <LogOut className="w-4 h-4" />
               <span>Odhlásit se</span>

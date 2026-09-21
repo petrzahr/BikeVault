@@ -11,6 +11,7 @@ import {
   processImageFile,
   resolveBikeImage,
 } from "@/lib/domain/bikeImage";
+import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 export interface BikeModalProps {
   isOpen: boolean;
@@ -267,7 +268,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* 1. Název kola */}
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               {t("bike.name")} *
             </label>
             <input
@@ -276,13 +277,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="např. Propain Spindrift CF"
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
           {/* 2. Výrobce */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               {t("bike.manufacturer")} *
             </label>
             <input
@@ -291,13 +292,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               value={manufacturer}
               onChange={(e) => setManufacturer(e.target.value)}
               placeholder="např. Propain, Canyon, Trek"
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
           {/* 3. Model */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               {t("bike.model")} *
             </label>
             <input
@@ -306,13 +307,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               value={model}
               onChange={(e) => setModel(e.target.value)}
               placeholder="např. Spindrift CF, Grizl CF SL"
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
           {/* 4. Modelový rok */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               {t("bike.modelYear")}
             </label>
             <input
@@ -320,13 +321,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               value={modelYear}
               onChange={(e) => setModelYear(e.target.value ? parseInt(e.target.value, 10) : "")}
               placeholder="2024"
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+              className={cn(inputClass, "tabular-nums")}
             />
           </div>
 
           {/* 5. Velikost rámu */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               Velikost rámu
             </label>
             <input
@@ -334,13 +335,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               value={frameSize}
               onChange={(e) => setFrameSize(e.target.value)}
               placeholder="např. L, 56, M/L"
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
           {/* 6. Sériové číslo rámu */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               Sériové číslo rámu
             </label>
             <input
@@ -348,13 +349,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               value={serialNumber}
               onChange={(e) => setSerialNumber(e.target.value)}
               placeholder="Výrobní číslo rámu"
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
           {/* 7. Hmotnost */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+            <label className={labelClass}>
               <Scale className="w-3.5 h-3.5 text-slate-400" />
               <span>Hmotnost</span>
             </label>
@@ -365,7 +366,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 value={weightInput}
                 onChange={(e) => setWeightInput(e.target.value)}
                 placeholder="např. 15,8"
-                className="w-full pl-3.5 pr-10 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+                className={cn(inputClass, "pr-10 tabular-nums")}
               />
               <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">
                 kg
@@ -377,13 +378,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
         {/* Klasifikace */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               {t("bike.category")}
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+              className={inputClass}
             >
               <option value="MTB">MTB</option>
               <option value="GRAVEL">Gravel</option>
@@ -397,13 +398,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               {t("bike.suspensionType")}
             </label>
             <select
               value={suspensionType}
               onChange={(e) => setSuspensionType(e.target.value)}
-              className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+              className={inputClass}
             >
               <option value="FULL_SUSPENSION">Celoodpružené</option>
               <option value="FRONT_SUSPENSION">Pouze přední (Hardtail)</option>
@@ -412,13 +413,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               {t("bike.driveType")}
             </label>
             <select
               value={driveType}
               onChange={(e) => setDriveType(e.target.value)}
-              className="w-full px-2.5 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+              className={inputClass}
             >
               <option value="CONVENTIONAL">Klasické</option>
               <option value="ELECTRIC">Elektrokolo (E-bike)</option>
@@ -429,7 +430,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
         {/* Nákup a výchozí počítadlo */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               {t("bike.purchaseDate")} *
             </label>
             <input
@@ -437,12 +438,12 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               required
               value={purchaseDate}
               onChange={(e) => setPurchaseDate(e.target.value)}
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               {t("bike.purchasePrice")} (Kč)
             </label>
             <input
@@ -450,20 +451,20 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               min="0"
               value={purchasePrice}
               onChange={(e) => setPurchasePrice(e.target.value)}
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+              className={cn(inputClass, "tabular-nums")}
             />
           </div>
 
           {/* Stav kola (pouze v editaci) */}
           {isEditMode && (
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className={labelClass}>
                 Stav kola
               </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as "ACTIVE" | "INACTIVE" | "SOLD" | "ARCHIVED")}
-                className="w-full px-2.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 text-slate-700"
+                className={inputClass}
               >
                 <option value="ACTIVE">Aktivní</option>
                 <option value="INACTIVE">Neaktivní</option>
@@ -477,7 +478,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           {!isEditMode && (
             <>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className={labelClass}>
                   {t("bike.initialKm")}
                 </label>
                 <input
@@ -486,12 +487,12 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                   min="0"
                   value={initialKm}
                   onChange={(e) => setInitialKm(e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+                  className={cn(inputClass, "tabular-nums")}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className={labelClass}>
                   {t("bike.initialHours")}
                 </label>
                 <input
@@ -499,7 +500,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                   min="0"
                   value={initialHours}
                   onChange={(e) => setInitialHours(e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 tabular-nums"
+                  className={cn(inputClass, "tabular-nums")}
                 />
               </div>
             </>
@@ -508,7 +509,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
         {/* Fotografie kola - nahrání souboru a náhled */}
         <div className="space-y-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80">
-          <label className="block text-xs font-semibold text-slate-700">
+          <label className={labelClass}>
             Fotografie kola
           </label>
 
@@ -533,7 +534,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             {/* Ovládací prvky pro nahrání a odebrání */}
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2 flex-wrap">
-                <label className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-xs cursor-pointer transition-all flex items-center gap-1.5 active:scale-95">
+                <label className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm cursor-pointer transition-all flex items-center gap-1.5 active:scale-95">
                   <Upload className="w-3.5 h-3.5 text-slate-500" />
                   <span>{uploadedImage ? "Změnit soubor" : "Nahrát fotografii"}</span>
                   <input
@@ -548,7 +549,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                   <button
                     type="button"
                     onClick={handleRemoveUploadedImage}
-                    className="px-3 py-2 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 text-xs font-semibold rounded-xl border border-rose-200/80 shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="px-3 py-2 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 text-xs font-semibold rounded-xl border border-rose-200/80 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Odebrat fotku</span>
@@ -559,7 +560,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               <p className="text-[11px] text-slate-500">
                 Podporované formáty: JPEG, PNG, WebP (max. 10 MB).
                 {uploadedImage && imageUrl && (
-                  <span className="block text-sky-600 font-medium mt-0.5">
+                  <span className="block text-brand-600 font-medium mt-0.5">
                     Nahraná fotografie má přednost před níže uvedenou URL adresou.
                   </span>
                 )}
@@ -569,7 +570,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
           {/* Externí URL adresa fotografie */}
           <div className="pt-2 border-t border-slate-200/60">
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className={labelClass}>
               URL fotografie kola (volitelné)
             </label>
             <input
@@ -580,14 +581,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 setPreviewFailed(false);
               }}
               placeholder="https://..."
-              className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+              className={inputClass}
             />
           </div>
         </div>
 
         {/* Poznámky */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
+          <label className={labelClass}>
             {t("bike.notes")}
           </label>
           <textarea
@@ -595,7 +596,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Poznámka ke kolu, komponentům nebo určení"
-            className="w-full px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+            className={inputClass}
           />
         </div>
 
@@ -604,14 +605,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer"
+            className={buttonClass("secondary", "lg")}
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-5 py-2 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm shadow-sky-200 transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer active:scale-95"
+            className={buttonClass("primary", "lg", "flex items-center gap-2")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>
