@@ -24,12 +24,14 @@ interface SidebarProps {
   mobileOpen: boolean;
   onCloseMobile: () => void;
   onOpenAddBikeModal: () => void;
+  onOpenAddComponentModal: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   mobileOpen,
   onCloseMobile,
   onOpenAddBikeModal,
+  onOpenAddComponentModal,
 }) => {
   const pathname = usePathname();
   const { data, getServiceScheduleStatuses } = useVault();
@@ -114,6 +116,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <Plus className="w-4 h-4" />
             <span>Přidat nové kolo</span>
+          </button>
+          <button
+            onClick={() => {
+              onOpenAddComponentModal();
+              onCloseMobile();
+            }}
+            className={buttonClass("secondary", "lg", "w-full flex items-center justify-center gap-2")}
+          >
+            <Plus className="w-4 h-4" />
+            <span>Přidat komponent</span>
           </button>
 
           {/* Navigační položky */}

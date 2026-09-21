@@ -5,6 +5,7 @@ import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { AlertBanner } from "./AlertBanner";
 import { AddBikeModal } from "@/components/garage/AddBikeModal";
+import { AddComponentModal } from "@/components/garage/AddComponentModal";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ interface AppShellProps {
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAddBikeModalOpen, setIsAddBikeModalOpen] = useState(false);
+  const [isAddComponentModalOpen, setIsAddComponentModalOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
@@ -21,6 +23,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
         onOpenAddBikeModal={() => setIsAddBikeModalOpen(true)}
+        onOpenAddComponentModal={() => setIsAddComponentModalOpen(true)}
       />
 
       {/* Hlavní obsahová oblast */}
@@ -43,6 +46,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       <AddBikeModal
         isOpen={isAddBikeModalOpen}
         onClose={() => setIsAddBikeModalOpen(false)}
+      />
+
+      {/* Globální modál pro založení komponentu ze sidebaru */}
+      <AddComponentModal
+        isOpen={isAddComponentModalOpen}
+        onClose={() => setIsAddComponentModalOpen(false)}
       />
     </div>
   );
