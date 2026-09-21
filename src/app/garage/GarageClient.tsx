@@ -114,7 +114,7 @@ export function GarageClient({
         <div className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl max-w-sm pt-1">
           <button
             onClick={() => setActiveTab("ACTIVE")}
-            className={`flex-1 flex items-center justify-center py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+            className={`flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
               activeTab === "ACTIVE"
                 ? "bg-white text-slate-900 shadow-sm font-bold"
                 : "text-slate-600 hover:text-slate-900"
@@ -124,7 +124,7 @@ export function GarageClient({
           </button>
           <button
             onClick={() => setActiveTab("SOLD")}
-            className={`flex-1 flex items-center justify-center py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+            className={`flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
               activeTab === "SOLD"
                 ? "bg-white text-slate-900 shadow-sm font-bold"
                 : "text-slate-600 hover:text-slate-900"
@@ -134,7 +134,7 @@ export function GarageClient({
           </button>
           <button
             onClick={() => setActiveTab("ARCHIVED")}
-            className={`flex-1 flex items-center justify-center py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+            className={`flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
               activeTab === "ARCHIVED"
                 ? "bg-white text-slate-900 shadow-sm font-bold"
                 : "text-slate-600 hover:text-slate-900"

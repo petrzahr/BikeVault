@@ -27,9 +27,10 @@
     "emptyTitle": "V garáži zatím nemáte žádné kolo",
     "emptyDesc": "Založte si své první kolo a začněte sledovat jeho kompletní servisní a komponentovou historii.",
     "tabs": {
-      "active": "Aktivní kola",
+      "active": "Aktivní",
       "history": "Historie kol",
-      "sold": "Prodaná kola"
+      "sold": "Prodaná",
+      "archived": "Archivovaná"
     },
     "card": {
       "nextService": "Nejbližší servis",
