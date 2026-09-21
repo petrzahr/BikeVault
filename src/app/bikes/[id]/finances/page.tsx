@@ -3,6 +3,7 @@
 import React, { use } from "react";
 import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
+import { DeleteButton } from "@/components/common/DeleteButton";
 import { calculateTco } from "@/lib/domain/finance";
 import { formatCzk, formatDateCs, t } from "@/lib/i18n";
 import { Coins, TrendingDown, TrendingUp, Calendar, Tag } from "lucide-react";
@@ -14,7 +15,7 @@ interface BikeFinancesPageProps {
 
 export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
   const { id } = use(params);
-  const { data, getBike } = useVault();
+  const { data, getBike, deleteTransaction } = useVault();
   const bike = getBike(id);
 
   if (!bike) {
@@ -138,12 +139,17 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
                     </div>
                   </div>
 
-                  <div className="text-right">
+                  <div className="flex items-center gap-2">
                     <span className={`text-base font-bold tabular-nums ${
                       isExpense ? "text-slate-900" : "text-emerald-600"
                     }`}>
                       {isExpense ? "-" : "+"}{formatCzk(tx.amount)}
                     </span>
+                    <DeleteButton
+                      onConfirm={() => deleteTransaction(tx.id)}
+                      title="Smazat transakci"
+                      message={`Opravdu chcete smazat transakci „${tx.notes || t(categoryKey)}“ (${formatCzk(tx.amount)})? Tuto akci nelze vrátit zpět.`}
+                    />
                   </div>
                 </div>
               );

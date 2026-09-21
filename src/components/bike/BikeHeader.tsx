@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   Bike as BikeIcon, 
   SlidersHorizontal, 
@@ -16,13 +16,15 @@ import {
   Link2,
   RefreshCw,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Trash2
 } from "lucide-react";
 import { t, formatDateCs } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import { QuickPressureModal } from "@/components/garage/QuickPressureModal";
 import { UpdateOdometerModal } from "@/components/garage/UpdateOdometerModal";
 import { BikeModal } from "@/components/garage/BikeModal";
+import { DeleteBikeModal } from "@/components/garage/DeleteBikeModal";
 import { getValidAccessToken } from "@/lib/google/googleAuth";
 import { resolveBikeImage, formatWeightCs } from "@/lib/domain/bikeImage";
 import { Bike } from "@/types/vault";
@@ -58,6 +60,8 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
   const { syncBikeFromStrava, user } = useVault();
   const currentUserId = user?.emailAddress || "default_user";
   const pathname = usePathname();
+  const router = useRouter();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isPressureModalOpen, setIsPressureModalOpen] = useState(false);
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -183,6 +187,15 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
             >
               <Gauge className="w-3.5 h-3.5 text-slate-500" />
               <span>Tlaky</span>
+            </button>
+
+            <button
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="px-3 py-2 bg-white hover:bg-red-50 text-slate-500 hover:text-red-600 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+              title="Smazat kolo"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Smazat</span>
             </button>
           </div>
         </div>
@@ -324,6 +337,14 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         bikeToEdit={bike as unknown as Bike}
+      />
+
+      <DeleteBikeModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        bikeId={bike.id}
+        bikeName={bike.name}
+        onDeleted={() => router.push("/garage")}
       />
     </>
   );

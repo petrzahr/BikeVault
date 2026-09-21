@@ -1,8 +1,9 @@
 "use client";
 
-import React, { use } from "react";
+import React, { use, useState } from "react";
 import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 import { formatDateCs, formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
 import { 
   History, 
@@ -11,7 +12,8 @@ import {
   SlidersHorizontal, 
   Calendar, 
   ArrowRight, 
-  Layers 
+  Layers,
+  Trash2
 } from "lucide-react";
 import Link from "next/link";
 
@@ -21,8 +23,23 @@ interface BikeHistoryPageProps {
 
 export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
   const { id } = use(params);
-  const { data, getBike, getBikeServiceEvents } = useVault();
+  const { data, getBike, getBikeServiceEvents, deleteOdometerEntry, deleteServiceEvent } = useVault();
   const bike = getBike(id);
+  const [pendingDelete, setPendingDelete] = useState<{
+    kind: "SERVICE" | "ODOMETER";
+    id: string;
+    label: string;
+  } | null>(null);
+
+  const handleConfirmDelete = () => {
+    if (!pendingDelete) return;
+    if (pendingDelete.kind === "SERVICE") {
+      deleteServiceEvent(pendingDelete.id);
+    } else {
+      const res = deleteOdometerEntry(pendingDelete.id);
+      if (!res.success) alert(res.error || "Záznam nelze smazat.");
+    }
+  };
 
   if (!bike) {
     return (
@@ -42,6 +59,10 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
 
   const serviceEvents = getBikeServiceEvents(id);
   const odometerEntries = data.odometerEntries.filter((o) => o.bikeId === id);
+  // Only the most recent non-initial odometer entry can be deleted (later entries build on earlier ones)
+  const latestOdometerEntry = [...odometerEntries].sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  const deletableOdometerId =
+    latestOdometerEntry && latestOdometerEntry.entryType !== "INITIAL" ? latestOdometerEntry.id : null;
 
   // Group into unified chronological timeline
   const timelineItems: any[] = [];
@@ -84,6 +105,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       badge: "Servis",
       badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
       icon: Wrench,
+      onDelete: () => setPendingDelete({ kind: "SERVICE", id: item.id, label: `servisní záznam „${item.description}“ včetně navázané platby` }),
     });
   }
 
@@ -119,6 +141,9 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
           ? "bg-sky-50 text-sky-700 border-sky-200/80"
           : "bg-emerald-50 text-emerald-700 border-emerald-200/80",
         icon: SlidersHorizontal,
+        onDelete: odo.id === deletableOdometerId
+          ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `odečet počítadla ${formatKm(odo.resultingKm)} (nájezd se vrátí na předchozí stav)` })
+          : undefined,
       });
     } else if (odo.entryType === "CORRECTION") {
       timelineItems.push({
@@ -129,6 +154,9 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         badge: `Korekce • ${sourceLabel}`,
         badgeColor: "bg-purple-50 text-purple-700 border-purple-200/80",
         icon: History,
+        onDelete: odo.id === deletableOdometerId
+          ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `korekci počítadla na ${formatKm(odo.resultingKm)} (nájezd se vrátí na předchozí stav)` })
+          : undefined,
       });
     }
   }
@@ -179,11 +207,33 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
                 <p className="text-xs text-slate-500 mt-0.5 tabular-nums">
                   {item.subtitle}
                 </p>
+                {item.onDelete && (
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      onClick={item.onDelete}
+                      className="px-2 py-1 text-[11px] font-semibold text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                      title="Smazat záznam"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>Smazat</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           );
         })}
       </div>
+
+      <ConfirmationModal
+        isOpen={pendingDelete !== null}
+        onClose={() => setPendingDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title="Smazat záznam"
+        message={`Opravdu chcete smazat ${pendingDelete?.label ?? "záznam"}? Tuto akci nelze vrátit zpět.`}
+        confirmText="Smazat"
+        isDestructive
+      />
     </div>
   );
 }

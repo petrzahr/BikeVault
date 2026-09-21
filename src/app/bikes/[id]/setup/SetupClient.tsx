@@ -18,6 +18,7 @@ import {
 import { t, formatDateCs, formatPsi, formatBar } from "@/lib/i18n";
 import { formatClicksFromClosed } from "@/lib/domain/setup";
 import { Modal } from "@/components/common/Modal";
+import { DeleteButton } from "@/components/common/DeleteButton";
 
 interface SetupClientProps {
   bike: any;
@@ -38,7 +39,7 @@ export function SetupClient({
   frontTireComp,
   rearTireComp,
 }: SetupClientProps) {
-  const { saveSetup, saveSetupSnapshot, getBikeSetup, getBikeSnapshots } = useVault();
+  const { saveSetup, saveSetupSnapshot, deleteSetupSnapshot, getBikeSetup, getBikeSnapshots } = useVault();
   const initialSetup = propSetup ?? getBikeSetup(bike.id);
   const snapshots = propSnapshots ?? getBikeSnapshots(bike.id);
 
@@ -640,9 +641,16 @@ export function SetupClient({
                   <span className="font-bold text-sm text-sky-700">
                     {snap.profileName || "Snímek nastavení"}
                   </span>
-                  <span className="text-slate-400 tabular-nums">
-                    {formatDateCs(snap.createdAt)}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-slate-400 tabular-nums">
+                      {formatDateCs(snap.createdAt)}
+                    </span>
+                    <DeleteButton
+                      onConfirm={() => deleteSetupSnapshot(snap.id)}
+                      title="Smazat snímek nastavení"
+                      message={`Opravdu chcete smazat snímek nastavení „${snap.profileName || "Snímek nastavení"}“? Tuto akci nelze vrátit zpět.`}
+                    />
+                  </div>
                 </div>
 
                 {snap.notes && (

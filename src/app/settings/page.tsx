@@ -18,12 +18,14 @@ import {
   Loader2, 
   Bike as BikeIcon, 
   CheckCircle2,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Trash2
 } from "lucide-react";
 import { t, formatDateCs } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import { StravaManageBikesModal } from "@/components/settings/StravaManageBikesModal";
 import { BikeModal } from "@/components/garage/BikeModal";
+import { ClearAllDataModal } from "@/components/settings/ClearAllDataModal";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { PublicStravaStatus } from "@/lib/strava/stravaTokenStore";
 import { getValidAccessToken, loginToGoogle } from "@/lib/google/googleAuth";
@@ -36,7 +38,8 @@ export default function SettingsPage() {
   const initialTab = searchParams.get("tab") === "integrations" ? "integrations" : "preferences";
   const [activeTab, setActiveTab] = useState<"preferences" | "integrations">(initialTab);
 
-  const { data, user, syncBikeFromStrava } = useVault();
+  const { data, user, syncBikeFromStrava, clearAllData } = useVault();
+  const [isClearAllOpen, setIsClearAllOpen] = useState(false);
   const currentUserId = user?.emailAddress || "default_user";
 
   // Strava status
@@ -570,8 +573,35 @@ export default function SettingsPage() {
               </div>
             </div>
           </div>
+
+          {/* Danger zone */}
+          <div className="bg-white border border-red-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2 text-red-700">
+              <Trash2 className="w-4 h-4" />
+              <h3 className="text-xs font-bold uppercase tracking-wider">Nebezpečná zóna</h3>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <p className="text-xs text-slate-600">
+                Smaže všechna kola, komponenty a související data. Kategorie a předvolby zůstanou zachovány.
+              </p>
+              <button
+                onClick={() => setIsClearAllOpen(true)}
+                className="px-3.5 py-2 bg-white hover:bg-red-50 text-red-600 text-xs font-semibold rounded-xl border border-red-200 transition-colors cursor-pointer shrink-0"
+              >
+                Smazat všechna data
+              </button>
+            </div>
+          </div>
         </div>
       )}
+
+      <ClearAllDataModal
+        isOpen={isClearAllOpen}
+        onClose={() => setIsClearAllOpen(false)}
+        onConfirm={clearAllData}
+        bikesCount={data.bikes.length}
+        componentsCount={data.components.length}
+      />
 
       {/* Manage Strava Bikes Modal */}
       <StravaManageBikesModal

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useVault } from "@/context/VaultContext";
+import { DeleteButton } from "@/components/common/DeleteButton";
 import { 
   Coins, 
   TrendingDown, 
@@ -14,7 +15,7 @@ import {
 import { t, formatCzk, formatDateCs } from "@/lib/i18n";
 
 export default function GlobalFinancesPage() {
-  const { data } = useVault();
+  const { data, deleteTransaction } = useVault();
   const transactions = data.financialTransactions
     .slice()
     .sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime())
@@ -169,12 +170,17 @@ export default function GlobalFinancesPage() {
                     </div>
                   </div>
 
-                  <div className="text-right">
+                  <div className="flex items-center justify-end gap-2">
                     <span className={`text-base font-bold tabular-nums ${
                       isExpense ? "text-slate-900" : "text-emerald-600"
                     }`}>
                       {isExpense ? "-" : "+"}{formatCzk(tx.amount)}
                     </span>
+                    <DeleteButton
+                      onConfirm={() => deleteTransaction(tx.id)}
+                      title="Smazat transakci"
+                      message={`Opravdu chcete smazat transakci „${tx.notes || t(categoryKey)}“ (${formatCzk(tx.amount)})? Tuto akci nelze vrátit zpět.`}
+                    />
                   </div>
                 </div>
               );

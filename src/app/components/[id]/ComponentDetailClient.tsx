@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { 
+import { useRouter } from "next/navigation";
+import {
   ArrowLeft, 
   Wrench, 
   Plus, 
@@ -19,6 +20,7 @@ import { formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
 import { useVault } from "@/context/VaultContext";
 import { Modal } from "@/components/common/Modal";
+import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 
 interface ComponentDetailClientProps {
   componentData: {
@@ -44,8 +46,10 @@ export function ComponentDetailClient({
     createServiceEvent, 
     getComponentServiceSchedules, 
     getComponentServiceEvents, 
-    getGarageBikes 
+    getGarageBikes,
+    deleteComponent
   } = useVault();
+  const router = useRouter();
 
   const { component, category, activeInstallation, installationHistory } = componentData;
   const schedulesWithStatus = propSchedulesWithStatus ?? getComponentServiceSchedules(component.id);
@@ -69,6 +73,13 @@ export function ComponentDetailClient({
   const [recordLoading, setRecordLoading] = useState(false);
 
   const activeBike = activeInstallation?.bike;
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const handleDeleteComponent = () => {
+    deleteComponent(component.id);
+    router.push("/components");
+  };
 
   const handleOpenCreateSchedule = () => {
     setEditingSchedule(null);
@@ -212,6 +223,14 @@ export function ComponentDetailClient({
             >
               <Plus className="w-4 h-4" />
               <span>Přidat plán</span>
+            </button>
+            <button
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="px-3 py-2 bg-white hover:bg-red-50 text-slate-500 hover:text-red-600 border border-slate-200 text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              title="Smazat komponentu"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Smazat</span>
             </button>
           </div>
         </div>
@@ -613,6 +632,16 @@ export function ComponentDetailClient({
         components={[component]}
         preselectedBikeId={activeBike?.id}
         preselectedComponentId={component.id}
+      />
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteComponent}
+        title="Smazat komponentu"
+        message={`Opravdu chcete smazat komponentu ${component.manufacturer} ${component.model}? Smaže se i historie jejích montáží, servisní plány a nákupní či prodejní záznamy. Servisní události na kole zůstanou. Tuto akci nelze vrátit zpět.`}
+        confirmText="Smazat komponentu"
+        isDestructive
       />
     </div>
   );

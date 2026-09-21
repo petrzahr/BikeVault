@@ -46,6 +46,14 @@ import {
 } from "@/lib/storage/storageService";
 import { recordOdometerSnapshot, calculateInstallationUsage } from "@/lib/domain/odometer";
 import { compareMileage, validateLinkConstraint, validateNewBikeGearId } from "@/lib/domain/stravaSync";
+import {
+  BikeComponentsDisposition,
+  deleteBikeFromData,
+  deleteComponentFromData,
+  deleteOdometerEntryFromData,
+  deleteServiceEventFromData,
+  clearVaultData,
+} from "@/lib/domain/deletion";
 import { evaluateServiceSchedule, MaintenanceStatusResult } from "@/lib/domain/maintenance";
 import { areComponentsEquivalentReplacement, findStorageReplacements } from "@/lib/domain/replacement";
 
@@ -96,7 +104,9 @@ interface VaultContextType {
     }
   ) => string;
   updateBike: (id: string, updates: Partial<Bike>) => void;
-  deleteBike: (id: string) => void;
+  deleteBike: (id: string, disposition?: BikeComponentsDisposition) => void;
+  deleteOdometerEntry: (entryId: string) => { success: boolean; error?: string };
+  clearAllData: () => void;
   updateOdometer: (
     bikeId: string,
     newTotalKm: number,
@@ -123,6 +133,7 @@ interface VaultContextType {
   addComponent: (comp: Omit<Component, "id" | "status" | "createdAt" | "updatedAt">) => string;
   updateComponent: (id: string, updates: Partial<Component>) => void;
   retireComponent: (id: string) => void;
+  deleteComponent: (id: string) => void;
   installComponent: (bikeId: string, componentId: string, slot: string) => void;
   removeComponent: (
     installationId: string,
@@ -139,6 +150,7 @@ interface VaultContextType {
   toggleServiceScheduleActive: (id: string) => void;
   deleteServiceSchedule: (id: string) => { success: boolean; message?: string };
   createServiceEvent: (event: Omit<ServiceEvent, "id" | "createdAt">) => string;
+  deleteServiceEvent: (id: string) => void;
 
   // Setup actions
   saveSetup: (bikeId: string, updates: Partial<BikeSetup>) => void;
@@ -596,18 +608,27 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const deleteBike = (id: string) => {
-    mutateData((prev) => ({
-      ...prev,
-      bikes: prev.bikes.filter((b) => b.id !== id),
-      odometerEntries: prev.odometerEntries.filter((o) => o.bikeId !== id),
-      componentInstallations: prev.componentInstallations.filter((i) => i.bikeId !== id),
-      serviceSchedules: prev.serviceSchedules.filter((s) => s.bikeId !== id),
-      serviceEvents: prev.serviceEvents.filter((e) => e.bikeId !== id),
-      bikeSetups: prev.bikeSetups.filter((s) => s.bikeId !== id),
-      setupSnapshots: prev.setupSnapshots.filter((s) => s.bikeId !== id),
-      financialTransactions: prev.financialTransactions.filter((t) => t.bikeId !== id),
-    }));
+  const deleteBike = (id: string, disposition: BikeComponentsDisposition = "STORAGE") => {
+    mutateData((prev) => deleteBikeFromData(prev, id, disposition));
+  };
+
+  const deleteComponent = (id: string) => {
+    mutateData((prev) => deleteComponentFromData(prev, id));
+  };
+
+  const deleteOdometerEntry = (entryId: string): { success: boolean; error?: string } => {
+    const result = deleteOdometerEntryFromData(data, entryId);
+    if (!result.success) return { success: false, error: result.error };
+    mutateData((prev) => deleteOdometerEntryFromData(prev, entryId).data);
+    return { success: true };
+  };
+
+  const deleteServiceEvent = (id: string) => {
+    mutateData((prev) => deleteServiceEventFromData(prev, id));
+  };
+
+  const clearAllData = () => {
+    mutateData((prev) => clearVaultData(prev));
   };
 
   const updateOdometer = (
@@ -1502,6 +1523,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     addBike,
     updateBike,
     deleteBike,
+    deleteOdometerEntry,
+    clearAllData,
     updateOdometer,
     linkBikeToStrava,
     unlinkBikeFromStrava,
@@ -1510,6 +1533,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     addComponent,
     updateComponent,
     retireComponent,
+    deleteComponent,
     installComponent,
     removeComponent,
     transferComponent,
@@ -1519,6 +1543,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     toggleServiceScheduleActive,
     deleteServiceSchedule,
     createServiceEvent,
+    deleteServiceEvent,
     saveSetup,
     saveSetupSnapshot,
     deleteSetupSnapshot,
