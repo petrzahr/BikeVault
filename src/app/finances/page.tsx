@@ -46,7 +46,7 @@ export default function GlobalFinancesPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <PageHeader title={t("finances.title")} subtitle="Globální kniha výdajů a příjmů spojených s koly, komponenty a servisem" />
+      <PageHeader title={t("finances.title")} />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

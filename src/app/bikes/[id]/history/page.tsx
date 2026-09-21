@@ -176,9 +176,6 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             Časová osa a životopis kola
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Kompletní chronologie od nákupu, přes upgrady dílů, servisní zásahy až po odečty stavu tachometru
-          </p>
         </div>
       </div>
 

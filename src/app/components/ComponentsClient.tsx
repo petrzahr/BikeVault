@@ -52,9 +52,6 @@ export function ComponentsClient({
                 {initialComponents.length} celkem
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Centrální sklad, inventář a kompletní životní cyklus všech fyzických dílů
-            </p>
           </div>
 
           <button

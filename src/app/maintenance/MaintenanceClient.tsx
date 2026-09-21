@@ -209,9 +209,6 @@ export function MaintenanceClient({
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Plánování údržby, intervaly podle kilometrů i provozních hodin a servisní kniha
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5 self-start sm:self-auto flex-wrap">

@@ -270,9 +270,6 @@ export default function SettingsPage() {
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">
             {t("nav.settings")}
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Uživatelské předvolby, propojení externích služeb a systémové informace
-          </p>
         </div>
 
         {/* Tab Switcher */}

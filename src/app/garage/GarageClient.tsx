@@ -96,9 +96,6 @@ export function GarageClient({
                 {totalBikesCount} {totalBikesCount === 1 ? "kolo" : totalBikesCount >= 2 && totalBikesCount <= 4 ? "kola" : "kol"}
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {t("garage.subtitle")}
-            </p>
           </div>
 
           <button

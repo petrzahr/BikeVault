@@ -269,9 +269,6 @@ export function ComponentDetailClient({
               <Clock className="w-5 h-5 text-navy-600" />
               <span>Servisní plány komponenty ({schedulesWithStatus.length})</span>
             </h2>
-            <p className="text-xs text-slate-500">
-              Nakonfigurované pravidelné intervaly údržby pro {component.manufacturer} {component.model}
-            </p>
           </div>
 
           <button

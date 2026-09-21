@@ -177,9 +177,6 @@ export function BikeServiceClient({
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             Servisní plány a servisní kniha
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Pravidelné intervaly údržby kola i osazených komponent a kompletní servisní historie
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5 self-start sm:self-auto flex-wrap">

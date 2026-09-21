@@ -42,7 +42,7 @@ export default function StatisticsPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <PageHeader title={t("nav.statistics")} subtitle="Analytika nájezdu, životnosti komponentů a finančních metrik" />
+      <PageHeader title={t("nav.statistics")} />
 
       {/* High-level stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

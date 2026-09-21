@@ -50,9 +50,6 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             {t("finances.title")} kola
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Kompletní finanční ledger všech výdajů a příjmů spojených s tímto kolem
-          </p>
         </div>
       </div>
 
