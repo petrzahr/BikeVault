@@ -215,21 +215,21 @@ export function ComponentDetailClient({
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <button
               onClick={() => handleOpenRecordModal()}
-              className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
+              className={buttonClass("secondary", "md")}
             >
               <Wrench className="w-3.5 h-3.5 text-brand-600" />
               <span>Zapsat servis</span>
             </button>
             <button
               onClick={handleOpenCreateSchedule}
-              className={buttonClass("primary", "md", "flex items-center gap-1.5")}
+              className={buttonClass("primary", "md")}
             >
               <Plus className="w-4 h-4" />
               <span>Přidat plán</span>
             </button>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className="px-3 py-2 bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 text-xs font-semibold rounded-xl shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+              className={buttonClass("secondary", "md", "hover:bg-rose-50 hover:text-rose-600")}
               title="Smazat komponentu"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -276,7 +276,7 @@ export function ComponentDetailClient({
 
           <button
             onClick={handleOpenCreateSchedule}
-            className={buttonClass("primary", "sm", "flex items-center gap-1.5 self-start sm:self-auto")}
+            className={buttonClass("primary", "md", "self-start sm:self-auto")}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Přidat plán</span>
@@ -290,7 +290,7 @@ export function ComponentDetailClient({
             </p>
             <button
               onClick={handleOpenCreateSchedule}
-              className="px-4 py-2 bg-brand-50 text-brand-700 border border-brand-200 hover:bg-brand-100 text-xs font-semibold rounded-xl transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+              className={buttonClass("soft", "md")}
             >
               <Plus className="w-4 h-4" />
               <span>Vytvořit první plán</span>
@@ -392,7 +392,7 @@ export function ComponentDetailClient({
                       </button>
                       <button
                         onClick={() => handleOpenRecordModal(item)}
-                        className={buttonClass("primary", "sm")}
+                        className={buttonClass("primary", "md")}
                       >
                         Zapsat servis
                       </button>
@@ -610,14 +610,14 @@ export function ComponentDetailClient({
             <button
               type="button"
               onClick={() => setIsRecordModalOpen(false)}
-              className={buttonClass("secondary", "lg")}
+              className={buttonClass("secondary", "md")}
             >
               Zrušit
             </button>
             <button
               type="submit"
               disabled={recordLoading}
-              className={buttonClass("primary", "lg", "flex items-center gap-2")}
+              className={buttonClass("primary", "md")}
             >
               {recordLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               <span>Zapsat servis</span>

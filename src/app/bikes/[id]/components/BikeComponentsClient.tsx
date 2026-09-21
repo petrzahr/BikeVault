@@ -180,7 +180,7 @@ export function BikeComponentsClient({
 
         <button
           onClick={() => setIsInstallOpen(true)}
-          className={buttonClass("primary", "lg", "flex items-center gap-1.5 self-start sm:self-auto")}
+          className={buttonClass("primary", "md", "self-start sm:self-auto")}
         >
           <Plus className="w-4 h-4" />
           <span>Namontovat komponent</span>
@@ -271,7 +271,7 @@ export function BikeComponentsClient({
                         setTargetSlot(item.installation.slot);
                         setIsTransferOpen(true);
                       }}
-                      className={buttonClass("secondary", "sm", "flex items-center gap-1.5")}
+                      className={buttonClass("secondary", "sm")}
                       title="Přesunout na jiné kolo"
                     >
                       <ArrowRightLeft className="w-3.5 h-3.5 text-brand-600" />
@@ -283,7 +283,7 @@ export function BikeComponentsClient({
                         setSelectedInst(item);
                         setIsRemoveOpen(true);
                       }}
-                      className={buttonClass("secondary", "sm", "flex items-center gap-1.5")}
+                      className={buttonClass("secondary", "sm")}
                       title="Sundat do skladu / prodat / vyřadit"
                     >
                       <Archive className="w-3.5 h-3.5 text-slate-500" />
@@ -298,7 +298,7 @@ export function BikeComponentsClient({
                           setReplaceCandidates(matchingCandidates);
                           setIsReplaceOpen(true);
                         }}
-                        className="px-2.5 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200/80 rounded-xl flex items-center gap-1.5 transition-colors font-semibold cursor-pointer shadow-sm"
+                        className={buttonClass("soft", "sm")}
                         title={
                           matchingCandidates.length === 1
                             ? "Rychle vyměnit za identický kus ze skladu (1 ks skladem)"
@@ -317,7 +317,7 @@ export function BikeComponentsClient({
                           disabled
                           aria-disabled="true"
                           aria-label="Vyměnit: Není k dispozici stejný komponent skladem."
-                          className="px-2.5 py-1.5 bg-slate-100/70 text-slate-400 border border-slate-200/80 rounded-xl flex items-center gap-1.5 font-medium text-xs cursor-not-allowed select-none"
+                          className={buttonClass("secondary", "sm", "opacity-60 select-none")}
                         >
                           <Ban className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                           <span>Vyměnit</span>
@@ -434,7 +434,7 @@ export function BikeComponentsClient({
             <button
               type="submit"
               disabled={loading}
-              className={buttonClass("primary", "lg")}
+              className={buttonClass("primary", "md")}
             >
               {loading ? t("common.loading") : "Potvrdit demontáž"}
             </button>
@@ -504,7 +504,7 @@ export function BikeComponentsClient({
             <button
               type="submit"
               disabled={loading || otherBikes.length === 0 || !targetBikeId}
-              className={buttonClass("primary", "lg")}
+              className={buttonClass("primary", "md")}
             >
               {loading ? t("common.loading") : "Provést přesun"}
             </button>
@@ -583,7 +583,7 @@ export function BikeComponentsClient({
             <button
               type="submit"
               disabled={loading || storageComponents.length === 0 || !selectedStorageCompId}
-              className={buttonClass("primary", "lg")}
+              className={buttonClass("primary", "md")}
             >
               {loading ? t("common.loading") : "Namontovat"}
             </button>

@@ -534,7 +534,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             {/* Ovládací prvky pro nahrání a odebrání */}
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2 flex-wrap">
-                <label className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm cursor-pointer transition-all flex items-center gap-1.5 active:scale-95">
+                <label className={buttonClass("secondary", "md")}>
                   <Upload className="w-3.5 h-3.5 text-slate-500" />
                   <span>{uploadedImage ? "Změnit soubor" : "Nahrát fotografii"}</span>
                   <input
@@ -549,7 +549,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                   <button
                     type="button"
                     onClick={handleRemoveUploadedImage}
-                    className="px-3 py-2 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 text-xs font-semibold rounded-xl border border-rose-200/80 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                    className={buttonClass("dangerOutline", "md")}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Odebrat fotku</span>
@@ -605,14 +605,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           <button
             type="button"
             onClick={onClose}
-            className={buttonClass("secondary", "lg")}
+            className={buttonClass("secondary", "md")}
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className={buttonClass("primary", "lg", "flex items-center gap-2")}
+            className={buttonClass("primary", "md")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>

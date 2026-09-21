@@ -190,7 +190,7 @@ export function SetupClient({
           <button
             type="button"
             onClick={() => setIsSnapshotModalOpen(true)}
-            className={buttonClass("secondary", "lg", "flex items-center gap-2")}
+            className={buttonClass("secondary", "md")}
           >
             <Camera className="w-4 h-4 text-brand-600" />
             <span>{t("setup.saveSnapshot")}</span>
@@ -616,7 +616,7 @@ export function SetupClient({
           <button
             type="submit"
             disabled={loading}
-            className={buttonClass("primary", "md", "flex items-center gap-2")}
+            className={buttonClass("primary", "md")}
           >
             <Save className="w-4 h-4" />
             <span>{loading ? t("common.loading") : t("setup.save")}</span>
@@ -719,7 +719,7 @@ export function SetupClient({
             </button>
             <button
               type="submit"
-              className={buttonClass("primary", "lg")}
+              className={buttonClass("primary", "md")}
             >
               Uložit profil
             </button>

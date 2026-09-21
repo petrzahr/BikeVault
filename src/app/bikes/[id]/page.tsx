@@ -28,6 +28,7 @@ import {
   ChevronRight 
 } from "lucide-react";
 import Link from "next/link";
+import { buttonClass } from "@/lib/ui";
 
 interface BikeOverviewPageProps {
   params: Promise<{ id: string }>;
@@ -109,7 +110,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
               </div>
               <Link
                 href={`/bikes/${bike.id}/service`}
-                className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl transition-colors whitespace-nowrap shadow-sm"
+                className={buttonClass("danger", "md", "whitespace-nowrap")}
               >
                 Zapsat servis
               </Link>
@@ -134,7 +135,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
               </div>
               <Link
                 href={`/bikes/${bike.id}/service`}
-                className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl transition-colors whitespace-nowrap shadow-sm"
+                className={buttonClass("warning", "md", "whitespace-nowrap")}
               >
                 Detail
               </Link>

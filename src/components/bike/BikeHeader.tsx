@@ -158,7 +158,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
               <button
                 onClick={handleSyncWithStrava}
                 disabled={isSyncingStrava}
-                className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
+                className={buttonClass("secondary", "md")}
                 title="Synchronizovat nájezd se Stravou"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isSyncingStrava ? "animate-spin text-brand-600" : "text-slate-500"}`} />
@@ -168,7 +168,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsEditModalOpen(true)}
-              className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
+              className={buttonClass("secondary", "md")}
             >
               <Pencil className="w-3.5 h-3.5 text-slate-500" />
               <span>Upravit kolo</span>
@@ -176,7 +176,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsOdometerModalOpen(true)}
-              className={buttonClass("primary", "md", "flex items-center gap-1.5")}
+              className={buttonClass("primary", "md")}
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>{t("odometer.updateOdometer")}</span>
@@ -184,7 +184,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsPressureModalOpen(true)}
-              className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
+              className={buttonClass("secondary", "md")}
             >
               <Gauge className="w-3.5 h-3.5 text-slate-500" />
               <span>Tlaky</span>
@@ -192,7 +192,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className="px-3 py-2 bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-xs font-semibold rounded-xl border border-slate-200/80 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+              className={buttonClass("secondary", "md", "hover:bg-rose-50 hover:text-rose-600")}
               title="Smazat kolo"
             >
               <Trash2 className="w-3.5 h-3.5" />

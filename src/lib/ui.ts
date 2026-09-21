@@ -5,18 +5,21 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'dark' | 'ghost';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonVariant = 'primary' | 'secondary' | 'soft' | 'danger' | 'dangerOutline' | 'warning' | 'dark' | 'ghost';
+export type ButtonSize = 'sm' | 'md';
 
 const buttonBase =
-  'inline-flex items-center justify-center gap-1.5 font-semibold rounded-xl transition-colors cursor-pointer ' +
+  'inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-bold rounded-xl transition-colors cursor-pointer ' +
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ' +
   'disabled:opacity-50 disabled:cursor-not-allowed';
 
 const buttonVariants: Record<ButtonVariant, string> = {
   primary: 'bg-brand-600 hover:bg-brand-700 text-white shadow-sm',
   secondary: 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200',
+  soft: 'bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200',
   danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-sm',
+  dangerOutline: 'bg-white hover:bg-rose-50 text-rose-600 border border-rose-200',
+  warning: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm',
   dark: 'bg-slate-900 hover:bg-slate-800 text-white shadow-sm',
   ghost: 'text-slate-600 hover:text-slate-800 hover:bg-slate-100',
 };
@@ -24,7 +27,6 @@ const buttonVariants: Record<ButtonVariant, string> = {
 const buttonSizes: Record<ButtonSize, string> = {
   sm: 'px-3 py-1.5 text-xs',
   md: 'px-4 py-2 text-xs',
-  lg: 'px-5 py-2.5 text-sm',
 };
 
 export function buttonClass(

@@ -63,7 +63,7 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
         <button
           type="button"
           onClick={handleClose}
-          className={buttonClass("secondary", "lg")}
+          className={buttonClass("secondary", "md")}
         >
           Zrušit
         </button>
@@ -71,7 +71,7 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
           type="button"
           onClick={handleConfirm}
           disabled={!canConfirm}
-          className={buttonClass("danger", "lg")}
+          className={buttonClass("danger", "md")}
         >
           Smazat všechna data
         </button>

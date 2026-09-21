@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { buttonClass } from "@/lib/ui";
 
 export default function NotFound() {
   return (
@@ -8,7 +9,7 @@ export default function NotFound() {
       <p className="text-slate-500 mb-6 text-sm">Stránka nebyla nalezena.</p>
       <Link
         href="/garage"
-        className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-xs shadow-sm shadow-brand-200 transition-all"
+        className={buttonClass("primary", "md")}
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Zpět do Garáže</span>

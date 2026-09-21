@@ -96,7 +96,7 @@ export function AuthGate({ children }: AuthGateProps) {
               <button
                 type="button"
                 onClick={exportCorruptedFile}
-                className={buttonClass("primary", "lg", "w-full inline-flex items-center justify-center gap-2")}
+                className={buttonClass("primary", "md", "w-full")}
               >
                 <Download className="w-4 h-4" />
                 <span>Stáhnout původní data pro kontrolu</span>
@@ -105,7 +105,7 @@ export function AuthGate({ children }: AuthGateProps) {
             <button
               type="button"
               onClick={() => logout()}
-              className={buttonClass("secondary", "lg", "w-full inline-flex items-center justify-center gap-2")}
+              className={buttonClass("secondary", "md", "w-full")}
             >
               <LogOut className="w-4 h-4" />
               <span>Odhlásit se a zkusit znovu</span>
@@ -146,7 +146,7 @@ export function AuthGate({ children }: AuthGateProps) {
               type="button"
               disabled={syncStatus === "saving"}
               onClick={() => reauthorizeGoogleDrive()}
-              className={buttonClass("primary", "lg", "w-full inline-flex items-center justify-center gap-2")}
+              className={buttonClass("primary", "md", "w-full")}
             >
               {syncStatus === "saving" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -158,7 +158,7 @@ export function AuthGate({ children }: AuthGateProps) {
             <button
               type="button"
               onClick={() => logout()}
-              className={buttonClass("secondary", "lg", "w-full inline-flex items-center justify-center gap-2")}
+              className={buttonClass("secondary", "md", "w-full")}
             >
               <LogOut className="w-4 h-4" />
               <span>Odhlásit se</span>

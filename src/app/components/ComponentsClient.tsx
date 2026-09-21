@@ -59,7 +59,7 @@ export function ComponentsClient({
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className={buttonClass("primary", "md", "flex items-center gap-1.5 self-start sm:self-auto")}
+            className={buttonClass("primary", "md", "self-start sm:self-auto")}
           >
             <Plus className="w-4 h-4" />
             <span>{t("components.addComponent")}</span>

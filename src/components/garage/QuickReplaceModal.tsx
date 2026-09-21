@@ -223,14 +223,14 @@ export function QuickReplaceModal({
           <button
             type="button"
             onClick={onClose}
-            className={buttonClass("secondary", "lg")}
+            className={buttonClass("secondary", "md")}
           >
             Zrušit
           </button>
           <button
             type="submit"
             disabled={loading || !selectedReplacementId}
-            className={buttonClass("primary", "lg", "flex items-center gap-2")}
+            className={buttonClass("primary", "md")}
           >
             {loading ? (
               <>

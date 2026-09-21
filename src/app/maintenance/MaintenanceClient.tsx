@@ -217,7 +217,7 @@ export function MaintenanceClient({
         <div className="flex items-center gap-2.5 self-start sm:self-auto flex-wrap">
           <button
             onClick={() => handleOpenRecordModal()}
-            className={buttonClass("secondary", "lg", "flex items-center gap-2")}
+            className={buttonClass("secondary", "md")}
           >
             <Wrench className="w-4 h-4 text-brand-600" />
             <span>Zapsat servis bez plánu</span>
@@ -225,7 +225,7 @@ export function MaintenanceClient({
 
           <button
             onClick={handleOpenCreatePlan}
-            className={buttonClass("primary", "lg", "flex items-center gap-2")}
+            className={buttonClass("primary", "md")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat servisní plán</span>
@@ -328,7 +328,7 @@ export function MaintenanceClient({
                   </span>
                   <button
                     onClick={() => handleOpenRecordModal(item)}
-                    className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+                    className={buttonClass("warning", "md")}
                   >
                     Zapsat servis →
                   </button>
@@ -390,7 +390,7 @@ export function MaintenanceClient({
 
           <button
             onClick={handleOpenCreatePlan}
-            className={buttonClass("primary", "md", "flex items-center gap-1.5 self-start sm:self-auto")}
+            className={buttonClass("primary", "md", "self-start sm:self-auto")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat plán</span>
@@ -496,7 +496,7 @@ export function MaintenanceClient({
                   <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto">
                     <button
                       onClick={() => handleOpenRecordModal(item)}
-                      className={buttonClass("primary", "sm", "flex items-center gap-1")}
+                      className={buttonClass("primary", "md")}
                     >
                       <Wrench className="w-3.5 h-3.5" />
                       <span>Zapsat servis</span>
@@ -504,7 +504,7 @@ export function MaintenanceClient({
 
                     <button
                       onClick={() => handleOpenEditPlan(sched)}
-                      className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-medium flex items-center gap-1 transition-colors"
+                      className={buttonClass("secondary", "sm")}
                       title="Upravit plán"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
@@ -732,7 +732,7 @@ export function MaintenanceClient({
             <button
               type="submit"
               disabled={recordLoading}
-              className={buttonClass("primary", "lg")}
+              className={buttonClass("primary", "md")}
             >
               {recordLoading ? "Ukládám..." : "Zapsat servis"}
             </button>

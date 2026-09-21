@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useVault } from "@/context/VaultContext";
 import { AlertTriangle, Wrench } from "lucide-react";
+import { buttonClass } from "@/lib/ui";
 
 export const AlertBanner: React.FC = () => {
   const { getServiceScheduleStatuses, data } = useVault();
@@ -35,7 +36,7 @@ export const AlertBanner: React.FC = () => {
 
       <Link
         href="/maintenance"
-        className="self-start sm:self-auto px-3 py-1.5 text-xs font-bold text-rose-800 bg-rose-100/80 hover:bg-rose-200 rounded-xl transition-colors shrink-0 flex items-center gap-1.5"
+        className={buttonClass("dangerOutline", "sm", "self-start sm:self-auto shrink-0")}
       >
         <Wrench className="w-3.5 h-3.5" />
         <span>Přejít do servisu</span>

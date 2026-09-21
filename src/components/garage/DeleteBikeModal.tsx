@@ -80,14 +80,14 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
         <button
           type="button"
           onClick={onClose}
-          className={buttonClass("secondary", "lg")}
+          className={buttonClass("secondary", "md")}
         >
           Zrušit
         </button>
         <button
           type="button"
           onClick={handleConfirm}
-          className={buttonClass("danger", "lg")}
+          className={buttonClass("danger", "md")}
         >
           Smazat kolo
         </button>

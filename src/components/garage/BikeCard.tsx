@@ -177,7 +177,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
             <button
               onClick={() => setIsOdometerModalOpen(true)}
               title={t("garage.card.quickUpdate")}
-              className={buttonClass("secondary", "md", "flex-1 flex items-center justify-center gap-1.5")}
+              className={buttonClass("secondary", "md")}
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
               <span>{t("garage.card.quickUpdate")}</span>
@@ -193,7 +193,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
 
             <Link
               href={`/bikes/${bike.id}`}
-              className="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-sm shadow-brand-200 transition-colors flex items-center justify-center gap-1 text-xs font-semibold"
+              className={buttonClass("primary", "md")}
             >
               <span>{t("garage.card.details")}</span>
               <ArrowUpRight className="w-3.5 h-3.5" />

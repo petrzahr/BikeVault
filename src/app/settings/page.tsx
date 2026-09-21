@@ -393,7 +393,7 @@ export default function SettingsPage() {
                 <div className="pt-2">
                   <button
                     onClick={handleConnectStrava}
-                    className={buttonClass("dark", "lg", "flex items-center gap-2")}
+                    className={buttonClass("dark", "md")}
                   >
                     <span>Připojit Stravu</span>
                     <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
@@ -440,7 +440,7 @@ export default function SettingsPage() {
                   <button
                     onClick={handleSyncAllBikes}
                     disabled={syncingAll}
-                    className={buttonClass("dark", "md", "flex items-center gap-1.5")}
+                    className={buttonClass("dark", "md")}
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${syncingAll ? "animate-spin text-brand-400" : ""}`} />
                     <span>{syncingAll ? "Synchronizuji..." : "Synchronizovat"}</span>
@@ -448,7 +448,7 @@ export default function SettingsPage() {
 
                   <button
                     onClick={() => setIsManageBikesOpen(true)}
-                    className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
+                    className={buttonClass("secondary", "md")}
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
                     <span>Spravovat kola</span>
@@ -456,7 +456,7 @@ export default function SettingsPage() {
 
                   <button
                     onClick={() => setIsDisconnectConfirmOpen(true)}
-                    className="px-3 py-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 text-xs font-semibold rounded-xl border border-rose-200/60 transition-colors ml-auto flex items-center gap-1.5 cursor-pointer"
+                    className={buttonClass("dangerOutline", "md", "ml-auto")}
                   >
                     <Unlink className="w-3.5 h-3.5" />
                     <span>Odpojit Stravu</span>
@@ -587,7 +587,7 @@ export default function SettingsPage() {
               </p>
               <button
                 onClick={() => setIsClearAllOpen(true)}
-                className="px-3.5 py-2 bg-white hover:bg-rose-50 text-rose-600 text-xs font-semibold rounded-xl border border-rose-200 transition-colors cursor-pointer shrink-0"
+                className={buttonClass("dangerOutline", "md", "shrink-0")}
               >
                 Smazat všechna data
               </button>
@@ -644,14 +644,14 @@ export default function SettingsPage() {
               <button
                 onClick={() => setIsDisconnectConfirmOpen(false)}
                 disabled={disconnecting}
-                className="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl"
+                className={buttonClass("ghost", "md")}
               >
                 Zrušit
               </button>
               <button
                 onClick={handleConfirmDisconnect}
                 disabled={disconnecting}
-                className={buttonClass("danger", "md", "flex items-center gap-1.5")}
+                className={buttonClass("danger", "md")}
               >
                 {disconnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unlink className="w-3.5 h-3.5" />}
                 <span>{disconnecting ? "Odpojuji..." : "Potvrdit odpojení"}</span>

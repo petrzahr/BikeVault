@@ -103,7 +103,7 @@ export function GarageClient({
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className={buttonClass("primary", "md", "flex items-center gap-1.5 self-start sm:self-auto")}
+            className={buttonClass("primary", "md", "self-start sm:self-auto")}
           >
             <Plus className="w-4 h-4" />
             <span>{t("garage.addBike")}</span>
@@ -204,7 +204,7 @@ export function GarageClient({
           {activeTab === "ACTIVE" && (
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className={buttonClass("primary", "md", "mt-4 inline-flex items-center gap-1.5")}
+              className={buttonClass("primary", "md", "mt-4")}
             >
               <Plus className="w-4 h-4" />
               <span>Přidat první kolo</span>

@@ -132,7 +132,7 @@ export function QuickPressureModal({
           <button
             type="button"
             onClick={onClose}
-            className={buttonClass("secondary", "lg")}
+            className={buttonClass("secondary", "md")}
           >
             {t("common.cancel")}
           </button>
@@ -140,7 +140,7 @@ export function QuickPressureModal({
             type="button"
             onClick={handleSave}
             disabled={loading}
-            className={buttonClass("primary", "lg", "flex items-center gap-2")}
+            className={buttonClass("primary", "md")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{loading ? t("common.loading") : t("common.save")}</span>

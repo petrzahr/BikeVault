@@ -215,7 +215,7 @@ export function StravaManageBikesModal({
           <button
             onClick={loadStravaBikes}
             disabled={loading}
-            className={buttonClass("secondary", "sm", "inline-flex items-center gap-1.5")}
+            className={buttonClass("secondary", "sm")}
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-brand-600" : "text-slate-500"}`} />
             <span>Obnovit ze Stravy</span>
@@ -298,7 +298,7 @@ export function StravaManageBikesModal({
                           <button
                             onClick={() => handleSyncBike(sb)}
                             disabled={isSyncing}
-                            className={buttonClass("secondary", "sm", "flex items-center gap-1.5")}
+                            className={buttonClass("secondary", "sm")}
                           >
                             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin text-brand-600" : "text-slate-500"}`} />
                             <span>Synchronizovat</span>
@@ -306,7 +306,7 @@ export function StravaManageBikesModal({
 
                           <button
                             onClick={() => setUnlinkingBike({ bikeId: linkedBike.id, name: linkedBike.name })}
-                            className="px-2.5 py-1.5 bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 text-xs font-semibold rounded-lg border border-slate-200/80 transition-colors flex items-center gap-1 cursor-pointer"
+                            className={buttonClass("secondary", "sm", "hover:bg-rose-50 hover:text-rose-600")}
                             title="Odpojit od Stravy"
                           >
                             <Unlink className="w-3.5 h-3.5" />
@@ -322,7 +322,7 @@ export function StravaManageBikesModal({
                               setSyncMileageOnLink(true);
                               setError(null);
                             }}
-                            className={buttonClass("secondary", "sm", "flex items-center gap-1.5")}
+                            className={buttonClass("secondary", "sm")}
                           >
                             <Link2 className="w-3.5 h-3.5 text-slate-500" />
                             <span>Propojit s existujícím</span>
@@ -333,7 +333,7 @@ export function StravaManageBikesModal({
                               onImportBike(sb);
                               onClose();
                             }}
-                            className={buttonClass("dark", "sm", "flex items-center gap-1.5")}
+                            className={buttonClass("dark", "sm")}
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span>Importovat</span>
@@ -365,7 +365,7 @@ export function StravaManageBikesModal({
                     onImportBike(linkingStravaBike);
                     onClose();
                   }}
-                  className="px-3 py-1.5 bg-amber-800 text-white rounded-lg text-xs font-semibold"
+                  className={buttonClass("warning", "md")}
                 >
                   Importovat jako nové kolo
                 </button>
@@ -436,13 +436,13 @@ export function StravaManageBikesModal({
                 <div className="flex items-center justify-end gap-2 pt-2">
                   <button
                     onClick={() => setLinkingStravaBike(null)}
-                    className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-800"
+                    className={buttonClass("ghost", "sm")}
                   >
                     Zrušit
                   </button>
                   <button
                     onClick={handleConfirmLink}
-                    className={buttonClass("primary", "sm")}
+                    className={buttonClass("primary", "md")}
                   >
                     Potvrdit propojení
                   </button>
@@ -465,7 +465,7 @@ export function StravaManageBikesModal({
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setUnlinkingBike(null)}
-                className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-800"
+                className={buttonClass("ghost", "sm")}
               >
                 Zrušit
               </button>

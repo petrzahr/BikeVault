@@ -6,6 +6,7 @@ import { useFeedback } from "@/components/common/Feedback";
 import { GoogleIcon } from "../common/GoogleIcon";
 import { Bike, ShieldCheck, Zap, Wrench, AlertCircle, AlertTriangle, Loader2, Mail, Check, RotateCcw } from "lucide-react";
 import { buildGmailComposeUrl, ACCESS_REQUEST_EMAIL } from "@/constants/authConfig";
+import { buttonClass } from "@/lib/ui";
 
 export const LoginScreen: React.FC = () => {
   const { login, syncStatus, syncError } = useVault();
@@ -212,7 +213,7 @@ export const LoginScreen: React.FC = () => {
             href={buildGmailComposeUrl()}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 active:scale-[0.99] cursor-pointer"
+            className={buttonClass("secondary", "md", "w-full")}
           >
             <Mail className="w-4 h-4 text-slate-500 shrink-0" />
             <span>Požádat o přístup přes Gmail</span>

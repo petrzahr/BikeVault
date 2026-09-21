@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { AlertTriangle } from 'lucide-react';
@@ -35,12 +35,12 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         </div>
       </div>
       <div className="mt-6 flex justify-end gap-3">
-        <Button variant="secondary" size="lg" onClick={onClose}>
+        <Button variant="secondary" size="md" onClick={onClose}>
           {cancelText}
         </Button>
         <Button
           variant={isDestructive ? 'danger' : 'primary'}
-          size="lg"
+          size="md"
           onClick={() => {
             onConfirm();
             onClose();

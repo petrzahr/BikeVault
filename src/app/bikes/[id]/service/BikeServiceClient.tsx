@@ -185,7 +185,7 @@ export function BikeServiceClient({
         <div className="flex items-center gap-2.5 self-start sm:self-auto flex-wrap">
           <button
             onClick={handleOpenRecordWithoutPlan}
-            className={buttonClass("secondary", "md", "flex items-center gap-1.5")}
+            className={buttonClass("secondary", "md")}
             title="Jednorázový servis mimo pravidelný plán"
           >
             <Wrench className="w-3.5 h-3.5 text-brand-600" />
@@ -194,7 +194,7 @@ export function BikeServiceClient({
 
           <button
             onClick={handleOpenCreatePlan}
-            className={buttonClass("primary", "md", "flex items-center gap-1.5")}
+            className={buttonClass("primary", "md")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat servisní plán</span>
@@ -224,7 +224,7 @@ export function BikeServiceClient({
             </p>
             <button
               onClick={handleOpenCreatePlan}
-              className="px-4 py-2 bg-brand-50 text-brand-700 border border-brand-200/80 hover:bg-brand-100 text-xs font-semibold rounded-xl transition-all inline-flex items-center gap-1.5"
+              className={buttonClass("soft", "md")}
             >
               <Plus className="w-4 h-4" />
               <span>Vytvořit první servisní plán</span>
@@ -326,7 +326,7 @@ export function BikeServiceClient({
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                     <button
                       onClick={() => handleOpenModalWithSchedule(sched)}
-                      className={buttonClass("primary", "sm", "flex items-center gap-1.5")}
+                      className={buttonClass("primary", "md")}
                     >
                       <Wrench className="w-3.5 h-3.5" />
                       <span>Zapsat servis</span>
@@ -613,7 +613,7 @@ export function BikeServiceClient({
             <button
               type="submit"
               disabled={loading}
-              className={buttonClass("primary", "lg")}
+              className={buttonClass("primary", "md")}
             >
               {loading ? t("common.loading") : "Zapsat servis"}
             </button>

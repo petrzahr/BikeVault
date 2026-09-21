@@ -207,14 +207,14 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
           <button
             type="button"
             onClick={() => onClose()}
-            className={buttonClass("secondary", "lg")}
+            className={buttonClass("secondary", "md")}
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className={buttonClass("primary", "lg", "flex items-center gap-2")}
+            className={buttonClass("primary", "md")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{loading ? t("common.loading") : "Založit díl do skladu"}</span>
