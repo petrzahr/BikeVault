@@ -106,13 +106,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* Rychlé tlačítko přidání */}
+          {/* Rychlé tlačítka přidání */}
+          <div className="space-y-2">
           <button
             onClick={() => {
               onOpenAddBikeModal();
               onCloseMobile();
             }}
-            className={buttonClass("primary", "lg", "w-full flex items-center justify-center gap-2")}
+            className={buttonClass("primary", "md", "w-full")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat nové kolo</span>
@@ -122,11 +123,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onOpenAddComponentModal();
               onCloseMobile();
             }}
-            className={buttonClass("primary", "lg", "w-full flex items-center justify-center gap-2")}
+            className={buttonClass("primary", "md", "w-full")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat komponent</span>
           </button>
+          </div>
 
           {/* Navigační položky */}
           <nav className="space-y-1">
