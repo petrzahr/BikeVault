@@ -18,6 +18,8 @@ import { UpdateOdometerModal } from "./UpdateOdometerModal";
 import { QuickPressureModal } from "./QuickPressureModal";
 import { resolveBikeImage } from "@/lib/domain/bikeImage";
 import { buttonClass } from "@/lib/ui";
+import { useVault } from "@/context/VaultContext";
+import { labelFor, resolveLists } from "@/lib/bikeLists";
 
 interface BikeCardProps {
   bike: {
@@ -49,6 +51,8 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
   const [isPressureModalOpen, setIsPressureModalOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const { data } = useVault();
+  const lists = resolveLists(data.settings);
 
   const resolvedImage = resolveBikeImage(bike);
 
@@ -107,7 +111,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
           {/* Top badges */}
           <div className="absolute top-3 left-9 right-3 flex items-center justify-between pointer-events-none">
             <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-xl text-[11px] font-semibold tracking-wide text-slate-700 border border-slate-200/80 shadow-sm">
-              {bike.category} • {bike.discipline}
+              {labelFor(lists.bikeCategories, bike.category)} • {labelFor(lists.disciplines[bike.category], bike.discipline)}
             </span>
 
             {bike.modelYear && (

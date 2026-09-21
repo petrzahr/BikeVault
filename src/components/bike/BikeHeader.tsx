@@ -29,6 +29,7 @@ import { getValidAccessToken } from "@/lib/google/googleAuth";
 import { resolveBikeImage, formatWeightCs } from "@/lib/domain/bikeImage";
 import { Bike } from "@/types/vault";
 import { buttonClass } from "@/lib/ui";
+import { labelFor, resolveLists } from "@/lib/bikeLists";
 
 interface BikeHeaderProps {
   bike: {
@@ -58,7 +59,8 @@ interface BikeHeaderProps {
 }
 
 export function BikeHeader({ bike }: BikeHeaderProps) {
-  const { syncBikeFromStrava, user } = useVault();
+  const { data, syncBikeFromStrava, user } = useVault();
+  const lists = resolveLists(data.settings);
   const currentUserId = user?.emailAddress || "default_user";
   const pathname = usePathname();
   const router = useRouter();
@@ -257,7 +259,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
                 </span>
               )}
               <span className="px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700 border border-navy-200/80 text-xs font-semibold">
-                {bike.category} • {bike.discipline}
+                {labelFor(lists.bikeCategories, bike.category)} • {labelFor(lists.disciplines[bike.category], bike.discipline)}
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-medium">
                 {bike.status === "ACTIVE" ? "Aktivní" : bike.status === "SOLD" ? "Prodáno" : "Archivováno"}

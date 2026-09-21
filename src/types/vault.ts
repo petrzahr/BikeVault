@@ -8,6 +8,21 @@ export interface UserSettings {
   distanceUnit: "km" | "mi";
   language: "cs" | "en";
   googleClientId?: string;
+  /** Uživatelem upravené seznamy voleb; chybějící klíč = výchozí seznam. */
+  customLists?: CustomLists;
+}
+
+export interface ListOption {
+  value: string;
+  label: string;
+}
+
+export interface CustomLists {
+  bikeCategories?: ListOption[];
+  suspensionTypes?: ListOption[];
+  driveTypes?: ListOption[];
+  /** Disciplíny podle hodnoty kategorie kola. */
+  disciplines?: Record<string, ListOption[]>;
 }
 
 export interface Bike {

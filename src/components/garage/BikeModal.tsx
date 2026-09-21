@@ -5,7 +5,8 @@ import { Check, Loader2, Upload, Trash2, Scale, Bike as BikeIcon } from "lucide-
 import { t } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import { Modal } from "@/components/common/Modal";
-import { Bike } from "@/types/vault";
+import { Bike, ListOption } from "@/types/vault";
+import { resolveLists } from "@/lib/bikeLists";
 import {
   parseWeightInput,
   processImageFile,
@@ -21,39 +22,9 @@ export interface BikeModalProps {
   initialData?: Partial<Bike> & { initialKm?: number; initialHours?: number; stravaGearId?: string } | null;
 }
 
-const DISCIPLINES_BY_CATEGORY: Record<string, { value: string; label: string }[]> = {
-  MTB: [
-    { value: "ENDURO", label: "Enduro" },
-    { value: "TRAIL", label: "Trail" },
-    { value: "DOWNHILL", label: "Downhill" },
-    { value: "XC", label: "XC / Maraton" },
-  ],
-  GRAVEL: [
-    { value: "GRAVEL", label: "Gravel" },
-    { value: "BIKEPACKING", label: "Bikepacking" },
-    { value: "RACE", label: "Závodní" },
-  ],
-  ROAD: [
-    { value: "ROAD", label: "Silnice" },
-    { value: "ENDURANCE", label: "Vytrvalostní" },
-    { value: "AERO", label: "Aero" },
-    { value: "TT", label: "Časovka / Triatlon" },
-  ],
-  CYCLOCROSS: [{ value: "CYCLOCROSS", label: "Cyklokros" }],
-  CITY_URBAN: [
-    { value: "COMMUTER", label: "Dojíždění" },
-    { value: "CITY", label: "Městské" },
-  ],
-  TOURING: [{ value: "TOURING", label: "Touring" }],
-  DIRT_PUMPTRACK: [
-    { value: "DIRT", label: "Dirt" },
-    { value: "PUMPTRACK", label: "Pumptrack" },
-  ],
-  OTHER: [{ value: "OTHER", label: "Jiné" }],
-};
-
 export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData }: BikeModalProps) {
-  const { addBike, updateBike } = useVault();
+  const { data, addBike, updateBike } = useVault();
+  const lists = resolveLists(data.settings);
   const isEditMode = Boolean(bikeToEdit);
 
   const [name, setName] = useState("");
@@ -63,11 +34,10 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
   const [frameSize, setFrameSize] = useState("");
   const [category, setCategory] = useState("MTB");
   const [discipline, setDiscipline] = useState("ENDURO");
-  const baseDisciplineOptions = DISCIPLINES_BY_CATEGORY[category] ?? DISCIPLINES_BY_CATEGORY.OTHER;
-  // Zachová i starší uloženou hodnotu, která do kategorie nepatří, aby se při úpravě tiše nepřepsala
-  const disciplineOptions = baseDisciplineOptions.some((o) => o.value === discipline)
-    ? baseDisciplineOptions
-    : [...baseDisciplineOptions, { value: discipline, label: discipline }];
+  // Zachová i uloženou hodnotu, která už v seznamu není, aby se při úpravě tiše nepřepsala
+  const withCurrent = (options: ListOption[], current: string) =>
+    options.some((o) => o.value === current) ? options : [...options, { value: current, label: current }];
+  const disciplineOptions = withCurrent(lists.disciplines[category] ?? [], discipline);
   const [suspensionType, setSuspensionType] = useState("FULL_SUSPENSION");
   const [driveType, setDriveType] = useState("CONVENTIONAL");
   const [serialNumber, setSerialNumber] = useState("");
@@ -422,19 +392,16 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               onChange={(e) => {
                 const next = e.target.value;
                 setCategory(next);
-                const allowed = DISCIPLINES_BY_CATEGORY[next] ?? DISCIPLINES_BY_CATEGORY.OTHER;
-                if (!allowed.some((o) => o.value === discipline)) setDiscipline(allowed[0].value);
+                const allowed = lists.disciplines[next] ?? [];
+                if (allowed.length > 0 && !allowed.some((o) => o.value === discipline)) setDiscipline(allowed[0].value);
               }}
               className={inputClass}
             >
-              <option value="MTB">MTB</option>
-              <option value="GRAVEL">Gravel</option>
-              <option value="ROAD">Silniční</option>
-              <option value="CYCLOCROSS">Cyklokros</option>
-              <option value="CITY_URBAN">Městské</option>
-              <option value="TOURING">Touring</option>
-              <option value="DIRT_PUMPTRACK">Dirt / Pumptrack</option>
-              <option value="OTHER">Jiné</option>
+              {withCurrent(lists.bikeCategories, category).map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -464,9 +431,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               onChange={(e) => setSuspensionType(e.target.value)}
               className={inputClass}
             >
-              <option value="FULL_SUSPENSION">Celoodpružené</option>
-              <option value="FRONT_SUSPENSION">Pouze přední (Hardtail)</option>
-              <option value="RIGID">Pevné (Bez odpružení)</option>
+              {withCurrent(lists.suspensionTypes, suspensionType).map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -479,8 +448,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               onChange={(e) => setDriveType(e.target.value)}
               className={inputClass}
             >
-              <option value="CONVENTIONAL">Klasické</option>
-              <option value="ELECTRIC">Elektrokolo (E-bike)</option>
+              {withCurrent(lists.driveTypes, driveType).map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
             </select>
           </div>
         </div>
