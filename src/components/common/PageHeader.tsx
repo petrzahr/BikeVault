@@ -13,7 +13,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, badge, 
   <div
     className={cn(
       cardClass,
-      'p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4',
+      'p-5 min-h-[5rem] flex flex-col sm:flex-row sm:items-center justify-between gap-4',
       className,
     )}
   >

@@ -64,8 +64,8 @@ export function ComponentsClient({
         </div>
 
         {/* Panel filtrů a vyhledávání */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
-          <div className="flex gap-1 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scrollbar-none">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scrollbar-none">
             {[
               { id: "ALL", label: t("common.all") },
               { id: "INSTALLED", label: t("components.installed") },

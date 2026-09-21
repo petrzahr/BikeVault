@@ -172,7 +172,7 @@ export function BikeServiceClient({
       <BikeHeader bike={bike} />
 
       {/* Header Bar */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-5 min-h-[5rem] border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             Servisní plány a servisní kniha
