@@ -27,6 +27,7 @@ import { StravaManageBikesModal } from "@/components/settings/StravaManageBikesM
 import { BikeModal } from "@/components/garage/BikeModal";
 import { ClearAllDataModal } from "@/components/settings/ClearAllDataModal";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
+import { StravaLogo } from "@/components/common/StravaIcon";
 import { PublicStravaStatus } from "@/lib/strava/stravaTokenStore";
 import { getValidAccessToken, loginToGoogle } from "@/lib/google/googleAuth";
 import { Bike } from "@/types/vault";
@@ -333,17 +334,8 @@ export default function SettingsPage() {
           <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-5 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black tracking-wider text-sm shadow-sm">
-                  ST
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900">
-                    Strava
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Synchronizace celkového nájezdu kol z vašeho účtu Strava
-                  </p>
-                </div>
+                <StravaLogo className="h-9 w-auto" />
+                <h3 className="sr-only">Strava</h3>
               </div>
 
               {/* Connection Status Badge */}
