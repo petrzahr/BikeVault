@@ -21,6 +21,37 @@ export interface BikeModalProps {
   initialData?: Partial<Bike> & { initialKm?: number; initialHours?: number; stravaGearId?: string } | null;
 }
 
+const DISCIPLINES_BY_CATEGORY: Record<string, { value: string; label: string }[]> = {
+  MTB: [
+    { value: "ENDURO", label: "Enduro" },
+    { value: "TRAIL", label: "Trail" },
+    { value: "DOWNHILL", label: "Downhill" },
+    { value: "XC", label: "XC / Maraton" },
+  ],
+  GRAVEL: [
+    { value: "GRAVEL", label: "Gravel" },
+    { value: "BIKEPACKING", label: "Bikepacking" },
+    { value: "RACE", label: "Závodní" },
+  ],
+  ROAD: [
+    { value: "ROAD", label: "Silnice" },
+    { value: "ENDURANCE", label: "Vytrvalostní" },
+    { value: "AERO", label: "Aero" },
+    { value: "TT", label: "Časovka / Triatlon" },
+  ],
+  CYCLOCROSS: [{ value: "CYCLOCROSS", label: "Cyklokros" }],
+  CITY_URBAN: [
+    { value: "COMMUTER", label: "Dojíždění" },
+    { value: "CITY", label: "Městské" },
+  ],
+  TOURING: [{ value: "TOURING", label: "Touring" }],
+  DIRT_PUMPTRACK: [
+    { value: "DIRT", label: "Dirt" },
+    { value: "PUMPTRACK", label: "Pumptrack" },
+  ],
+  OTHER: [{ value: "OTHER", label: "Jiné" }],
+};
+
 export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData }: BikeModalProps) {
   const { addBike, updateBike } = useVault();
   const isEditMode = Boolean(bikeToEdit);
@@ -32,6 +63,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
   const [frameSize, setFrameSize] = useState("");
   const [category, setCategory] = useState("MTB");
   const [discipline, setDiscipline] = useState("ENDURO");
+  const baseDisciplineOptions = DISCIPLINES_BY_CATEGORY[category] ?? DISCIPLINES_BY_CATEGORY.OTHER;
+  // Zachová i starší uloženou hodnotu, která do kategorie nepatří, aby se při úpravě tiše nepřepsala
+  const disciplineOptions = baseDisciplineOptions.some((o) => o.value === discipline)
+    ? baseDisciplineOptions
+    : [...baseDisciplineOptions, { value: discipline, label: discipline }];
   const [suspensionType, setSuspensionType] = useState("FULL_SUSPENSION");
   const [driveType, setDriveType] = useState("CONVENTIONAL");
   const [serialNumber, setSerialNumber] = useState("");
@@ -376,14 +412,19 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
         </div>
 
         {/* Klasifikace */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
           <div>
             <label className={labelClass}>
               {t("bike.category")}
             </label>
             <select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => {
+                const next = e.target.value;
+                setCategory(next);
+                const allowed = DISCIPLINES_BY_CATEGORY[next] ?? DISCIPLINES_BY_CATEGORY.OTHER;
+                if (!allowed.some((o) => o.value === discipline)) setDiscipline(allowed[0].value);
+              }}
               className={inputClass}
             >
               <option value="MTB">MTB</option>
@@ -394,6 +435,23 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               <option value="TOURING">Touring</option>
               <option value="DIRT_PUMPTRACK">Dirt / Pumptrack</option>
               <option value="OTHER">Jiné</option>
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>
+              {t("bike.discipline")}
+            </label>
+            <select
+              value={discipline}
+              onChange={(e) => setDiscipline(e.target.value)}
+              className={inputClass}
+            >
+              {disciplineOptions.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
             </select>
           </div>
 
