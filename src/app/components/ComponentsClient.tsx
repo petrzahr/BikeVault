@@ -42,7 +42,7 @@ export function ComponentsClient({
 
   return (
     <div className="space-y-5 pb-12">
-      {/* Horní akční lišta ve stylu CashPilot */}
+      {/* Horní akční lišta */}
       <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
@@ -81,7 +81,7 @@ export function ComponentsClient({
                 onClick={() => setFilterStatus(tab.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   filterStatus === tab.id
-                    ? "bg-white text-slate-900 shadow-sm font-bold"
+                    ? "bg-navy-600 text-white shadow-sm font-bold"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
@@ -117,22 +117,22 @@ export function ComponentsClient({
 
             let statusBadge = {
               text: t("components.inStorage"),
-              style: "bg-brand-50 text-brand-700 border-brand-200",
+              style: "bg-ink-900 text-white border-ink-900",
             };
             if (comp.status === "INSTALLED") {
               statusBadge = {
                 text: activeBike ? `Na kole: ${activeBike.name}` : t("components.installed"),
-                style: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                style: "bg-ink-900 text-white border-ink-900",
               };
             } else if (comp.status === "SOLD") {
               statusBadge = {
                 text: t("components.sold"),
-                style: "bg-purple-50 text-purple-700 border-purple-200",
+                style: "bg-ink-900 text-white border-ink-900",
               };
             } else if (comp.status === "DISCARDED") {
               statusBadge = {
                 text: t("components.discarded"),
-                style: "bg-rose-50 text-rose-700 border-rose-200",
+                style: "bg-ink-900 text-white border-ink-900",
               };
             }
 
@@ -161,7 +161,7 @@ export function ComponentsClient({
                   )}
 
                   {comp.tireCasing && (
-                    <p className="text-xs text-brand-700 mt-1 font-medium">
+                    <p className="text-xs text-navy-700 mt-1 font-medium">
                       {comp.tireCasing} • {comp.tireCompound || ""}
                     </p>
                   )}
@@ -171,7 +171,7 @@ export function ComponentsClient({
                   <span>Cena: <strong className="text-slate-900 tabular-nums font-bold">{formatCzk(comp.purchasePrice)}</strong></span>
                   <Link
                     href={`/components/${comp.id}`}
-                    className="text-brand-600 hover:text-brand-700 font-semibold inline-flex items-center gap-1"
+                    className="text-navy-600 hover:text-navy-700 font-semibold inline-flex items-center gap-1"
                   >
                     <span>Detail & Servis →</span>
                   </Link>

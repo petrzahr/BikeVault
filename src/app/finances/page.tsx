@@ -80,14 +80,14 @@ export default function GlobalFinancesPage() {
 
         <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-brand-700">
+            <span className="text-xs font-semibold uppercase tracking-wider text-navy-700">
               {t("finances.netCost")} (TCO)
             </span>
-            <div className="p-2 rounded-xl bg-brand-50 text-brand-600">
+            <div className="p-2 rounded-xl bg-navy-50 text-navy-600">
               <Coins className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-2xl font-bold text-brand-700 tabular-nums">
+          <span className="text-2xl font-bold text-navy-700 tabular-nums">
             {formatCzk(netTotal)}
           </span>
         </div>
@@ -110,7 +110,7 @@ export default function GlobalFinancesPage() {
                 <span className="text-lg font-bold text-slate-900 tabular-nums block">
                   {formatCzk(total)}
                 </span>
-                <span className="text-[11px] text-brand-700 font-semibold tabular-nums">
+                <span className="text-[11px] text-navy-700 font-semibold tabular-nums">
                   {percent} % výdajů
                 </span>
               </div>
@@ -148,7 +148,7 @@ export default function GlobalFinancesPage() {
                         {t(categoryKey)}
                       </span>
                       {item.bike && (
-                        <span className="text-xs text-brand-700 font-semibold">
+                        <span className="text-xs text-navy-700 font-semibold">
                           [{item.bike.name}]
                         </span>
                       )}

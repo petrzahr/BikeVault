@@ -72,7 +72,7 @@ export function QuickPressureModal({
             <span className="text-xs font-semibold text-slate-700">
               Přední plášť
             </span>
-            <span className="text-xs tabular-nums text-brand-600 font-semibold">
+            <span className="text-xs tabular-nums text-navy-600 font-semibold">
               {(front * 14.5038).toFixed(1)} psi
             </span>
           </div>
@@ -103,7 +103,7 @@ export function QuickPressureModal({
             <span className="text-xs font-semibold text-slate-700">
               Zadní plášť
             </span>
-            <span className="text-xs tabular-nums text-brand-600 font-semibold">
+            <span className="text-xs tabular-nums text-navy-600 font-semibold">
               {(rear * 14.5038).toFixed(1)} psi
             </span>
           </div>

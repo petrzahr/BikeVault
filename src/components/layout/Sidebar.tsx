@@ -142,11 +142,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={onCloseMobile}
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                     active
-                      ? "bg-brand-50 text-brand-700 shadow-sm"
+                      ? "bg-navy-50 text-navy-700 shadow-sm"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}
                 >
-                  <span className={active ? "text-brand-600" : "text-slate-400"}>
+                  <span className={active ? "text-navy-600" : "text-slate-400"}>
                     <Icon className="w-4 h-4" />
                   </span>
                   <span>{item.label}</span>

@@ -276,7 +276,7 @@ export default function SettingsPage() {
             onClick={() => setActiveTab("preferences")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
               activeTab === "preferences"
-                ? "bg-white text-slate-900 shadow-sm"
+                ? "bg-navy-600 text-white shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -286,7 +286,7 @@ export default function SettingsPage() {
             onClick={() => setActiveTab("integrations")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === "integrations"
-                ? "bg-white text-slate-900 shadow-sm"
+                ? "bg-navy-600 text-white shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -364,7 +364,7 @@ export default function SettingsPage() {
             {/* Content based on state */}
             {loadingStatus ? (
               <div className="py-8 text-center text-slate-400 text-xs">
-                <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-brand-600" />
+                <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-navy-600" />
                 <span>Ověřuji stav spojení se Stravou...</span>
               </div>
             ) : !stravaStatus.connected ? (
@@ -442,7 +442,7 @@ export default function SettingsPage() {
                     disabled={syncingAll}
                     className={buttonClass("dark", "md")}
                   >
-                    <RefreshCw className={`w-3.5 h-3.5 ${syncingAll ? "animate-spin text-brand-400" : ""}`} />
+                    <RefreshCw className={`w-3.5 h-3.5 ${syncingAll ? "animate-spin text-navy-400" : ""}`} />
                     <span>{syncingAll ? "Synchronizuji..." : "Synchronizovat"}</span>
                   </button>
 
@@ -480,7 +480,7 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                  <Globe className="w-4 h-4 text-brand-600" />
+                  <Globe className="w-4 h-4 text-navy-600" />
                   <span>Jazyk rozhraní</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
@@ -506,7 +506,7 @@ export default function SettingsPage() {
 
               <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                  <Gauge className="w-4 h-4 text-brand-600" />
+                  <Gauge className="w-4 h-4 text-navy-600" />
                   <span>Jednotka tlaku v pláštích</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
@@ -519,7 +519,7 @@ export default function SettingsPage() {
 
               <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                  <Gauge className="w-4 h-4 text-brand-600" />
+                  <Gauge className="w-4 h-4 text-navy-600" />
                   <span>Jednotka tlaku odpružení</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
@@ -535,7 +535,7 @@ export default function SettingsPage() {
           {/* Technical & Database Info */}
           <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
             <div className="flex items-center gap-2 text-slate-900">
-              <Database className="w-4 h-4 text-brand-600" />
+              <Database className="w-4 h-4 text-navy-600" />
               <h3 className="text-xs font-bold uppercase tracking-wider">
                 Systémové informace BikeVault
               </h3>
@@ -544,7 +544,7 @@ export default function SettingsPage() {
             <div className="space-y-2.5 text-xs text-slate-600 divide-y divide-slate-100">
               <div className="flex justify-between py-2">
                 <span>Architektura</span>
-                <span className="font-semibold text-brand-700">Next.js App Router (Hybrid Cloud)</span>
+                <span className="font-semibold text-navy-700">Next.js App Router (Hybrid Cloud)</span>
               </div>
               <div className="flex justify-between py-2">
                 <span>Cloudové úložiště</span>

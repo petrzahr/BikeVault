@@ -51,7 +51,7 @@ export default function StatisticsPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">
               Celkem najeto na všech kolech
             </span>
-            <div className="p-2 rounded-xl bg-brand-50 text-brand-600">
+            <div className="p-2 rounded-xl bg-navy-50 text-navy-600">
               <Compass className="w-4 h-4" />
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function StatisticsPage() {
                   <span className="text-slate-500 uppercase tracking-wider block text-[10px] font-semibold">
                     Cena za km
                   </span>
-                  <span className="text-sm font-bold text-brand-700 tabular-nums">
+                  <span className="text-sm font-bold text-navy-700 tabular-nums">
                     {item.costPerKm.toFixed(2)} Kč/km
                   </span>
                 </div>

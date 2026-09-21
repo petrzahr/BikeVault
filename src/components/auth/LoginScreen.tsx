@@ -75,7 +75,7 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-brand-50/40 to-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 select-none">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-navy-50/40 to-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 select-none">
       <div className="max-w-md w-full bg-white rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-200/60 p-7 sm:p-9 space-y-7">
         
         {/* Logo a hlavička */}
@@ -87,7 +87,7 @@ export const LoginScreen: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
               BikeVault
             </h1>
-            <p className="text-xs text-brand-600 font-bold uppercase tracking-wider mt-0.5">
+            <p className="text-xs text-navy-600 font-bold uppercase tracking-wider mt-0.5">
               Vaše kola pod absolutní kontrolou
             </p>
           </div>
@@ -99,7 +99,7 @@ export const LoginScreen: React.FC = () => {
         {/* Přehled výhod */}
         <div className="bg-slate-50/80 rounded-2xl p-4 border border-slate-200/60 space-y-3 text-xs text-slate-600">
           <div className="flex items-start gap-3">
-            <div className="p-1 rounded-lg bg-brand-100 text-brand-700 shrink-0 mt-0.5">
+            <div className="p-1 rounded-lg bg-navy-100 text-navy-700 shrink-0 mt-0.5">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
@@ -119,7 +119,7 @@ export const LoginScreen: React.FC = () => {
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-1 rounded-lg bg-brand-100 text-brand-700 shrink-0 mt-0.5">
+            <div className="p-1 rounded-lg bg-navy-100 text-navy-700 shrink-0 mt-0.5">
               <Wrench className="w-4 h-4" />
             </div>
             <div>
@@ -173,11 +173,11 @@ export const LoginScreen: React.FC = () => {
             type="button"
             onClick={handleLogin}
             disabled={isSyncing}
-            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold border border-slate-300 shadow-md shadow-slate-200/50 hover:border-brand-300 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm"
+            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold border border-slate-300 shadow-md shadow-slate-200/50 hover:border-navy-300 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm"
           >
             {isSyncing ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin text-brand-600" />
+                <Loader2 className="w-5 h-5 animate-spin text-navy-600" />
                 <span>Přihlašuji a načítám data...</span>
               </>
             ) : (
@@ -230,7 +230,7 @@ export const LoginScreen: React.FC = () => {
                 type="button"
                 onClick={handleCopyEmail}
                 title={`Zkopírovat adresu ${ACCESS_REQUEST_EMAIL}`}
-                className="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-brand-500 rounded"
+                className="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-navy-500 rounded"
               >
                 Zkopírovat kontaktní e-mail
               </button>

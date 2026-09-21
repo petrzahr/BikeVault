@@ -55,25 +55,29 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
   const getServiceBadgeStyle = () => {
     if (!serviceSummary) {
       return {
-        bg: "bg-slate-100 text-slate-600 border-slate-200",
+        bg: "bg-ink-900 text-white border-ink-900",
+        dot: "text-ink-300",
         icon: CheckCircle2,
       };
     }
     switch (serviceSummary.urgency) {
       case "OVERDUE":
         return {
-          bg: "bg-rose-50 text-rose-700 border-rose-200",
+          bg: "bg-ink-900 text-white border-ink-900",
+          dot: "text-danger brightness-150",
           icon: AlertTriangle,
         };
       case "DUE_SOON":
         return {
-          bg: "bg-amber-50 text-amber-800 border-amber-200",
+          bg: "bg-ink-900 text-white border-ink-900",
+          dot: "text-warning brightness-150",
           icon: Clock,
         };
       case "OK":
       default:
         return {
-          bg: "bg-emerald-50 text-emerald-700 border-emerald-200",
+          bg: "bg-ink-900 text-white border-ink-900",
+          dot: "text-success brightness-150",
           icon: CheckCircle2,
         };
     }
@@ -118,7 +122,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
           {/* Header titles */}
           <div>
-            <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-snug group-hover:text-brand-600 transition-colors">
+            <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-snug group-hover:text-navy-600 transition-colors">
               {bike.name}
             </h3>
             <p className="text-xs text-slate-500 font-medium mt-0.5">
@@ -155,7 +159,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
                 <span>{t("garage.card.nextService")}:</span>
               </span>
               <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-semibold flex items-center gap-1.5 ${badgeStyle.bg}`}>
-                <BadgeIcon className="w-3 h-3" />
+                <BadgeIcon className={`w-3 h-3 ${badgeStyle.dot}`} />
                 <span>{serviceSummary?.text || t("garage.card.noServiceDue")}</span>
               </span>
             </div>

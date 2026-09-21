@@ -236,7 +236,7 @@ export function BikeComponentsClient({
                   )}
 
                   {item.component.tireCasing && (
-                    <p className="text-xs text-brand-700 tabular-nums mt-1 font-medium">
+                    <p className="text-xs text-navy-700 tabular-nums mt-1 font-medium">
                       {item.component.tireCasing} • {item.component.tireCompound || ""}
                     </p>
                   )}
@@ -274,7 +274,7 @@ export function BikeComponentsClient({
                       className={buttonClass("secondary", "sm")}
                       title="Přesunout na jiné kolo"
                     >
-                      <ArrowRightLeft className="w-3.5 h-3.5 text-brand-600" />
+                      <ArrowRightLeft className="w-3.5 h-3.5 text-navy-600" />
                       <span>Přesunout</span>
                     </button>
 
@@ -305,7 +305,7 @@ export function BikeComponentsClient({
                             : `Rychle vyměnit za identický kus ze skladu (${matchingCandidates.length} ks skladem)`
                         }
                       >
-                        <RefreshCw className="w-3.5 h-3.5 text-brand-600" />
+                        <RefreshCw className="w-3.5 h-3.5 text-navy-600" />
                         <span>
                           Vyměnit {matchingCandidates.length > 1 ? `(${matchingCandidates.length})` : ""}
                         </span>
@@ -339,7 +339,7 @@ export function BikeComponentsClient({
 
                   <Link
                     href={`/components/${item.component.id}`}
-                    className="text-slate-500 hover:text-brand-600 flex items-center gap-1 font-semibold transition-colors"
+                    className="text-slate-500 hover:text-navy-600 flex items-center gap-1 font-semibold transition-colors"
                   >
                     <span>Detail</span>
                     <ExternalLink className="w-3 h-3" />
@@ -375,7 +375,7 @@ export function BikeComponentsClient({
                   key={opt.id}
                   className={`flex items-center gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
                     disposition === opt.id
-                      ? "bg-brand-50/70 border-brand-500 text-brand-950 font-medium"
+                      ? "bg-navy-50/70 border-navy-500 text-navy-950 font-medium"
                       : "bg-slate-50/60 border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
                   }`}
                 >
@@ -385,7 +385,7 @@ export function BikeComponentsClient({
                     value={opt.id}
                     checked={disposition === opt.id}
                     onChange={() => setDisposition(opt.id as any)}
-                    className="text-brand-600 focus:ring-0"
+                    className="text-navy-600 focus:ring-0"
                   />
                   <span>{opt.label}</span>
                 </label>
@@ -530,7 +530,7 @@ export function BikeComponentsClient({
                 <p>Ve skladu nemáte žádné volné komponenty.</p>
                 <Link
                   href="/components"
-                  className="text-brand-600 hover:underline block font-semibold"
+                  className="text-navy-600 hover:underline block font-semibold"
                 >
                   Přejít do Centrálního skladu a přidat komponent →
                 </Link>

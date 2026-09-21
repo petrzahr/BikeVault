@@ -86,7 +86,7 @@ export function GarageClient({
 
   return (
     <div className="space-y-5 pb-12">
-      {/* Horní akční lišta ve stylu CashPilot */}
+      {/* Horní akční lišta */}
       <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
@@ -116,7 +116,7 @@ export function GarageClient({
             onClick={() => setActiveTab("ACTIVE")}
             className={`flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
               activeTab === "ACTIVE"
-                ? "bg-white text-slate-900 shadow-sm font-bold"
+                ? "bg-navy-600 text-white shadow-sm font-bold"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -126,7 +126,7 @@ export function GarageClient({
             onClick={() => setActiveTab("SOLD")}
             className={`flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
               activeTab === "SOLD"
-                ? "bg-white text-slate-900 shadow-sm font-bold"
+                ? "bg-navy-600 text-white shadow-sm font-bold"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -136,7 +136,7 @@ export function GarageClient({
             onClick={() => setActiveTab("ARCHIVED")}
             className={`flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
               activeTab === "ARCHIVED"
-                ? "bg-white text-slate-900 shadow-sm font-bold"
+                ? "bg-navy-600 text-white shadow-sm font-bold"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -150,7 +150,7 @@ export function GarageClient({
         <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-semibold">Celkový nájezd garáže</span>
-            <div className="p-1.5 rounded-lg bg-brand-50 text-brand-600">
+            <div className="p-1.5 rounded-lg bg-navy-50 text-navy-600">
               <BikeIcon className="w-4 h-4" />
             </div>
           </div>

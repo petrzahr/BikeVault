@@ -179,14 +179,14 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               value={tireCasing}
               onChange={(e) => setTireCasing(e.target.value)}
               placeholder="Kostra (např. DoubleDown, DH, EXO+)"
-              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
             />
             <input
               type="text"
               value={tireCompound}
               onChange={(e) => setTireCompound(e.target.value)}
               placeholder="Směs (např. MaxxGrip, MaxxTerra)"
-              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
             />
           </div>
         </div>

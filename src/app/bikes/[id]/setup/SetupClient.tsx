@@ -192,7 +192,7 @@ export function SetupClient({
             onClick={() => setIsSnapshotModalOpen(true)}
             className={buttonClass("secondary", "md")}
           >
-            <Camera className="w-4 h-4 text-brand-600" />
+            <Camera className="w-4 h-4 text-navy-600" />
             <span>{t("setup.saveSnapshot")}</span>
           </button>
         </div>
@@ -214,7 +214,7 @@ export function SetupClient({
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-brand-50 text-brand-700 border border-brand-200/60 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-xl bg-navy-50 text-navy-700 border border-navy-200/60 flex items-center justify-center font-bold text-xs">
                     V
                   </div>
                   <div>
@@ -227,7 +227,7 @@ export function SetupClient({
                   </div>
                 </div>
 
-                <span className="text-[11px] text-brand-700 tabular-nums bg-brand-50 px-2.5 py-1 rounded-full border border-brand-200/80 font-semibold">
+                <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
                   {forkTravel} mm zdvih
                 </span>
               </div>
@@ -340,7 +340,7 @@ export function SetupClient({
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-brand-50 text-brand-700 border border-brand-200/60 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-xl bg-navy-50 text-navy-700 border border-navy-200/60 flex items-center justify-center font-bold text-xs">
                     T
                   </div>
                   <div>
@@ -353,7 +353,7 @@ export function SetupClient({
                   </div>
                 </div>
 
-                <span className="text-[11px] text-brand-700 tabular-nums bg-brand-50 px-2.5 py-1 rounded-full border border-brand-200/80 font-semibold">
+                <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
                   Zadní tlumič
                 </span>
               </div>
@@ -628,7 +628,7 @@ export function SetupClient({
       {snapshots.length > 0 && (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
           <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-            <History className="w-4 h-4 text-brand-600" />
+            <History className="w-4 h-4 text-navy-600" />
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               Uložené profily a snímky nastavení ({snapshots.length})
             </h3>
@@ -641,7 +641,7 @@ export function SetupClient({
                 className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-2.5 text-xs hover:border-slate-300 transition-colors"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-brand-700">
+                  <span className="font-bold text-sm text-navy-700">
                     {snap.profileName || "Snímek nastavení"}
                   </span>
                   <div className="flex items-center gap-1.5">

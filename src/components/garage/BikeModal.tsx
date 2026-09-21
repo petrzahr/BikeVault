@@ -560,7 +560,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               <p className="text-[11px] text-slate-500">
                 Podporované formáty: JPEG, PNG, WebP (max. 10 MB).
                 {uploadedImage && imageUrl && (
-                  <span className="block text-brand-600 font-medium mt-0.5">
+                  <span className="block text-navy-600 font-medium mt-0.5">
                     Nahraná fotografie má přednost před níže uvedenou URL adresou.
                   </span>
                 )}

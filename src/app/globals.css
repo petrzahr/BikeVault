@@ -12,21 +12,21 @@ body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
-/* Custom scrollbar matching BikeVault's cool slate palette */
+/* Custom scrollbar matching BikeVault's neutral ink palette */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #edf2f7;
+  background: #f4f5f6;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #c9ccd1;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8294a8;
+  background: #9aa0a8;
 }

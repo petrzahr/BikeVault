@@ -219,7 +219,7 @@ export function MaintenanceClient({
             onClick={() => handleOpenRecordModal()}
             className={buttonClass("secondary", "md")}
           >
-            <Wrench className="w-4 h-4 text-brand-600" />
+            <Wrench className="w-4 h-4 text-navy-600" />
             <span>Zapsat servis bez plánu</span>
           </button>
 
@@ -380,7 +380,7 @@ export function MaintenanceClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-brand-600" />
+              <Sliders className="w-4 h-4 text-navy-600" />
               <span>Správa servisních plánů ({allSchedules.length})</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -410,7 +410,7 @@ export function MaintenanceClient({
                 onClick={() => setFilterActive(tab.id as any)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   filterActive === tab.id
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-navy-600 text-white shadow-sm"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
@@ -465,7 +465,7 @@ export function MaintenanceClient({
                       </span>
 
                       {item.bike && (
-                        <span className="text-xs text-brand-700 font-semibold flex items-center gap-1">
+                        <span className="text-xs text-navy-700 font-semibold flex items-center gap-1">
                           <BikeIcon className="w-3 h-3" />
                           <span>{item.bike.name}</span>
                         </span>
@@ -556,7 +556,7 @@ export function MaintenanceClient({
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm font-bold text-slate-900">{item.event.name || item.event.description}</span>
                     {item.bike && (
-                      <span className="text-xs text-brand-700 font-medium">({item.bike.name})</span>
+                      <span className="text-xs text-navy-700 font-medium">({item.bike.name})</span>
                     )}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-slate-500 tabular-nums">

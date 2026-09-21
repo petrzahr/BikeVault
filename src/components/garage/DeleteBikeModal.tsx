@@ -47,7 +47,7 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
           <legend className="text-xs font-semibold text-slate-700 mb-2">
             Co udělat s komponenty na kole ({installedCount})?
           </legend>
-          <label className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50/50">
+          <label className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer has-[:checked]:border-navy-500 has-[:checked]:bg-navy-50/50">
             <input
               type="radio"
               name="components-disposition"

@@ -40,8 +40,8 @@ const toastStyles: Record<ToastKind, { box: string; icon: React.ReactNode }> = {
     icon: <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />,
   },
   info: {
-    box: 'bg-brand-50 border-brand-200 text-brand-900',
-    icon: <Info className="w-4 h-4 text-brand-600 shrink-0" />,
+    box: 'bg-navy-50 border-navy-200 text-navy-900',
+    icon: <Info className="w-4 h-4 text-navy-600 shrink-0" />,
   },
 };
 

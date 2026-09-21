@@ -153,12 +153,12 @@ export const Header: React.FC<HeaderProps> = ({
                 <GoogleIcon className="w-3.5 h-3.5 shrink-0" />
                 <span className="relative flex h-2 w-2">
                   {syncStatus === "saving" && (
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-navy-400 opacity-75"></span>
                   )}
                   <span
                     className={`relative inline-flex rounded-full h-2 w-2 ${
                       syncStatus === "saving"
-                        ? "bg-brand-500"
+                        ? "bg-navy-500"
                         : syncStatus === "error" || appState === "scopeInsufficient"
                         ? "bg-amber-500"
                         : "bg-emerald-500"
@@ -187,7 +187,7 @@ export const Header: React.FC<HeaderProps> = ({
                         className="w-8 h-8 rounded-full border border-slate-200 shrink-0"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xs shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-navy-100 text-navy-700 flex items-center justify-center font-bold text-xs shrink-0">
                         {user?.displayName ? user.displayName[0].toUpperCase() : "G"}
                       </div>
                     )}
@@ -208,8 +208,8 @@ export const Header: React.FC<HeaderProps> = ({
                       <span className="font-semibold flex items-center gap-1">
                         {syncStatus === "saving" ? (
                           <>
-                            <RefreshCw className="w-3 h-3 animate-spin text-brand-600" />
-                            <span className="text-brand-600">Probíhá zápis</span>
+                            <RefreshCw className="w-3 h-3 animate-spin text-navy-600" />
+                            <span className="text-navy-600">Probíhá zápis</span>
                           </>
                         ) : syncStatus === "error" ? (
                           <>

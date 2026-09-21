@@ -217,7 +217,7 @@ export function UpdateOdometerModal({
                 type="checkbox"
                 checked={allowCorrection}
                 onChange={(e) => setAllowCorrection(e.target.checked)}
-                className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500"
+                className="w-4 h-4 text-navy-600 rounded border-slate-300 focus:ring-navy-500"
               />
               <span>Potvrdit korekci stavu počítadla</span>
             </label>

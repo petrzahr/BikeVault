@@ -37,7 +37,7 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
       </head>
-      <body className="h-full text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900 bg-slate-50">
+      <body className="h-full text-slate-800 antialiased selection:bg-navy-100 selection:text-navy-900 bg-slate-50">
         <FeedbackProvider>
           <VaultProvider>
             <AuthGate>

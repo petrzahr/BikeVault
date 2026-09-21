@@ -10,18 +10,18 @@ export type ButtonSize = 'sm' | 'md';
 
 const buttonBase =
   'inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-bold rounded-xl transition-colors cursor-pointer ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/30 ' +
   'disabled:opacity-50 disabled:cursor-not-allowed';
 
 const buttonVariants: Record<ButtonVariant, string> = {
-  primary: 'bg-brand-600 hover:bg-brand-700 text-white shadow-sm',
-  secondary: 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200',
-  soft: 'bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200',
+  primary: 'bg-navy-600 hover:bg-navy-700 text-white shadow-sm',
+  secondary: 'bg-white hover:bg-ink-50 text-ink-700 border border-ink-200',
+  soft: 'bg-ink-100 hover:bg-ink-200 text-ink-700 border border-ink-200',
   danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-sm',
   dangerOutline: 'bg-white hover:bg-rose-50 text-rose-600 border border-rose-200',
   warning: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm',
-  dark: 'bg-slate-900 hover:bg-slate-800 text-white shadow-sm',
-  ghost: 'text-slate-600 hover:text-slate-800 hover:bg-slate-100',
+  dark: 'bg-ink-900 hover:bg-ink-800 text-white shadow-sm',
+  ghost: 'text-ink-500 hover:text-ink-800 hover:bg-ink-100',
 };
 
 const buttonSizes: Record<ButtonSize, string> = {
@@ -38,10 +38,10 @@ export function buttonClass(
 }
 
 export const inputClass =
-  'w-full px-3.5 py-2 text-sm text-slate-900 bg-white border border-slate-200 rounded-xl shadow-sm transition-colors ' +
-  'placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 ' +
-  'disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed';
+  'w-full px-3.5 py-2 text-sm text-ink-900 bg-white border border-ink-200 rounded-xl shadow-sm transition-colors ' +
+  'placeholder:text-ink-300 focus:outline-none focus:ring-2 focus:ring-navy-500/30 focus:border-navy-500 ' +
+  'disabled:bg-ink-50 disabled:text-ink-400 disabled:cursor-not-allowed';
 
-export const labelClass = 'block text-xs font-semibold text-slate-700 mb-1';
+export const labelClass = 'block text-xs font-semibold text-ink-700 mb-1';
 
-export const cardClass = 'bg-white border border-slate-200/80 rounded-2xl shadow-sm';
+export const cardClass = 'bg-white border border-ink-200/80 rounded-2xl shadow-sm';

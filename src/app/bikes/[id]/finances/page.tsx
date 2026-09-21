@@ -22,7 +22,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
     return (
       <div className="p-12 text-center text-slate-500 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
         <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
-        <Link href="/garage" className="text-brand-600 hover:underline text-xs font-semibold">
+        <Link href="/garage" className="text-navy-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
         </Link>
       </div>
@@ -88,14 +88,14 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
 
         <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-brand-700">
+            <span className="text-xs font-semibold uppercase tracking-wider text-navy-700">
               {t("finances.netCost")}
             </span>
-            <div className="p-2 rounded-xl bg-brand-50 text-brand-600">
+            <div className="p-2 rounded-xl bg-navy-50 text-navy-600">
               <Coins className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-2xl font-bold text-brand-700 tabular-nums">
+          <span className="text-2xl font-bold text-navy-700 tabular-nums">
             {formatCzk(tco.netOwnershipCost)}
           </span>
         </div>

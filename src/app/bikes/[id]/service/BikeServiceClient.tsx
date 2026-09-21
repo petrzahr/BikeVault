@@ -188,7 +188,7 @@ export function BikeServiceClient({
             className={buttonClass("secondary", "md")}
             title="Jednorázový servis mimo pravidelný plán"
           >
-            <Wrench className="w-3.5 h-3.5 text-brand-600" />
+            <Wrench className="w-3.5 h-3.5 text-navy-600" />
             <span>Zapsat servis bez plánu</span>
           </button>
 
@@ -210,7 +210,7 @@ export function BikeServiceClient({
           </h3>
           <button
             onClick={handleOpenCreatePlan}
-            className="text-xs font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1"
+            className="text-xs font-semibold text-navy-600 hover:text-navy-700 inline-flex items-center gap-1"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Přidat plán</span>
@@ -298,7 +298,7 @@ export function BikeServiceClient({
                     </h4>
 
                     {comp ? (
-                      <p className="text-xs text-brand-700 font-medium flex items-center gap-1">
+                      <p className="text-xs text-navy-700 font-medium flex items-center gap-1">
                         <Layers className="w-3 h-3" />
                         <span>Komponent: {comp.manufacturer} {comp.model}</span>
                       </p>
@@ -393,7 +393,7 @@ export function BikeServiceClient({
                         {ev.name || ev.description}
                       </span>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border ${
-                        ev.executionType === "DIY" || ev.performedBy === "SELF" ? "bg-brand-50 text-brand-700 border-brand-200/80" : "bg-purple-50 text-purple-700 border-purple-200/80"
+                        ev.executionType === "DIY" || ev.performedBy === "SELF" ? "bg-navy-50 text-navy-700 border-navy-200/80" : "bg-purple-50 text-purple-700 border-purple-200/80"
                       }`}>
                         {ev.executionType === "DIY" || ev.performedBy === "SELF" ? "Svépomocí" : "Dílna"}
                       </span>

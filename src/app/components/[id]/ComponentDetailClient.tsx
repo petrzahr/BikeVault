@@ -198,7 +198,7 @@ export function ComponentDetailClient({
                   <span>Osazeno na: {activeBike.name}</span>
                 </span>
               ) : (
-                <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200 text-xs font-semibold">
+                <span className="px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700 border border-navy-200 text-xs font-semibold">
                   Skladem
                 </span>
               )}
@@ -217,7 +217,7 @@ export function ComponentDetailClient({
               onClick={() => handleOpenRecordModal()}
               className={buttonClass("secondary", "md")}
             >
-              <Wrench className="w-3.5 h-3.5 text-brand-600" />
+              <Wrench className="w-3.5 h-3.5 text-navy-600" />
               <span>Zapsat servis</span>
             </button>
             <button
@@ -266,7 +266,7 @@ export function ComponentDetailClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
           <div>
             <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <Clock className="w-5 h-5 text-brand-600" />
+              <Clock className="w-5 h-5 text-navy-600" />
               <span>Servisní plány komponenty ({schedulesWithStatus.length})</span>
             </h2>
             <p className="text-xs text-slate-500">
@@ -408,7 +408,7 @@ export function ComponentDetailClient({
       {/* HISTORIE SERVISU SEKCE */}
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2 border-b border-slate-200 pb-3">
-          <Wrench className="w-5 h-5 text-brand-600" />
+          <Wrench className="w-5 h-5 text-navy-600" />
           <span>Servisní deník komponenty ({serviceEvents.length})</span>
         </h2>
 
@@ -449,7 +449,7 @@ export function ComponentDetailClient({
       {/* HISTORIE INSTALACÍ SEKCE */}
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2 border-b border-slate-200 pb-3">
-          <BikeIcon className="w-5 h-5 text-brand-600" />
+          <BikeIcon className="w-5 h-5 text-navy-600" />
           <span>Historie osazení na kolech ({installationHistory.length})</span>
         </h2>
 

@@ -161,7 +161,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
                 className={buttonClass("secondary", "md")}
                 title="Synchronizovat nájezd se Stravou"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${isSyncingStrava ? "animate-spin text-brand-600" : "text-slate-500"}`} />
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncingStrava ? "animate-spin text-navy-600" : "text-slate-500"}`} />
                 <span>Synchronizovat</span>
               </button>
             )}
@@ -251,12 +251,12 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
                 {bike.name}
               </h1>
               {bike.stravaGearId && (
-                <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200/80 text-xs font-semibold flex items-center gap-1">
-                  <Link2 className="w-3 h-3 text-brand-600" />
+                <span className="px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700 border border-navy-200/80 text-xs font-semibold flex items-center gap-1">
+                  <Link2 className="w-3 h-3 text-navy-600" />
                   <span>Strava propojeno</span>
                 </span>
               )}
-              <span className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200/80 text-xs font-semibold">
+              <span className="px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700 border border-navy-200/80 text-xs font-semibold">
                 {bike.category} • {bike.discipline}
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-medium">
@@ -306,7 +306,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
                   href={tab.href}
                   className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                     active
-                      ? "bg-white text-brand-700 shadow-sm"
+                      ? "bg-white text-navy-700 shadow-sm"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
