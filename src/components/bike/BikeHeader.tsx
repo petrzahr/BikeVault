@@ -184,7 +184,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className={buttonClass("secondary", "md", "hover:bg-rose-50 hover:text-rose-600")}
+              className={buttonClass("secondary", "md", "text-rose-600 hover:bg-rose-50")}
               title="Smazat kolo"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -287,16 +287,16 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
         {/* Sub-Navigation Tabs */}
         <div className="pt-2">
-          <div className="inline-flex p-1 bg-slate-200/60 rounded-xl overflow-x-auto max-w-full">
+          <div className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto max-w-2xl">
             {tabs.map((tab) => {
               const active = isTabActive(tab.href);
               return (
                 <Link
                   key={tab.href}
                   href={tab.href}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                  className={`flex-1 flex items-center justify-center px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
                     active
-                      ? "bg-white text-navy-700 shadow-sm"
+                      ? "bg-navy-600 text-white shadow-sm font-bold"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
