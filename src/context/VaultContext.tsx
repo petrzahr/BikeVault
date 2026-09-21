@@ -105,6 +105,7 @@ interface VaultContextType {
     }
   ) => string;
   updateBike: (id: string, updates: Partial<Bike>) => void;
+  reorderBikes: (orderedIds: string[]) => void;
   deleteBike: (id: string, disposition?: BikeComponentsDisposition) => void;
   deleteOdometerEntry: (entryId: string) => { success: boolean; error?: string };
   clearAllData: () => void;
@@ -608,6 +609,20 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       ...prev,
       bikes: prev.bikes.map((b) => (b.id === id ? { ...b, ...updates, id: b.id, updatedAt: new Date().toISOString() } : b)),
     }));
+  };
+
+  // Přeřadí kola z orderedIds do daného pořadí; ostatní kola (jiné záložky) zůstanou na svých pozicích.
+  const reorderBikes = (orderedIds: string[]) => {
+    mutateData((prev) => {
+      const byId = new Map(prev.bikes.map((b) => [b.id, b]));
+      const queue = orderedIds.filter((id) => byId.has(id));
+      const inGroup = new Set(queue);
+      let next = 0;
+      return {
+        ...prev,
+        bikes: prev.bikes.map((b) => (inGroup.has(b.id) ? byId.get(queue[next++])! : b)),
+      };
+    });
   };
 
   const deleteBike = (id: string, disposition: BikeComponentsDisposition = "STORAGE") => {
@@ -1524,6 +1539,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     exportCorruptedFile,
     addBike,
     updateBike,
+    reorderBikes,
     deleteBike,
     deleteOdometerEntry,
     clearAllData,

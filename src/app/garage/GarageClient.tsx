@@ -19,7 +19,9 @@ export function GarageClient({
   allTransactions: propTransactions,
   serviceSchedulesWithStatus: propServiceSchedules,
 }: GarageClientProps = {}) {
-  const { data, getServiceScheduleStatuses } = useVault();
+  const { data, getServiceScheduleStatuses, reorderBikes } = useVault();
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"ACTIVE" | "SOLD" | "ARCHIVED">("ACTIVE");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
@@ -33,6 +35,21 @@ export function GarageClient({
     if (activeTab === "SOLD") return b.status === "SOLD";
     return b.status === "ARCHIVED" || b.status === "INACTIVE";
   });
+
+  // Řazení kol přetažením: kolo se vloží na pozici cílové karty
+  const handleDrop = (targetId: string) => {
+    if (draggedId && draggedId !== targetId) {
+      const ids = filteredBikes.map((b) => b.id);
+      const from = ids.indexOf(draggedId);
+      const to = ids.indexOf(targetId);
+      if (from !== -1 && to !== -1) {
+        ids.splice(to, 0, ids.splice(from, 1)[0]);
+        reorderBikes(ids);
+      }
+    }
+    setDraggedId(null);
+    setOverId(null);
+  };
 
   // Calculate Garage totals
   const totalMileage = initialBikes.reduce((acc, b) => acc + Number(b.currentKm || 0), 0);
@@ -211,12 +228,41 @@ export function GarageClient({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredBikes.map((bike) => (
-            <BikeCard
+            <div
               key={bike.id}
-              bike={bike}
-              serviceSummary={getBikeServiceSummary(bike.id)}
-              netCost={getBikeNetCost(bike.id)}
-            />
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = "move";
+                setDraggedId(bike.id);
+              }}
+              onDragOver={(e) => {
+                if (!draggedId) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                if (overId !== bike.id) setOverId(bike.id);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                handleDrop(bike.id);
+              }}
+              onDragEnd={() => {
+                setDraggedId(null);
+                setOverId(null);
+              }}
+              className={`cursor-grab active:cursor-grabbing rounded-2xl transition-all ${
+                draggedId === bike.id ? "opacity-40" : ""
+              } ${
+                overId === bike.id && draggedId !== bike.id
+                  ? "ring-2 ring-navy-600 ring-offset-2"
+                  : ""
+              }`}
+            >
+              <BikeCard
+                bike={bike}
+                serviceSummary={getBikeServiceSummary(bike.id)}
+                netCost={getBikeNetCost(bike.id)}
+              />
+            </div>
           ))}
         </div>
       )}
