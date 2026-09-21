@@ -1,5 +1,5 @@
 /**
- * Comprehensive test suite for BikeVault Strava Integration (27 Requirements)
+ * Comprehensive test suite for BikeVault Strava Integration (28 Requirements)
  * Run: npx tsx tests/stravaIntegration.test.ts
  */
 
@@ -19,7 +19,8 @@ import {
 import { 
   metersToKm, 
   compareMileage, 
-  validateLinkConstraint 
+  validateLinkConstraint,
+  validateNewBikeGearId
 } from "../src/lib/domain/stravaSync";
 import { 
   StravaAuthData, 
@@ -57,7 +58,7 @@ const storageMock = (() => {
 (globalThis as unknown as Record<string, unknown>).localStorage = storageMock;
 (globalThis as unknown as Record<string, unknown>).window = globalThis;
 
-console.log("\n=== RUNNING BIKEVAULT STRAVA INTEGRATION TESTS (27 REQUIREMENTS) ===\n");
+console.log("\n=== RUNNING BIKEVAULT STRAVA INTEGRATION TESTS (28 REQUIREMENTS) ===\n");
 
 // Isolate test storage key
 setActiveStorageKey("bikevault_test_strava_v1");
@@ -704,7 +705,23 @@ async function runTests() {
   console.log("✅ PASSED Test 27: All 27 Strava integration requirements verified.");
 }
 
-console.log("\n🎉 ALL 27 / 27 STRAVA INTEGRATION TESTS PASSED SUCCESSFULLY!\n");
+// 28. Creating a new bike cannot reuse an already linked Strava gear ID (1:1 constraint)
+{
+  const dataset = createTestDataset();
+  dataset.bikes[0].stravaGearId = "b101";
+
+  const duplicate = validateNewBikeGearId(dataset.bikes, "b101");
+  assert.strictEqual(duplicate.valid, false, "Already linked gear ID must be rejected for a new bike");
+  assert.ok(duplicate.error?.includes(dataset.bikes[0].name), "Error must name the bike holding the link");
+
+  assert.strictEqual(validateNewBikeGearId(dataset.bikes, " b101 ").valid, false, "Gear ID is trimmed before comparison");
+  assert.strictEqual(validateNewBikeGearId(dataset.bikes, "b102").valid, true, "Unlinked gear ID is accepted");
+  assert.strictEqual(validateNewBikeGearId(dataset.bikes, undefined).valid, true, "Bike without Strava link is accepted");
+  assert.strictEqual(validateNewBikeGearId(dataset.bikes, "").valid, true, "Empty gear ID is accepted");
+  console.log("✅ PASSED Test 28: New bike creation enforces 1:1 Strava gear ID constraint.");
+}
+
+console.log("\n🎉 ALL 28 / 28 STRAVA INTEGRATION TESTS PASSED SUCCESSFULLY!\n");
 }
 
 runTests().catch((err) => {

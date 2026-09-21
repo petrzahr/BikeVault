@@ -45,7 +45,7 @@ import {
   getInitialData,
 } from "@/lib/storage/storageService";
 import { recordOdometerSnapshot, calculateInstallationUsage } from "@/lib/domain/odometer";
-import { compareMileage, validateLinkConstraint } from "@/lib/domain/stravaSync";
+import { compareMileage, validateLinkConstraint, validateNewBikeGearId } from "@/lib/domain/stravaSync";
 import { evaluateServiceSchedule, MaintenanceStatusResult } from "@/lib/domain/maintenance";
 import { areComponentsEquivalentReplacement, findStorageReplacements } from "@/lib/domain/replacement";
 
@@ -520,6 +520,11 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       initialOdometerSource?: "MANUAL" | "STRAVA" | string;
     }
   ): string => {
+    const gearValidation = validateNewBikeGearId(data.bikes, bikeData.stravaGearId);
+    if (!gearValidation.valid) {
+      throw new Error(gearValidation.error);
+    }
+
     const bikeId = generateId("bike");
     const now = new Date().toISOString();
     const initialKm = Number(bikeData.initialKm || 0);

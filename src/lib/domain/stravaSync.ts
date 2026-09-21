@@ -71,6 +71,28 @@ export function compareMileage(bikeVaultKm: number, stravaKm: number): MileageCo
 }
 
 /**
+ * Validates that a Strava gear ID is not already linked when creating a brand new bike.
+ * A missing/empty gear ID is valid (bike is not linked to Strava).
+ */
+export function validateNewBikeGearId(
+  bikes: Bike[],
+  stravaGearId?: string | null
+): { valid: boolean; error?: string } {
+  const cleanGearId = (stravaGearId || "").trim();
+  if (!cleanGearId) return { valid: true };
+
+  const duplicateBike = bikes.find((b) => b.stravaGearId === cleanGearId);
+  if (duplicateBike) {
+    return {
+      valid: false,
+      error: `Toto kolo ze Stravy je již propojeno s kolem "${duplicateBike.name}".`,
+    };
+  }
+
+  return { valid: true };
+}
+
+/**
  * Validates the 1:1 relationship constraint between a Strava gear ID and a BikeVault bike.
  * Neither the Strava bike nor the BikeVault bike may be linked multiple times.
  */
