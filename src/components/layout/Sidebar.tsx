@@ -10,7 +10,8 @@ import {
   Wrench, 
   Coins, 
   BarChart3, 
-  Settings, 
+  Settings,
+  ListChecks,
   Plus, 
   X, 
   Bike as BikeIcon 
@@ -42,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { href: "/maintenance", label: t("nav.maintenance"), icon: Wrench },
     { href: "/finances", label: t("nav.finances"), icon: Coins },
     { href: "/statistics", label: t("nav.statistics"), icon: BarChart3 },
+    { href: "/lists", label: t("nav.lists"), icon: ListChecks },
     { href: "/settings", label: t("nav.settings"), icon: Settings },
   ];
 

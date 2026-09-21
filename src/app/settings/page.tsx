@@ -25,7 +25,6 @@ import { t, formatDateCs } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import { StravaManageBikesModal } from "@/components/settings/StravaManageBikesModal";
 import { BikeModal } from "@/components/garage/BikeModal";
-import { OptionListsEditor } from "@/components/settings/OptionListsEditor";
 import { ClearAllDataModal } from "@/components/settings/ClearAllDataModal";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { StravaLogo } from "@/components/common/StravaIcon";
@@ -524,18 +523,6 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
-          </div>
-
-          {/* Editovatelné seznamy voleb */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-              Seznamy voleb
-            </h3>
-            <p className="text-xs text-slate-500">
-              Upravte položky nabízené ve formulářích kol a komponent. Seznamy se řadí abecedně.
-              Přejmenování se projeví i u již založených záznamů, odebrání položky je nezmění.
-            </p>
-            <OptionListsEditor />
           </div>
 
           {/* Technical & Database Info */}

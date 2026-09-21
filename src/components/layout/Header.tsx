@@ -71,6 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
     if (pathname === "/maintenance") return "Plánovač a servisní kniha";
     if (pathname === "/finances") return "Finanční přehled & TCO";
     if (pathname === "/statistics") return "Analytika & statistiky";
+    if (pathname === "/lists") return "Správa seznamů";
     if (pathname === "/settings") return "Nastavení aplikace";
     return "BikeVault";
   };
