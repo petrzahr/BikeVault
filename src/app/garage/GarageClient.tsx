@@ -165,7 +165,7 @@ export function GarageClient({
         <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-semibold">Odjeto celkem</span>
-            <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+            <div className="p-1.5 rounded-lg bg-navy-50 text-navy-600">
               <Clock className="w-4 h-4" />
             </div>
           </div>
@@ -180,7 +180,7 @@ export function GarageClient({
         <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-semibold">Kola v provozu</span>
-            <div className="p-1.5 rounded-lg bg-purple-50 text-purple-600">
+            <div className="p-1.5 rounded-lg bg-navy-50 text-navy-600">
               <Warehouse className="w-4 h-4" />
             </div>
           </div>

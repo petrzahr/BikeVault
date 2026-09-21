@@ -65,7 +65,7 @@ export default function StatisticsPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">
               Celkový čas v sedle
             </span>
-            <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+            <div className="p-2 rounded-xl bg-navy-50 text-navy-600">
               <Layers className="w-4 h-4" />
             </div>
           </div>
@@ -79,7 +79,7 @@ export default function StatisticsPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">
               Celkem evidovaných komponentů
             </span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+            <div className="p-2 rounded-xl bg-navy-50 text-navy-600">
               <ShieldCheck className="w-4 h-4" />
             </div>
           </div>
