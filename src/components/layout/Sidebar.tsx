@@ -122,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onOpenAddComponentModal();
               onCloseMobile();
             }}
-            className={buttonClass("secondary", "lg", "w-full flex items-center justify-center gap-2")}
+            className={buttonClass("primary", "lg", "w-full flex items-center justify-center gap-2")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat komponent</span>
