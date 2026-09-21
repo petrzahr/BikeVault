@@ -77,7 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between transition-transform duration-200 ease-in-out ${
+        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-ink-900 flex flex-col justify-between transition-transform duration-200 ease-in-out ${
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
@@ -85,14 +85,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Logo a záhlaví */}
           <div className="flex items-center justify-between">
             <Link href="/garage" onClick={onCloseMobile} className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-slate-800 text-white flex items-center justify-center shadow-md shadow-slate-900/15">
+              <div className="w-9 h-9 rounded-xl bg-navy-600 text-white flex items-center justify-center shadow-md shadow-black/20">
                 <BikeIcon className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-base font-extrabold tracking-tight text-slate-900 block leading-none">
+                <span className="text-base font-extrabold tracking-tight text-white block leading-none">
                   BikeVault
                 </span>
-                <span className="text-[10px] text-slate-400 font-medium tracking-wide block mt-0.5 uppercase">
+                <span className="text-[10px] text-white/50 font-medium tracking-wide block mt-0.5 uppercase">
                   Garáž & servis kol
                 </span>
               </div>
@@ -100,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             <button
               onClick={onCloseMobile}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-600 md:hidden"
+              className="p-1 rounded-lg text-white/50 hover:text-white/80 md:hidden"
             >
               <X className="w-5 h-5" />
             </button>
@@ -123,7 +123,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onOpenAddComponentModal();
               onCloseMobile();
             }}
-            className={buttonClass("primary", "md", "w-full")}
+            className={buttonClass("outlineDark", "md", "w-full")}
           >
             <Plus className="w-4 h-4" />
             <span>Přidat komponent</span>
@@ -142,11 +142,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={onCloseMobile}
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                     active
-                      ? "bg-navy-50 text-navy-700 shadow-sm"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      ? "bg-navy-600 text-white shadow-sm"
+                      : "text-white/55 hover:bg-white/5 hover:text-white/85"
                   }`}
                 >
-                  <span className={active ? "text-navy-600" : "text-slate-400"}>
+                  <span className={active ? "text-white" : "text-white/35"}>
                     <Icon className="w-4 h-4" />
                   </span>
                   <span>{item.label}</span>
@@ -157,42 +157,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Spodní rychlý přehled stavu k dnešnímu dni */}
-        <div className="p-3.5 m-3 bg-slate-50 border border-slate-200/70 rounded-2xl space-y-2 text-xs">
+        <div className="p-3.5 m-3 bg-ink-800 border border-white/10 rounded-2xl space-y-2 text-xs">
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-slate-600">
+            <div className="flex items-center justify-between text-white/50">
               <span className="truncate pr-2" title="Aktivní kola">Kola v garáži</span>
-              <span className="shrink-0 font-medium tabular-nums text-slate-800">
+              <span className="shrink-0 font-medium tabular-nums text-white/90">
                 {activeBikesCount} {activeBikesCount === 1 ? "kolo" : activeBikesCount >= 2 && activeBikesCount <= 4 ? "kola" : "kol"}
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-slate-600">
+            <div className="flex items-center justify-between text-white/50">
               <span className="truncate pr-2" title="Celkový nájezd">Celkový nájezd</span>
-              <span className="shrink-0 font-medium tabular-nums text-slate-800">
+              <span className="shrink-0 font-medium tabular-nums text-white/90">
                 {formatKm(totalKm)}
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-slate-600">
+            <div className="flex items-center justify-between text-white/50">
               <span className="truncate pr-2" title="Aktivní komponenty">Aktivní díly</span>
-              <span className="shrink-0 font-medium tabular-nums text-slate-800">
+              <span className="shrink-0 font-medium tabular-nums text-white/90">
                 {installedComponentsCount} ks
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-slate-600">
+            <div className="flex items-center justify-between text-white/50">
               <span className="truncate pr-2" title="Vyžaduje servis">Vyžaduje servis</span>
-              <span className={`shrink-0 font-medium tabular-nums ${overdueCount > 0 ? "text-rose-600 font-bold" : "text-emerald-700"}`}>
+              <span className={`shrink-0 font-medium tabular-nums ${overdueCount > 0 ? "text-rose-400 font-bold" : "text-emerald-400"}`}>
                 {overdueCount > 0 ? `${overdueCount} po termínu` : "V pořádku"}
               </span>
             </div>
           </div>
 
-          <div className="border-t border-slate-200/80 pt-2 flex items-center justify-between">
-            <span className="font-bold text-slate-700 truncate pr-2" title="Hodnota garáže a dílů">
+          <div className="border-t border-white/10 pt-2 flex items-center justify-between">
+            <span className="font-bold text-white/80 truncate pr-2" title="Hodnota garáže a dílů">
               Investice do kol
             </span>
-            <span className="shrink-0 font-extrabold text-sm tabular-nums text-slate-900">
+            <span className="shrink-0 font-extrabold text-sm tabular-nums text-white">
               {formatCzk(totalInvestment)}
             </span>
           </div>

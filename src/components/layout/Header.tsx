@@ -103,22 +103,22 @@ export const Header: React.FC<HeaderProps> = ({
         className="hidden"
       />
 
-      <header className="h-16 min-h-16 shrink-0 bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between gap-2 select-none">
+      <header className="h-16 min-h-16 shrink-0 bg-ink-900 border-b border-white/10 sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between gap-2 select-none">
         {/* Levá strana: mobilní menu + název sekce */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <button
             onClick={onToggleMobileMenu}
             aria-label="Otevřít menu"
-            className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 md:hidden shrink-0"
+            className="p-2 rounded-xl text-white/60 hover:bg-white/10 md:hidden shrink-0"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           <div className="min-w-0">
-            <h1 className="text-base font-bold text-slate-900 leading-tight truncate">
+            <h1 className="text-base font-bold text-white leading-tight truncate">
               {getScreenTitle()}
             </h1>
-            <p className="text-[11px] text-slate-400 font-medium hidden sm:block truncate">
+            <p className="text-[11px] text-white/45 font-medium hidden sm:block truncate">
               BikeVault – Vaše kola pod absolutní kontrolou
             </p>
           </div>
@@ -132,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={connectGoogleDrive}
               disabled={syncStatus === "saving"}
               title="Připojit Google Disk pro automatickou synchronizaci"
-              className={buttonClass("secondary", "sm")}
+              className={buttonClass("outlineDark", "sm")}
             >
               <GoogleIcon className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden sm:inline">
@@ -148,7 +148,7 @@ export const Header: React.FC<HeaderProps> = ({
                 type="button"
                 onClick={() => setMenuOpen((prev) => !prev)}
                 title="Google Disk připojen – klikněte pro podrobnosti a synchronizaci"
-                className={buttonClass("secondary", "sm")}
+                className={buttonClass("outlineDark", "sm")}
               >
                 <GoogleIcon className="w-3.5 h-3.5 shrink-0" />
                 <span className="relative flex h-2 w-2">

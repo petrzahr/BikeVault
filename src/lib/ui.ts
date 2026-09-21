@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
-export type ButtonVariant = 'primary' | 'secondary' | 'soft' | 'danger' | 'dangerOutline' | 'warning' | 'dark' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'soft' | 'danger' | 'dangerOutline' | 'warning' | 'dark' | 'ghost' | 'outlineDark';
 export type ButtonSize = 'sm' | 'md';
 
 const buttonBase =
@@ -22,6 +22,7 @@ const buttonVariants: Record<ButtonVariant, string> = {
   warning: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm',
   dark: 'bg-ink-900 hover:bg-ink-800 text-white shadow-sm',
   ghost: 'text-ink-500 hover:text-ink-800 hover:bg-ink-100',
+  outlineDark: 'bg-white/5 hover:bg-white/10 text-white border border-white/15',
 };
 
 const buttonSizes: Record<ButtonSize, string> = {
