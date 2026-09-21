@@ -63,6 +63,10 @@ export default function SettingsPage() {
     const errorParam = searchParams.get("strava_error");
     const connectedParam = searchParams.get("strava_connected");
 
+    if (searchParams.get("tab") === "integrations") {
+      setActiveTab("integrations");
+    }
+
     if (errorParam) {
       setStatusMessage({
         type: "error",

@@ -45,7 +45,7 @@ export const StravaStatusBadge: React.FC = () => {
 
   return (
     <Link
-      href="/settings"
+      href="/settings?tab=integrations"
       title={
         connected
           ? `Strava připojena${athleteName ? ` – ${athleteName}` : ""}`
