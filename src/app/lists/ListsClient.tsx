@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Pencil, Trash2, RotateCcw } from "lucide-react";
+import { Plus, Pencil, Trash2, RotateCcw, ChevronDown, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { useVault } from "@/context/VaultContext";
-import type { CustomLists, ListOption } from "@/types/vault";
-import { makeOptionValue, resolveLists, sortCategoriesAz } from "@/lib/bikeLists";
+import type { ComponentCategory, CustomLists, ListOption } from "@/types/vault";
+import { getCategorySpecFields, makeOptionValue, resolveLists, sortCategoriesAz } from "@/lib/bikeLists";
 import { buttonClass, inputClass } from "@/lib/ui";
 
 interface ListRowData {
@@ -194,11 +194,129 @@ function ListCard({
   );
 }
 
+/** Vlastní pole specifikace jedné kategorie komponent — přidávání/přejmenování/mazání. */
+function CategorySpecFieldsPanel({ category }: { category: ComponentCategory }) {
+  const { addCategorySpecField, renameCategorySpecField, deleteCategorySpecField } = useVault();
+  const fields = getCategorySpecFields(category);
+  const [adding, setAdding] = useState(false);
+
+  return (
+    <div className="ml-2 pl-3 border-l-2 border-slate-200 space-y-1.5 py-2">
+      {fields.length === 0 && !adding && (
+        <p className="text-[11px] text-slate-400 px-1">Kategorie zatím nemá žádná vlastní pole specifikace.</p>
+      )}
+      {fields.map((field) => (
+        <ListRow
+          key={field.key}
+          row={{ id: field.key, label: field.label, canDelete: true }}
+          onRename={(label) => renameCategorySpecField(category.id, field.key, label)}
+          onDelete={() => deleteCategorySpecField(category.id, field.key)}
+        />
+      ))}
+      {adding ? (
+        <div className="px-1">
+          <InlineInput
+            placeholder="Název pole… (např. Kostra, Tlak)"
+            onCommit={(v) => {
+              addCategorySpecField(category.id, v);
+              setAdding(false);
+            }}
+            onCancel={() => setAdding(false)}
+          />
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setAdding(true)}
+          className="flex items-center gap-1 text-[11px] font-semibold text-navy-600 hover:text-navy-700 px-1 py-1 cursor-pointer"
+        >
+          <Plus className="w-3 h-3" />
+          <span>Přidat vlastní pole</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** Řádek kategorie komponent s rozbalitelnou správou jejích vlastních polí specifikace. */
+function ComponentCategoryRow({
+  category,
+  canDelete,
+  deleteHint,
+  onRename,
+  onDelete,
+}: {
+  category: ComponentCategory;
+  canDelete: boolean;
+  deleteHint?: string;
+  onRename: (label: string) => void;
+  onDelete: () => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const fieldCount = getCategorySpecFields(category).length;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-slate-50/80 rounded-lg min-h-[36px]">
+        {editing ? (
+          <InlineInput
+            initial={category.nameCs}
+            onCommit={(v) => {
+              onRename(v);
+              setEditing(false);
+            }}
+            onCancel={() => setEditing(false)}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="flex items-center gap-1 text-xs font-medium text-slate-700 truncate cursor-pointer hover:text-slate-900"
+          >
+            {expanded ? <ChevronDown className="w-3.5 h-3.5 shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
+            <span className="truncate">{category.nameCs}</span>
+            {fieldCount > 0 && (
+              <span className="text-[10px] text-slate-400 font-semibold tabular-nums">({fieldCount})</span>
+            )}
+          </button>
+        )}
+        {!editing && (
+          <div className="flex items-center shrink-0">
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              title="Vlastní pole specifikace"
+              className={iconButton}
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+            </button>
+            <button type="button" onClick={() => setEditing(true)} title="Přejmenovat" className={iconButton}>
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={!canDelete}
+              title={canDelete ? "Odebrat" : deleteHint}
+              className={iconButton}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+      </div>
+      {expanded && <CategorySpecFieldsPanel category={category} />}
+    </div>
+  );
+}
+
 export function ListsClient() {
   const { data, updateSettings, addCategory, renameCategory, deleteCategory } = useVault();
   const custom: CustomLists = data.settings.customLists ?? {};
   const lists = resolveLists(data.settings);
   const [addingKind, setAddingKind] = useState(false);
+  const [addingCategory, setAddingCategory] = useState(false);
 
   const save = (patch: Partial<CustomLists>) => updateSettings({ customLists: { ...custom, ...patch } });
 
@@ -294,19 +412,40 @@ export function ListsClient() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <ListCard title="Typ odpružení" addPlaceholder="Nový typ odpružení…" {...flatCard("suspensionTypes", lists.suspensionTypes)} />
         <ListCard title="Typ pohonu" addPlaceholder="Nový typ pohonu…" {...flatCard("driveTypes", lists.driveTypes)} />
-        <ListCard
-          title="Kategorie komponent"
-          addPlaceholder="Nová kategorie komponent…"
-          rows={componentCategories.map((c) => ({
-            id: c.id,
-            label: c.nameCs,
-            canDelete: !c.isSystem && !usedCategoryIds.has(c.id),
-            deleteHint: c.isSystem ? "Systémovou kategorii nelze odebrat" : "Kategorii používá komponent",
-          }))}
-          onAdd={addCategory}
-          onRenameRow={renameCategory}
-          onDeleteRow={deleteCategory}
-        />
+
+        {/* Kategorie komponent — každou lze rozbalit a spravovat jí vlastní pole specifikace */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 flex flex-col">
+          <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100 min-h-[36px]">
+            <h3 className="text-sm font-bold text-slate-900 truncate">Kategorie komponent</h3>
+            <button type="button" onClick={() => setAddingCategory(true)} title="Přidat kategorii" className={iconButton}>
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="space-y-1.5 pt-2.5">
+            {componentCategories.map((c) => (
+              <ComponentCategoryRow
+                key={c.id}
+                category={c}
+                canDelete={!c.isSystem && !usedCategoryIds.has(c.id)}
+                deleteHint={c.isSystem ? "Systémovou kategorii nelze odebrat" : "Kategorii používá komponent"}
+                onRename={(label) => renameCategory(c.id, label)}
+                onDelete={() => deleteCategory(c.id)}
+              />
+            ))}
+            {addingCategory && (
+              <div className="px-1">
+                <InlineInput
+                  placeholder="Nová kategorie komponent…"
+                  onCommit={(v) => {
+                    addCategory(v);
+                    setAddingCategory(false);
+                  }}
+                  onCancel={() => setAddingCategory(false)}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

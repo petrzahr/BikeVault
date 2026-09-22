@@ -1,4 +1,4 @@
-import type { CustomLists, ListOption, UserSettings } from "@/types/vault";
+import type { ComponentCategory, ComponentSpecField, CustomLists, ListOption, UserSettings } from "@/types/vault";
 
 export const DEFAULT_BIKE_CATEGORIES: ListOption[] = [
   { value: "MTB", label: "MTB" },
@@ -113,4 +113,46 @@ export function bikeKindLabel(
 /** Kategorie komponent seřazené A–Z podle českého názvu (pro dropdowny). */
 export function sortCategoriesAz<T extends { nameCs: string }>(categories: T[]): T[] {
   return [...categories].sort((a, b) => compareCs(a.nameCs, b.nameCs));
+}
+
+/** Výchozí vlastní pole pro vestavěné kategorie, dokud si je uživatel sám neupraví (viz getCategorySpecFields). */
+export const DEFAULT_CATEGORY_SPEC_FIELDS: Record<string, ComponentSpecField[]> = {
+  TIRE_FRONT: [
+    { key: "wheelDiameter", label: "Průměr", placeholder: 'např. 29", 27.5"' },
+    { key: "tireWidth", label: "Šířka pláště", placeholder: 'např. 2.4"' },
+    { key: "tireCasing", label: "Kostra", placeholder: "např. DoubleDown, DH, EXO+" },
+    { key: "tireCompound", label: "Směs", placeholder: "např. MaxxGrip, MaxxTerra" },
+  ],
+  TIRE_REAR: [
+    { key: "wheelDiameter", label: "Průměr", placeholder: 'např. 29", 27.5"' },
+    { key: "tireWidth", label: "Šířka pláště", placeholder: 'např. 2.4"' },
+    { key: "tireCasing", label: "Kostra", placeholder: "např. DoubleDown, DH, EXO+" },
+    { key: "tireCompound", label: "Směs", placeholder: "např. MaxxGrip, MaxxTerra" },
+  ],
+  WHEELS: [{ key: "wheelDiameter", label: "Průměr", placeholder: 'např. 29", 27.5"' }],
+};
+
+/** Klíče, které se historicky ukládaly jako pevná pole Component místo Component.customFields. */
+export const LEGACY_COMPONENT_SPEC_KEYS = ["wheelDiameter", "tireWidth", "tireCasing", "tireCompound"] as const;
+
+/** Efektivní sada vlastních polí kategorie: uloženo na kategorii, jinak výchozí podle `code`, jinak žádná. */
+export function getCategorySpecFields(category: Pick<ComponentCategory, "code" | "specFields"> | null | undefined): ComponentSpecField[] {
+  if (!category) return [];
+  if (category.specFields) return category.specFields;
+  return DEFAULT_CATEGORY_SPEC_FIELDS[category.code] ?? [];
+}
+
+/** Vytvoří stabilní klíč vlastního pole z popisku, unikátní vůči existujícím polím kategorie. */
+export function makeSpecFieldKey(label: string, existing: ComponentSpecField[]): string {
+  const base =
+    label
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "") || "FIELD";
+  let key = base;
+  let i = 2;
+  while (existing.some((f) => f.key === key)) key = `${base}_${i++}`;
+  return key;
 }

@@ -7,13 +7,16 @@ import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import { Modal } from "@/components/common/Modal";
 import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
-import { sortCategoriesAz } from "@/lib/bikeLists";
+import { getCategorySpecFields, LEGACY_COMPONENT_SPEC_KEYS, sortCategoriesAz } from "@/lib/bikeLists";
 
 interface AddComponentModalProps {
   isOpen: boolean;
   onClose: () => void;
   componentToEdit?: any | null;
 }
+
+const isLegacySpecKey = (key: string): boolean =>
+  (LEGACY_COMPONENT_SPEC_KEYS as readonly string[]).includes(key);
 
 export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, onClose, componentToEdit }) => {
   const { data, addComponent, updateComponent } = useVault();
@@ -23,6 +26,9 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
 
   const [categoryId, setCategoryId] = useState("");
   const effectiveCategoryId = categoryId;
+  const selectedCategory = categories.find((c) => c.id === effectiveCategoryId);
+  const specFields = getCategorySpecFields(selectedCategory);
+
   const [manufacturer, setManufacturer] = useState("");
   const [model, setModel] = useState("");
   const [variant, setVariant] = useState("");
@@ -31,10 +37,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
   const [purchasePrice, setPurchasePrice] = useState("");
   const [initialKm, setInitialKm] = useState("0");
   const [initialHours, setInitialHours] = useState("0");
-  const [wheelDiameter, setWheelDiameter] = useState("");
-  const [tireWidth, setTireWidth] = useState("");
-  const [tireCasing, setTireCasing] = useState("");
-  const [tireCompound, setTireCompound] = useState("");
+  const [specValues, setSpecValues] = useState<Record<string, string>>({});
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -52,10 +55,12 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
       setPurchasePrice(componentToEdit.purchasePrice != null ? String(componentToEdit.purchasePrice) : "");
       setInitialKm(componentToEdit.initialKm != null ? String(componentToEdit.initialKm) : "0");
       setInitialHours(componentToEdit.initialMinutes != null ? String(componentToEdit.initialMinutes / 60) : "0");
-      setWheelDiameter(componentToEdit.wheelDiameter || "");
-      setTireWidth(componentToEdit.tireWidth || "");
-      setTireCasing(componentToEdit.tireCasing || "");
-      setTireCompound(componentToEdit.tireCompound || "");
+      const values: Record<string, string> = {};
+      LEGACY_COMPONENT_SPEC_KEYS.forEach((key) => {
+        if (componentToEdit[key]) values[key] = String(componentToEdit[key]);
+      });
+      if (componentToEdit.customFields) Object.assign(values, componentToEdit.customFields);
+      setSpecValues(values);
       setNotes(componentToEdit.notes || "");
     } else {
       setCategoryId("");
@@ -67,10 +72,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
       setPurchasePrice("");
       setInitialKm("0");
       setInitialHours("0");
-      setWheelDiameter("");
-      setTireWidth("");
-      setTireCasing("");
-      setTireCompound("");
+      setSpecValues({});
       setNotes("");
     }
   }, [isOpen, componentToEdit]);
@@ -81,42 +83,39 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
 
     setLoading(true);
     try {
+      // Legacy pole (wheelDiameter, tireWidth, ...) žijí přímo na Component kvůli zpětné kompatibilitě,
+      // ostatní vlastní pole kategorie jdou do Component.customFields.
+      const legacySpecFields: Record<string, string | undefined> = {};
+      const customFields: Record<string, string> = {};
+      specFields.forEach((field) => {
+        const val = (specValues[field.key] || "").trim();
+        if (isLegacySpecKey(field.key)) {
+          legacySpecFields[field.key] = val || undefined;
+        } else if (val) {
+          customFields[field.key] = val;
+        }
+      });
+
+      const payload = {
+        categoryId: effectiveCategoryId,
+        manufacturer: manufacturer.trim(),
+        model: model.trim(),
+        variant: variant.trim() || undefined,
+        serialNumber: serialNumber.trim() || undefined,
+        purchaseDate,
+        purchasePrice: purchasePrice ? parseFloat(purchasePrice) : undefined,
+        initialKm: initialKm ? parseFloat(initialKm) : 0,
+        initialMinutes: Math.round((initialHours ? parseFloat(initialHours) : 0) * 60),
+        ...legacySpecFields,
+        customFields: Object.keys(customFields).length ? customFields : undefined,
+        notes: notes.trim() || undefined,
+      };
+
       if (isEditing) {
-        updateComponent(componentToEdit.id, {
-          categoryId: effectiveCategoryId,
-          manufacturer: manufacturer.trim(),
-          model: model.trim(),
-          variant: variant.trim() || undefined,
-          serialNumber: serialNumber.trim() || undefined,
-          purchaseDate,
-          purchasePrice: purchasePrice ? parseFloat(purchasePrice) : undefined,
-          initialKm: initialKm ? parseFloat(initialKm) : 0,
-          initialMinutes: Math.round((initialHours ? parseFloat(initialHours) : 0) * 60),
-          wheelDiameter: wheelDiameter.trim() || undefined,
-          tireWidth: tireWidth.trim() || undefined,
-          tireCasing: tireCasing.trim() || undefined,
-          tireCompound: tireCompound.trim() || undefined,
-          notes: notes.trim() || undefined,
-        });
+        updateComponent(componentToEdit.id, payload);
         toast("Komponent byl upraven.", "success");
       } else {
-        addComponent({
-          categoryId: effectiveCategoryId,
-          manufacturer: manufacturer.trim(),
-          model: model.trim(),
-          variant: variant.trim() || undefined,
-          serialNumber: serialNumber.trim() || undefined,
-          purchaseDate,
-          purchasePrice: purchasePrice ? parseFloat(purchasePrice) : undefined,
-          currency: "CZK",
-          initialKm: initialKm ? parseFloat(initialKm) : 0,
-          initialMinutes: Math.round((initialHours ? parseFloat(initialHours) : 0) * 60),
-          wheelDiameter: wheelDiameter.trim() || undefined,
-          tireWidth: tireWidth.trim() || undefined,
-          tireCasing: tireCasing.trim() || undefined,
-          tireCompound: tireCompound.trim() || undefined,
-          notes: notes.trim() || undefined,
-        });
+        addComponent({ ...payload, currency: "CZK" });
         toast("Komponent byl založen do skladu.", "success");
       }
 
@@ -155,7 +154,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             ))}
           </select>
         </div>
-    
+
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={labelClass}>
@@ -184,7 +183,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             />
           </div>
         </div>
-    
+
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={labelClass}>
@@ -238,44 +237,28 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             />
           </div>
         </div>
-    
-        {/* Specifická pole pro pláště / kola */}
-        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-2">
-          <span className="text-xs font-semibold text-slate-700 block">
-            Specifikace pro pláště / kola (volitelné)
-          </span>
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              type="text"
-              value={wheelDiameter}
-              onChange={(e) => setWheelDiameter(e.target.value)}
-              placeholder="Průměr kola (např. 29&quot;, 27.5&quot;)"
-              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
-            />
-            <input
-              type="text"
-              value={tireWidth}
-              onChange={(e) => setTireWidth(e.target.value)}
-              placeholder="Šířka pláště (např. 2.4&quot;)"
-              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
-            />
-            <input
-              type="text"
-              value={tireCasing}
-              onChange={(e) => setTireCasing(e.target.value)}
-              placeholder="Kostra (např. DoubleDown, DH, EXO+)"
-              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
-            />
-            <input
-              type="text"
-              value={tireCompound}
-              onChange={(e) => setTireCompound(e.target.value)}
-              placeholder="Směs (např. MaxxGrip, MaxxTerra)"
-              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
-            />
+
+        {/* Vlastní pole specifikace podle zvolené kategorie */}
+        {specFields.length > 0 && (
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-2">
+            <span className="text-xs font-semibold text-slate-700 block">
+              Specifikace: {selectedCategory?.nameCs}
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              {specFields.map((field) => (
+                <input
+                  key={field.key}
+                  type="text"
+                  value={specValues[field.key] || ""}
+                  onChange={(e) => setSpecValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
+                  placeholder={field.placeholder || field.label}
+                  className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-    
+        )}
+
         <div>
           <label className={labelClass}>
             Poznámka
@@ -287,7 +270,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             className={inputClass}
           />
         </div>
-    
+
         <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
           <button
             type="button"

@@ -70,6 +70,14 @@ export interface BikeOdometerEntry {
   createdAt: string;
 }
 
+/** Vlastní pole specifikace definované per-kategorii (systémová i uživatelská). */
+export interface ComponentSpecField {
+  /** Unikátní v rámci kategorie. Pro pole zděděná ze staršího pevného schématu (wheelDiameter, tireWidth, tireCasing, tireCompound) se hodnota ukládá přímo do Component, jinak do Component.customFields. */
+  key: string;
+  label: string;
+  placeholder?: string | null;
+}
+
 export interface ComponentCategory {
   id: string;
   code: string;
@@ -78,6 +86,8 @@ export interface ComponentCategory {
   defaultSlot?: string | null;
   isSystem: boolean;
   sortOrder: number;
+  /** Když chybí, použije se výchozí sada polí podle `code` (viz getCategorySpecFields). Prázdné pole = žádná specifická pole. */
+  specFields?: ComponentSpecField[] | null;
 }
 
 export interface Component {
@@ -101,6 +111,8 @@ export interface Component {
   tireCasing?: string | null;
   tireCompound?: string | null;
   isTubeless?: boolean;
+  /** Hodnoty vlastních polí specifikace mimo pevné schéma výše, klíčované podle ComponentSpecField.key. */
+  customFields?: Record<string, string> | null;
   notes?: string | null;
   createdAt: string;
   updatedAt: string;

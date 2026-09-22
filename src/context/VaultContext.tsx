@@ -57,6 +57,7 @@ import {
 } from "@/lib/domain/deletion";
 import { evaluateServiceSchedule, MaintenanceStatusResult } from "@/lib/domain/maintenance";
 import { areComponentsEquivalentReplacement, findStorageReplacements } from "@/lib/domain/replacement";
+import { getCategorySpecFields, makeSpecFieldKey } from "@/lib/bikeLists";
 
 export type SyncStatus = "synced" | "saving" | "offline" | "error";
 export type AppState =
@@ -109,6 +110,9 @@ interface VaultContextType {
   addCategory: (nameCs: string) => void;
   renameCategory: (id: string, nameCs: string) => void;
   deleteCategory: (id: string) => void;
+  addCategorySpecField: (categoryId: string, label: string) => void;
+  renameCategorySpecField: (categoryId: string, key: string, label: string) => void;
+  deleteCategorySpecField: (categoryId: string, key: string) => void;
   deleteBike: (id: string, disposition?: BikeComponentsDisposition) => void;
   deleteOdometerEntry: (entryId: string) => { success: boolean; error?: string };
   clearAllData: () => void;
@@ -673,6 +677,49 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       return { ...prev, categories: prev.categories.filter((c) => c.id !== id) };
     });
   };
+
+  const addCategorySpecField = (categoryId: string, label: string) => {
+    const name = label.trim();
+    if (!name) return;
+    mutateData((prev) => {
+      const category = prev.categories.find((c) => c.id === categoryId);
+      if (!category) return prev;
+      const existing = getCategorySpecFields(category);
+      const key = makeSpecFieldKey(name, existing);
+      const specFields = [...existing, { key, label: name }];
+      return {
+        ...prev,
+        categories: prev.categories.map((c) => (c.id === categoryId ? { ...c, specFields } : c)),
+      };
+    });
+  };
+
+  const renameCategorySpecField = (categoryId: string, key: string, label: string) => {
+    const name = label.trim();
+    if (!name) return;
+    mutateData((prev) => {
+      const category = prev.categories.find((c) => c.id === categoryId);
+      if (!category) return prev;
+      const specFields = getCategorySpecFields(category).map((f) => (f.key === key ? { ...f, label: name } : f));
+      return {
+        ...prev,
+        categories: prev.categories.map((c) => (c.id === categoryId ? { ...c, specFields } : c)),
+      };
+    });
+  };
+
+  const deleteCategorySpecField = (categoryId: string, key: string) => {
+    mutateData((prev) => {
+      const category = prev.categories.find((c) => c.id === categoryId);
+      if (!category) return prev;
+      const specFields = getCategorySpecFields(category).filter((f) => f.key !== key);
+      return {
+        ...prev,
+        categories: prev.categories.map((c) => (c.id === categoryId ? { ...c, specFields } : c)),
+      };
+    });
+  };
+
   const deleteBike = (id: string, disposition: BikeComponentsDisposition = "STORAGE") => {
     mutateData((prev) => deleteBikeFromData(prev, id, disposition));
   };
@@ -1591,6 +1638,9 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     addCategory,
     renameCategory,
     deleteCategory,
+    addCategorySpecField,
+    renameCategorySpecField,
+    deleteCategorySpecField,
     deleteBike,
     deleteOdometerEntry,
     clearAllData,

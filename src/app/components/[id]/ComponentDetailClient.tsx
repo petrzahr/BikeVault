@@ -18,6 +18,7 @@ import {
   Pencil
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
+import { getCategorySpecFields, LEGACY_COMPONENT_SPEC_KEYS } from "@/lib/bikeLists";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
 import { AddComponentModal } from "@/components/garage/AddComponentModal";
 import { useVault } from "@/context/VaultContext";
@@ -78,6 +79,13 @@ export function ComponentDetailClient({
   const [recordLoading, setRecordLoading] = useState(false);
 
   const activeBike = activeInstallation?.bike;
+  const specFields = getCategorySpecFields(category);
+  const getSpecValue = (key: string): string | null => {
+    const value = (LEGACY_COMPONENT_SPEC_KEYS as readonly string[]).includes(key)
+      ? component[key]
+      : component.customFields?.[key];
+    return value || null;
+  };
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -263,12 +271,12 @@ export function ComponentDetailClient({
             <span className="text-slate-400 uppercase tracking-wider text-[10px] font-semibold block">Sériové číslo</span>
             <span className="text-sm text-slate-700 tabular-nums">{component.serialNumber || "Neuvedeno"}</span>
           </div>
-          <div>
-            <span className="text-slate-400 uppercase tracking-wider text-[10px] font-semibold block">Specifikace pláště / kola</span>
-            <span className="text-sm font-medium text-slate-700">
-              {component.tireCasing ? `${component.tireCasing} • ${component.tireCompound || ""}` : (component.wheelDiameter || "-")}
-            </span>
-          </div>
+          {specFields.map((field) => (
+            <div key={field.key}>
+              <span className="text-slate-400 uppercase tracking-wider text-[10px] font-semibold block">{field.label}</span>
+              <span className="text-sm font-medium text-slate-700">{getSpecValue(field.key) || "-"}</span>
+            </div>
+          ))}
         </div>
       </div>
 
