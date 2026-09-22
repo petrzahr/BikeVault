@@ -160,7 +160,7 @@ export const LoginScreen: React.FC = () => {
               type="button"
               onClick={handleResetError}
               title="Zkusit jiný účet"
-              className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-white/60 transition-colors shrink-0"
+              className="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-white/60 transition-colors shrink-0"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>

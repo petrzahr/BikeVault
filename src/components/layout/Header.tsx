@@ -239,11 +239,7 @@ export const Header: React.FC<HeaderProps> = ({
                           setMenuOpen(false);
                         }}
                         disabled={syncStatus === "saving"}
-                        className={buttonClass(
-                          "soft",
-                          "md",
-                          "w-full rounded-full py-2.5"
-                        )}
+                        className={buttonClass("soft", "md", "w-full")}
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
                         <span>Synchronizovat nyní</span>
