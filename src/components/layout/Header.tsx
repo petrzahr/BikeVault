@@ -259,7 +259,7 @@ export const Header: React.FC<HeaderProps> = ({
                           setMenuOpen(false);
                         }
                       }}
-                      className={buttonClass("ghost", "sm", "w-full hover:text-rose-600 hover:bg-rose-50")}
+                      className={buttonClass("ghost", "md", "w-full hover:text-rose-600 hover:bg-rose-50")}
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span>Odpojit Google Disk</span>
