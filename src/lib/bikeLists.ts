@@ -1,4 +1,4 @@
-import type { ComponentCategory, ComponentSpecField, CustomLists, ListOption, UserSettings } from "@/types/vault";
+import type { Component, ComponentCategory, ComponentSpecField, CustomLists, ListOption, UserSettings } from "@/types/vault";
 
 export const DEFAULT_BIKE_CATEGORIES: ListOption[] = [
   { value: "MTB", label: "MTB" },
@@ -140,6 +140,31 @@ export function getCategorySpecFields(category: Pick<ComponentCategory, "code" |
   if (!category) return [];
   if (category.specFields) return category.specFields;
   return DEFAULT_CATEGORY_SPEC_FIELDS[category.code] ?? [];
+}
+
+/** Hodnota vlastního pole komponenty (legacy pevné schéma, nebo customFields podle klíče). */
+export function getComponentSpecValue(
+  component: Pick<Component, "customFields" | "wheelDiameter" | "tireWidth" | "tireCasing" | "tireCompound">,
+  key: string,
+): string | null {
+  const value = (LEGACY_COMPONENT_SPEC_KEYS as readonly string[]).includes(key)
+    ? (component as Record<string, unknown>)[key]
+    : component.customFields?.[key];
+  return (value as string) || null;
+}
+
+/** Zdvih (mm) komponenty podle jejího vlastního pole se štítkem obsahujícím "zdvih" (napr. "Zdvih (mm)"). */
+export function getComponentTravelMm(
+  component: Component | null | undefined,
+  category: Pick<ComponentCategory, "code" | "specFields"> | null | undefined,
+): number | null {
+  if (!component || !category) return null;
+  const field = getCategorySpecFields(category).find((f) => f.label.toLowerCase().includes("zdvih"));
+  if (!field) return null;
+  const raw = getComponentSpecValue(component, field.key);
+  if (!raw) return null;
+  const parsed = parseInt(raw, 10);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 /** Vytvoří stabilní klíč vlastního pole z popisku, unikátní vůči existujícím polím kategorie. */

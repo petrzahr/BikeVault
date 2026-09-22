@@ -3,6 +3,7 @@
 import React, { use } from "react";
 import { useVault } from "@/context/VaultContext";
 import { SetupClient } from "./SetupClient";
+import { getComponentTravelMm } from "@/lib/bikeLists";
 import Link from "next/link";
 
 interface SetupPageProps {
@@ -29,10 +30,15 @@ export default function BikeSetupPage({ params }: SetupPageProps) {
   const snapshots = getBikeSnapshots(id);
   const installedComponents = getBikeInstalledComponents(id);
 
-  const forkComp = installedComponents.find((c) => c.installation.slot === "FORK")?.component;
+  const forkEntry = installedComponents.find((c) => c.installation.slot === "FORK");
+  const frameEntry = installedComponents.find((c) => c.installation.slot === "FRAME");
+  const forkComp = forkEntry?.component;
   const shockComp = installedComponents.find((c) => c.installation.slot === "REAR_SHOCK")?.component;
   const frontTireComp = installedComponents.find((c) => c.installation.slot === "FRONT_TIRE")?.component;
   const rearTireComp = installedComponents.find((c) => c.installation.slot === "REAR_TIRE")?.component;
+
+  const forkTravelSpec = getComponentTravelMm(forkEntry?.component, forkEntry?.category);
+  const frameTravelSpec = getComponentTravelMm(frameEntry?.component, frameEntry?.category);
 
   return (
     <SetupClient
@@ -43,6 +49,8 @@ export default function BikeSetupPage({ params }: SetupPageProps) {
       shockComp={shockComp}
       frontTireComp={frontTireComp}
       rearTireComp={rearTireComp}
+      forkTravelSpec={forkTravelSpec}
+      frameTravelSpec={frameTravelSpec}
     />
   );
 }

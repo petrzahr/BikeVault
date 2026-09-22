@@ -30,6 +30,8 @@ interface SetupClientProps {
   shockComp?: any;
   frontTireComp?: any;
   rearTireComp?: any;
+  forkTravelSpec?: number | null;
+  frameTravelSpec?: number | null;
 }
 
 export function SetupClient({
@@ -40,6 +42,8 @@ export function SetupClient({
   shockComp,
   frontTireComp,
   rearTireComp,
+  forkTravelSpec,
+  frameTravelSpec,
 }: SetupClientProps) {
   const { saveSetup, saveSetupSnapshot, deleteSetupSnapshot, getBikeSetup, getBikeSnapshots } = useVault();
   const { toast } = useFeedback();
@@ -53,7 +57,9 @@ export function SetupClient({
   const [forkLsc, setForkLsc] = useState(initialSetup?.forkLscClicks !== null && initialSetup?.forkLscClicks !== undefined ? String(initialSetup.forkLscClicks) : "4");
   const [forkHsc, setForkHsc] = useState(initialSetup?.forkHscClicks !== null && initialSetup?.forkHscClicks !== undefined ? String(initialSetup.forkHscClicks) : "2");
   const [forkTokens, setForkTokens] = useState(initialSetup?.forkVolumeSpacers ? String(initialSetup.forkVolumeSpacers) : "1");
-  const [forkTravel, setForkTravel] = useState(initialSetup?.forkTravelMm ? String(initialSetup.forkTravelMm) : "180");
+  const [forkTravel, setForkTravel] = useState(
+    initialSetup?.forkTravelMm ? String(initialSetup.forkTravelMm) : forkTravelSpec ? String(forkTravelSpec) : "180"
+  );
   const [forkNotes, setForkNotes] = useState(initialSetup?.forkNotes || "");
 
   // Tlumič
@@ -351,7 +357,7 @@ export function SetupClient({
                 </div>
 
                 <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
-                  Zadní tlumič
+                  {frameTravelSpec ? `${frameTravelSpec} mm zdvih` : "Zadní tlumič"}
                 </span>
               </div>
 
