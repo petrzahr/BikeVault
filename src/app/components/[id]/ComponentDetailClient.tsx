@@ -4,20 +4,22 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft, 
-  Wrench, 
-  Plus, 
-  Clock, 
-  AlertTriangle, 
-  CheckCircle2, 
-  Bike as BikeIcon, 
-  Coins, 
-  Trash2, 
+  ArrowLeft,
+  Wrench,
+  Plus,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+  Bike as BikeIcon,
+  Coins,
+  Trash2,
   Check,
-  Loader2
+  Loader2,
+  Pencil
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
+import { AddComponentModal } from "@/components/garage/AddComponentModal";
 import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import { Modal } from "@/components/common/Modal";
@@ -78,6 +80,7 @@ export function ComponentDetailClient({
   const activeBike = activeInstallation?.bike;
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleDeleteComponent = () => {
     deleteComponent(component.id);
@@ -226,6 +229,14 @@ export function ComponentDetailClient({
             >
               <Plus className="w-4 h-4" />
               <span>Přidat plán</span>
+            </button>
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className={buttonClass("secondary", "md")}
+              title="Upravit komponentu"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Upravit</span>
             </button>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
@@ -622,6 +633,13 @@ export function ComponentDetailClient({
           </div>
         </form>
       </Modal>
+
+      {/* Edit Component Modal */}
+      <AddComponentModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        componentToEdit={component}
+      />
 
       {/* Edit / Create Schedule Modal */}
       <ServiceScheduleModal

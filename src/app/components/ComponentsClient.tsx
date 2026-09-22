@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  Plus, 
-  Search
+import {
+  Plus,
+  Search,
+  Pencil
 } from "lucide-react";
 import { t, formatCzk } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
@@ -25,6 +26,7 @@ export function ComponentsClient({
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [componentToEdit, setComponentToEdit] = useState<any | null>(null);
 
   // Filtered components
   const filtered = initialComponents.filter((item) => {
@@ -166,12 +168,22 @@ export function ComponentsClient({
 
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                   <span>Cena: <strong className="text-slate-900 tabular-nums font-bold">{formatCzk(comp.purchasePrice)}</strong></span>
-                  <Link
-                    href={`/components/${comp.id}`}
-                    className="text-navy-600 hover:text-navy-700 font-semibold inline-flex items-center gap-1"
-                  >
-                    <span>Detail & Servis →</span>
-                  </Link>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setComponentToEdit(comp)}
+                      className="text-slate-500 hover:text-navy-700 font-semibold inline-flex items-center gap-1 cursor-pointer"
+                      title="Upravit komponentu"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      <span>Upravit</span>
+                    </button>
+                    <Link
+                      href={`/components/${comp.id}`}
+                      className="text-navy-600 hover:text-navy-700 font-semibold inline-flex items-center gap-1"
+                    >
+                      <span>Detail & Servis →</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
             );
@@ -180,6 +192,11 @@ export function ComponentsClient({
       )}
 
       <AddComponentModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+      <AddComponentModal
+        isOpen={!!componentToEdit}
+        onClose={() => setComponentToEdit(null)}
+        componentToEdit={componentToEdit}
+      />
     </div>
   );
 }
