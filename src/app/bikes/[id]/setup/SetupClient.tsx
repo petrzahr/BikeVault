@@ -50,36 +50,46 @@ export function SetupClient({
   const initialSetup = propSetup ?? getBikeSetup(bike.id);
   const snapshots = propSnapshots ?? getBikeSnapshots(bike.id);
 
+  /** Uloženo dřív: hodnota (i 0) se zachová, explicitně vymazané pole (null) zůstane prázdné. Zatím nikdy neuloženo: použije se přátelská výchozí hodnota. */
+  const numField = (value: number | null | undefined, fallbackForNew: string): string => {
+    if (!initialSetup) return fallbackForNew;
+    return value !== null && value !== undefined ? String(value) : "";
+  };
+  const textField = (value: string | null | undefined, fallbackForNew: string): string => {
+    if (!initialSetup) return fallbackForNew;
+    return value !== null && value !== undefined ? value : "";
+  };
+
   // Vidlice
-  const [forkPressure, setForkPressure] = useState(initialSetup?.forkPressurePsi ? String(initialSetup.forkPressurePsi) : "76");
-  const [forkSag, setForkSag] = useState(initialSetup?.forkSagPercent ? String(initialSetup.forkSagPercent) : "20");
-  const [forkLsc, setForkLsc] = useState(initialSetup?.forkLscClicks !== null && initialSetup?.forkLscClicks !== undefined ? String(initialSetup.forkLscClicks) : "4");
-  const [forkHsc, setForkHsc] = useState(initialSetup?.forkHscClicks !== null && initialSetup?.forkHscClicks !== undefined ? String(initialSetup.forkHscClicks) : "2");
-  const [forkLsr, setForkLsr] = useState(initialSetup?.forkLsrClicks !== null && initialSetup?.forkLsrClicks !== undefined ? String(initialSetup.forkLsrClicks) : "7");
-  const [forkHsr, setForkHsr] = useState(initialSetup?.forkHsrClicks !== null && initialSetup?.forkHsrClicks !== undefined ? String(initialSetup.forkHsrClicks) : "2");
-  const [forkTokens, setForkTokens] = useState(initialSetup?.forkVolumeSpacers ? String(initialSetup.forkVolumeSpacers) : "1");
+  const [forkPressure, setForkPressure] = useState(numField(initialSetup?.forkPressurePsi, "76"));
+  const [forkSag, setForkSag] = useState(numField(initialSetup?.forkSagPercent, "20"));
+  const [forkLsc, setForkLsc] = useState(numField(initialSetup?.forkLscClicks, "4"));
+  const [forkHsc, setForkHsc] = useState(numField(initialSetup?.forkHscClicks, "2"));
+  const [forkLsr, setForkLsr] = useState(numField(initialSetup?.forkLsrClicks, "7"));
+  const [forkHsr, setForkHsr] = useState(numField(initialSetup?.forkHsrClicks, "2"));
+  const [forkTokens, setForkTokens] = useState(numField(initialSetup?.forkVolumeSpacers, "1"));
   const [forkTravel, setForkTravel] = useState(
     forkTravelSpec ? String(forkTravelSpec) : initialSetup?.forkTravelMm ? String(initialSetup.forkTravelMm) : ""
   );
   const [forkNotes, setForkNotes] = useState(initialSetup?.forkNotes || "");
 
   // Tlumič
-  const [shockPressure, setShockPressure] = useState(initialSetup?.shockPressurePsi ? String(initialSetup.shockPressurePsi) : "195");
-  const [shockSag, setShockSag] = useState(initialSetup?.shockSagPercent ? String(initialSetup.shockSagPercent) : "28");
-  const [shockLsc, setShockLsc] = useState(initialSetup?.shockLscClicks !== null && initialSetup?.shockLscClicks !== undefined ? String(initialSetup.shockLscClicks) : "3");
-  const [shockHsc, setShockHsc] = useState(initialSetup?.shockHscClicks !== null && initialSetup?.shockHscClicks !== undefined ? String(initialSetup.shockHscClicks) : "2");
-  const [shockLsr, setShockLsr] = useState(initialSetup?.shockLsrClicks !== null && initialSetup?.shockLsrClicks !== undefined ? String(initialSetup.shockLsrClicks) : "6");
-  const [shockHsr, setShockHsr] = useState(initialSetup?.shockHsrClicks !== null && initialSetup?.shockHsrClicks !== undefined ? String(initialSetup.shockHsrClicks) : "2");
-  const [shockTokens, setShockTokens] = useState(initialSetup?.shockVolumeSpacers ? String(initialSetup.shockVolumeSpacers) : "1");
+  const [shockPressure, setShockPressure] = useState(numField(initialSetup?.shockPressurePsi, "195"));
+  const [shockSag, setShockSag] = useState(numField(initialSetup?.shockSagPercent, "28"));
+  const [shockLsc, setShockLsc] = useState(numField(initialSetup?.shockLscClicks, "3"));
+  const [shockHsc, setShockHsc] = useState(numField(initialSetup?.shockHscClicks, "2"));
+  const [shockLsr, setShockLsr] = useState(numField(initialSetup?.shockLsrClicks, "6"));
+  const [shockHsr, setShockHsr] = useState(numField(initialSetup?.shockHsrClicks, "2"));
+  const [shockTokens, setShockTokens] = useState(numField(initialSetup?.shockVolumeSpacers, "1"));
   const [shockNotes, setShockNotes] = useState(initialSetup?.shockNotes || "");
 
   // Pláště
-  const [frontPressure, setFrontPressure] = useState(initialSetup?.frontTirePressureBar ? String(initialSetup.frontTirePressureBar) : "1.55");
-  const [frontInsert, setFrontInsert] = useState(initialSetup?.frontTireInsert || "Bez vložky");
+  const [frontPressure, setFrontPressure] = useState(numField(initialSetup?.frontTirePressureBar, "1.55"));
+  const [frontInsert, setFrontInsert] = useState(textField(initialSetup?.frontTireInsert, "Bez vložky"));
   const [frontNotes, setFrontNotes] = useState(initialSetup?.frontTireNotes || "");
 
-  const [rearPressure, setRearPressure] = useState(initialSetup?.rearTirePressureBar ? String(initialSetup.rearTirePressureBar) : "1.75");
-  const [rearInsert, setRearInsert] = useState(initialSetup?.rearTireInsert || "CushCore Pro");
+  const [rearPressure, setRearPressure] = useState(numField(initialSetup?.rearTirePressureBar, "1.75"));
+  const [rearInsert, setRearInsert] = useState(textField(initialSetup?.rearTireInsert, "CushCore Pro"));
   const [rearNotes, setRearNotes] = useState(initialSetup?.rearTireNotes || "");
 
   // Obecná poznámka
