@@ -101,7 +101,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
               src={resolvedImage}
               alt={bike.name}
               onError={() => setImageFailed(true)}
-              className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300"
+              className="w-full h-full object-contain object-center group-hover:scale-102 transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-slate-50">
