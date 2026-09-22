@@ -390,7 +390,7 @@ export function SetupClient({
               <div className="grid grid-cols-2 gap-3.5">
                 <div>
                   <label className={labelClass}>
-                    {t("setup.shock.pressure")}
+                    {t("setup.shock.pressure")} (psi)
                   </label>
                   <input
                     type="number"
