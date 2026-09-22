@@ -17,7 +17,7 @@ import {
   Sliders
 } from "lucide-react";
 import { t, formatDateCs, formatPsi, formatBar } from "@/lib/i18n";
-import { formatClicksFromClosed } from "@/lib/domain/setup";
+import { formatClicksFromClosed, formatTireLabel, formatTireBadge } from "@/lib/domain/setup";
 import { Modal } from "@/components/common/Modal";
 import { DeleteButton } from "@/components/common/DeleteButton";
 import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
@@ -489,14 +489,14 @@ export function SetupClient({
                     {t("setup.tires.front")}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    {frontTireComp ? `${frontTireComp.manufacturer} ${frontTireComp.model} ${frontTireComp.tireWidth || ""}` : "Neosazeno"}
+                    {frontTireComp ? formatTireLabel(frontTireComp) : "Neosazeno"}
                   </p>
                 </div>
               </div>
 
-              {frontTireComp?.tireCasing && (
+              {frontTireComp && formatTireBadge(frontTireComp) && (
                 <span className="text-[11px] text-slate-600 tabular-nums bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200/80 font-medium">
-                  {frontTireComp.tireCasing}
+                  {formatTireBadge(frontTireComp)}
                 </span>
               )}
             </div>
@@ -555,14 +555,14 @@ export function SetupClient({
                     {t("setup.tires.rear")}
                   </h3>
                   <p className="text-xs text-slate-500">
-                    {rearTireComp ? `${rearTireComp.manufacturer} ${rearTireComp.model} ${rearTireComp.tireWidth || ""}` : "Neosazeno"}
+                    {rearTireComp ? formatTireLabel(rearTireComp) : "Neosazeno"}
                   </p>
                 </div>
               </div>
 
-              {rearTireComp?.tireCasing && (
+              {rearTireComp && formatTireBadge(rearTireComp) && (
                 <span className="text-[11px] text-slate-600 tabular-nums bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200/80 font-medium">
-                  {rearTireComp.tireCasing}
+                  {formatTireBadge(rearTireComp)}
                 </span>
               )}
             </div>
