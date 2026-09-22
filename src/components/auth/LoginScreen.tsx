@@ -80,7 +80,7 @@ export const LoginScreen: React.FC = () => {
         
         {/* Logo a hlavička */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-navy-600 text-white shadow-lg shadow-navy-900/20 mb-1">
+          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-navy-600 text-white shadow-lg shadow-navy-900/20 mb-1 ${isSyncing ? "animate-pulse" : ""}`}>
             <Bike className="w-9 h-9" />
           </div>
           <div>
