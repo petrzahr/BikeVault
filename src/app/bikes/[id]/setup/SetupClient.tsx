@@ -58,7 +58,7 @@ export function SetupClient({
   const [forkHsc, setForkHsc] = useState(initialSetup?.forkHscClicks !== null && initialSetup?.forkHscClicks !== undefined ? String(initialSetup.forkHscClicks) : "2");
   const [forkTokens, setForkTokens] = useState(initialSetup?.forkVolumeSpacers ? String(initialSetup.forkVolumeSpacers) : "1");
   const [forkTravel, setForkTravel] = useState(
-    initialSetup?.forkTravelMm ? String(initialSetup.forkTravelMm) : forkTravelSpec ? String(forkTravelSpec) : "180"
+    forkTravelSpec ? String(forkTravelSpec) : initialSetup?.forkTravelMm ? String(initialSetup.forkTravelMm) : "180"
   );
   const [forkNotes, setForkNotes] = useState(initialSetup?.forkNotes || "");
 
