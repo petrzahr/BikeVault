@@ -182,7 +182,6 @@ export interface BikeSetup {
   // Vidlice
   forkPressurePsi?: number | null;
   forkSagPercent?: number | null;
-  forkReboundClicks?: number | null;
   forkLscClicks?: number | null;
   forkHscClicks?: number | null;
   forkLsrClicks?: number | null;
@@ -193,7 +192,6 @@ export interface BikeSetup {
   // Tlumič
   shockPressurePsi?: number | null;
   shockSagPercent?: number | null;
-  shockReboundClicks?: number | null;
   shockLscClicks?: number | null;
   shockHscClicks?: number | null;
   shockLsrClicks?: number | null;

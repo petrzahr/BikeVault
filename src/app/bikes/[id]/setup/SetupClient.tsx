@@ -53,9 +53,10 @@ export function SetupClient({
   // Vidlice
   const [forkPressure, setForkPressure] = useState(initialSetup?.forkPressurePsi ? String(initialSetup.forkPressurePsi) : "76");
   const [forkSag, setForkSag] = useState(initialSetup?.forkSagPercent ? String(initialSetup.forkSagPercent) : "20");
-  const [forkRebound, setForkRebound] = useState(initialSetup?.forkReboundClicks ? String(initialSetup.forkReboundClicks) : "7");
   const [forkLsc, setForkLsc] = useState(initialSetup?.forkLscClicks !== null && initialSetup?.forkLscClicks !== undefined ? String(initialSetup.forkLscClicks) : "4");
   const [forkHsc, setForkHsc] = useState(initialSetup?.forkHscClicks !== null && initialSetup?.forkHscClicks !== undefined ? String(initialSetup.forkHscClicks) : "2");
+  const [forkLsr, setForkLsr] = useState(initialSetup?.forkLsrClicks !== null && initialSetup?.forkLsrClicks !== undefined ? String(initialSetup.forkLsrClicks) : "7");
+  const [forkHsr, setForkHsr] = useState(initialSetup?.forkHsrClicks !== null && initialSetup?.forkHsrClicks !== undefined ? String(initialSetup.forkHsrClicks) : "2");
   const [forkTokens, setForkTokens] = useState(initialSetup?.forkVolumeSpacers ? String(initialSetup.forkVolumeSpacers) : "1");
   const [forkTravel, setForkTravel] = useState(
     forkTravelSpec ? String(forkTravelSpec) : initialSetup?.forkTravelMm ? String(initialSetup.forkTravelMm) : ""
@@ -65,9 +66,10 @@ export function SetupClient({
   // Tlumič
   const [shockPressure, setShockPressure] = useState(initialSetup?.shockPressurePsi ? String(initialSetup.shockPressurePsi) : "195");
   const [shockSag, setShockSag] = useState(initialSetup?.shockSagPercent ? String(initialSetup.shockSagPercent) : "28");
-  const [shockRebound, setShockRebound] = useState(initialSetup?.shockReboundClicks ? String(initialSetup.shockReboundClicks) : "6");
   const [shockLsc, setShockLsc] = useState(initialSetup?.shockLscClicks !== null && initialSetup?.shockLscClicks !== undefined ? String(initialSetup.shockLscClicks) : "3");
   const [shockHsc, setShockHsc] = useState(initialSetup?.shockHscClicks !== null && initialSetup?.shockHscClicks !== undefined ? String(initialSetup.shockHscClicks) : "2");
+  const [shockLsr, setShockLsr] = useState(initialSetup?.shockLsrClicks !== null && initialSetup?.shockLsrClicks !== undefined ? String(initialSetup.shockLsrClicks) : "6");
+  const [shockHsr, setShockHsr] = useState(initialSetup?.shockHsrClicks !== null && initialSetup?.shockHsrClicks !== undefined ? String(initialSetup.shockHsrClicks) : "2");
   const [shockTokens, setShockTokens] = useState(initialSetup?.shockVolumeSpacers ? String(initialSetup.shockVolumeSpacers) : "1");
   const [shockNotes, setShockNotes] = useState(initialSetup?.shockNotes || "");
 
@@ -101,18 +103,20 @@ export function SetupClient({
       saveSetup(bike.id, {
         forkPressurePsi: forkPressure ? parseFloat(forkPressure) : null,
         forkSagPercent: forkSag ? parseInt(forkSag, 10) : null,
-        forkReboundClicks: forkRebound ? parseInt(forkRebound, 10) : null,
         forkLscClicks: forkLsc ? parseInt(forkLsc, 10) : null,
         forkHscClicks: forkHsc ? parseInt(forkHsc, 10) : null,
+        forkLsrClicks: forkLsr ? parseInt(forkLsr, 10) : null,
+        forkHsrClicks: forkHsr ? parseInt(forkHsr, 10) : null,
         forkVolumeSpacers: forkTokens ? parseInt(forkTokens, 10) : null,
         forkTravelMm: forkTravel ? parseInt(forkTravel, 10) : null,
         forkNotes: forkNotes.trim() || null,
 
         shockPressurePsi: shockPressure ? parseFloat(shockPressure) : null,
         shockSagPercent: shockSag ? parseInt(shockSag, 10) : null,
-        shockReboundClicks: shockRebound ? parseInt(shockRebound, 10) : null,
         shockLscClicks: shockLsc ? parseInt(shockLsc, 10) : null,
         shockHscClicks: shockHsc ? parseInt(shockHsc, 10) : null,
+        shockLsrClicks: shockLsr ? parseInt(shockLsr, 10) : null,
+        shockHsrClicks: shockHsr ? parseInt(shockHsr, 10) : null,
         shockVolumeSpacers: shockTokens ? parseInt(shockTokens, 10) : null,
         shockNotes: shockNotes.trim() || null,
 
@@ -145,17 +149,19 @@ export function SetupClient({
       const snapshotData = {
         forkPressurePsi: forkPressure ? parseFloat(forkPressure) : null,
         forkSagPercent: forkSag ? parseInt(forkSag, 10) : null,
-        forkReboundClicks: forkRebound ? parseInt(forkRebound, 10) : null,
         forkLscClicks: forkLsc ? parseInt(forkLsc, 10) : null,
         forkHscClicks: forkHsc ? parseInt(forkHsc, 10) : null,
+        forkLsrClicks: forkLsr ? parseInt(forkLsr, 10) : null,
+        forkHsrClicks: forkHsr ? parseInt(forkHsr, 10) : null,
         forkVolumeSpacers: forkTokens ? parseInt(forkTokens, 10) : null,
         forkTravelMm: forkTravel ? parseInt(forkTravel, 10) : null,
         forkNotes: forkNotes.trim() || null,
         shockPressurePsi: shockPressure ? parseFloat(shockPressure) : null,
         shockSagPercent: shockSag ? parseInt(shockSag, 10) : null,
-        shockReboundClicks: shockRebound ? parseInt(shockRebound, 10) : null,
         shockLscClicks: shockLsc ? parseInt(shockLsc, 10) : null,
         shockHscClicks: shockHsc ? parseInt(shockHsc, 10) : null,
+        shockLsrClicks: shockLsr ? parseInt(shockLsr, 10) : null,
+        shockHsrClicks: shockHsr ? parseInt(shockHsr, 10) : null,
         shockVolumeSpacers: shockTokens ? parseInt(shockTokens, 10) : null,
         shockNotes: shockNotes.trim() || null,
         frontTirePressureBar: frontPressure ? parseFloat(frontPressure) : null,
@@ -265,14 +271,62 @@ export function SetupClient({
 
                 <div>
                   <label className={labelClass}>
-                    {t("setup.fork.rebound")} (odskok)
+                    {t("setup.fork.lsc")}
                   </label>
                   <div className="relative">
                     <input
                       type="number"
                       min="0"
-                      value={forkRebound}
-                      onChange={(e) => setForkRebound(e.target.value)}
+                      value={forkLsc}
+                      onChange={(e) => setForkLsc(e.target.value)}
+                      className={cn(inputClass, "tabular-nums")}
+                    />
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    {t("setup.fork.hsc")}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      value={forkHsc}
+                      onChange={(e) => setForkHsc(e.target.value)}
+                      className={cn(inputClass, "tabular-nums")}
+                    />
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    {t("setup.fork.lsr")}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      value={forkLsr}
+                      onChange={(e) => setForkLsr(e.target.value)}
+                      className={cn(inputClass, "tabular-nums")}
+                    />
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    {t("setup.fork.hsr")}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      value={forkHsr}
+                      onChange={(e) => setForkHsr(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
@@ -290,38 +344,6 @@ export function SetupClient({
                     onChange={(e) => setForkTokens(e.target.value)}
                     className={cn(inputClass, "tabular-nums")}
                   />
-                </div>
-
-                <div>
-                  <label className={labelClass}>
-                    LSC (pomalá komprese)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={forkLsc}
-                      onChange={(e) => setForkLsc(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
-                    />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className={labelClass}>
-                    HSC (rychlá komprese)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={forkHsc}
-                      onChange={(e) => setForkHsc(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
-                    />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
-                  </div>
                 </div>
               </div>
 
@@ -393,14 +415,62 @@ export function SetupClient({
 
                 <div>
                   <label className={labelClass}>
-                    {t("setup.shock.rebound")} (odskok)
+                    {t("setup.shock.lsc")}
                   </label>
                   <div className="relative">
                     <input
                       type="number"
                       min="0"
-                      value={shockRebound}
-                      onChange={(e) => setShockRebound(e.target.value)}
+                      value={shockLsc}
+                      onChange={(e) => setShockLsc(e.target.value)}
+                      className={cn(inputClass, "tabular-nums")}
+                    />
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    {t("setup.shock.hsc")}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      value={shockHsc}
+                      onChange={(e) => setShockHsc(e.target.value)}
+                      className={cn(inputClass, "tabular-nums")}
+                    />
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    {t("setup.shock.lsr")}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      value={shockLsr}
+                      onChange={(e) => setShockLsr(e.target.value)}
+                      className={cn(inputClass, "tabular-nums")}
+                    />
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>
+                    {t("setup.shock.hsr")}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      value={shockHsr}
+                      onChange={(e) => setShockHsr(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
                     <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
@@ -418,38 +488,6 @@ export function SetupClient({
                     onChange={(e) => setShockTokens(e.target.value)}
                     className={cn(inputClass, "tabular-nums")}
                   />
-                </div>
-
-                <div>
-                  <label className={labelClass}>
-                    LSC (pomalá komprese)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={shockLsc}
-                      onChange={(e) => setShockLsc(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
-                    />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className={labelClass}>
-                    HSC (rychlá komprese)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={shockHsc}
-                      onChange={(e) => setShockHsc(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
-                    />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
-                  </div>
                 </div>
               </div>
 

@@ -289,12 +289,17 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                     {forkComp ? `${forkComp.manufacturer} ${forkComp.model}` : "Neosazeno"}
                   </p>
                   <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200/60 tabular-nums">
-                    <div>Odskok: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup?.forkReboundClicks)}</span></div>
                     {setup?.forkLscClicks !== null && setup?.forkLscClicks !== undefined && (
                       <div>LSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkLscClicks)}</span></div>
                     )}
                     {setup?.forkHscClicks !== null && setup?.forkHscClicks !== undefined && (
                       <div>HSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkHscClicks)}</span></div>
+                    )}
+                    {setup?.forkLsrClicks !== null && setup?.forkLsrClicks !== undefined && (
+                      <div>LSR: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkLsrClicks)}</span></div>
+                    )}
+                    {setup?.forkHsrClicks !== null && setup?.forkHsrClicks !== undefined && (
+                      <div>HSR: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkHsrClicks)}</span></div>
                     )}
                   </div>
                 </div>
@@ -316,7 +321,18 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   </p>
                   <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200/60 tabular-nums">
                     <div>SAG: <span className="text-slate-800 font-medium">{setup?.shockSagPercent ?? "-"} %</span></div>
-                    <div>Odskok: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup?.shockReboundClicks)}</span></div>
+                    {setup?.shockLscClicks !== null && setup?.shockLscClicks !== undefined && (
+                      <div>LSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.shockLscClicks)}</span></div>
+                    )}
+                    {setup?.shockHscClicks !== null && setup?.shockHscClicks !== undefined && (
+                      <div>HSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.shockHscClicks)}</span></div>
+                    )}
+                    {setup?.shockLsrClicks !== null && setup?.shockLsrClicks !== undefined && (
+                      <div>LSR: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.shockLsrClicks)}</span></div>
+                    )}
+                    {setup?.shockHsrClicks !== null && setup?.shockHsrClicks !== undefined && (
+                      <div>HSR: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.shockHsrClicks)}</span></div>
+                    )}
                   </div>
                 </div>
               )}
