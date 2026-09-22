@@ -463,7 +463,7 @@ export const DEMO_VAULT_DATA: BikeVaultData = {
       forkHsrClicks: 2,
       forkVolumeSpacers: 1,
       forkTravelMm: 180,
-      forkNotes: "Základní setup pro bikepark. Odskok počítán od plně zavřené polohy.",
+      forkNotes: "Základní setup pro bikepark.",
       shockPressurePsi: 185.0,
       shockSagPercent: 30,
       shockLscClicks: 4,
