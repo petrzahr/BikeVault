@@ -74,11 +74,9 @@ export function SetupClient({
   // Pláště
   const [frontPressure, setFrontPressure] = useState(initialSetup?.frontTirePressureBar ? String(initialSetup.frontTirePressureBar) : "1.55");
   const [frontInsert, setFrontInsert] = useState(initialSetup?.frontTireInsert || "Bez vložky");
-  const [frontNotes, setFrontNotes] = useState(initialSetup?.frontTireNotes || "");
 
   const [rearPressure, setRearPressure] = useState(initialSetup?.rearTirePressureBar ? String(initialSetup.rearTirePressureBar) : "1.75");
   const [rearInsert, setRearInsert] = useState(initialSetup?.rearTireInsert || "CushCore Pro");
-  const [rearNotes, setRearNotes] = useState(initialSetup?.rearTireNotes || "");
 
   // Obecná poznámka
   const [generalNotes, setGeneralNotes] = useState(initialSetup?.generalNotes || "");
@@ -118,11 +116,9 @@ export function SetupClient({
 
         frontTirePressureBar: frontPressure ? parseFloat(frontPressure) : null,
         frontTireInsert: frontInsert.trim() || null,
-        frontTireNotes: frontNotes.trim() || null,
 
         rearTirePressureBar: rearPressure ? parseFloat(rearPressure) : null,
         rearTireInsert: rearInsert.trim() || null,
-        rearTireNotes: rearNotes.trim() || null,
 
         generalNotes: generalNotes.trim() || null,
       });
@@ -160,10 +156,8 @@ export function SetupClient({
         shockVolumeSpacers: shockTokens ? parseInt(shockTokens, 10) : null,
         frontTirePressureBar: frontPressure ? parseFloat(frontPressure) : null,
         frontTireInsert: frontInsert.trim() || null,
-        frontTireNotes: frontNotes.trim() || null,
         rearTirePressureBar: rearPressure ? parseFloat(rearPressure) : null,
         rearTireInsert: rearInsert.trim() || null,
-        rearTireNotes: rearNotes.trim() || null,
         generalNotes: generalNotes.trim() || null,
       };
 
@@ -528,19 +522,6 @@ export function SetupClient({
                 />
               </div>
             </div>
-
-            <div>
-              <label className={labelClass}>
-                {t("setup.tires.notes")}
-              </label>
-              <input
-                type="text"
-                value={frontNotes}
-                onChange={(e) => setFrontNotes(e.target.value)}
-                placeholder="např. DD kostra, bez vložky, suchý bikepark"
-                className={inputClass}
-              />
-            </div>
           </div>
 
           {/* Zadní plášť */}
@@ -593,19 +574,6 @@ export function SetupClient({
                   className={inputClass}
                 />
               </div>
-            </div>
-
-            <div>
-              <label className={labelClass}>
-                {t("setup.tires.notes")}
-              </label>
-              <input
-                type="text"
-                value={rearNotes}
-                onChange={(e) => setRearNotes(e.target.value)}
-                placeholder="např. DH kostra, CushCore Pro"
-                className={inputClass}
-              />
             </div>
           </div>
         </div>

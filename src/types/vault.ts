@@ -199,10 +199,8 @@ export interface BikeSetup {
   // Pláště
   frontTirePressureBar?: number | null;
   frontTireInsert?: string | null;
-  frontTireNotes?: string | null;
   rearTirePressureBar?: number | null;
   rearTireInsert?: string | null;
-  rearTireNotes?: string | null;
   generalNotes?: string | null;
   updatedAt: string;
 }
