@@ -232,7 +232,7 @@ export function SetupClient({
 
                 {forkTravel && (
                   <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
-                    {forkTravel} mm zdvih
+                    {forkTravel} mm
                   </span>
                 )}
               </div>
@@ -363,7 +363,7 @@ export function SetupClient({
 
                 {frameTravelSpec && (
                   <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
-                    {frameTravelSpec} mm zdvih
+                    {frameTravelSpec} mm
                   </span>
                 )}
               </div>
