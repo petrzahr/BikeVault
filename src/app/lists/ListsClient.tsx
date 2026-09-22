@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Pencil, Trash2, RotateCcw, ChevronDown, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { Plus, Pencil, Trash2, RotateCcw, ChevronDown, ChevronRight, SlidersHorizontal, ArrowUp, ArrowDown } from "lucide-react";
 import { useVault } from "@/context/VaultContext";
 import type { ComponentCategory, CustomLists, ListOption } from "@/types/vault";
 import { getCategorySpecFields, makeOptionValue, resolveLists, sortCategoriesAz } from "@/lib/bikeLists";
@@ -65,12 +65,18 @@ function ListRow({
   row,
   onRename,
   onDelete,
+  onMoveUp,
+  onMoveDown,
 }: {
   row: ListRowData;
   onRename: (label: string) => void;
   onDelete: () => void;
+  /** Když jsou zadané, zobrazí se šipky pro ruční řazení (např. vlastní pole specifikace). */
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }) {
   const [editing, setEditing] = useState(false);
+  const canReorder = Boolean(onMoveUp || onMoveDown);
 
   return (
     <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-slate-50/80 rounded-lg min-h-[36px]">
@@ -88,6 +94,16 @@ function ListRow({
       )}
       {!editing && (
         <div className="flex items-center shrink-0">
+          {canReorder && (
+            <>
+              <button type="button" onClick={onMoveUp} disabled={!onMoveUp} title="Posunout nahoru" className={iconButton}>
+                <ArrowUp className="w-3.5 h-3.5" />
+              </button>
+              <button type="button" onClick={onMoveDown} disabled={!onMoveDown} title="Posunout dolů" className={iconButton}>
+                <ArrowDown className="w-3.5 h-3.5" />
+              </button>
+            </>
+          )}
           <button type="button" onClick={() => setEditing(true)} title="Přejmenovat" className={iconButton}>
             <Pencil className="w-3.5 h-3.5" />
           </button>
@@ -194,9 +210,9 @@ function ListCard({
   );
 }
 
-/** Vlastní pole specifikace jedné kategorie komponent — přidávání/přejmenování/mazání. */
+/** Vlastní pole specifikace jedné kategorie komponent — přidávání/přejmenování/mazání/řazení. */
 function CategorySpecFieldsPanel({ category }: { category: ComponentCategory }) {
-  const { addCategorySpecField, renameCategorySpecField, deleteCategorySpecField } = useVault();
+  const { addCategorySpecField, renameCategorySpecField, deleteCategorySpecField, moveCategorySpecField } = useVault();
   const fields = getCategorySpecFields(category);
   const [adding, setAdding] = useState(false);
 
@@ -205,12 +221,14 @@ function CategorySpecFieldsPanel({ category }: { category: ComponentCategory }) 
       {fields.length === 0 && !adding && (
         <p className="text-[11px] text-slate-400 px-1">Kategorie zatím nemá žádná vlastní pole specifikace.</p>
       )}
-      {fields.map((field) => (
+      {fields.map((field, index) => (
         <ListRow
           key={field.key}
           row={{ id: field.key, label: field.label, canDelete: true }}
           onRename={(label) => renameCategorySpecField(category.id, field.key, label)}
           onDelete={() => deleteCategorySpecField(category.id, field.key)}
+          onMoveUp={index > 0 ? () => moveCategorySpecField(category.id, field.key, "UP") : undefined}
+          onMoveDown={index < fields.length - 1 ? () => moveCategorySpecField(category.id, field.key, "DOWN") : undefined}
         />
       ))}
       {adding ? (

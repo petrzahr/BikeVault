@@ -113,6 +113,7 @@ interface VaultContextType {
   addCategorySpecField: (categoryId: string, label: string) => void;
   renameCategorySpecField: (categoryId: string, key: string, label: string) => void;
   deleteCategorySpecField: (categoryId: string, key: string) => void;
+  moveCategorySpecField: (categoryId: string, key: string, direction: "UP" | "DOWN") => void;
   deleteBike: (id: string, disposition?: BikeComponentsDisposition) => void;
   deleteOdometerEntry: (entryId: string) => { success: boolean; error?: string };
   clearAllData: () => void;
@@ -713,6 +714,23 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       const category = prev.categories.find((c) => c.id === categoryId);
       if (!category) return prev;
       const specFields = getCategorySpecFields(category).filter((f) => f.key !== key);
+      return {
+        ...prev,
+        categories: prev.categories.map((c) => (c.id === categoryId ? { ...c, specFields } : c)),
+      };
+    });
+  };
+
+  const moveCategorySpecField = (categoryId: string, key: string, direction: "UP" | "DOWN") => {
+    mutateData((prev) => {
+      const category = prev.categories.find((c) => c.id === categoryId);
+      if (!category) return prev;
+      const existing = getCategorySpecFields(category);
+      const index = existing.findIndex((f) => f.key === key);
+      const targetIndex = direction === "UP" ? index - 1 : index + 1;
+      if (index === -1 || targetIndex < 0 || targetIndex >= existing.length) return prev;
+      const specFields = [...existing];
+      [specFields[index], specFields[targetIndex]] = [specFields[targetIndex], specFields[index]];
       return {
         ...prev,
         categories: prev.categories.map((c) => (c.id === categoryId ? { ...c, specFields } : c)),
@@ -1641,6 +1659,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     addCategorySpecField,
     renameCategorySpecField,
     deleteCategorySpecField,
+    moveCategorySpecField,
     deleteBike,
     deleteOdometerEntry,
     clearAllData,
