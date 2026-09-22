@@ -173,7 +173,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
 
                   {/* Informace o synchronizaci */}
-                  <div className="space-y-1.5 text-[11px]">
+                  <div className="p-2.5 bg-slate-50 rounded-xl space-y-1.5 text-[11px]">
                     <div className="flex items-center justify-between text-slate-500">
                       <span>Stav:</span>
                       <span className="font-semibold flex items-center gap-1">
