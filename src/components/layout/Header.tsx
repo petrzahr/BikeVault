@@ -138,7 +138,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
                 <span className="hidden sm:inline">
                   {syncStatus === "saving"
-                    ? "Ukládám..."
+                    ? "Synchronizuji změny"
                     : appState === "scopeInsufficient"
                     ? "Chybí oprávnění"
                     : syncStatus === "error"
