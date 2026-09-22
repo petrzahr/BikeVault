@@ -157,7 +157,7 @@
     "fork": {
       "title": "Vidlice",
       "pressure": "Tlak",
-      "sag": "SAG",
+      "sag": "SAG (%)",
       "lsc": "LSC",
       "hsc": "HSC",
       "lsr": "LSR",
@@ -170,7 +170,7 @@
     "shock": {
       "title": "Tlumič",
       "pressure": "Tlak",
-      "sag": "SAG",
+      "sag": "SAG (%)",
       "lsc": "LSC",
       "hsc": "HSC",
       "lsr": "LSR",
@@ -184,7 +184,7 @@
       "rear": "Zadní plášť",
       "pressure": "Tlak",
       "insert": "Vložka (Insert)",
-      "notes": "Poznámka k plášti (směs, podmínky)"
+      "notes": "Poznámka k plášti"
     },
     "generalNotes": "Celková poznámka k nastavení"
   },
