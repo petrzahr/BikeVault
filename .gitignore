@@ -7,6 +7,7 @@ node_modules/
 dist/
 dist-ssr/
 build/
+.next/
 *.tsbuildinfo
 
 # Logs & temp files
