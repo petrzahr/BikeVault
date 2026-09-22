@@ -4,14 +4,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
-import { 
-  Menu, 
-  RefreshCw, 
-  LogOut, 
-  Download, 
-  Upload, 
-  CheckCircle2, 
-  AlertCircle 
+import {
+  Menu,
+  RefreshCw,
+  LogOut,
+  CheckCircle2,
+  AlertCircle
 } from "lucide-react";
 import { GoogleIcon } from "@/components/common/GoogleIcon";
 import { buttonClass } from "@/lib/ui";
@@ -27,7 +25,6 @@ export const Header: React.FC<HeaderProps> = ({
   activeScreenTitle,
 }) => {
   const pathname = usePathname();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     appState,
     syncStatus,
@@ -39,10 +36,8 @@ export const Header: React.FC<HeaderProps> = ({
     logout,
     reauthorizeGoogleDrive,
     syncNow,
-    exportBackup,
-    importBackup,
   } = useVault();
-  const { toast, confirm } = useFeedback();
+  const { confirm } = useFeedback();
 
   const isDriveConnected = isAuthenticated;
   const connectGoogleDrive = login;
@@ -76,35 +71,8 @@ export const Header: React.FC<HeaderProps> = ({
     return "BikeVault";
   };
 
-  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      const text = await file.text();
-      const success = await importBackup(text);
-      if (success) {
-        toast("Záloha byla úspěšně importována!", "success");
-        setMenuOpen(false);
-      }
-    } catch {
-      toast("Chyba při čtení souboru.", "error");
-    } finally {
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
   return (
     <>
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleImportFile}
-        accept=".json"
-        className="hidden"
-      />
-
       <header className="h-16 min-h-16 shrink-0 bg-ink-900 border-b border-white/10 sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between gap-2 select-none">
         {/* Levá strana: mobilní menu + název sekce */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -248,7 +216,7 @@ export const Header: React.FC<HeaderProps> = ({
                     )}
                   </div>
 
-                  {/* Tlačítka synchronizace a zálohy */}
+                  {/* Tlačítko synchronizace */}
                   <div className="space-y-1.5 pt-1">
                     {appState === "scopeInsufficient" ? (
                       <button
@@ -274,36 +242,13 @@ export const Header: React.FC<HeaderProps> = ({
                         className={buttonClass(
                           "soft",
                           "md",
-                          "w-full rounded-full py-2.5 bg-navy-50 hover:bg-navy-100 text-navy-700 border-transparent"
+                          "w-full rounded-full py-2.5"
                         )}
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
                         <span>Synchronizovat nyní</span>
                       </button>
                     )}
-
-                    <div className="grid grid-cols-2 gap-1.5 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          exportBackup();
-                          setMenuOpen(false);
-                        }}
-                        className={buttonClass("secondary", "sm")}
-                      >
-                        <Download className="w-3 h-3 text-slate-500" />
-                        <span>Zálohovat JSON</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className={buttonClass("secondary", "sm")}
-                      >
-                        <Upload className="w-3 h-3 text-slate-500" />
-                        <span>Obnovit JSON</span>
-                      </button>
-                    </div>
 
                     <button
                       type="button"
