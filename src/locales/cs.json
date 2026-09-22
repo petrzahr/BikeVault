@@ -156,27 +156,25 @@
     "profileNamePlaceholder": "např. Bikepark – sucho",
     "fork": {
       "title": "Vidlice",
-      "pressure": "Tlak vidlice",
-      "sag": "SAG (%)",
-      "lsc": "LSC (Nízkorychlostní komprese)",
-      "hsc": "HSC (Vysokorychlostní komprese)",
-      "lsr": "LSR (Nízkorychlostní odskok)",
-      "hsr": "HSR (Vysokorychlostní odskok)",
-      "tokens": "Tokeny / Volume spacery",
+      "pressure": "Tlak",
+      "sag": "SAG",
+      "lsc": "LSC",
+      "hsc": "HSC",
+      "lsr": "LSR",
+      "hsr": "HSR",
+      "tokens": "Tokeny",
       "travel": "Zdvih (mm)",
-      "clicksFromClosed": "kliků od zavřené polohy",
-      "notes": "Poznámka k vidlici"
+      "clicksFromClosed": "kliků od zavřené polohy"
     },
     "shock": {
       "title": "Tlumič",
-      "pressure": "Tlak tlumiče",
-      "sag": "SAG (%)",
-      "lsc": "LSC (Nízkorychlostní komprese)",
-      "hsc": "HSC (Vysokorychlostní komprese)",
-      "lsr": "LSR (Nízkorychlostní odskok)",
-      "hsr": "HSR (Vysokorychlostní odskok)",
-      "tokens": "Tokeny / Volume spacery",
-      "notes": "Poznámka k tlumiči"
+      "pressure": "Tlak",
+      "sag": "SAG",
+      "lsc": "LSC",
+      "hsc": "HSC",
+      "lsr": "LSR",
+      "hsr": "HSR",
+      "tokens": "Tokeny"
     },
     "tires": {
       "title": "Pláště",
