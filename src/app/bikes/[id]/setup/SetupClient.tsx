@@ -58,7 +58,7 @@ export function SetupClient({
   const [forkHsc, setForkHsc] = useState(initialSetup?.forkHscClicks !== null && initialSetup?.forkHscClicks !== undefined ? String(initialSetup.forkHscClicks) : "2");
   const [forkTokens, setForkTokens] = useState(initialSetup?.forkVolumeSpacers ? String(initialSetup.forkVolumeSpacers) : "1");
   const [forkTravel, setForkTravel] = useState(
-    forkTravelSpec ? String(forkTravelSpec) : initialSetup?.forkTravelMm ? String(initialSetup.forkTravelMm) : "180"
+    forkTravelSpec ? String(forkTravelSpec) : initialSetup?.forkTravelMm ? String(initialSetup.forkTravelMm) : ""
   );
   const [forkNotes, setForkNotes] = useState(initialSetup?.forkNotes || "");
 
@@ -230,9 +230,11 @@ export function SetupClient({
                   </div>
                 </div>
 
-                <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
-                  {forkTravel} mm zdvih
-                </span>
+                {forkTravel && (
+                  <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
+                    {forkTravel} mm zdvih
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3.5">
@@ -356,9 +358,11 @@ export function SetupClient({
                   </div>
                 </div>
 
-                <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
-                  {frameTravelSpec ? `${frameTravelSpec} mm zdvih` : "Zadní tlumič"}
-                </span>
+                {frameTravelSpec && (
+                  <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
+                    {frameTravelSpec} mm zdvih
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3.5">
