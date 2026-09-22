@@ -205,8 +205,8 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
 
                   {/* Informace o synchronizaci */}
-                  <div className="p-2.5 bg-slate-50 rounded-xl space-y-1 text-[11px]">
-                    <div className="flex items-center justify-between text-slate-600">
+                  <div className="space-y-1.5 text-[11px]">
+                    <div className="flex items-center justify-between text-slate-500">
                       <span>Stav:</span>
                       <span className="font-semibold flex items-center gap-1">
                         {syncStatus === "saving" ? (
@@ -242,7 +242,7 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
 
                     {syncError && (
-                      <p className="text-[10px] text-rose-600 pt-1 border-t border-slate-200 mt-1">
+                      <p className="text-[10px] text-rose-600 pt-1.5 border-t border-slate-100 mt-1.5">
                         {syncError}
                       </p>
                     )}
@@ -271,7 +271,11 @@ export const Header: React.FC<HeaderProps> = ({
                           setMenuOpen(false);
                         }}
                         disabled={syncStatus === "saving"}
-                        className={buttonClass("soft", "md", "w-full")}
+                        className={buttonClass(
+                          "soft",
+                          "md",
+                          "w-full rounded-full py-2.5 bg-navy-50 hover:bg-navy-100 text-navy-700 border-transparent"
+                        )}
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
                         <span>Synchronizovat nyní</span>
