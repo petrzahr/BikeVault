@@ -350,6 +350,11 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                 <p className="text-xs text-slate-600 font-medium truncate">
                   {frontTireComp ? `${frontTireComp.manufacturer} ${frontTireComp.model}` : "Neosazeno"}
                 </p>
+                {setup?.frontTireNotes && (
+                  <p className="text-[11px] text-slate-500 italic">
+                    "{setup.frontTireNotes}"
+                  </p>
+                )}
               </div>
 
               {/* Zadní plášť */}
@@ -365,6 +370,11 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                 <p className="text-xs text-slate-600 font-medium truncate">
                   {rearTireComp ? `${rearTireComp.manufacturer} ${rearTireComp.model}` : "Neosazeno"}
                 </p>
+                {setup?.rearTireNotes && (
+                  <p className="text-[11px] text-slate-500 italic">
+                    "{setup.rearTireNotes}"
+                  </p>
+                )}
               </div>
             </div>
 

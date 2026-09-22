@@ -188,6 +188,7 @@ export interface BikeSetup {
   forkHsrClicks?: number | null;
   forkVolumeSpacers?: number | null;
   forkTravelMm?: number | null;
+  forkNotes?: string | null;
   // Tlumič
   shockPressurePsi?: number | null;
   shockSagPercent?: number | null;
@@ -196,11 +197,14 @@ export interface BikeSetup {
   shockLsrClicks?: number | null;
   shockHsrClicks?: number | null;
   shockVolumeSpacers?: number | null;
+  shockNotes?: string | null;
   // Pláště
   frontTirePressureBar?: number | null;
   frontTireInsert?: string | null;
+  frontTireNotes?: string | null;
   rearTirePressureBar?: number | null;
   rearTireInsert?: string | null;
+  rearTireNotes?: string | null;
   generalNotes?: string | null;
   updatedAt: string;
 }

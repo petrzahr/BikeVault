@@ -164,7 +164,8 @@
       "hsr": "HSR",
       "tokens": "Tokeny",
       "travel": "Zdvih (mm)",
-      "clicksFromClosed": "kliků od zavřené polohy"
+      "clicksFromClosed": "kliků od zavřené polohy",
+      "notes": "Poznámka k vidlici"
     },
     "shock": {
       "title": "Tlumič",
@@ -174,14 +175,16 @@
       "hsc": "HSC",
       "lsr": "LSR",
       "hsr": "HSR",
-      "tokens": "Tokeny"
+      "tokens": "Tokeny",
+      "notes": "Poznámka k tlumiči"
     },
     "tires": {
       "title": "Pláště",
       "front": "Přední plášť",
       "rear": "Zadní plášť",
       "pressure": "Tlak",
-      "insert": "Vložka (Insert)"
+      "insert": "Vložka (Insert)",
+      "notes": "Poznámka k plášti (směs, podmínky)"
     },
     "generalNotes": "Celková poznámka k nastavení"
   },
