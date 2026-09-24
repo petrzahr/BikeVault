@@ -234,7 +234,7 @@ function CategorySpecFieldsPanel({ category }: { category: ComponentCategory }) 
       {adding ? (
         <div className="px-1">
           <InlineInput
-            placeholder="Název pole… (např. Kostra, Tlak)"
+            placeholder="Název pole…"
             onCommit={(v) => {
               addCategorySpecField(category.id, v);
               setAdding(false);

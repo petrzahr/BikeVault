@@ -361,7 +361,6 @@ export function SetupClient({
                   type="text"
                   value={forkNotes}
                   onChange={(e) => setForkNotes(e.target.value)}
-                  placeholder="např. ButterCups vložky, nastavení pro 82 kg jezdce"
                   className={inputClass}
                 />
               </div>
@@ -505,7 +504,6 @@ export function SetupClient({
                   type="text"
                   value={shockNotes}
                   onChange={(e) => setShockNotes(e.target.value)}
-                  placeholder="např. Hydraulic Bottom Out, 28% SAG"
                   className={inputClass}
                 />
               </div>
@@ -561,7 +559,6 @@ export function SetupClient({
                   type="text"
                   value={frontInsert}
                   onChange={(e) => setFrontInsert(e.target.value)}
-                  placeholder="např. Bez vložky, CushCore XC"
                   className={inputClass}
                 />
               </div>
@@ -575,7 +572,6 @@ export function SetupClient({
                 type="text"
                 value={frontNotes}
                 onChange={(e) => setFrontNotes(e.target.value)}
-                placeholder="např. DD kostra, bez vložky, suchý bikepark"
                 className={inputClass}
               />
             </div>
@@ -627,7 +623,6 @@ export function SetupClient({
                   type="text"
                   value={rearInsert}
                   onChange={(e) => setRearInsert(e.target.value)}
-                  placeholder="např. CushCore Pro, Tubolight"
                   className={inputClass}
                 />
               </div>
@@ -641,7 +636,6 @@ export function SetupClient({
                 type="text"
                 value={rearNotes}
                 onChange={(e) => setRearNotes(e.target.value)}
-                placeholder="např. DH kostra, CushCore Pro"
                 className={inputClass}
               />
             </div>
@@ -657,7 +651,6 @@ export function SetupClient({
             rows={3}
             value={generalNotes}
             onChange={(e) => setGeneralNotes(e.target.value)}
-            placeholder="např. Bikepark setup. Sucho, rychlé rozbité tratě. DD vpředu, DH vzadu, CushCore vzadu. Tlumič o 2 kliky pomalejší rebound než běžný trail setup."
             className={inputClass}
           />
         </div>
@@ -742,7 +735,6 @@ export function SetupClient({
               required
               value={snapshotName}
               onChange={(e) => setSnapshotName(e.target.value)}
-              placeholder={t("setup.profileNamePlaceholder")}
               className={inputClass}
             />
           </div>
@@ -755,7 +747,6 @@ export function SetupClient({
               rows={2}
               value={snapshotNote}
               onChange={(e) => setSnapshotNote(e.target.value)}
-              placeholder="Pro jaké tratě, počasí nebo závod byl profil vytvořen"
               className={inputClass}
             />
           </div>

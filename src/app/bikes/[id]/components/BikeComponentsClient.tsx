@@ -402,7 +402,6 @@ export function BikeComponentsClient({
                   required
                   value={salePrice}
                   onChange={(e) => setSalePrice(e.target.value)}
-                  placeholder="např. 6000"
                   className={cn(inputClass, "tabular-nums")}
                 />
               </div>

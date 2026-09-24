@@ -165,7 +165,6 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               required
               value={manufacturer}
               onChange={(e) => setManufacturer(e.target.value)}
-              placeholder="např. RockShox, SRAM, Shimano"
               className={inputClass}
             />
           </div>
@@ -178,7 +177,6 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               required
               value={model}
               onChange={(e) => setModel(e.target.value)}
-              placeholder="např. ZEB Ultimate, Eagle X0"
               className={inputClass}
             />
           </div>
@@ -193,7 +191,6 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               type="text"
               value={variant}
               onChange={(e) => setVariant(e.target.value)}
-              placeholder="např. 180mm 29 Slab Grey, 32z, 10-52z"
               className={inputClass}
             />
           </div>
@@ -205,7 +202,6 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               type="text"
               value={serialNumber}
               onChange={(e) => setSerialNumber(e.target.value)}
-              placeholder="volitelné"
               className={inputClass}
             />
           </div>
@@ -221,7 +217,6 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               min="0"
               value={purchasePrice}
               onChange={(e) => setPurchasePrice(e.target.value)}
-              placeholder="0"
               className={cn(inputClass, "tabular-nums")}
             />
           </div>
@@ -251,7 +246,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
                   type="text"
                   value={specValues[field.key] || ""}
                   onChange={(e) => setSpecValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
-                  placeholder={field.placeholder || field.label}
+                  placeholder={field.label}
                   className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
                 />
               ))}

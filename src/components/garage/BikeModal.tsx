@@ -284,7 +284,6 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="např. Propain Spindrift CF"
               className={inputClass}
             />
           </div>
@@ -299,7 +298,6 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               required
               value={manufacturer}
               onChange={(e) => setManufacturer(e.target.value)}
-              placeholder="např. Propain, Canyon, Trek"
               className={inputClass}
             />
           </div>
@@ -314,7 +312,6 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               required
               value={model}
               onChange={(e) => setModel(e.target.value)}
-              placeholder="např. Spindrift CF, Grizl CF SL"
               className={inputClass}
             />
           </div>
@@ -328,7 +325,6 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               type="number"
               value={modelYear}
               onChange={(e) => setModelYear(e.target.value ? parseInt(e.target.value, 10) : "")}
-              placeholder="2024"
               className={cn(inputClass, "tabular-nums")}
             />
           </div>
@@ -342,7 +338,6 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               type="text"
               value={frameSize}
               onChange={(e) => setFrameSize(e.target.value)}
-              placeholder="např. L, 56, M/L"
               className={inputClass}
             />
           </div>
@@ -356,7 +351,6 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               type="text"
               value={serialNumber}
               onChange={(e) => setSerialNumber(e.target.value)}
-              placeholder="Výrobní číslo rámu"
               className={inputClass}
             />
           </div>
@@ -373,7 +367,6 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 inputMode="decimal"
                 value={weightInput}
                 onChange={(e) => setWeightInput(e.target.value)}
-                placeholder="např. 15,8"
                 className={cn(inputClass, "pr-10 tabular-nums")}
               />
               <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">
@@ -616,7 +609,6 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 setImageUrl(e.target.value);
                 setPreviewFailed(false);
               }}
-              placeholder="https://..."
               className={inputClass}
             />
           </div>
@@ -631,7 +623,6 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Poznámka ke kolu, komponentům nebo určení"
             className={inputClass}
           />
         </div>

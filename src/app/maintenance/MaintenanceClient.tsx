@@ -623,7 +623,6 @@ export function MaintenanceClient({
               required
               value={serviceName}
               onChange={(e) => setServiceName(e.target.value)}
-              placeholder="např. Výměna ložisek v náboji"
               className={inputClass}
             />
           </div>
@@ -670,7 +669,6 @@ export function MaintenanceClient({
               type="text"
               value={serviceProvider}
               onChange={(e) => setServiceProvider(e.target.value)}
-              placeholder="např. Svépomocí, Bikeclinic, Kolofix"
               className={inputClass}
             />
           </div>
@@ -685,7 +683,6 @@ export function MaintenanceClient({
                 min="0"
                 value={partsCost}
                 onChange={(e) => setPartsCost(e.target.value)}
-                placeholder="0"
                 className={cn(inputClass, "tabular-nums")}
               />
             </div>
@@ -699,7 +696,6 @@ export function MaintenanceClient({
                 min="0"
                 value={laborCost}
                 onChange={(e) => setLaborCost(e.target.value)}
-                placeholder="0"
                 className={cn(inputClass, "tabular-nums")}
               />
             </div>
@@ -713,7 +709,6 @@ export function MaintenanceClient({
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Popis provedených prací, použitých těsnění a olejů..."
               className={inputClass}
             />
           </div>

@@ -118,18 +118,18 @@ export function sortCategoriesAz<T extends { nameCs: string }>(categories: T[]):
 /** Výchozí vlastní pole pro vestavěné kategorie, dokud si je uživatel sám neupraví (viz getCategorySpecFields). */
 export const DEFAULT_CATEGORY_SPEC_FIELDS: Record<string, ComponentSpecField[]> = {
   TIRE_FRONT: [
-    { key: "wheelDiameter", label: "Průměr", placeholder: 'např. 29", 27.5"' },
-    { key: "tireWidth", label: "Šířka pláště", placeholder: 'např. 2.4"' },
-    { key: "tireCasing", label: "Kostra", placeholder: "např. DoubleDown, DH, EXO+" },
-    { key: "tireCompound", label: "Směs", placeholder: "např. MaxxGrip, MaxxTerra" },
+    { key: "wheelDiameter", label: "Průměr" },
+    { key: "tireWidth", label: "Šířka pláště" },
+    { key: "tireCasing", label: "Kostra" },
+    { key: "tireCompound", label: "Směs" },
   ],
   TIRE_REAR: [
-    { key: "wheelDiameter", label: "Průměr", placeholder: 'např. 29", 27.5"' },
-    { key: "tireWidth", label: "Šířka pláště", placeholder: 'např. 2.4"' },
-    { key: "tireCasing", label: "Kostra", placeholder: "např. DoubleDown, DH, EXO+" },
-    { key: "tireCompound", label: "Směs", placeholder: "např. MaxxGrip, MaxxTerra" },
+    { key: "wheelDiameter", label: "Průměr" },
+    { key: "tireWidth", label: "Šířka pláště" },
+    { key: "tireCasing", label: "Kostra" },
+    { key: "tireCompound", label: "Směs" },
   ],
-  WHEELS: [{ key: "wheelDiameter", label: "Průměr", placeholder: 'např. 29", 27.5"' }],
+  WHEELS: [{ key: "wheelDiameter", label: "Průměr" }],
 };
 
 /** Klíče, které se historicky ukládaly jako pevná pole Component místo Component.customFields. */

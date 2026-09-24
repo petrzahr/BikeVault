@@ -279,7 +279,6 @@ export function ServiceScheduleModal({
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="např. Servis spodních nohou vidlice"
             className={inputClass}
           />
         </div>
@@ -398,7 +397,6 @@ export function ServiceScheduleModal({
                   min="1"
                   value={intervalHours}
                   onChange={(e) => setIntervalHours(e.target.value)}
-                  placeholder="např. 50"
                   className={cn(inputClass, "pl-3 pr-8 tabular-nums")}
                 />
                 <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none">h</span>
@@ -416,7 +414,6 @@ export function ServiceScheduleModal({
                   min="1"
                   value={intervalKm}
                   onChange={(e) => setIntervalKm(e.target.value)}
-                  placeholder="např. 1000"
                   className={cn(inputClass, "pl-3 pr-10 tabular-nums")}
                 />
                 <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none">km</span>
@@ -434,7 +431,6 @@ export function ServiceScheduleModal({
                   min="1"
                   value={intervalMonths}
                   onChange={(e) => setIntervalMonths(e.target.value)}
-                  placeholder="např. 12"
                   className={cn(inputClass, "pl-3 pr-12 tabular-nums")}
                 />
                 <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none">měs.</span>
@@ -453,7 +449,6 @@ export function ServiceScheduleModal({
                 min="1"
                 value={warningHours}
                 onChange={(e) => setWarningHours(e.target.value)}
-                placeholder="např. 10"
                 className={cn(inputClass, "tabular-nums")}
               />
             </div>
@@ -467,7 +462,6 @@ export function ServiceScheduleModal({
                 min="1"
                 value={warningKm}
                 onChange={(e) => setWarningKm(e.target.value)}
-                placeholder="např. 100"
                 className={cn(inputClass, "tabular-nums")}
               />
             </div>
@@ -551,7 +545,6 @@ export function ServiceScheduleModal({
                         step="0.1"
                         value={lastServiceKm}
                         onChange={(e) => setLastServiceKm(e.target.value)}
-                        placeholder={String(currentKmNum)}
                         className={cn(inputClass, "tabular-nums")}
                       />
                     </div>
@@ -564,7 +557,6 @@ export function ServiceScheduleModal({
                         step="0.5"
                         value={lastServiceHours}
                         onChange={(e) => setLastServiceHours(e.target.value)}
-                        placeholder={String(currentHoursNum)}
                         className={cn(inputClass, "tabular-nums")}
                       />
                     </div>
@@ -620,7 +612,6 @@ export function ServiceScheduleModal({
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Instrukce pro mechanika, typ použitého těsnění nebo oleje..."
             className={inputClass}
           />
         </div>

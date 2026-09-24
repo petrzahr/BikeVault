@@ -75,7 +75,6 @@ export interface ComponentSpecField {
   /** Unikátní v rámci kategorie. Pro pole zděděná ze staršího pevného schématu (wheelDiameter, tireWidth, tireCasing, tireCompound) se hodnota ukládá přímo do Component, jinak do Component.customFields. */
   key: string;
   label: string;
-  placeholder?: string | null;
 }
 
 export interface ComponentCategory {
