@@ -67,6 +67,19 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
   const deletableOdometerId =
     latestOdometerEntry && latestOdometerEntry.entryType !== "INITIAL" ? latestOdometerEntry.id : null;
 
+  // Sort keys: local calendar day + precise timestamp
+  const localDay = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const fromTimestamp = (iso: string) => {
+    const d = new Date(iso);
+    return { date: d, day: localDay(d), time: d.getTime() };
+  };
+  const fromDateOnly = (ymd: string, createdAt?: string) => ({
+    date: new Date(ymd),
+    day: ymd,
+    time: createdAt ? new Date(createdAt).getTime() : 0,
+  });
+
   // Group into unified chronological timeline
   const timelineItems: any[] = [];
 
@@ -77,7 +90,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
     const catName = cat?.nameCs || "";
 
     timelineItems.push({
-      date: new Date(inst.installedAt),
+      ...fromTimestamp(inst.installedAt),
       type: "INSTALLATION",
       title: `Montáž: ${compName}`,
       subtitle: `${catName} • při ${formatKm(inst.installedBikeKm)}`,
@@ -88,7 +101,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
 
     if (inst.removedAt) {
       timelineItems.push({
-        date: new Date(inst.removedAt),
+        ...fromTimestamp(inst.removedAt),
         type: "REMOVAL",
         title: `Demontáž: ${compName}`,
         subtitle: `Ukončení montáže při ${formatKm(inst.removedBikeKm || 0)}`,
@@ -101,7 +114,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
 
   for (const item of serviceEvents) {
     timelineItems.push({
-      date: new Date(item.serviceDate),
+      ...fromDateOnly(item.serviceDate, item.createdAt),
       type: "SERVICE",
       title: `Servis: ${item.description}`,
       subtitle: `${item.shopName || (item.performedBy === "SELF" ? "Svépomocí" : "Servis")} • ${formatCzk(Number(item.totalPrice || 0))}`,
@@ -118,7 +131,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
 
     if (odo.entryType === "INITIAL") {
       timelineItems.push({
-        date: new Date(odo.entryDate),
+        ...fromDateOnly(odo.entryDate, odo.createdAt),
         type: "INITIAL",
         title: `Výchozí stav počítadla: ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Zavedení kola do garáže"}`,
@@ -135,7 +148,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       const deltaMinText = odo.deltaMinutes >= 0 ? `+${formatMinutes(odo.deltaMinutes)}` : `-${formatMinutes(Math.abs(odo.deltaMinutes))}`;
 
       timelineItems.push({
-        date: new Date(odo.entryDate),
+        ...fromDateOnly(odo.entryDate, odo.createdAt),
         type: "SNAPSHOT",
         title: `Odečet počítadla: ${formatKm(odo.resultingKm)} (${deltaKmText})`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} (${deltaMinText}) • ${sourceLabel}${odo.note ? ` • ${odo.note}` : ""}`,
@@ -150,7 +163,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       });
     } else if (odo.entryType === "CORRECTION") {
       timelineItems.push({
-        date: new Date(odo.entryDate),
+        ...fromDateOnly(odo.entryDate, odo.createdAt),
         type: "CORRECTION",
         title: `Korekce počítadla na ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Manuální oprava"}`,
@@ -164,8 +177,10 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
     }
   }
 
-  // Sort descending by date
-  timelineItems.sort((a, b) => b.date.getTime() - a.date.getTime());
+  // Sort descending by calendar day, then by the actual time the event was recorded.
+  // Odometer/service entries only carry a date (YYYY-MM-DD), so their createdAt timestamp
+  // is used to order them against installations/removals within the same day.
+  timelineItems.sort((a, b) => b.day.localeCompare(a.day) || b.time - a.time);
 
   return (
     <div className="space-y-6 animate-fade-in">
