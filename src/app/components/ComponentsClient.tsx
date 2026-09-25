@@ -10,7 +10,10 @@ import { t, formatCzk } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import Link from "next/link";
 import { AddComponentModal } from "@/components/garage/AddComponentModal";
-import { buttonClass, inputClass, cn } from "@/lib/ui";
+import { Modal } from "@/components/common/Modal";
+import { useFeedback } from "@/components/common/Feedback";
+import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+import { sortCategoriesAz } from "@/lib/bikeLists";
 
 interface ComponentsClientProps {
   initialComponents?: any[];
@@ -21,12 +24,38 @@ export function ComponentsClient({
   initialComponents: propComponents,
   categories: propCategories,
 }: ComponentsClientProps = {}) {
-  const { data, getAllComponents } = useVault();
+  const { data, getAllComponents, getGarageBikes, installComponent } = useVault();
+  const { toast } = useFeedback();
   const initialComponents = propComponents ?? getAllComponents();
+  const categories = sortCategoriesAz(propCategories ?? data.categories);
+  const activeBikes = getGarageBikes("ACTIVE");
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [componentToEdit, setComponentToEdit] = useState<any | null>(null);
+
+  // Install from storage
+  const [componentToInstall, setComponentToInstall] = useState<any | null>(null);
+  const [installBikeId, setInstallBikeId] = useState<string>("");
+  const [installSlot, setInstallSlot] = useState<string>("");
+
+  const openInstall = (comp: any, cat: any) => {
+    setComponentToInstall(comp);
+    setInstallBikeId(activeBikes.length === 1 ? activeBikes[0].id : "");
+    setInstallSlot(cat?.defaultSlot || cat?.code || "");
+  };
+
+  const handleInstall = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!componentToInstall || !installBikeId || !installSlot) return;
+    try {
+      installComponent(installBikeId, componentToInstall.id, installSlot);
+      setComponentToInstall(null);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Chyba při montáži komponentu.";
+      toast(msg, "error");
+    }
+  };
 
   // Filtered components
   const filtered = initialComponents.filter((item) => {
@@ -145,9 +174,18 @@ export function ComponentsClient({
                     <span className="text-[11px] font-semibold text-slate-700 px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-200">
                       {cat?.nameCs || "Díl"}
                     </span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${statusBadge.style} truncate max-w-[180px]`}>
-                      {statusBadge.text}
-                    </span>
+                    {comp.status === "IN_STORAGE" ? (
+                      <button
+                        onClick={() => openInstall(comp, cat)}
+                        className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold border border-navy-600 bg-navy-600 hover:bg-navy-700 hover:border-navy-700 text-white cursor-pointer transition-colors"
+                      >
+                        Namontovat
+                      </button>
+                    ) : (
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${statusBadge.style} truncate max-w-[180px]`}>
+                        {statusBadge.text}
+                      </span>
+                    )}
                   </div>
 
                   <h3 className="text-base font-bold text-slate-900 tracking-tight">
@@ -197,6 +235,74 @@ export function ComponentsClient({
         onClose={() => setComponentToEdit(null)}
         componentToEdit={componentToEdit}
       />
+
+      {/* MODAL: NAMONTOVAT ZE SKLADU */}
+      <Modal
+        isOpen={!!componentToInstall}
+        onClose={() => setComponentToInstall(null)}
+        title="Namontovat díl na kolo"
+        subtitle={componentToInstall ? `${componentToInstall.manufacturer} ${componentToInstall.model}` : undefined}
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleInstall} className="space-y-4">
+          <div>
+            <label className={labelClass}>Kolo</label>
+            {activeBikes.length === 0 ? (
+              <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 text-xs text-slate-600">
+                Nemáte žádné aktivní kolo.
+              </div>
+            ) : (
+              <select
+                required
+                value={installBikeId}
+                onChange={(e) => setInstallBikeId(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">—</option>
+                {activeBikes.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          <div>
+            <label className={labelClass}>Slot na kole</label>
+            <select
+              required
+              value={installSlot}
+              onChange={(e) => setInstallSlot(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">—</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.defaultSlot || c.code}>
+                  {c.nameCs}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setComponentToInstall(null)}
+              className={buttonClass("ghost", "md")}
+            >
+              {t("common.cancel")}
+            </button>
+            <button
+              type="submit"
+              disabled={!installBikeId || !installSlot}
+              className={buttonClass("primary", "md")}
+            >
+              Namontovat
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
