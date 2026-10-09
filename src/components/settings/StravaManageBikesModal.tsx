@@ -16,8 +16,8 @@ import {
 import { Modal } from "@/components/common/Modal";
 import { useVault } from "@/context/VaultContext";
 import { Bike } from "@/types/vault";
-import { compareMileage } from "@/lib/domain/stravaSync";
-import { formatKm } from "@/lib/i18n";
+import { compareMileage, compareRideTime } from "@/lib/domain/stravaSync";
+import { formatKm, formatMinutes } from "@/lib/i18n";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { getValidAccessToken } from "@/lib/google/googleAuth";
 import { buttonClass, labelClass } from "@/lib/ui";
@@ -138,7 +138,11 @@ export function StravaManageBikesModal({
         setSuccessMsg(domainResult.message + timeNote);
         // Refresh local list distance
         setStravaBikes((prev) =>
-          prev.map((b) => (b.id === stravaBike.id ? { ...b, distanceKm: freshDistanceKm } : b))
+          prev.map((b) =>
+            b.id === stravaBike.id
+              ? { ...b, distanceKm: freshDistanceKm, movingMinutes: gearResult?.movingMinutes ?? b.movingMinutes }
+              : b
+          )
         );
       }
     } catch (err) {
@@ -156,12 +160,19 @@ export function StravaManageBikesModal({
     if (!vaultBike) return;
 
     const comparison = compareMileage(vaultBike.currentKm, linkingStravaBike.distanceKm);
-    const shouldUpdateMileage = syncMileageOnLink && comparison.type === "HIGHER";
+    const timeComparison =
+      linkingStravaBike.movingMinutes != null
+        ? compareRideTime(vaultBike.currentMinutes, linkingStravaBike.movingMinutes)
+        : null;
+    const shouldUpdate =
+      syncMileageOnLink && (comparison.type === "HIGHER" || timeComparison?.type === "HIGHER");
 
     const res = linkBikeToStrava(
       selectedVaultBikeId,
       linkingStravaBike.id,
-      shouldUpdateMileage ? { stravaKm: linkingStravaBike.distanceKm } : undefined
+      shouldUpdate
+        ? { stravaKm: linkingStravaBike.distanceKm, stravaMinutes: linkingStravaBike.movingMinutes }
+        : undefined
     );
 
     if (!res.success) {
@@ -273,6 +284,14 @@ export function StravaManageBikesModal({
                         <span className="font-semibold text-slate-700 tabular-nums">
                           {formatKm(sb.distanceKm)}
                         </span>
+                        {sb.movingMinutes != null && (
+                          <>
+                            <span>•</span>
+                            <span className="font-semibold text-slate-700 tabular-nums">
+                              {formatMinutes(sb.movingMinutes)}
+                            </span>
+                          </>
+                        )}
                       </div>
 
                       {/* Linked Status */}
@@ -397,22 +416,37 @@ export function StravaManageBikesModal({
                   const targetBike = data.bikes.find((b) => b.id === selectedVaultBikeId);
                   if (!targetBike) return null;
                   const comparison = compareMileage(targetBike.currentKm, linkingStravaBike.distanceKm);
+                  const stravaMinutes = linkingStravaBike.movingMinutes;
+                  const timeComparison =
+                    stravaMinutes != null ? compareRideTime(targetBike.currentMinutes, stravaMinutes) : null;
+                  const kmUp = comparison.type === "HIGHER";
+                  const timeUp = timeComparison?.type === "HIGHER";
+                  const deltas = [
+                    kmUp ? `+${formatKm(comparison.deltaKm)}` : null,
+                    timeUp && timeComparison ? `+${formatMinutes(timeComparison.deltaMinutes)}` : null,
+                  ].filter(Boolean).join(", ");
 
                   return (
                     <div className="p-3 rounded-lg bg-white border border-slate-200/80 space-y-2">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">BikeVault ({targetBike.name}):</span>
-                        <span className="font-bold text-slate-800 tabular-nums">{formatKm(targetBike.currentKm)}</span>
+                        <span className="font-bold text-slate-800 tabular-nums">
+                          {formatKm(targetBike.currentKm)}
+                          {stravaMinutes != null && ` • ${formatMinutes(targetBike.currentMinutes)}`}
+                        </span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Strava ({linkingStravaBike.name}):</span>
-                        <span className="font-bold text-slate-800 tabular-nums">{formatKm(linkingStravaBike.distanceKm)}</span>
+                        <span className="font-bold text-slate-800 tabular-nums">
+                          {formatKm(linkingStravaBike.distanceKm)}
+                          {stravaMinutes != null && ` • ${formatMinutes(stravaMinutes)}`}
+                        </span>
                       </div>
 
-                      {comparison.type === "HIGHER" && (
+                      {(kmUp || timeUp) && (
                         <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
                           <span className="text-emerald-700 font-semibold text-xs">
-                            Rozdíl: +{formatKm(comparison.deltaKm)}
+                            Rozdíl: {deltas}
                           </span>
                           <label className="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium text-xs">
                             <input
@@ -421,15 +455,17 @@ export function StravaManageBikesModal({
                               onChange={(e) => setSyncMileageOnLink(e.target.checked)}
                               className="rounded text-navy-600 focus:ring-navy-500"
                             />
-                            <span>Aktualizovat na {formatKm(linkingStravaBike.distanceKm)}</span>
+                            <span>Aktualizovat ze Stravy</span>
                           </label>
                         </div>
                       )}
 
-                      {comparison.type === "LOWER" && (
+                      {(comparison.type === "LOWER" || timeComparison?.type === "LOWER") && (
                         <div className="pt-2 border-t border-slate-100 text-[11px] text-amber-700 flex items-start gap-1.5">
                           <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                          <span>Strava uvádí nižší nájezd. Nájezd v BikeVault zůstane zachován.</span>
+                          <span>
+                            Strava uvádí {comparison.type === "LOWER" && timeComparison?.type === "LOWER" ? "nižší nájezd i méně hodin" : comparison.type === "LOWER" ? "nižší nájezd" : "méně hodin"}. Hodnoty v BikeVault zůstanou zachovány.
+                          </span>
                         </div>
                       )}
                     </div>

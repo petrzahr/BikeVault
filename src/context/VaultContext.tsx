@@ -130,7 +130,7 @@ interface VaultContextType {
   linkBikeToStrava: (
     bikeId: string,
     stravaGearId: string,
-    updateMileage?: { stravaKm: number }
+    updateMileage?: { stravaKm: number; stravaMinutes?: number | null }
   ) => { success: boolean; error?: string };
   unlinkBikeFromStrava: (bikeId: string) => { success: boolean };
   syncBikeFromStrava: (
@@ -835,7 +835,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const linkBikeToStrava = (
     bikeId: string,
     stravaGearId: string,
-    updateMileage?: { stravaKm: number }
+    updateMileage?: { stravaKm: number; stravaMinutes?: number | null }
   ): { success: boolean; error?: string } => {
     const validation = validateLinkConstraint(data.bikes, bikeId, stravaGearId);
     if (!validation.valid) {
@@ -849,20 +849,9 @@ export function VaultProvider({ children }: { children: ReactNode }) {
 
     const now = new Date().toISOString();
 
-    // If initial mileage update was requested and stravaKm is higher
+    // If initial update was requested, raise km / ride time to Strava values (never decreases)
     if (updateMileage && updateMileage.stravaKm !== undefined) {
-      const comparison = compareMileage(bike.currentKm, updateMileage.stravaKm);
-      if (comparison.type === "HIGHER") {
-        updateOdometer(
-          bikeId,
-          comparison.stravaKm,
-          bike.currentMinutes,
-          now,
-          `Propojení se Stravou (+${comparison.deltaKm} km)`,
-          false,
-          "STRAVA"
-        );
-      }
+      syncBikeFromStrava(bikeId, updateMileage.stravaKm, updateMileage.stravaMinutes, "Propojení se Stravou");
     }
 
     // Update bike's stravaGearId
@@ -889,7 +878,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const syncBikeFromStrava = (
     bikeId: string,
     stravaKm: number,
-    stravaMinutes?: number | null
+    stravaMinutes?: number | null,
+    notePrefix = "Synchronizace se Stravou"
   ): { success: boolean; type: "EQUAL" | "HIGHER" | "LOWER"; deltaKm: number; message: string } => {
     const bike = data.bikes.find((b) => b.id === bikeId);
     if (!bike) {
@@ -930,7 +920,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       kmUp ? comparison.stravaKm : Number(bike.currentKm),
       timeUp ? time.stravaMinutes : bike.currentMinutes,
       new Date().toISOString(),
-      `Synchronizace se Stravou (${changes})`,
+      `${notePrefix} (${changes})`,
       false,
       "STRAVA"
     );

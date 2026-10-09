@@ -26,6 +26,8 @@ export interface StravaBikeSummary {
   name: string;
   distanceMeters: number;
   distanceKm: number;
+  /** Moving time summed from activities; null when activity access is missing or failed. */
+  movingMinutes?: number | null;
   brandName?: string;
   modelName?: string;
   frameType?: number;

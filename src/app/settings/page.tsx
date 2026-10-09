@@ -55,7 +55,7 @@ export default function SettingsPage() {
   // Modals
   const [isManageBikesOpen, setIsManageBikesOpen] = useState(false);
   const [isImportBikeModalOpen, setIsImportBikeModalOpen] = useState(false);
-  const [bikeToImportData, setBikeToImportData] = useState<(Partial<Bike> & { initialKm?: number; stravaGearId?: string }) | null>(null);
+  const [bikeToImportData, setBikeToImportData] = useState<(Partial<Bike> & { initialKm?: number; initialHours?: number; stravaGearId?: string }) | null>(null);
   const [isDisconnectConfirmOpen, setIsDisconnectConfirmOpen] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
 
@@ -260,6 +260,8 @@ export default function SettingsPage() {
       manufacturer: stravaBike.brandName || "",
       model: stravaBike.modelName || "",
       initialKm: stravaBike.distanceKm,
+      initialHours:
+        stravaBike.movingMinutes != null ? Math.round((stravaBike.movingMinutes / 60) * 100) / 100 : undefined,
       stravaGearId: stravaBike.id,
     });
     setIsImportBikeModalOpen(true);
