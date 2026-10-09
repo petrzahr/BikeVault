@@ -34,11 +34,7 @@ export function formatKm(km: number | string | null | undefined): string {
 
 export function formatMinutes(totalMinutes: number | null | undefined): string {
   if (!totalMinutes || totalMinutes <= 0) return "0 h";
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  if (minutes === 0) return `${hours} h`;
-  if (hours === 0) return `${minutes} min`;
-  return `${hours} h ${minutes} min`;
+  return `${Math.round(totalMinutes / 60).toLocaleString("cs-CZ")} h`;
 }
 
 export function formatHoursDecimal(totalMinutes: number | null | undefined): string {
