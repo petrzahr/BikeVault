@@ -123,17 +123,19 @@ export function StravaManageBikesModal({
       }
 
       const syncResult = await res.json();
-      const freshDistanceKm = syncResult.results?.[stravaBike.id]?.distanceKm ?? stravaBike.distanceKm;
+      const gearResult = syncResult.results?.[stravaBike.id];
+      const freshDistanceKm = gearResult?.distanceKm ?? stravaBike.distanceKm;
 
       // Now apply BikeVault sync domain rules
-      const domainResult = syncBikeFromStrava(linkedVaultBike.id, freshDistanceKm);
+      const domainResult = syncBikeFromStrava(linkedVaultBike.id, freshDistanceKm, gearResult?.movingMinutes);
+      const timeNote = gearResult?.movingTimeError ? ` ${gearResult.movingTimeError}` : "";
 
-      if (domainResult.type === "EQUAL") {
+      if (domainResult.type === "EQUAL" && !timeNote) {
         setSuccessMsg(`Kolo "${linkedVaultBike.name}": ${domainResult.message}`);
-      } else if (domainResult.type === "LOWER") {
-        setError(domainResult.message);
+      } else if (domainResult.type !== "HIGHER") {
+        setError(domainResult.message + timeNote);
       } else {
-        setSuccessMsg(domainResult.message);
+        setSuccessMsg(domainResult.message + timeNote);
         // Refresh local list distance
         setStravaBikes((prev) =>
           prev.map((b) => (b.id === stravaBike.id ? { ...b, distanceKm: freshDistanceKm } : b))

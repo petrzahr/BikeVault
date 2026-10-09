@@ -216,11 +216,13 @@ export default function SettingsPage() {
       let updatedCount = 0;
       let upToDateCount = 0;
       let warningsCount = 0;
+      let movingTimeError: string | undefined;
 
       for (const bike of linkedBikes) {
         const gearResult = results[bike.stravaGearId as string];
         if (gearResult && !gearResult.error) {
-          const syncRes = syncBikeFromStrava(bike.id, gearResult.distanceKm);
+          movingTimeError = movingTimeError || gearResult.movingTimeError;
+          const syncRes = syncBikeFromStrava(bike.id, gearResult.distanceKm, gearResult.movingMinutes);
           if (syncRes.type === "HIGHER") updatedCount++;
           else if (syncRes.type === "EQUAL") upToDateCount++;
           else if (syncRes.type === "LOWER") warningsCount++;
@@ -231,7 +233,10 @@ export default function SettingsPage() {
 
       let msg = `Synchronizace dokončena: ${updatedCount} kol aktualizováno, ${upToDateCount} kol je aktuálních.`;
       if (warningsCount > 0) {
-        msg += ` U ${warningsCount} kola/kol je stav na Stravě nižší než v BikeVault (nájezd nebyl snížen).`;
+        msg += ` U ${warningsCount} kola/kol je stav na Stravě nižší než v BikeVault (nájezd ani hodiny nebyly sníženy).`;
+      }
+      if (movingTimeError) {
+        msg += ` Hodiny nebyly synchronizovány: ${movingTimeError}`;
       }
 
       setStatusMessage({

@@ -71,6 +71,38 @@ export function compareMileage(bikeVaultKm: number, stravaKm: number): MileageCo
 }
 
 /**
+ * Converts seconds (Strava activity moving_time) to whole minutes.
+ */
+export function secondsToMinutes(seconds: number): number {
+  if (seconds <= 0 || isNaN(seconds)) return 0;
+  return Math.round(seconds / 60);
+}
+
+export interface RideTimeComparisonResult {
+  type: MileageComparisonType;
+  bikeVaultMinutes: number;
+  stravaMinutes: number;
+  deltaMinutes: number;
+}
+
+/**
+ * Compares BikeVault cumulative ride time with Strava cumulative moving time (both in minutes).
+ * Same safety rule as mileage: LOWER must never decrease the BikeVault value automatically.
+ */
+export function compareRideTime(bikeVaultMinutes: number, stravaMinutes: number): RideTimeComparisonResult {
+  const bv = Math.round(Number(bikeVaultMinutes || 0));
+  const st = Math.round(Number(stravaMinutes || 0));
+  const deltaMinutes = st - bv;
+
+  return {
+    type: deltaMinutes === 0 ? "EQUAL" : deltaMinutes > 0 ? "HIGHER" : "LOWER",
+    bikeVaultMinutes: bv,
+    stravaMinutes: st,
+    deltaMinutes,
+  };
+}
+
+/**
  * Validates that a Strava gear ID is not already linked when creating a brand new bike.
  * A missing/empty gear ID is valid (bike is not linked to Strava).
  */

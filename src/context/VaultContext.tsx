@@ -46,7 +46,8 @@ import {
 } from "@/lib/storage/storageService";
 import { useFeedback } from "@/components/common/Feedback";
 import { recordOdometerSnapshot, calculateInstallationUsage } from "@/lib/domain/odometer";
-import { compareMileage, validateLinkConstraint, validateNewBikeGearId } from "@/lib/domain/stravaSync";
+import { compareMileage, compareRideTime, validateLinkConstraint, validateNewBikeGearId } from "@/lib/domain/stravaSync";
+import { formatMinutes } from "@/lib/i18n";
 import {
   BikeComponentsDisposition,
   deleteBikeFromData,
@@ -134,7 +135,8 @@ interface VaultContextType {
   unlinkBikeFromStrava: (bikeId: string) => { success: boolean };
   syncBikeFromStrava: (
     bikeId: string,
-    stravaKm: number
+    stravaKm: number,
+    stravaMinutes?: number | null
   ) => { success: boolean; type: "EQUAL" | "HIGHER" | "LOWER"; deltaKm: number; message: string };
   getBikeByStravaGearId: (stravaGearId: string) => Bike | undefined;
   getServiceScheduleStatuses: () => EvaluatedServiceSchedule[];
@@ -886,7 +888,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
 
   const syncBikeFromStrava = (
     bikeId: string,
-    stravaKm: number
+    stravaKm: number,
+    stravaMinutes?: number | null
   ): { success: boolean; type: "EQUAL" | "HIGHER" | "LOWER"; deltaKm: number; message: string } => {
     const bike = data.bikes.find((b) => b.id === bikeId);
     if (!bike) {
@@ -894,28 +897,40 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     }
 
     const comparison = compareMileage(bike.currentKm, stravaKm);
+    const time =
+      stravaMinutes !== null && stravaMinutes !== undefined
+        ? compareRideTime(bike.currentMinutes, stravaMinutes)
+        : null;
 
-    if (comparison.type === "EQUAL") {
+    // CRITICAL: NEVER automatically decrease mileage or ride time — each value moves only upwards.
+    const kmUp = comparison.type === "HIGHER";
+    const timeUp = time?.type === "HIGHER";
+    const timeLowerNote =
+      time?.type === "LOWER"
+        ? ` Strava uvádí méně hodin než BikeVault (${formatMinutes(time.stravaMinutes)} vs. ${formatMinutes(time.bikeVaultMinutes)}), hodiny nebudou sníženy.`
+        : "";
+
+    if (!kmUp && !timeUp) {
+      if (comparison.type === "LOWER") {
+        return { success: false, type: "LOWER", deltaKm: comparison.deltaKm, message: comparison.message + timeLowerNote };
+      }
+      if (time?.type === "LOWER") {
+        return { success: false, type: "LOWER", deltaKm: 0, message: `Nájezd je aktuální.${timeLowerNote}` };
+      }
       return { success: true, type: "EQUAL", deltaKm: 0, message: "Nájezd je aktuální." };
     }
 
-    if (comparison.type === "LOWER") {
-      // CRITICAL: NEVER automatically decrease mileage
-      return {
-        success: false,
-        type: "LOWER",
-        deltaKm: comparison.deltaKm,
-        message: comparison.message,
-      };
-    }
+    const changes = [
+      kmUp ? `+${comparison.deltaKm} km` : null,
+      timeUp ? `+${formatMinutes(time.deltaMinutes)}` : null,
+    ].filter(Boolean).join(", ");
 
-    // HIGHER: update odometer
     const res = updateOdometer(
       bikeId,
-      comparison.stravaKm,
-      bike.currentMinutes,
+      kmUp ? comparison.stravaKm : Number(bike.currentKm),
+      timeUp ? time.stravaMinutes : bike.currentMinutes,
       new Date().toISOString(),
-      `Synchronizace se Stravou (+${comparison.deltaKm} km)`,
+      `Synchronizace se Stravou (${changes})`,
       false,
       "STRAVA"
     );
@@ -929,11 +944,17 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       };
     }
 
+    const updated = [
+      kmUp ? `nájezd na ${comparison.stravaKm} km` : null,
+      timeUp ? `čas jízdy na ${formatMinutes(time.stravaMinutes)}` : null,
+    ].filter(Boolean).join(" a ");
+    const lowerNote = comparison.type === "LOWER" ? ` ${comparison.message}` : timeLowerNote;
+
     return {
       success: true,
-      type: "HIGHER",
-      deltaKm: comparison.deltaKm,
-      message: `Nájezd úspěšně aktualizován na ${comparison.stravaKm} km (+${comparison.deltaKm} km).`,
+      type: comparison.type === "LOWER" || time?.type === "LOWER" ? "LOWER" : "HIGHER",
+      deltaKm: kmUp ? comparison.deltaKm : 0,
+      message: `Úspěšně aktualizován ${updated} (${changes}).${lowerNote}`,
     };
   };
 

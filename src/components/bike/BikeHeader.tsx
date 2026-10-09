@@ -104,11 +104,10 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         throw new Error(gearResult.error);
       }
 
-      const domainResult = syncBikeFromStrava(bike.id, gearResult.distanceKm);
-      if (domainResult.type === "EQUAL") {
-        setStravaSyncNotice({ type: "success", text: domainResult.message });
-      } else if (domainResult.type === "LOWER") {
-        setStravaSyncNotice({ type: "warning", text: domainResult.message });
+      const domainResult = syncBikeFromStrava(bike.id, gearResult.distanceKm, gearResult.movingMinutes);
+      const timeNote = gearResult.movingTimeError ? ` ${gearResult.movingTimeError}` : "";
+      if (domainResult.type === "LOWER" || timeNote) {
+        setStravaSyncNotice({ type: "warning", text: domainResult.message + timeNote });
       } else {
         setStravaSyncNotice({ type: "success", text: domainResult.message });
       }

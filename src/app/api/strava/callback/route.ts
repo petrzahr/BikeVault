@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    await exchangeCodeForTokens(code, stateValidation.bikeVaultUserId);
+    await exchangeCodeForTokens(code, stateValidation.bikeVaultUserId, url.searchParams.get("scope"));
     return NextResponse.redirect(
       `${baseUrl}/settings?tab=integrations&strava_connected=true&userId=${encodeURIComponent(
         stateValidation.bikeVaultUserId

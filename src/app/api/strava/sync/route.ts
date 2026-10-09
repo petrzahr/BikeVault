@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getGearMileageFromStrava } from "@/lib/strava/stravaApi";
+import { getGearMileageFromStrava, getGearMovingSecondsFromStrava } from "@/lib/strava/stravaApi";
+import { secondsToMinutes } from "@/lib/domain/stravaSync";
 import { updateUserLastSyncTime } from "@/lib/strava/stravaTokenStore";
 import { resolveAuthenticatedUserId, UnauthorizedError } from "@/lib/strava/requestUser";
 
@@ -23,12 +24,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const results: Record<string, { distanceMeters: number; distanceKm: number; error?: string }> = {};
+    const results: Record<
+      string,
+      { distanceMeters: number; distanceKm: number; movingMinutes?: number | null; movingTimeError?: string; error?: string }
+    > = {};
+
+    // Ride time is summed from activities (gear objects carry distance only).
+    // A failure here must not block the mileage sync.
+    let movingSecondsByGear: Record<string, number> | null = null;
+    let movingTimeError: string | undefined;
+    try {
+      movingSecondsByGear = await getGearMovingSecondsFromStrava(userId);
+    } catch (err) {
+      movingTimeError = err instanceof Error ? err.message : "Chyba při zjišťování hodin ze Stravy.";
+    }
 
     for (const id of idsToSync) {
       try {
         const mileage = await getGearMileageFromStrava(id, userId);
-        results[id] = mileage;
+        results[id] = {
+          ...mileage,
+          movingMinutes: movingSecondsByGear ? secondsToMinutes(movingSecondsByGear[id] || 0) : null,
+          movingTimeError,
+        };
       } catch (err) {
         results[id] = {
           distanceMeters: 0,

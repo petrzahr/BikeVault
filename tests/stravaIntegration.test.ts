@@ -18,7 +18,9 @@ import {
 } from "../src/types/vault";
 import { 
   metersToKm, 
-  compareMileage, 
+  compareMileage,
+  compareRideTime,
+  secondsToMinutes,
   validateLinkConstraint,
   validateNewBikeGearId
 } from "../src/lib/domain/stravaSync";
@@ -484,6 +486,17 @@ async function runTests() {
   assert.strictEqual(comparison.deltaKm, -53.0);
   assert.strictEqual(comparison.message.includes("Nájezd nebude automaticky snížen"), true);
   console.log("✅ PASSED Test 15: Lower Strava mileage never automatically decreases BikeVault mileage.");
+}
+
+// 15b. Ride time from Strava moving_time: seconds → minutes, never decreased automatically
+{
+  assert.strictEqual(secondsToMinutes(5430), 91);
+  assert.strictEqual(secondsToMinutes(-5), 0);
+  assert.strictEqual(compareRideTime(600, 690).type, "HIGHER");
+  assert.strictEqual(compareRideTime(600, 690).deltaMinutes, 90);
+  assert.strictEqual(compareRideTime(600, 600).type, "EQUAL");
+  assert.strictEqual(compareRideTime(700, 600).type, "LOWER");
+  console.log("✅ PASSED Test 15b: Ride time comparison converts seconds and never proposes a decrease.");
 }
 
 // 16. Linking does not overwrite BikeVault metadata

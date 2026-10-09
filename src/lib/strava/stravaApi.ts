@@ -5,6 +5,7 @@ import {
   isTokenExpired,
   createOAuthState,
   normalizeUserId,
+  updateUserActivityTotals,
   DEFAULT_USER_ID,
   StravaIntegrationRecord,
 } from "./stravaTokenStore";
@@ -14,7 +15,11 @@ export const STRAVA_API_BASE = "https://www.strava.com/api/v3";
 export const STRAVA_OAUTH_AUTHORIZE = "https://www.strava.com/oauth/authorize";
 export const STRAVA_OAUTH_TOKEN = "https://www.strava.com/api/v3/oauth/token";
 export const STRAVA_OAUTH_DEAUTHORIZE = "https://www.strava.com/oauth/deauthorize";
-export const REQUIRED_SCOPES = "read,profile:read_all";
+export const REQUIRED_SCOPES = "read,profile:read_all,activity:read_all";
+export const ACTIVITY_SCOPE = "activity:read_all";
+const ACTIVITIES_PAGE_SIZE = 200;
+// With `after`, Strava returns activities oldest-first, so a capped run resumes on the next sync.
+const MAX_ACTIVITY_PAGES = 20;
 
 export interface StravaBikeSummary {
   id: string; // Strava gear ID, e.g. "b123456"
@@ -67,7 +72,8 @@ export async function buildAuthorizeUrl(bikeVaultUserId?: string | null): Promis
  */
 export async function exchangeCodeForTokens(
   code: string,
-  bikeVaultUserId?: string | null
+  bikeVaultUserId?: string | null,
+  grantedScopes?: string | null
 ): Promise<StravaIntegrationRecord> {
   const { clientId, clientSecret } = getStravaConfig();
   if (!clientId || !clientSecret) {
@@ -114,6 +120,7 @@ export async function exchangeCodeForTokens(
     stravaAthleteId: athleteId,
     athleteName,
     connectedAt: new Date().toISOString(),
+    grantedScopes: grantedScopes || undefined,
   };
 
   await saveUserStravaAuth(authRecord);
@@ -166,6 +173,8 @@ export async function refreshAccessToken(
     athleteName: current?.athleteName,
     connectedAt: current?.connectedAt || new Date().toISOString(),
     lastSyncAt: current?.lastSyncAt,
+    grantedScopes: current?.grantedScopes,
+    activityTotals: current?.activityTotals,
   };
 
   await saveUserStravaAuth(updatedAuth);
@@ -299,6 +308,70 @@ export async function getGearMileageFromStrava(
     distanceMeters,
     distanceKm: metersToKm(distanceMeters),
   };
+}
+
+/**
+ * Returns true when the stored integration was granted access to activities
+ * (needed to sum ride time — Strava gear objects carry distance only).
+ */
+export function hasActivityScope(grantedScopes?: string | null): boolean {
+  return (grantedScopes || "").split(",").some((s) => s.trim() === ACTIVITY_SCOPE || s.trim() === "activity:read");
+}
+
+/**
+ * Sums moving time (in seconds) per gear ID across the athlete's activities.
+ * The first run walks the full history; later runs only fetch activities started after
+ * the cached `syncedUntil` mark and add them to the cached totals.
+ */
+export async function getGearMovingSecondsFromStrava(
+  bikeVaultUserId?: string | null
+): Promise<Record<string, number>> {
+  const userId = normalizeUserId(bikeVaultUserId);
+  const auth = await getUserStravaAuth(userId);
+  if (!auth || !hasActivityScope(auth.grantedScopes)) {
+    throw new Error("Pro synchronizaci hodin je potřeba Stravu znovu připojit (přístup k aktivitám).");
+  }
+
+  const accessToken = await getValidAccessToken(userId);
+  const movingSecondsByGear: Record<string, number> = { ...(auth.activityTotals?.movingSecondsByGear || {}) };
+  let syncedUntil = auth.activityTotals?.syncedUntil || 0;
+  const after = syncedUntil;
+
+  for (let page = 1; page <= MAX_ACTIVITY_PAGES; page++) {
+    const params = new URLSearchParams({
+      after: String(after),
+      page: String(page),
+      per_page: String(ACTIVITIES_PAGE_SIZE),
+    });
+    const res = await fetch(`${STRAVA_API_BASE}/athlete/activities?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    if (!res.ok) {
+      if (res.status === 429) {
+        throw new Error("Byl překročen limit požadavků Strava API. Zkuste to prosím za chvíli.");
+      }
+      if (res.status === 401 || res.status === 403) {
+        throw new Error("Pro synchronizaci hodin je potřeba Stravu znovu připojit (přístup k aktivitám).");
+      }
+      throw new Error(`Chyba při načítání aktivit ze Stravy (${res.status}).`);
+    }
+
+    const activities = await res.json();
+    if (!Array.isArray(activities) || activities.length === 0) break;
+
+    for (const a of activities) {
+      const startEpoch = Math.floor(new Date(a.start_date).getTime() / 1000);
+      if (!isNaN(startEpoch) && startEpoch > syncedUntil) syncedUntil = startEpoch;
+      if (!a.gear_id) continue;
+      movingSecondsByGear[a.gear_id] = (movingSecondsByGear[a.gear_id] || 0) + Number(a.moving_time || 0);
+    }
+
+    if (activities.length < ACTIVITIES_PAGE_SIZE) break;
+  }
+
+  await updateUserActivityTotals(userId, { syncedUntil, movingSecondsByGear });
+  return movingSecondsByGear;
 }
 
 /**

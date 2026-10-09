@@ -11,6 +11,16 @@ export interface StravaIntegrationRecord {
   expiresAt: number; // Unix timestamp in seconds
   connectedAt: string; // ISO 8601
   lastSyncAt?: string; // ISO 8601
+  /** Scopes granted by the athlete during OAuth (comma separated), e.g. "read,activity:read_all". */
+  grantedScopes?: string;
+  /** Incremental cache of moving time summed over activities, keyed by Strava gear ID. */
+  activityTotals?: StravaActivityTotals;
+}
+
+export interface StravaActivityTotals {
+  /** Unix timestamp (s) of the newest activity start already included in the totals. */
+  syncedUntil: number;
+  movingSecondsByGear: Record<string, number>;
 }
 
 // Backwards compatibility alias
@@ -451,6 +461,21 @@ export async function updateUserLastSyncTime(
   const current = await getUserStravaAuth(userId);
   if (current) {
     current.lastSyncAt = isoDate;
+    await saveUserStravaAuth(current);
+  }
+}
+
+/**
+ * Stores the incremental moving-time cache for a specific user's integration.
+ */
+export async function updateUserActivityTotals(
+  bikeVaultUserId: string | null | undefined,
+  totals: StravaActivityTotals
+): Promise<void> {
+  const userId = normalizeUserId(bikeVaultUserId);
+  const current = await getUserStravaAuth(userId);
+  if (current) {
+    current.activityTotals = totals;
     await saveUserStravaAuth(current);
   }
 }

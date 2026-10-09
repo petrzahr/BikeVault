@@ -366,7 +366,7 @@ async function runTests() {
   assert.strictEqual(data.url.startsWith("https://www.strava.com/oauth/authorize"), true, "Must redirect to Strava OAuth");
   assert.strictEqual(data.url.includes("client_id=mock_client_id_123"), true, "Must include client_id");
   assert.strictEqual(data.url.includes("response_type=code"), true, "Must include response_type=code");
-  assert.strictEqual(data.url.includes("scope=read%2Cprofile%3Aread_all"), true, "Must include required scopes");
+  assert.strictEqual(data.url.includes("scope=read%2Cprofile%3Aread_all%2Cactivity%3Aread_all"), true, "Must include required scopes");
 
   console.log("✅ PASSED Test 15: OAuth callback is bound to the user who initiated authorization.");
 }
