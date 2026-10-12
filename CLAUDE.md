@@ -1,7 +1,7 @@
 # Claude Code Guidelines
 
 ## Token Budget & Context Management
-- Strictly adhere to .claudeignore. Never bypass exclusions.
+- Don't read files excluded by .claudeignore; they only waste context.
 - Check installed packages and scripts via package.json only.
 - Do not run commands that dump massive outputs into stdout (e.g. cat on large files or uncapped grep).
 - Keep diffs atomic and focused on the requested task.

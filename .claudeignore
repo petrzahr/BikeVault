@@ -34,22 +34,6 @@ coverage/
 *.tmp
 *.temp
 
-# Tests & Mocks
-__tests__/
-__mocks__/
-*.test.ts
-*.test.tsx
-*.test.js
-*.test.jsx
-*.spec.ts
-*.spec.tsx
-*.spec.js
-*.spec.jsx
-test/
-tests/
-cypress/
-playwright/
-
 # Media & Static Assets
 public/
 assets/
