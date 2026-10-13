@@ -616,10 +616,47 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   };
 
   const updateBike = (id: string, updates: Partial<Bike>) => {
-    mutateData((prev) => ({
-      ...prev,
-      bikes: prev.bikes.map((b) => (b.id === id ? { ...b, ...updates, id: b.id, updatedAt: new Date().toISOString() } : b)),
-    }));
+    mutateData((prev) => {
+      const now = new Date().toISOString();
+      const bikes = prev.bikes.map((b) => (b.id === id ? { ...b, ...updates, id: b.id, updatedAt: now } : b));
+      const bike = bikes.find((b) => b.id === id);
+      if (!bike || !("purchasePrice" in updates || "purchaseDate" in updates)) {
+        return { ...prev, bikes };
+      }
+
+      // Udržuje transakci nákupu kola v souladu s jeho kupní cenou
+      const price = Number(bike.purchasePrice || 0);
+      const existing = prev.financialTransactions.find(
+        (t) => t.bikeId === id && t.category === "BIKE_PURCHASE"
+      );
+      let financialTransactions = prev.financialTransactions;
+      if (price <= 0) {
+        financialTransactions = financialTransactions.filter((t) => t !== existing);
+      } else if (existing) {
+        financialTransactions = financialTransactions.map((t) =>
+          t === existing
+            ? { ...t, amount: price, transactionDate: bike.purchaseDate || t.transactionDate }
+            : t
+        );
+      } else {
+        financialTransactions = [
+          {
+            id: generateId("fin"),
+            bikeId: id,
+            type: "EXPENSE",
+            category: "BIKE_PURCHASE",
+            amount: price,
+            currency: bike.currency || "CZK",
+            transactionDate: bike.purchaseDate || now.split("T")[0],
+            notes: `Pořízení kola ${bike.manufacturer} ${bike.model}`,
+            createdAt: now,
+          },
+          ...financialTransactions,
+        ];
+      }
+
+      return { ...prev, bikes, financialTransactions };
+    });
   };
 
   // Přeřadí kola z orderedIds do daného pořadí; ostatní kola (jiné záložky) zůstanou na svých pozicích.
