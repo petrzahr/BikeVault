@@ -52,7 +52,8 @@ export function ComponentDetailClient({
     getComponentServiceSchedules, 
     getComponentServiceEvents, 
     getGarageBikes,
-    deleteComponent
+    deleteComponent,
+    deleteInstallation
   } = useVault();
   const { toast, confirm } = useFeedback();
   const router = useRouter();
@@ -93,6 +94,15 @@ export function ComponentDetailClient({
   const handleDeleteComponent = () => {
     deleteComponent(component.id);
     router.push("/components");
+  };
+
+  const handleDeleteInstallation = async (inst: any) => {
+    const message = inst.removedAt
+      ? `Smazat záznam o montáži na kolo ${inst.bike?.name || ""}? Použijte jen pro opravu chybně zadané montáže.`
+      : `Smazat záznam o montáži na kolo ${inst.bike?.name || ""}? Díl se vrátí do skladu. Použijte jen pro opravu chybně zadané montáže, pro běžné sundání dílu použijte Demontovat.`;
+    if (!(await confirm({ message, confirmText: "Smazat montáž", isDestructive: true }))) return;
+    deleteInstallation(inst.id);
+    toast("Záznam o montáži byl smazán.", "success");
   };
 
   const handleOpenCreateSchedule = () => {
@@ -484,6 +494,7 @@ export function ComponentDetailClient({
                     <th className="py-3 px-4">Demontováno</th>
                     <th className="py-3 px-4">Nájezd dílu</th>
                     <th className="py-3 px-4 text-right">Stav</th>
+                    <th className="py-3 px-4 w-10"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -499,6 +510,17 @@ export function ComponentDetailClient({
                         }`}>
                           {inst.removedAt ? "Ukončeno" : "Aktivní osazení"}
                         </span>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteInstallation(inst)}
+                          title="Smazat chybný záznam o montáži"
+                          aria-label="Smazat montáž"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </td>
                     </tr>
                   ))}

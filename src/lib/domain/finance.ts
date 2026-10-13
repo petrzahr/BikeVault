@@ -82,25 +82,25 @@ export function calculateTco(input: TcoInput): TcoMetrics {
 
 /**
  * Transakce patřící kolu: přímo přiřazené (bikeId) a transakce komponent bez kola
- * (typicky nákup komponenty), pokud byla komponenta naposledy namontována na toto kolo.
+ * (typicky nákup komponenty), pokud byla komponenta poprvé namontována na toto kolo.
  */
 export function getBikeTransactions(
   transactions: FinancialTransaction[],
   installations: ComponentInstallation[],
   bikeId: string
 ): FinancialTransaction[] {
-  const lastInstallByComponent = new Map<string, ComponentInstallation>();
+  const firstInstallByComponent = new Map<string, ComponentInstallation>();
   for (const inst of installations) {
-    const prev = lastInstallByComponent.get(inst.componentId);
-    if (!prev || new Date(inst.installedAt).getTime() > new Date(prev.installedAt).getTime()) {
-      lastInstallByComponent.set(inst.componentId, inst);
+    const prev = firstInstallByComponent.get(inst.componentId);
+    if (!prev || new Date(inst.installedAt).getTime() < new Date(prev.installedAt).getTime()) {
+      firstInstallByComponent.set(inst.componentId, inst);
     }
   }
 
   return transactions.filter((tx) => {
     if (tx.bikeId) return tx.bikeId === bikeId;
     if (!tx.componentId) return false;
-    return lastInstallByComponent.get(tx.componentId)?.bikeId === bikeId;
+    return firstInstallByComponent.get(tx.componentId)?.bikeId === bikeId;
   });
 }
 

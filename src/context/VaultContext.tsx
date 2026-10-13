@@ -154,6 +154,7 @@ interface VaultContextType {
     saleDate?: string
   ) => void;
   transferComponent: (installationId: string, targetBikeId: string, targetSlot: string) => void;
+  deleteInstallation: (installationId: string) => void;
   quickReplaceComponent: (bikeId: string, currentInstallationId: string, replacementComponentId: string) => void;
 
   // Service actions
@@ -1146,6 +1147,25 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  // Oprava chybného záznamu: montáž zmizí z historie, jako by nikdy neproběhla.
+  // Aktivní montáž vrátí díl do skladu.
+  const deleteInstallation = (installationId: string) => {
+    mutateData((prev) => {
+      const inst = prev.componentInstallations.find((i) => i.id === installationId);
+      if (!inst) return prev;
+      const now = new Date().toISOString();
+      return {
+        ...prev,
+        componentInstallations: prev.componentInstallations.filter((i) => i.id !== installationId),
+        components: inst.removedAt
+          ? prev.components
+          : prev.components.map((c) =>
+              c.id === inst.componentId ? { ...c, status: "IN_STORAGE" as const, updatedAt: now } : c
+            ),
+      };
+    });
+  };
+
   const transferComponent = (installationId: string, targetBikeId: string, targetSlot: string) => {
     const inst = data.componentInstallations.find((i) => i.id === installationId);
     if (!inst) throw new Error("Instalace nebyla nalezena");
@@ -1723,6 +1743,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     installComponent,
     removeComponent,
     transferComponent,
+    deleteInstallation,
     quickReplaceComponent,
     createServiceSchedule,
     updateServiceSchedule,
