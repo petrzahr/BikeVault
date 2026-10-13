@@ -96,10 +96,10 @@ export function ComponentDetailClient({
     router.push("/components");
   };
 
-  const handleDeleteInstallation = async (inst: any) => {
+  const handleDeleteInstallation = async (inst: any, bike: any) => {
     const message = inst.removedAt
-      ? `Smazat záznam o montáži na kolo ${inst.bike?.name || ""}? Použijte jen pro opravu chybně zadané montáže.`
-      : `Smazat záznam o montáži na kolo ${inst.bike?.name || ""}? Díl se vrátí do skladu. Použijte jen pro opravu chybně zadané montáže, pro běžné sundání dílu použijte Demontovat.`;
+      ? `Smazat záznam o montáži na kolo ${bike?.name || ""}? Použijte jen pro opravu chybně zadané montáže.`
+      : `Smazat záznam o montáži na kolo ${bike?.name || ""}? Díl se vrátí do skladu. Použijte jen pro opravu chybně zadané montáže, pro běžné sundání dílu použijte Demontovat.`;
     if (!(await confirm({ message, confirmText: "Smazat montáž", isDestructive: true }))) return;
     deleteInstallation(inst.id);
     toast("Záznam o montáži byl smazán.", "success");
@@ -498,12 +498,14 @@ export function ComponentDetailClient({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {installationHistory.map((inst) => (
+                  {installationHistory.map(({ installation: inst, bike }) => (
                     <tr key={inst.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3 px-4 font-bold text-slate-900">{inst.bike?.name || "Kolo"}</td>
+                      <td className="py-3 px-4 font-bold text-slate-900">{bike?.name || "Kolo"}</td>
                       <td className="py-3 px-4 text-slate-600">{formatDateCs(inst.installedAt)}</td>
                       <td className="py-3 px-4 text-slate-600">{inst.removedAt ? formatDateCs(inst.removedAt) : "Dosud osazeno"}</td>
-                      <td className="py-3 px-4 text-slate-700 font-semibold tabular-nums">{formatKm(inst.usageKm || 0)}</td>
+                      <td className="py-3 px-4 text-slate-700 font-semibold tabular-nums">
+                        {formatKm(Math.max(0, Number(inst.removedBikeKm ?? bike?.currentKm ?? 0) - Number(inst.installedBikeKm || 0)))}
+                      </td>
                       <td className="py-3 px-4 text-right">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
                           inst.removedAt ? "bg-slate-100 text-slate-600 border-slate-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"
@@ -514,7 +516,7 @@ export function ComponentDetailClient({
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"
-                          onClick={() => handleDeleteInstallation(inst)}
+                          onClick={() => handleDeleteInstallation(inst, bike)}
                           title="Smazat chybný záznam o montáži"
                           aria-label="Smazat montáž"
                           className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
