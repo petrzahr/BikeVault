@@ -4,7 +4,7 @@ import React, { use } from "react";
 import { notFound } from "next/navigation";
 import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
-import { calculateTco } from "@/lib/domain/finance";
+import { calculateTco, getBikeTransactions } from "@/lib/domain/finance";
 import { formatClicksFromClosed } from "@/lib/domain/setup";
 import { 
   formatKm, 
@@ -57,7 +57,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
   }
 
   // Load transactions for this bike
-  const txs = data.financialTransactions.filter((t) => t.bikeId === id);
+  const txs = getBikeTransactions(data.financialTransactions, data.componentInstallations, id);
 
   // Compute TCO
   const tco = calculateTco({

@@ -3,6 +3,8 @@
  * Computes TCO, per-km, per-hour, per-month metrics with zero floating-point corruption.
  */
 
+import type { ComponentInstallation, FinancialTransaction } from "@/types/vault";
+
 export interface TransactionSummaryItem {
   type: "EXPENSE" | "INCOME";
   amount: number;
@@ -76,6 +78,30 @@ export function calculateTco(input: TcoInput): TcoMetrics {
     costPerMonth,
     ownershipMonths,
   };
+}
+
+/**
+ * Transakce patřící kolu: přímo přiřazené (bikeId) a transakce komponent bez kola
+ * (typicky nákup komponenty), pokud byla komponenta naposledy namontována na toto kolo.
+ */
+export function getBikeTransactions(
+  transactions: FinancialTransaction[],
+  installations: ComponentInstallation[],
+  bikeId: string
+): FinancialTransaction[] {
+  const lastInstallByComponent = new Map<string, ComponentInstallation>();
+  for (const inst of installations) {
+    const prev = lastInstallByComponent.get(inst.componentId);
+    if (!prev || new Date(inst.installedAt).getTime() > new Date(prev.installedAt).getTime()) {
+      lastInstallByComponent.set(inst.componentId, inst);
+    }
+  }
+
+  return transactions.filter((tx) => {
+    if (tx.bikeId) return tx.bikeId === bikeId;
+    if (!tx.componentId) return false;
+    return lastInstallByComponent.get(tx.componentId)?.bikeId === bikeId;
+  });
 }
 
 export function calculateUpgradeCost(newComponentPrice: number, oldComponentSalePrice: number): number {

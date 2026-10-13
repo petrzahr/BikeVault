@@ -4,7 +4,7 @@ import React, { use } from "react";
 import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
 import { DeleteButton } from "@/components/common/DeleteButton";
-import { calculateTco } from "@/lib/domain/finance";
+import { calculateTco, getBikeTransactions } from "@/lib/domain/finance";
 import { formatCzk, formatDateCs, t } from "@/lib/i18n";
 import { Coins, TrendingDown, TrendingUp, Calendar, Tag } from "lucide-react";
 import Link from "next/link";
@@ -29,8 +29,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
     );
   }
 
-  const transactions = data.financialTransactions
-    .filter((t) => t.bikeId === id)
+  const transactions = getBikeTransactions(data.financialTransactions, data.componentInstallations, id)
     .sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime());
 
   const tco = calculateTco({

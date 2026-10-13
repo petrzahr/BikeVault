@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
 import { PageHeader } from "@/components/common/PageHeader";
+import { getBikeTransactions } from "@/lib/domain/finance";
 
 export default function StatisticsPage() {
   const { data } = useVault();
@@ -25,7 +26,7 @@ export default function StatisticsPage() {
 
   // Costs per bike
   const bikeCosts = bikes.map((b) => {
-    const bikeTxs = transactions.filter((t) => t.bikeId === b.id);
+    const bikeTxs = getBikeTransactions(transactions, data.componentInstallations, b.id);
     let expenses = 0;
     let incomes = 0;
     for (const t of bikeTxs) {

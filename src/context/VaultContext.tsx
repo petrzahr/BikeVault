@@ -986,10 +986,47 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   };
 
   const updateComponent = (id: string, updates: Partial<Component>) => {
-    mutateData((prev) => ({
-      ...prev,
-      components: prev.components.map((c) => (c.id === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c)),
-    }));
+    mutateData((prev) => {
+      const now = new Date().toISOString();
+      const components = prev.components.map((c) => (c.id === id ? { ...c, ...updates, updatedAt: now } : c));
+      const comp = components.find((c) => c.id === id);
+      if (!comp || !("purchasePrice" in updates || "purchaseDate" in updates)) {
+        return { ...prev, components };
+      }
+
+      // Udržuje transakci nákupu komponenty v souladu s její cenou
+      const price = Number(comp.purchasePrice || 0);
+      const existing = prev.financialTransactions.find(
+        (t) => t.componentId === id && t.category === "COMPONENT_PURCHASE"
+      );
+      let financialTransactions = prev.financialTransactions;
+      if (price <= 0) {
+        financialTransactions = financialTransactions.filter((t) => t !== existing);
+      } else if (existing) {
+        financialTransactions = financialTransactions.map((t) =>
+          t === existing
+            ? { ...t, amount: price, transactionDate: comp.purchaseDate || t.transactionDate }
+            : t
+        );
+      } else {
+        financialTransactions = [
+          {
+            id: generateId("fin"),
+            componentId: id,
+            type: "EXPENSE",
+            category: "COMPONENT_PURCHASE",
+            amount: price,
+            currency: comp.currency || "CZK",
+            transactionDate: comp.purchaseDate || now.split("T")[0],
+            notes: `Nákup komponentu ${comp.manufacturer} ${comp.model}`,
+            createdAt: now,
+          },
+          ...financialTransactions,
+        ];
+      }
+
+      return { ...prev, components, financialTransactions };
+    });
   };
 
   const retireComponent = (id: string) => {

@@ -7,6 +7,7 @@ import { BikeCard } from "@/components/garage/BikeCard";
 import { AddBikeModal } from "@/components/garage/AddBikeModal";
 import { t, formatKm, formatMinutes } from "@/lib/i18n";
 import { buttonClass } from "@/lib/ui";
+import { getBikeTransactions } from "@/lib/domain/finance";
 
 interface GarageClientProps {
   initialBikes?: any[];
@@ -90,7 +91,7 @@ export function GarageClient({
 
   // Build net cost per bike
   const getBikeNetCost = (bikeId: string) => {
-    const bikeTx = allTransactions.filter((tx) => tx.bikeId === bikeId);
+    const bikeTx = getBikeTransactions(allTransactions, data.componentInstallations, bikeId);
     let expenses = 0;
     let incomes = 0;
     for (const tx of bikeTx) {
