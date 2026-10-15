@@ -16,10 +16,10 @@ interface ListRowData {
 
 const compactInput =
   "w-full px-2.5 py-1 bg-white rounded-md border border-slate-200 text-xs text-slate-900 " +
-  "placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-navy-500/30 focus:border-navy-500";
+  "placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-navy-500/30 focus:border-navy-500";
 
 const iconButton =
-  "p-1 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer " +
+  "p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer " +
   "disabled:opacity-30 disabled:pointer-events-none";
 
 /** Textové pole pro přejmenování / přidání; potvrzení Enterem nebo opuštěním pole, Esc ruší. */
@@ -97,15 +97,15 @@ function ListRow({
         <div className="flex items-center shrink-0">
           {canReorder && (
             <>
-              <button type="button" onClick={onMoveUp} disabled={!onMoveUp} title="Posunout nahoru" className={iconButton}>
+              <button type="button" onClick={onMoveUp} disabled={!onMoveUp} title="Posunout nahoru" aria-label="Posunout nahoru" className={iconButton}>
                 <ArrowUp className="w-3.5 h-3.5" />
               </button>
-              <button type="button" onClick={onMoveDown} disabled={!onMoveDown} title="Posunout dolů" className={iconButton}>
+              <button type="button" onClick={onMoveDown} disabled={!onMoveDown} title="Posunout dolů" aria-label="Posunout dolů" className={iconButton}>
                 <ArrowDown className="w-3.5 h-3.5" />
               </button>
             </>
           )}
-          <button type="button" onClick={() => setEditing(true)} title="Přejmenovat" className={iconButton}>
+          <button type="button" onClick={() => setEditing(true)} title="Přejmenovat" aria-label="Přejmenovat položku" className={iconButton}>
             <Pencil className="w-3.5 h-3.5" />
           </button>
           <button
@@ -113,6 +113,7 @@ function ListRow({
             onClick={onDelete}
             disabled={!row.canDelete}
             title={row.canDelete ? "Odebrat" : row.deleteHint}
+            aria-label={row.canDelete ? "Odebrat položku" : (row.deleteHint || "Nelze odebrat")}
             className={iconButton}
           >
             <Trash2 className="w-3.5 h-3.5" />

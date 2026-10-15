@@ -5,7 +5,7 @@ import { AlertTriangle } from "lucide-react";
 import { Modal } from "@/components/common/Modal";
 import { useVault } from "@/context/VaultContext";
 import { BikeComponentsDisposition } from "@/lib/domain/deletion";
-import { buttonClass } from "@/lib/ui";
+import { buttonClass, cn } from "@/lib/ui";
 
 interface DeleteBikeModalProps {
   isOpen: boolean;
@@ -76,18 +76,18 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
         </fieldset>
       )}
 
-      <div className="mt-6 flex justify-end gap-3">
+      <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3">
         <button
           type="button"
           onClick={onClose}
-          className={buttonClass("secondary", "md")}
+          className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
         >
           Zrušit
         </button>
         <button
           type="button"
           onClick={handleConfirm}
-          className={buttonClass("danger", "md")}
+          className={cn(buttonClass("danger", "md"), "w-full sm:w-auto")}
         >
           Smazat kolo
         </button>

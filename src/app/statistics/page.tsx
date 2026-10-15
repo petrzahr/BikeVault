@@ -45,48 +45,51 @@ export default function StatisticsPage() {
       {/* Header */}
       <PageHeader title={t("nav.statistics")} />
 
-      {/* High-level stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">
-              Celkem najeto na všech kolech
-            </span>
-            <div className="p-2 rounded-xl bg-navy-50 text-navy-600">
-              <Compass className="w-4 h-4" />
+      {/* High-level stats - Sjednocený responzivní ribbon */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-3 sm:p-4 grid grid-cols-3 divide-x divide-slate-100 sm:divide-slate-200/60">
+        <div className="px-2 sm:px-4 first:pl-1">
+          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
+            <div className="p-1 rounded-md bg-navy-50 text-navy-600 shrink-0 hidden sm:flex">
+              <Compass className="w-3.5 h-3.5" />
             </div>
+            <span className="text-[11px] sm:text-xs font-semibold truncate">Celkový nájezd</span>
           </div>
-          <span className="text-2xl font-bold text-slate-900 tabular-nums">
+          <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
             {formatKm(totalKm)}
-          </span>
+          </div>
+          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
+            Všechna kola v garáži
+          </p>
         </div>
 
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">
-              Celkový čas v sedle
-            </span>
-            <div className="p-2 rounded-xl bg-navy-50 text-navy-600">
-              <Layers className="w-4 h-4" />
+        <div className="px-2 sm:px-4">
+          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
+            <div className="p-1 rounded-md bg-navy-50 text-navy-600 shrink-0 hidden sm:flex">
+              <Layers className="w-3.5 h-3.5" />
             </div>
+            <span className="text-[11px] sm:text-xs font-semibold truncate">Čas v sedle</span>
           </div>
-          <span className="text-2xl font-bold text-slate-900 tabular-nums">
+          <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
             {formatMinutes(totalMinutes)}
-          </span>
+          </div>
+          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
+            Doba provozu
+          </p>
         </div>
 
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">
-              Celkem evidovaných komponentů
-            </span>
-            <div className="p-2 rounded-xl bg-navy-50 text-navy-600">
-              <ShieldCheck className="w-4 h-4" />
+        <div className="px-2 sm:px-4 last:pr-1">
+          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
+            <div className="p-1 rounded-md bg-navy-50 text-navy-600 shrink-0 hidden sm:flex">
+              <ShieldCheck className="w-3.5 h-3.5" />
             </div>
+            <span className="text-[11px] sm:text-xs font-semibold truncate">Komponenty</span>
           </div>
-          <span className="text-2xl font-bold text-slate-900 tabular-nums">
+          <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
             {components.length}
-          </span>
+          </div>
+          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
+            Evidované díly
+          </p>
         </div>
       </div>
 

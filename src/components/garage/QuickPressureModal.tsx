@@ -5,7 +5,7 @@ import { useVault } from "@/context/VaultContext";
 import { Check, Plus, Minus, Loader2 } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { Modal } from "@/components/common/Modal";
-import { buttonClass } from "@/lib/ui";
+import { buttonClass, cn } from "@/lib/ui";
 
 interface QuickPressureModalProps {
   isOpen: boolean;
@@ -132,11 +132,11 @@ export function QuickPressureModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
           <button
             type="button"
             onClick={onClose}
-            className={buttonClass("secondary", "md")}
+            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
           >
             {t("common.cancel")}
           </button>
@@ -144,7 +144,7 @@ export function QuickPressureModal({
             type="button"
             onClick={handleSave}
             disabled={loading}
-            className={buttonClass("primary", "md")}
+            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{loading ? t("common.loading") : t("common.save")}</span>

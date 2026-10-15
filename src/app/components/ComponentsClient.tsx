@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import {
   Plus,
   Search,
-  Pencil
+  Pencil,
+  Check
 } from "lucide-react";
 import { t, formatCzk } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
@@ -96,7 +97,7 @@ export function ComponentsClient({
 
         {/* Panel filtrů a vyhledávání */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div role="tablist" aria-label="Stav komponentů" className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scrollbar-none">
+          <div role="tablist" aria-label="Stav komponentů" className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scroll-smooth scrollbar-none">
             {[
               { id: "ALL", label: t("common.all") },
               { id: "INSTALLED", label: t("components.installed") },
@@ -148,29 +149,29 @@ export function ComponentsClient({
 
             let statusBadge = {
               text: t("components.inStorage"),
-              style: "bg-ink-900 text-white border-ink-900",
+              style: "bg-slate-100 text-slate-700 border-slate-200/80",
             };
             if (comp.status === "INSTALLED") {
               statusBadge = {
                 text: activeBike ? `Na kole: ${activeBike.name}` : t("components.installed"),
-                style: "bg-ink-900 text-white border-ink-900",
+                style: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
               };
             } else if (comp.status === "SOLD") {
               statusBadge = {
                 text: t("components.sold"),
-                style: "bg-ink-900 text-white border-ink-900",
+                style: "bg-purple-50 text-purple-800 border-purple-200/80",
               };
             } else if (comp.status === "DISCARDED") {
               statusBadge = {
                 text: t("components.discarded"),
-                style: "bg-ink-900 text-white border-ink-900",
+                style: "bg-slate-100 text-slate-500 border-slate-200/80",
               };
             }
 
             return (
               <div
                 key={comp.id}
-                className="bg-white border border-slate-200/80 hover:border-slate-300 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition-all"
+                className="bg-white border border-slate-200/80 hover:border-slate-300 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition-all group"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
@@ -191,9 +192,11 @@ export function ComponentsClient({
                     )}
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 tracking-tight">
-                    {comp.manufacturer} {comp.model}
-                  </h3>
+                  <Link href={`/components/${comp.id}`} className="block group/title">
+                    <h3 className="text-base font-bold text-slate-900 tracking-tight group-hover/title:text-navy-600 transition-colors">
+                      {comp.manufacturer} {comp.model}
+                    </h3>
+                  </Link>
                   {comp.variant && (
                     <p className="text-xs text-slate-500 mt-0.5">
                       {comp.variant}
@@ -249,13 +252,14 @@ export function ComponentsClient({
       >
         <form onSubmit={handleInstall} className="space-y-4">
           <div>
-            <label className={labelClass}>Kolo</label>
+            <label htmlFor="components-install-bike" className={labelClass}>Kolo</label>
             {activeBikes.length === 0 ? (
               <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 text-xs text-slate-600">
                 Nemáte žádné aktivní kolo.
               </div>
             ) : (
               <select
+                id="components-install-bike"
                 required
                 value={installBikeId}
                 onChange={(e) => setInstallBikeId(e.target.value)}
@@ -272,8 +276,9 @@ export function ComponentsClient({
           </div>
 
           <div>
-            <label className={labelClass}>Slot na kole</label>
+            <label htmlFor="components-install-slot" className={labelClass}>Slot na kole</label>
             <select
+              id="components-install-slot"
               required
               value={installSlot}
               onChange={(e) => setInstallSlot(e.target.value)}
@@ -292,7 +297,7 @@ export function ComponentsClient({
             <button
               type="button"
               onClick={() => setComponentToInstall(null)}
-              className={buttonClass("ghost", "md")}
+              className={buttonClass("secondary", "md")}
             >
               {t("common.cancel")}
             </button>
@@ -301,7 +306,8 @@ export function ComponentsClient({
               disabled={!installBikeId || !installSlot}
               className={buttonClass("primary", "md")}
             >
-              Namontovat
+              <Check className="w-4 h-4" />
+              <span>Namontovat</span>
             </button>
           </div>
         </form>

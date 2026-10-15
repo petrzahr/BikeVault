@@ -646,18 +646,18 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
         </div>
 
         {/* Tlačítka akcí */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
           <button
             type="button"
             onClick={onClose}
-            className={buttonClass("secondary", "md")}
+            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className={buttonClass("primary", "md")}
+            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>

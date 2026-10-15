@@ -186,7 +186,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
     <div className="space-y-6 animate-fade-in">
       <BikeHeader bike={bike} />
 
-      <div className="bg-white rounded-2xl p-5 min-h-[5rem] border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             Časová osa a životopis kola
@@ -211,7 +211,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${item.badgeColor}`}>
                     {item.badge}
                   </span>
-                  <span className="text-xs tabular-nums text-slate-400">
+                  <span className="text-xs tabular-nums text-slate-500 font-medium">
                     {formatDateCs(item.date)}
                   </span>
                 </div>
@@ -228,6 +228,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
                       onClick={item.onDelete}
                       className={buttonClass("ghost", "sm", "hover:text-rose-600 hover:bg-rose-50")}
                       title="Smazat záznam"
+                      aria-label="Smazat záznam"
                     >
                       <Trash2 className="w-3 h-3" />
                       <span>Smazat</span>

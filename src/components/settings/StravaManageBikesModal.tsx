@@ -20,7 +20,7 @@ import { compareMileage, compareRideTime } from "@/lib/domain/stravaSync";
 import { formatKm, formatMinutes } from "@/lib/i18n";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { getValidAccessToken } from "@/lib/google/googleAuth";
-import { buttonClass, labelClass } from "@/lib/ui";
+import { buttonClass, labelClass, inputClass, cn } from "@/lib/ui";
 
 interface StravaManageBikesModalProps {
   isOpen: boolean;
@@ -249,7 +249,7 @@ export function StravaManageBikesModal({
           </div>
         ) : (
           /* Strava Bikes List */
-          <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+          <div className="space-y-3 max-h-[60vh] overflow-y-auto overscroll-contain pr-1">
             {stravaBikes.map((sb) => {
               const linkedBike = getLinkedVaultBike(sb.id);
               const isLinked = Boolean(linkedBike);
@@ -394,13 +394,14 @@ export function StravaManageBikesModal({
             ) : (
               <div className="space-y-3 text-xs">
                 <div>
-                  <label className={labelClass}>
+                  <label htmlFor="strava-vault-bike-select" className={labelClass}>
                     Vyberte kolo z BikeVault:
                   </label>
                   <select
+                    id="strava-vault-bike-select"
                     value={selectedVaultBikeId}
                     onChange={(e) => setSelectedVaultBikeId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white rounded-lg border border-slate-200/80 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-navy-500"
+                    className={inputClass}
                   >
                     <option value="">—</option>
                     {availableVaultBikes.map((b) => (
@@ -472,16 +473,16 @@ export function StravaManageBikesModal({
                   );
                 })()}
 
-                <div className="flex items-center justify-end gap-2 pt-2">
+                <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2 pt-2">
                   <button
                     onClick={() => setLinkingStravaBike(null)}
-                    className={buttonClass("ghost", "sm")}
+                    className={cn(buttonClass("secondary", "sm"), "w-full sm:w-auto")}
                   >
                     Zrušit
                   </button>
                   <button
                     onClick={handleConfirmLink}
-                    className={buttonClass("primary", "md")}
+                    className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
                   >
                     Potvrdit propojení
                   </button>
@@ -501,16 +502,16 @@ export function StravaManageBikesModal({
               Opravdu chcete odpojit kolo <strong className="text-slate-900">{unlinkingBike.name}</strong> od Stravy?
               Všechna data v BikeVault, včetně dosavadních záznamů tachometru a komponentů, zůstanou beze změny zachována.
             </p>
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setUnlinkingBike(null)}
-                className={buttonClass("ghost", "sm")}
+                className={cn(buttonClass("secondary", "sm"), "w-full sm:w-auto")}
               >
                 Zrušit
               </button>
               <button
                 onClick={handleConfirmUnlink}
-                className={buttonClass("danger", "sm")}
+                className={cn(buttonClass("danger", "sm"), "w-full sm:w-auto")}
               >
                 Potvrdit odpojení
               </button>

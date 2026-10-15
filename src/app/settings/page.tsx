@@ -19,7 +19,8 @@ import {
   Bike as BikeIcon, 
   CheckCircle2,
   SlidersHorizontal,
-  Trash2
+  Trash2,
+  X
 } from "lucide-react";
 import { t, formatDateCs } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
@@ -272,7 +273,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 animate-fade-in max-w-4xl">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-5 min-h-[5rem] border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">
             {t("nav.settings")}
@@ -280,8 +281,10 @@ export default function SettingsPage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center p-1 bg-slate-100/80 rounded-xl border border-slate-200/60 self-start sm:self-auto">
+        <div role="tablist" aria-label="Sekce nastavení" className="flex items-center p-1 bg-slate-100/80 rounded-xl border border-slate-200/60 self-start sm:self-auto">
           <button
+            role="tab"
+            aria-selected={activeTab === "preferences"}
             onClick={() => setActiveTab("preferences")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
               activeTab === "preferences"
@@ -292,6 +295,8 @@ export default function SettingsPage() {
             Předvolby
           </button>
           <button
+            role="tab"
+            aria-selected={activeTab === "integrations"}
             onClick={() => setActiveTab("integrations")}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === "integrations"
@@ -310,23 +315,25 @@ export default function SettingsPage() {
       {/* Status Notifications */}
       {statusMessage && (
         <div
-          className={`p-4 rounded-xl text-xs flex items-start gap-3 border shadow-sm animate-fade-in ${
+          className={`p-3.5 rounded-xl text-xs flex items-center gap-3 border shadow-sm animate-fade-in ${
             statusMessage.type === "success"
               ? "bg-emerald-50/80 border-emerald-200/80 text-emerald-800"
               : "bg-rose-50/80 border-rose-200/80 text-rose-800"
           }`}
         >
           {statusMessage.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           ) : (
-            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
           )}
-          <div className="flex-1">{statusMessage.text}</div>
+          <div className="flex-1 font-medium">{statusMessage.text}</div>
           <button
+            type="button"
             onClick={() => setStatusMessage(null)}
-            className="text-slate-400 hover:text-slate-600 text-xs font-semibold cursor-pointer"
+            aria-label="Zavřít upozornění"
+            className="p-1 min-w-[36px] min-h-[36px] flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-black/5 rounded-lg transition-colors cursor-pointer"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
@@ -633,8 +640,13 @@ export default function SettingsPage() {
       {/* Disconnect Confirmation Dialog */}
       {isDisconnectConfirmOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl border border-slate-200/80 space-y-4 animate-scale-in">
-            <h3 className="text-base font-bold text-slate-900">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="disconnect-modal-title"
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl border border-slate-200/80 space-y-4 animate-scale-in"
+          >
+            <h3 id="disconnect-modal-title" className="text-base font-bold text-slate-900">
               Odpojit účet Strava?
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">

@@ -403,7 +403,7 @@ export function ServiceScheduleModal({
                   onChange={(e) => setIntervalHours(e.target.value)}
                   className={cn(inputClass, "pl-3 pr-8 tabular-nums")}
                 />
-                <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none">h</span>
+                <span className="absolute right-3 top-2.5 text-xs text-slate-500 font-semibold pointer-events-none">h</span>
               </div>
             </div>
 
@@ -421,7 +421,7 @@ export function ServiceScheduleModal({
                   onChange={(e) => setIntervalKm(e.target.value)}
                   className={cn(inputClass, "pl-3 pr-10 tabular-nums")}
                 />
-                <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none">km</span>
+                <span className="absolute right-3 top-2.5 text-xs text-slate-500 font-semibold pointer-events-none">km</span>
               </div>
             </div>
 
@@ -439,7 +439,7 @@ export function ServiceScheduleModal({
                   onChange={(e) => setIntervalMonths(e.target.value)}
                   className={cn(inputClass, "pl-3 pr-12 tabular-nums")}
                 />
-                <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none">měs.</span>
+                <span className="absolute right-3 top-2.5 text-xs text-slate-500 font-semibold pointer-events-none">měs.</span>
               </div>
             </div>
           </div>
@@ -585,7 +585,7 @@ export function ServiceScheduleModal({
               Náhled výpočtu intervalu
             </span>
 
-            <div className="grid grid-cols-3 gap-3 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 text-xs">
               <div>
                 <span className="text-slate-500 block text-[11px]">Od servisu odjeto</span>
                 <span className="tabular-nums font-bold text-slate-900">
@@ -629,18 +629,18 @@ export function ServiceScheduleModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
           <button
             type="button"
             onClick={onClose}
-            className={buttonClass("secondary", "md")}
+            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
           >
             Zrušit
           </button>
           <button
             type="submit"
             disabled={loading}
-            className={buttonClass("primary", "md")}
+            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{isEditing ? "Uložit změny plánu" : "Vytvořit servisní plán"}</span>

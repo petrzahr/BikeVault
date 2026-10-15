@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { formatKm, formatMinutes, formatDateCs, formatCzk } from "@/lib/i18n";
 import { Modal } from "@/components/common/Modal";
-import { buttonClass } from "@/lib/ui";
+import { buttonClass, cn } from "@/lib/ui";
 
 interface QuickReplaceModalProps {
   isOpen: boolean;
@@ -74,7 +74,7 @@ export function QuickReplaceModal({
               <span className="px-2 py-0.5 rounded-md bg-white text-slate-700 border border-slate-200 text-[10px] font-semibold uppercase">
                 {currentCat?.nameCs || "Komponent"}
               </span>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-slate-500">
                 na kole od {formatDateCs(installedItem.installation.installedAt)}
               </span>
             </div>
@@ -122,13 +122,13 @@ export function QuickReplaceModal({
               <div className="flex flex-wrap items-center gap-3 mt-2 text-[11px] text-slate-500 tabular-nums">
                 {matchingCandidates[0].component.serialNumber && (
                   <span className="flex items-center gap-1">
-                    <Hash className="w-3 h-3 text-slate-400" />
+                    <Hash className="w-3 h-3 text-slate-500" />
                     SN: {matchingCandidates[0].component.serialNumber}
                   </span>
                 )}
                 {matchingCandidates[0].component.purchaseDate && (
                   <span className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3 text-slate-400" />
+                    <Calendar className="w-3 h-3 text-slate-500" />
                     Koupeno: {formatDateCs(matchingCandidates[0].component.purchaseDate)}
                   </span>
                 )}
@@ -164,7 +164,7 @@ export function QuickReplaceModal({
                         <span className="font-bold text-slate-900">
                           {c.manufacturer} {c.model}
                         </span>
-                        <span className="text-[10px] text-slate-400 tabular-nums">
+                        <span className="text-[10px] text-slate-500 tabular-nums">
                           ID: {c.id.slice(0, 6)}
                         </span>
                       </div>
@@ -185,7 +185,7 @@ export function QuickReplaceModal({
         </div>
 
         {/* 3. Stav kola při výměně */}
-        <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
           <div>
             <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
               Tachometr kola
@@ -219,18 +219,18 @@ export function QuickReplaceModal({
         </div>
 
         {/* Footer buttons */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
           <button
             type="button"
             onClick={onClose}
-            className={buttonClass("secondary", "md")}
+            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
           >
             Zrušit
           </button>
           <button
             type="submit"
             disabled={loading || !selectedReplacementId}
-            className={buttonClass("primary", "md")}
+            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
           >
             {loading ? (
               <>

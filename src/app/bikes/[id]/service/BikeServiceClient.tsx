@@ -17,7 +17,9 @@ import {
   Trash2,
   Layers,
   Bike as BikeIcon,
-  HelpCircle
+  HelpCircle,
+  Loader2,
+  Check
 } from "lucide-react";
 import { t, formatDateCs, formatKm, formatMinutes, formatCzk } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
@@ -172,7 +174,7 @@ export function BikeServiceClient({
       <BikeHeader bike={bike} />
 
       {/* Header Bar */}
-      <div className="bg-white rounded-2xl p-5 min-h-[5rem] border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             Servisní plány a servisní kniha
@@ -459,10 +461,11 @@ export function BikeServiceClient({
       >
         <form onSubmit={handleRecordService} className="space-y-4">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-service-name" className={labelClass}>
               Název servisního úkonu *
             </label>
             <input
+              id="bike-service-name"
               type="text"
               required
               value={serviceName}
@@ -473,10 +476,11 @@ export function BikeServiceClient({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>
+              <label htmlFor="bike-service-date" className={labelClass}>
                 Datum provedení
               </label>
               <input
+                id="bike-service-date"
                 type="date"
                 required
                 value={serviceDate}
@@ -486,10 +490,11 @@ export function BikeServiceClient({
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label htmlFor="bike-service-execution" className={labelClass}>
                 Provedení
               </label>
               <select
+                id="bike-service-execution"
                 value={executionType}
                 onChange={(e) => {
                   const val = e.target.value as any;
@@ -506,10 +511,11 @@ export function BikeServiceClient({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-service-provider" className={labelClass}>
               Mechanik / Název servisu
             </label>
             <input
+              id="bike-service-provider"
               type="text"
               value={serviceProvider}
               onChange={(e) => setServiceProvider(e.target.value)}
@@ -517,12 +523,13 @@ export function BikeServiceClient({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>
+              <label htmlFor="bike-service-parts-cost" className={labelClass}>
                 Cena dílů (Kč)
               </label>
               <input
+                id="bike-service-parts-cost"
                 type="number"
                 min="0"
                 value={partsCost}
@@ -532,10 +539,11 @@ export function BikeServiceClient({
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label htmlFor="bike-service-labor-cost" className={labelClass}>
                 Cena práce (Kč)
               </label>
               <input
+                id="bike-service-labor-cost"
                 type="number"
                 min="0"
                 value={laborCost}
@@ -547,10 +555,11 @@ export function BikeServiceClient({
 
           {/* Týká se komponenty */}
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-service-component" className={labelClass}>
               Vztahuje se ke komponentě (volitelné)
             </label>
             <select
+              id="bike-service-component"
               value={selectedComponentId}
               onChange={(e) => setSelectedComponentId(e.target.value)}
               className={inputClass}
@@ -565,10 +574,11 @@ export function BikeServiceClient({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-service-schedule" className={labelClass}>
               Propojený servisní plán (resetuje interval)
             </label>
             <select
+              id="bike-service-schedule"
               value={selectedScheduleId}
               onChange={(e) => setSelectedScheduleId(e.target.value)}
               className={inputClass}
@@ -583,10 +593,11 @@ export function BikeServiceClient({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-service-notes" className={labelClass}>
               Poznámka k servisu
             </label>
             <textarea
+              id="bike-service-notes"
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -594,20 +605,30 @@ export function BikeServiceClient({
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setIsRecordModalOpen(false)}
-              className={buttonClass("ghost", "md")}
+              className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className={buttonClass("primary", "md")}
+              className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
             >
-              {loading ? t("common.loading") : "Zapsat servis"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>{t("common.loading")}</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4" />
+                  <span>Zapsat servis</span>
+                </>
+              )}
             </button>
           </div>
         </form>

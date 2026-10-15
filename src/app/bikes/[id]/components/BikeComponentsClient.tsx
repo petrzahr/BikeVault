@@ -12,7 +12,8 @@ import {
   Check, 
   X,
   ExternalLink,
-  Ban
+  Ban,
+  Loader2
 } from "lucide-react";
 import { t, formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
 import { calculateInstallationUsage } from "@/lib/domain/odometer";
@@ -169,7 +170,7 @@ export function BikeComponentsClient({
       <BikeHeader bike={bike} />
 
       {/* Header Bar */}
-      <div className="bg-white rounded-2xl p-5 min-h-[5rem] border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             {t("components.installed")} ({installedComponents.length})
@@ -212,21 +213,23 @@ export function BikeComponentsClient({
             return (
               <div
                 key={item.installation.id}
-                className="bg-white border border-slate-200/80 hover:border-slate-300 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm transition-all"
+                className="bg-white border border-slate-200/80 hover:border-slate-300 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm transition-all group"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold border border-slate-200/80 tracking-wide">
                       {item.category.nameCs}
                     </span>
-                    <span className="text-[11px] text-slate-400 tabular-nums">
+                    <span className="text-[11px] text-slate-500 font-medium tabular-nums">
                       namontováno {formatDateCs(item.installation.installedAt)}
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 tracking-tight">
-                    {item.component.manufacturer} {item.component.model}
-                  </h3>
+                  <Link href={`/components/${item.component.id}`} className="block group/title">
+                    <h3 className="text-base font-bold text-slate-900 tracking-tight group-hover/title:text-navy-600 transition-colors">
+                      {item.component.manufacturer} {item.component.model}
+                    </h3>
+                  </Link>
                   {item.component.variant && (
                     <p className="text-xs text-slate-500 mt-0.5">
                       {item.component.variant}
@@ -392,12 +395,13 @@ export function BikeComponentsClient({
           </div>
 
           {disposition === "SOLD" && (
-            <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50/80 rounded-xl border border-slate-200/60 animate-fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50/80 rounded-xl border border-slate-200/60 animate-fade-in">
               <div>
-                <label className={labelClass}>
+                <label htmlFor="sale-price" className={labelClass}>
                   Prodejní cena (Kč)
                 </label>
                 <input
+                  id="sale-price"
                   type="number"
                   required
                   value={salePrice}
@@ -406,10 +410,11 @@ export function BikeComponentsClient({
                 />
               </div>
               <div>
-                <label className={labelClass}>
+                <label htmlFor="sale-date" className={labelClass}>
                   Datum prodeje
                 </label>
                 <input
+                  id="sale-date"
                   type="date"
                   required
                   value={saleDate}
@@ -420,20 +425,30 @@ export function BikeComponentsClient({
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setIsRemoveOpen(false)}
-              className={buttonClass("ghost", "md")}
+              className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className={buttonClass("primary", "md")}
+              className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
             >
-              {loading ? t("common.loading") : "Potvrdit demontáž"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>{t("common.loading")}</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4" />
+                  <span>Potvrdit demontáž</span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -449,7 +464,7 @@ export function BikeComponentsClient({
       >
         <form onSubmit={handleTransfer} className="space-y-4">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="transfer-target-bike" className={labelClass}>
               Cílové kolo
             </label>
             {otherBikes.length === 0 ? (
@@ -458,6 +473,7 @@ export function BikeComponentsClient({
               </p>
             ) : (
               <select
+                id="transfer-target-bike"
                 required
                 value={targetBikeId}
                 onChange={(e) => setTargetBikeId(e.target.value)}
@@ -474,10 +490,11 @@ export function BikeComponentsClient({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="transfer-target-slot" className={labelClass}>
               Pozice / Slot na cílovém kole
             </label>
             <select
+              id="transfer-target-slot"
               value={targetSlot}
               onChange={(e) => setTargetSlot(e.target.value)}
               className={inputClass}
@@ -491,20 +508,30 @@ export function BikeComponentsClient({
             </select>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setIsTransferOpen(false)}
-              className={buttonClass("ghost", "md")}
+              className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading || otherBikes.length === 0 || !targetBikeId}
-              className={buttonClass("primary", "md")}
+              className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
             >
-              {loading ? t("common.loading") : "Provést přesun"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>{t("common.loading")}</span>
+                </>
+              ) : (
+                <>
+                  <ArrowRightLeft className="w-4 h-4" />
+                  <span>Provést přesun</span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -520,7 +547,7 @@ export function BikeComponentsClient({
       >
         <form onSubmit={handleInstall} className="space-y-4">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="install-comp-select" className={labelClass}>
               Vyberte díl ze skladu
             </label>
             {storageComponents.length === 0 ? (
@@ -535,6 +562,7 @@ export function BikeComponentsClient({
               </div>
             ) : (
               <select
+                id="install-comp-select"
                 required
                 value={selectedStorageCompId}
                 onChange={(e) => setSelectedStorageCompId(e.target.value)}
@@ -554,10 +582,11 @@ export function BikeComponentsClient({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="install-slot-select" className={labelClass}>
               Slot na kole
             </label>
             <select
+              id="install-slot-select"
               value={installSlot}
               onChange={(e) => setInstallSlot(e.target.value)}
               required
@@ -572,20 +601,30 @@ export function BikeComponentsClient({
             </select>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setIsInstallOpen(false)}
-              className={buttonClass("ghost", "md")}
+              className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading || storageComponents.length === 0 || !selectedStorageCompId}
-              className={buttonClass("primary", "md")}
+              className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
             >
-              {loading ? t("common.loading") : "Namontovat"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>{t("common.loading")}</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" />
+                  <span>Namontovat</span>
+                </>
+              )}
             </button>
           </div>
         </form>

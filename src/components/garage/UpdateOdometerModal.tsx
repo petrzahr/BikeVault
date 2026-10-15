@@ -137,7 +137,7 @@ export function UpdateOdometerModal({
               onChange={(e) => setTotalKmStr(e.target.value)}
               className={cn(inputClass, "pr-12 tabular-nums")}
             />
-            <span className="absolute right-3.5 top-2 text-slate-400 text-xs font-medium pointer-events-none">km</span>
+            <span className="absolute right-3.5 top-2 text-slate-500 text-xs font-semibold pointer-events-none">km</span>
           </div>
         </div>
 
@@ -157,7 +157,7 @@ export function UpdateOdometerModal({
                 onChange={(e) => setHoursStr(e.target.value)}
                 className={cn(inputClass, "pr-8 tabular-nums")}
               />
-              <span className="absolute right-3.5 top-2 text-slate-400 text-xs font-medium pointer-events-none">h</span>
+              <span className="absolute right-3.5 top-2 text-slate-500 text-xs font-semibold pointer-events-none">h</span>
             </div>
             <div className="relative">
               <input
@@ -170,7 +170,7 @@ export function UpdateOdometerModal({
                 onChange={(e) => setMinutesStr(e.target.value)}
                 className={cn(inputClass, "pr-11 tabular-nums")}
               />
-              <span className="absolute right-3.5 top-2 text-slate-400 text-xs font-medium pointer-events-none">min</span>
+              <span className="absolute right-3.5 top-2 text-slate-500 text-xs font-semibold pointer-events-none">min</span>
             </div>
           </div>
         </div>
@@ -227,18 +227,18 @@ export function UpdateOdometerModal({
         )}
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
           <button
             type="button"
             onClick={onClose}
-            className={buttonClass("secondary", "md")}
+            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading || (isDecreasing && !allowCorrection)}
-            className={buttonClass("primary", "md")}
+            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{loading ? t("common.loading") : t("odometer.saveStatus")}</span>

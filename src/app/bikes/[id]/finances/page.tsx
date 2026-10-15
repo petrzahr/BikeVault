@@ -44,56 +44,51 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
     <div className="space-y-6 animate-fade-in">
       <BikeHeader bike={bike} />
 
-      <div className="bg-white rounded-2xl p-5 min-h-[5rem] border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-            {t("finances.title")} kola
-          </h2>
-        </div>
-      </div>
-
-      {/* TCO Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">
-              {t("finances.totalExpenses")}
-            </span>
-            <div className="p-2 rounded-xl bg-rose-50 text-rose-600">
-              <TrendingDown className="w-4 h-4" />
+      {/* TCO Summary Cards - Sjednocený responzivní ribbon */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-3 sm:p-4 grid grid-cols-3 divide-x divide-slate-100 sm:divide-slate-200/60">
+        <div className="px-2 sm:px-4 first:pl-1">
+          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
+            <div className="p-1 rounded-md bg-rose-50 text-rose-600 shrink-0 hidden sm:flex">
+              <TrendingDown className="w-3.5 h-3.5" />
             </div>
+            <span className="text-[11px] sm:text-xs font-semibold truncate">{t("finances.totalExpenses")}</span>
           </div>
-          <span className="text-2xl font-bold text-slate-900 tabular-nums">
+          <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
             {formatCzk(tco.totalExpenses)}
-          </span>
+          </div>
+          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
+            Pořízení a servis
+          </p>
         </div>
 
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">
-              {t("finances.totalIncomes")}
-            </span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
-              <TrendingUp className="w-4 h-4" />
+        <div className="px-2 sm:px-4">
+          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
+            <div className="p-1 rounded-md bg-emerald-50 text-emerald-600 shrink-0 hidden sm:flex">
+              <TrendingUp className="w-3.5 h-3.5" />
             </div>
+            <span className="text-[11px] sm:text-xs font-semibold truncate">{t("finances.totalIncomes")}</span>
           </div>
-          <span className="text-2xl font-bold text-emerald-600 tabular-nums">
+          <div className="text-base sm:text-xl font-bold text-emerald-600 truncate tabular-nums">
             {formatCzk(tco.totalIncomes)}
-          </span>
+          </div>
+          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
+            Prodej dílů
+          </p>
         </div>
 
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-navy-700">
-              {t("finances.netCost")}
-            </span>
-            <div className="p-2 rounded-xl bg-navy-50 text-navy-600">
-              <Coins className="w-4 h-4" />
+        <div className="px-2 sm:px-4 last:pr-1">
+          <div className="flex items-center gap-1.5 text-navy-700 mb-1">
+            <div className="p-1 rounded-md bg-navy-50 text-navy-600 shrink-0 hidden sm:flex">
+              <Coins className="w-3.5 h-3.5" />
             </div>
+            <span className="text-[11px] sm:text-xs font-bold truncate">{t("finances.netCost")}</span>
           </div>
-          <span className="text-2xl font-bold text-navy-700 tabular-nums">
+          <div className="text-base sm:text-xl font-bold text-navy-700 truncate tabular-nums">
             {formatCzk(tco.netOwnershipCost)}
-          </span>
+          </div>
+          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
+            Čistá bilance kola
+          </p>
         </div>
       </div>
 
@@ -129,8 +124,8 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-slate-400 tabular-nums">
-                      <Calendar className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-2 text-xs text-slate-500 tabular-nums">
+                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       <span>{formatDateCs(tx.transactionDate)}</span>
                     </div>
                   </div>

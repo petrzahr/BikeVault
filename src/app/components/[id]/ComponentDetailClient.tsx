@@ -219,7 +219,7 @@ export function ComponentDetailClient({
                   <span>Osazeno na: {activeBike.name}</span>
                 </span>
               ) : (
-                <span className="px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700 border border-navy-200 text-xs font-semibold">
+                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold">
                   Skladem
                 </span>
               )}
@@ -270,20 +270,20 @@ export function ComponentDetailClient({
         {/* Specs Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
           <div>
-            <span className="text-slate-400 uppercase tracking-wider text-[10px] font-semibold block">Nákupní cena</span>
+            <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Nákupní cena</span>
             <span className="text-base font-bold text-slate-900 tabular-nums">{formatCzk(component.purchasePrice)}</span>
           </div>
           <div>
-            <span className="text-slate-400 uppercase tracking-wider text-[10px] font-semibold block">Datum nákupu</span>
+            <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Datum nákupu</span>
             <span className="text-sm font-semibold text-slate-900">{component.purchaseDate ? formatDateCs(component.purchaseDate) : "-"}</span>
           </div>
           <div>
-            <span className="text-slate-400 uppercase tracking-wider text-[10px] font-semibold block">Sériové číslo</span>
+            <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Sériové číslo</span>
             <span className="text-sm text-slate-700 tabular-nums">{component.serialNumber || "Neuvedeno"}</span>
           </div>
           {specFields.map((field) => (
             <div key={field.key}>
-              <span className="text-slate-400 uppercase tracking-wider text-[10px] font-semibold block">{field.label}</span>
+              <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">{field.label}</span>
               <span className="text-sm font-medium text-slate-700">{getSpecValue(field.key) || "-"}</span>
             </div>
           ))}

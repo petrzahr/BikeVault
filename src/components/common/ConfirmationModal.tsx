@@ -35,13 +35,14 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <p>{message}</p>
         </div>
       </div>
-      <div className="mt-6 flex justify-end gap-3">
-        <Button variant="secondary" size="md" onClick={onClose}>
+      <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3">
+        <Button variant="secondary" size="md" className="w-full sm:w-auto" onClick={onClose}>
           {cancelText}
         </Button>
         <Button
           variant={isDestructive ? 'danger' : 'primary'}
           size="md"
+          className="w-full sm:w-auto"
           onClick={() => {
             onConfirm();
             onClose();

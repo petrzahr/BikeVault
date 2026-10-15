@@ -242,11 +242,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
 
         {/* Vlastní pole specifikace podle zvolené kategorie */}
         {specFields.length > 0 && (
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-2">
+          <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80 space-y-2.5">
             <span className="text-xs font-semibold text-slate-700 block">
               Specifikace: {selectedCategory?.nameCs}
             </span>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {specFields.map((field) => (
                 <input
                   key={field.key}
@@ -255,7 +255,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
                   onChange={(e) => setSpecValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
                   placeholder={field.label}
                   aria-label={field.label}
-                  className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
+                  className={inputClass}
                 />
               ))}
             </div>
@@ -275,18 +275,18 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
           <button
             type="button"
             onClick={() => onClose()}
-            className={buttonClass("secondary", "md")}
+            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className={buttonClass("primary", "md")}
+            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{loading ? t("common.loading") : isEditing ? "Uložit změny" : "Založit díl do skladu"}</span>

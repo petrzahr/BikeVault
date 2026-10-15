@@ -194,7 +194,7 @@ export function SetupClient({
       <BikeHeader bike={bike} />
 
       {/* Title & Actions Bar */}
-      <div className="bg-white rounded-2xl p-5 min-h-[5rem] border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">
             {t("setup.title")}
@@ -287,7 +287,7 @@ export function SetupClient({
                       onChange={(e) => setForkLsc(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
                   </div>
                 </div>
 
@@ -303,7 +303,7 @@ export function SetupClient({
                       onChange={(e) => setForkHsc(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
                   </div>
                 </div>
 
@@ -319,7 +319,7 @@ export function SetupClient({
                       onChange={(e) => setForkLsr(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
                   </div>
                 </div>
 
@@ -335,7 +335,7 @@ export function SetupClient({
                       onChange={(e) => setForkHsr(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
                   </div>
                 </div>
 
@@ -430,7 +430,7 @@ export function SetupClient({
                       onChange={(e) => setShockLsc(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
                   </div>
                 </div>
 
@@ -446,7 +446,7 @@ export function SetupClient({
                       onChange={(e) => setShockHsc(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
                   </div>
                 </div>
 
@@ -462,7 +462,7 @@ export function SetupClient({
                       onChange={(e) => setShockLsr(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
                   </div>
                 </div>
 
@@ -478,7 +478,7 @@ export function SetupClient({
                       onChange={(e) => setShockHsr(e.target.value)}
                       className={cn(inputClass, "tabular-nums")}
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-400">od zavřeno</span>
+                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
                   </div>
                 </div>
 
@@ -727,10 +727,11 @@ export function SetupClient({
       >
         <form onSubmit={handleSaveSnapshot} className="space-y-4">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="snapshot-name" className={labelClass}>
               {t("setup.profileName")} *
             </label>
             <input
+              id="snapshot-name"
               type="text"
               required
               value={snapshotName}
@@ -740,10 +741,11 @@ export function SetupClient({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="snapshot-notes" className={labelClass}>
               Poznámka k profilu
             </label>
             <textarea
+              id="snapshot-notes"
               rows={2}
               value={snapshotNote}
               onChange={(e) => setSnapshotNote(e.target.value)}
@@ -751,19 +753,20 @@ export function SetupClient({
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setIsSnapshotModalOpen(false)}
-              className={buttonClass("ghost", "md")}
+              className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
-              className={buttonClass("primary", "md")}
+              className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
             >
-              Uložit profil nastavení
+              <Check className="w-4 h-4" />
+              <span>Uložit profil nastavení</span>
             </button>
           </div>
         </form>

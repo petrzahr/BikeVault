@@ -18,7 +18,9 @@ import {
   Sparkles,
   Search,
   Filter,
-  Sliders
+  Sliders,
+  Loader2,
+  Check
 } from "lucide-react";
 import { t, formatDateCs, formatCzk, formatKm, formatMinutes } from "@/lib/i18n";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
@@ -197,7 +199,7 @@ export function MaintenanceClient({
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Action Bar Header */}
-      <div className="bg-white rounded-2xl p-5 min-h-[5rem] border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-slate-900 tracking-tight">
@@ -596,10 +598,11 @@ export function MaintenanceClient({
       >
         <form onSubmit={handleSaveServiceEvent} className="space-y-4">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="service-bike" className={labelClass}>
               Kolo *
             </label>
             <select
+              id="service-bike"
               required
               value={selectedBikeId}
               onChange={(e) => setSelectedBikeId(e.target.value)}
@@ -615,10 +618,11 @@ export function MaintenanceClient({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="service-name" className={labelClass}>
               Název servisního úkonu *
             </label>
             <input
+              id="service-name"
               type="text"
               required
               value={serviceName}
@@ -629,10 +633,11 @@ export function MaintenanceClient({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>
+              <label htmlFor="service-date" className={labelClass}>
                 Datum provedení
               </label>
               <input
+                id="service-date"
                 type="date"
                 required
                 value={serviceDate}
@@ -642,10 +647,11 @@ export function MaintenanceClient({
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label htmlFor="service-execution" className={labelClass}>
                 Provedení
               </label>
               <select
+                id="service-execution"
                 value={executionType}
                 onChange={(e) => {
                   const val = e.target.value as any;
@@ -662,10 +668,11 @@ export function MaintenanceClient({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="service-provider" className={labelClass}>
               Mechanik / Název servisu
             </label>
             <input
+              id="service-provider"
               type="text"
               value={serviceProvider}
               onChange={(e) => setServiceProvider(e.target.value)}
@@ -673,12 +680,13 @@ export function MaintenanceClient({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>
+              <label htmlFor="service-parts-cost" className={labelClass}>
                 Cena dílů (Kč)
               </label>
               <input
+                id="service-parts-cost"
                 type="number"
                 min="0"
                 value={partsCost}
@@ -688,10 +696,11 @@ export function MaintenanceClient({
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label htmlFor="service-labor-cost" className={labelClass}>
                 Cena práce (Kč)
               </label>
               <input
+                id="service-labor-cost"
                 type="number"
                 min="0"
                 value={laborCost}
@@ -702,10 +711,11 @@ export function MaintenanceClient({
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="service-notes" className={labelClass}>
               Poznámka k servisu
             </label>
             <textarea
+              id="service-notes"
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -713,20 +723,30 @@ export function MaintenanceClient({
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setIsRecordModalOpen(false)}
-              className={buttonClass("secondary", "md")}
+              className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
             >
               Zrušit
             </button>
             <button
               type="submit"
               disabled={recordLoading}
-              className={buttonClass("primary", "md")}
+              className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
             >
-              {recordLoading ? "Ukládám..." : "Zapsat servis"}
+              {recordLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Ukládám...</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4" />
+                  <span>Zapsat servis</span>
+                </>
+              )}
             </button>
           </div>
         </form>
