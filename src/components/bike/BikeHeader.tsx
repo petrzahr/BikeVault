@@ -291,7 +291,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
         {/* Sub-Navigation Tabs */}
         <div className="pt-2">
-          <div className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto max-w-2xl">
+          <div className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto max-w-full sm:max-w-2xl scroll-smooth">
             {tabs.map((tab) => {
               const active = isTabActive(tab.href);
               return (

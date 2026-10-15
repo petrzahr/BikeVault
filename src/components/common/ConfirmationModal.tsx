@@ -20,10 +20,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onConfirm,
   title,
   message,
-  confirmText = 'Potvrdit',
+  confirmText,
   cancelText = 'Zrušit',
   isDestructive = false,
 }) => {
+  const resolvedConfirmText = confirmText || (isDestructive ? 'Smazat' : 'Potvrdit');
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth="max-w-md">
       <div className="flex items-start gap-3">
@@ -46,7 +47,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             onClose();
           }}
         >
-          {confirmText}
+          {resolvedConfirmText}
         </Button>
       </div>
     </Modal>

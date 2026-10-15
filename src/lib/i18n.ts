@@ -62,3 +62,12 @@ export function formatDateCs(date: Date | string | null | undefined): string {
     year: "numeric"
   });
 }
+
+/**
+ * Czech pluralization helper (1 kolo, 2-4 kola, 5+ kol)
+ */
+export function pluralizeCs(count: number, one: string, few: string, many: string): string {
+  if (count === 1) return one;
+  if (count >= 2 && count <= 4) return few;
+  return many;
+}

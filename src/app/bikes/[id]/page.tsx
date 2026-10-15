@@ -144,108 +144,122 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
         </div>
       )}
 
-      {/* METRICS & TCO GRID */}
+      {/* METRICS & TCO SECTION */}
       <div className="space-y-3">
-        <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-          Přehled provozu a nákladů (TCO)
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            Přehled provozu a nákladů (TCO)
+          </h2>
+          <Link
+            href={`/bikes/${bike.id}/finances`}
+            className="text-xs font-semibold text-navy-600 hover:text-navy-700 flex items-center gap-1"
+          >
+            <span>Detail financí</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Hlavní provozní ukazatele */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Nájezd */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs text-slate-500 block mb-1 font-medium">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-xs hover:border-slate-300 transition-all">
+            <span className="text-[11px] text-slate-500 block mb-1 font-semibold uppercase tracking-wide">
               {t("bike.metrics.currentMileage")}
             </span>
-            <span className="text-lg font-bold text-slate-900 tabular-nums">
+            <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
               {formatKm(bike.currentKm)}
             </span>
           </div>
 
           {/* Hodiny */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs text-slate-500 block mb-1 font-medium">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-xs hover:border-slate-300 transition-all">
+            <span className="text-[11px] text-slate-500 block mb-1 font-semibold uppercase tracking-wide">
               {t("bike.metrics.ridingHours")}
             </span>
-            <span className="text-lg font-bold text-slate-900 tabular-nums">
+            <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
               {formatMinutes(bike.currentMinutes)}
             </span>
           </div>
 
           {/* Doba vlastnictví */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs text-slate-500 block mb-1 font-medium">
+          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-xs hover:border-slate-300 transition-all">
+            <span className="text-[11px] text-slate-500 block mb-1 font-semibold uppercase tracking-wide">
               {t("bike.metrics.ownershipDuration")}
             </span>
-            <span className="text-lg font-bold text-slate-900 tabular-nums">
+            <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
               {tco.ownershipMonths} {tco.ownershipMonths === 1 ? "měsíc" : tco.ownershipMonths >= 2 && tco.ownershipMonths <= 4 ? "měsíce" : "měsíců"}
             </span>
           </div>
 
-          {/* Čisté náklady */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all col-span-2 sm:col-span-1">
-            <span className="text-xs text-navy-600 font-semibold block mb-1">
+          {/* Čisté náklady TCO */}
+          <div className="bg-navy-50/70 border border-navy-200/80 p-4 rounded-2xl shadow-xs">
+            <span className="text-[11px] text-navy-700 block mb-1 font-bold uppercase tracking-wide">
               {t("bike.metrics.netCost")}
             </span>
-            <span className="text-lg font-bold text-navy-700 tabular-nums">
+            <span className="text-xl sm:text-2xl font-extrabold text-navy-800 tabular-nums">
               {formatCzk(tco.netOwnershipCost)}
             </span>
           </div>
+        </div>
 
+        {/* Jednotkové náklady a bilance */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 bg-white border border-slate-200/80 p-3 sm:p-4 rounded-2xl shadow-xs">
           {/* Cena za km */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs text-slate-500 block mb-1 font-medium">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
+            <span className="text-[10px] text-slate-500 block font-medium truncate">
               {t("bike.metrics.costPerKm")}
             </span>
-            <span className="text-lg font-bold text-slate-800 tabular-nums">
-              {tco.costPerKm !== null ? `${tco.costPerKm.toFixed(2)} Kč/km` : "-"}
+            <span className="text-sm sm:text-base font-bold text-slate-800 tabular-nums">
+              {tco.costPerKm !== null ? `${tco.costPerKm.toFixed(2)} Kč` : "-"}
             </span>
           </div>
 
           {/* Cena za hodinu */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs text-slate-500 block mb-1 font-medium">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
+            <span className="text-[10px] text-slate-500 block font-medium truncate">
               {t("bike.metrics.costPerHour")}
             </span>
-            <span className="text-lg font-bold text-slate-800 tabular-nums">
-              {tco.costPerHour !== null ? `${formatCzk(tco.costPerHour)}/h` : "-"}
+            <span className="text-sm sm:text-base font-bold text-slate-800 tabular-nums">
+              {tco.costPerHour !== null ? `${formatCzk(tco.costPerHour)}` : "-"}
             </span>
           </div>
 
           {/* Cena za měsíc */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs text-slate-500 block mb-1 font-medium">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
+            <span className="text-[10px] text-slate-500 block font-medium truncate">
               {t("bike.metrics.costPerMonth")}
             </span>
-            <span className="text-lg font-bold text-slate-800 tabular-nums">
-              {formatCzk(tco.costPerMonth)}/měsíc
+            <span className="text-sm sm:text-base font-bold text-slate-800 tabular-nums">
+              {formatCzk(tco.costPerMonth)}
             </span>
           </div>
 
           {/* Kupní cena */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs text-slate-500 block mb-1 font-medium">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
+            <span className="text-[10px] text-slate-500 block font-medium truncate">
               {t("bike.metrics.purchasePrice")}
             </span>
-            <span className="text-lg font-bold text-slate-700 tabular-nums">
+            <span className="text-sm sm:text-base font-bold text-slate-700 tabular-nums">
               {formatCzk(bike.purchasePrice)}
             </span>
           </div>
 
           {/* Celkové výdaje */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs text-slate-500 block mb-1 font-medium">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
+            <span className="text-[10px] text-slate-500 block font-medium truncate">
               {t("bike.metrics.totalExpenses")}
             </span>
-            <span className="text-lg font-bold text-slate-700 tabular-nums">
+            <span className="text-sm sm:text-base font-bold text-rose-700 tabular-nums">
               {formatCzk(tco.totalExpenses)}
             </span>
           </div>
 
           {/* Celkové příjmy */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-sm hover:border-slate-300 transition-all">
-            <span className="text-xs text-slate-500 block mb-1 font-medium">
+          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
+            <span className="text-[10px] text-slate-500 block font-medium truncate">
               {t("bike.metrics.totalIncomes")}
             </span>
-            <span className="text-lg font-bold text-emerald-600 tabular-nums">
+            <span className="text-sm sm:text-base font-bold text-emerald-700 tabular-nums">
               {formatCzk(tco.totalIncomes)}
             </span>
           </div>

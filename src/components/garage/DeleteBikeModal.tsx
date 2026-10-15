@@ -35,8 +35,8 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
         </div>
         <div className="text-sm text-slate-600 space-y-2">
           <p>
-            Opravdu chcete smazat kolo <strong className="text-slate-900">{bikeName}</strong>? Smaže se i jeho
-            historie tachometru, servisní záznamy a plány, nastavení, snímky nastavení a finanční záznamy kola.
+            Opravdu chcete smazat kolo <strong className="text-slate-900">{bikeName}</strong>? Smaže se kompletní
+            historie nájezdu, servisní záznamy a plány, profily nastavení a finanční transakce kola.
             Tuto akci nelze vrátit zpět.
           </p>
         </div>
@@ -45,7 +45,7 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
       {installedCount > 0 && (
         <fieldset className="mt-5 space-y-2">
           <legend className="text-xs font-semibold text-slate-700 mb-2">
-            Co udělat s komponenty na kole ({installedCount})?
+            Co udělat s namontovanými komponentami ({installedCount})?
           </legend>
           <label className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer has-[:checked]:border-navy-500 has-[:checked]:bg-navy-50/50">
             <input
@@ -69,8 +69,8 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
               className="mt-0.5"
             />
             <span className="text-xs text-slate-600">
-              <span className="block font-semibold text-slate-800">Smazat i komponenty</span>
-              Komponenty se odstraní včetně jejich servisních plánů a nákupních záznamů.
+              <span className="block font-semibold text-slate-800">Trvale smazat i komponenty</span>
+              Komponenty se trvale odstraní včetně jejich servisních plánů a nákupních záznamů.
             </span>
           </label>
         </fieldset>

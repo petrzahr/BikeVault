@@ -40,7 +40,7 @@ export function buttonClass(
 
 export const inputClass =
   'w-full px-3.5 py-2 text-sm text-ink-900 bg-white border border-ink-200 rounded-xl shadow-sm transition-colors ' +
-  'placeholder:text-ink-300 focus:outline-none focus:ring-2 focus:ring-navy-500/30 focus:border-navy-500 ' +
+  'placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-navy-500/30 focus:border-navy-500 ' +
   'disabled:bg-ink-50 disabled:text-ink-400 disabled:cursor-not-allowed';
 
 export const labelClass = 'block text-xs font-semibold text-ink-700 mb-1';

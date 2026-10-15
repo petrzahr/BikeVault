@@ -325,7 +325,7 @@ export function MaintenanceClient({
                   </span>
                   <button
                     onClick={() => handleOpenRecordModal(item)}
-                    className={buttonClass("warning", "md")}
+                    className={buttonClass("warning", "sm")}
                   >
                     Zapsat servis →
                   </button>

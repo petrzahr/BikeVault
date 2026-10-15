@@ -50,16 +50,16 @@ export function UpdateOdometerModal({
     setError(null);
 
     if (isNaN(newKm) || newKm < 0) {
-      setError("Zadejte platný kumulativní stav kilometrů.");
+      setError("Zadejte celkový nájezd v kilometrech (nezáporné číslo).");
       return;
     }
     if (newMinutes < 0) {
-      setError("Zadejte platný počet hodin.");
+      setError("Zadejte platný počet hodin a minut (nezáporné číslo).");
       return;
     }
 
     if (isDecreasing && !allowCorrection) {
-      setError("Nový stav je nižší než předchozí. Pro uložení potvrďte, že jde o korekci.");
+      setError("Nový nájezd je nižší než předchozí zaznamenaný stav. Pro uložení zaškrtněte potvrzení korekce.");
       return;
     }
 
@@ -74,13 +74,13 @@ export function UpdateOdometerModal({
         allowCorrection
       );
       if (!res.success) {
-        setError(res.error || "Došlo k chybě při ukládání stavu počítadla.");
+        setError(res.error || "Došlo k chybě při ukládání nájezdu.");
         return;
       }
       onClose();
       if (onSuccess) onSuccess();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Došlo k chybě při ukládání stavu počítadla.";
+      const msg = err instanceof Error ? err.message : "Došlo k chybě při ukládání nájezdu.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -209,10 +209,10 @@ export function UpdateOdometerModal({
           <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2 text-xs text-amber-900">
             <div className="flex items-center gap-2 font-bold text-amber-800">
               <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
-              <span>Upozornění: Zadaný stav je nižší než předchozí!</span>
+              <span>Zadaný stav je nižší než předchozí ({formatKm(currentKm)})</span>
             </div>
             <p className="text-[11px] leading-relaxed text-amber-800">
-              Pokud opravujete předchozí překlep nebo došlo k výměně tachometru, zaškrtněte potvrzení korekce.
+              Pokud opravujete předchozí překlep nebo nastavujete nový cyklopočítač, potvrďte korekci níže.
             </p>
             <label className="flex items-center gap-2 pt-1 font-semibold text-slate-800 cursor-pointer select-none">
               <input
@@ -221,7 +221,7 @@ export function UpdateOdometerModal({
                 onChange={(e) => setAllowCorrection(e.target.checked)}
                 className="w-4 h-4 text-navy-600 rounded border-slate-300 focus:ring-navy-500"
               />
-              <span>Potvrdit korekci stavu počítadla</span>
+              <span>Potvrdit snížení celkového nájezdu (korekce)</span>
             </label>
           </div>
         )}

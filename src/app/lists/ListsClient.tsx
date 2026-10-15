@@ -50,6 +50,7 @@ function InlineInput({
       autoFocus
       value={value}
       placeholder={placeholder}
+      aria-label={placeholder || "Hodnota položky"}
       onChange={(e) => setValue(e.target.value)}
       onBlur={() => finish(true)}
       onKeyDown={(e) => {

@@ -10,6 +10,19 @@
 
 body {
   font-family: var(--font-sans), 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  caret-color: #1c3a63;
+}
+
+::selection {
+  background-color: #dbe3ee;
+  color: #0a1626;
+}
+
+:focus-visible {
+  outline: 2px solid #1c3a63;
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

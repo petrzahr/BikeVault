@@ -83,7 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="p-5 space-y-6">
+        <div className="flex-1 min-h-0 overflow-y-auto p-5 space-y-5">
           {/* Logo a záhlaví */}
           <div className="flex items-center justify-between">
             <Link href="/garage" onClick={onCloseMobile} className="flex items-center gap-2.5">
@@ -111,26 +111,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Rychlé tlačítka přidání */}
           <div className="space-y-2">
-          <button
-            onClick={() => {
-              onOpenAddBikeModal();
-              onCloseMobile();
-            }}
-            className={buttonClass("primary", "md", "w-full")}
-          >
-            <Plus className="w-4 h-4" />
-            <span>Přidat nové kolo</span>
-          </button>
-          <button
-            onClick={() => {
-              onOpenAddComponentModal();
-              onCloseMobile();
-            }}
-            className={buttonClass("outlineDark", "md", "w-full")}
-          >
-            <Plus className="w-4 h-4" />
-            <span>Přidat komponent</span>
-          </button>
+            <button
+              onClick={() => {
+                onOpenAddBikeModal();
+                onCloseMobile();
+              }}
+              className={buttonClass("primary", "md", "w-full")}
+            >
+              <Plus className="w-4 h-4" />
+              <span>Přidat nové kolo</span>
+            </button>
+            <button
+              onClick={() => {
+                onOpenAddComponentModal();
+                onCloseMobile();
+              }}
+              className={buttonClass("outlineDark", "md", "w-full")}
+            >
+              <Plus className="w-4 h-4" />
+              <span>Přidat komponentu</span>
+            </button>
           </div>
 
           {/* Navigační položky */}
@@ -160,7 +160,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Spodní rychlý přehled stavu k dnešnímu dni */}
-        <div className="p-3.5 m-3 bg-ink-800 border border-white/10 rounded-2xl space-y-2 text-xs">
+        <div className="p-3.5 mx-4 mb-4 shrink-0 bg-ink-800 border border-white/10 rounded-2xl space-y-2 text-xs">
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Aktivní kola">Kola v garáži</span>

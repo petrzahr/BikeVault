@@ -7,11 +7,14 @@ import {
   Wrench, 
   Coins, 
   ArrowUpRight, 
-  SlidersHorizontal, 
+  Gauge, 
   Settings, 
   AlertTriangle, 
   CheckCircle2, 
-  Clock 
+  Clock,
+  ArrowLeft,
+  ArrowRight,
+  GripVertical
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
 import { UpdateOdometerModal } from "./UpdateOdometerModal";
@@ -43,12 +46,28 @@ interface BikeCardProps {
     text: string;
   };
   netCost?: number;
+  isReordering?: boolean;
+  onMoveEarlier?: () => void;
+  onMoveLater?: () => void;
+  canMoveEarlier?: boolean;
+  canMoveLater?: boolean;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 const iconButtonClass =
   "p-2 min-w-[44px] min-h-[44px] bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200 transition-colors flex items-center justify-center cursor-pointer";
 
-export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
+export function BikeCard({
+  bike,
+  serviceSummary,
+  netCost,
+  isReordering = false,
+  onMoveEarlier,
+  onMoveLater,
+  canMoveEarlier = false,
+  canMoveLater = false,
+  dragHandleProps,
+}: BikeCardProps) {
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const { data } = useVault();
@@ -60,29 +79,29 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
   const getServiceBadgeStyle = () => {
     if (!serviceSummary) {
       return {
-        bg: "bg-ink-900 text-white border-ink-900",
-        dot: "text-ink-300",
+        bg: "bg-slate-100 text-slate-700 border-slate-200/80",
+        dot: "text-slate-500",
         icon: CheckCircle2,
       };
     }
     switch (serviceSummary.urgency) {
       case "OVERDUE":
         return {
-          bg: "bg-ink-900 text-white border-ink-900",
-          dot: "text-danger brightness-150",
+          bg: "bg-rose-50 text-rose-700 border-rose-200/80",
+          dot: "text-rose-600",
           icon: AlertTriangle,
         };
       case "DUE_SOON":
         return {
-          bg: "bg-ink-900 text-white border-ink-900",
-          dot: "text-warning brightness-150",
+          bg: "bg-amber-50 text-amber-800 border-amber-200/80",
+          dot: "text-amber-600",
           icon: Clock,
         };
       case "OK":
       default:
         return {
-          bg: "bg-ink-900 text-white border-ink-900",
-          dot: "text-success brightness-150",
+          bg: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
+          dot: "text-emerald-600",
           icon: CheckCircle2,
         };
     }
@@ -94,6 +113,45 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
   return (
     <>
       <div className="bg-white border border-slate-200/80 hover:border-slate-300 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
+        {/* Reorder Toolbar (when reorder mode is active) */}
+        {isReordering && (
+          <div className="bg-slate-900 text-white px-3 py-2 flex items-center justify-between border-b border-slate-800">
+            <button
+              type="button"
+              onClick={onMoveEarlier}
+              disabled={!canMoveEarlier}
+              title="Posunout dopředu"
+              aria-label="Posunout kolo dopředu v pořadí"
+              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-white flex items-center justify-center min-w-[36px] min-h-[36px] transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+
+            <div
+              {...dragHandleProps}
+              role="button"
+              tabIndex={0}
+              title="Přetažením myší změníte pořadí"
+              aria-label="Přetažením myší změníte pořadí kola"
+              className="flex items-center gap-1.5 text-xs text-slate-200 font-medium px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700/80 cursor-grab active:cursor-grabbing select-none"
+            >
+              <GripVertical className="w-4 h-4 text-slate-400" />
+              <span>Přetáhnout</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={onMoveLater}
+              disabled={!canMoveLater}
+              title="Posunout dozadu"
+              aria-label="Posunout kolo dozadu v pořadí"
+              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-white flex items-center justify-center min-w-[36px] min-h-[36px] transition-colors cursor-pointer"
+            >
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {/* Photo or Header visual */}
         <div className="relative h-44 bg-slate-100 overflow-hidden border-b border-slate-100">
           {resolvedImage && !imageFailed ? (
@@ -103,7 +161,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
               loading="lazy"
               decoding="async"
               onError={() => setImageFailed(true)}
-              className="w-full h-full object-contain object-center group-hover:scale-102 transition-transform duration-300"
+              className="w-full h-full object-contain object-center group-hover:scale-[1.02] transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-slate-50">
@@ -112,7 +170,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
           )}
 
           {/* Top badges */}
-          <div className="absolute top-3 left-9 right-3 flex items-center justify-between pointer-events-none">
+          <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
             {kindLabel ? (<span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-xl text-[11px] font-semibold tracking-wide text-slate-700 border border-slate-200/80 shadow-sm">{kindLabel}</span>) : <span />}
 
             {bike.modelYear && (
@@ -127,9 +185,11 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
           {/* Header titles */}
           <div>
-            <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-snug group-hover:text-navy-600 transition-colors">
-              {bike.name}
-            </h3>
+            <Link href={`/bikes/${bike.id}`} className="block group/title">
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-snug group-hover/title:text-navy-600 transition-colors">
+                {bike.name}
+              </h3>
+            </Link>
             <p className="text-xs text-slate-500 font-medium mt-0.5">
               {bike.manufacturer} {bike.model}
             </p>
@@ -182,31 +242,33 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
           </div>
 
           {/* Quick Actions & Detail Link */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-            <button
-              onClick={() => setIsOdometerModalOpen(true)}
-              title={t("garage.card.quickUpdate")}
-              aria-label={t("garage.card.quickUpdate")}
-              className={iconButtonClass}
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-            </button>
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setIsOdometerModalOpen(true)}
+                title="Zapsat stav tachometru"
+                aria-label="Zapsat stav tachometru"
+                className={iconButtonClass}
+              >
+                <Gauge className="w-4 h-4 text-slate-700" />
+              </button>
 
-            <Link
-              href={`/bikes/${bike.id}/setup`}
-              title="Nastavení kola"
-              aria-label="Nastavení kola"
-              className={iconButtonClass}
-            >
-              <Settings className="w-4 h-4" />
-            </Link>
+              <Link
+                href={`/bikes/${bike.id}/setup`}
+                title="Nastavení kola"
+                aria-label="Nastavení kola"
+                className={iconButtonClass}
+              >
+                <Settings className="w-4 h-4" />
+              </Link>
+            </div>
 
             <Link
               href={`/bikes/${bike.id}`}
               title={t("garage.card.details")}
-              aria-label={t("garage.card.details")}
-              className="p-2 min-w-[44px] min-h-[44px] bg-navy-600 hover:bg-navy-700 text-white rounded-xl border border-navy-600 transition-colors flex items-center justify-center cursor-pointer"
+              className="px-3.5 py-2 min-h-[44px] bg-navy-600 hover:bg-navy-700 text-white text-xs font-semibold rounded-xl border border-navy-600 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
+              <span>{t("garage.card.details")}</span>
               <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>

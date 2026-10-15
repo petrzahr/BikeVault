@@ -668,13 +668,13 @@ export function SetupClient({
         </div>
       </form>
 
-      {/* HISTORIE SNÍMKŮ / PROFILY NASTAVENÍ */}
+      {/* HISTORIE PROFILŮ NASTAVENÍ */}
       {snapshots.length > 0 && (
         <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
           <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
             <History className="w-4 h-4 text-navy-600" />
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-              Uložené profily a snímky nastavení ({snapshots.length})
+              Uložené profily nastavení ({snapshots.length})
             </h3>
           </div>
 
@@ -686,7 +686,7 @@ export function SetupClient({
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-sm text-navy-700">
-                    {snap.profileName || "Snímek nastavení"}
+                    {snap.profileName || "Profil nastavení"}
                   </span>
                   <div className="flex items-center gap-1.5">
                     <span className="text-slate-400 tabular-nums">
@@ -694,8 +694,8 @@ export function SetupClient({
                     </span>
                     <DeleteButton
                       onConfirm={() => deleteSetupSnapshot(snap.id)}
-                      title="Smazat snímek nastavení"
-                      message={`Opravdu chcete smazat snímek nastavení „${snap.profileName || "Snímek nastavení"}“? Tuto akci nelze vrátit zpět.`}
+                      title="Smazat profil nastavení"
+                      message={`Opravdu chcete smazat profil nastavení „${snap.profileName || "Profil nastavení"}“? Tuto akci nelze vrátit zpět.`}
                     />
                   </div>
                 </div>
@@ -763,7 +763,7 @@ export function SetupClient({
               type="submit"
               className={buttonClass("primary", "md")}
             >
-              Uložit profil
+              Uložit profil nastavení
             </button>
           </div>
         </form>

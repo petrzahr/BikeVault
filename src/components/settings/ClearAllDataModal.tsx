@@ -39,7 +39,7 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
         <div className="text-sm text-slate-600 space-y-2">
           <p>
             Smažou se všechna kola ({bikesCount}), komponenty ({componentsCount}) a vše, co s nimi souvisí: historie
-            tachometru, montáže, servisní plány a záznamy, nastavení a finanční záznamy.
+            nájezdu, montáže komponent, servisní plány a záznamy, profily nastavení a finanční záznamy.
           </p>
           <p>Kategorie komponent a uživatelské předvolby zůstanou. Tuto akci nelze vrátit zpět, zvažte předchozí zálohu.</p>
         </div>
