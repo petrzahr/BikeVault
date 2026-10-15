@@ -25,7 +25,7 @@ import { t, formatDateCs, formatKm, formatMinutes, formatCzk } from "@/lib/i18n"
 import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
-import { Modal } from "@/components/common/Modal";
+import { RecordServiceEventModal } from "@/components/maintenance/RecordServiceEventModal";
 import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 interface BikeServiceClientProps {
@@ -45,7 +45,6 @@ export function BikeServiceClient({
     data,
     toggleServiceScheduleActive, 
     deleteServiceSchedule, 
-    createServiceEvent, 
     getBikeServiceSchedulesWithStatus, 
     getBikeServiceEvents, 
     getBikeInstalledComponents 
@@ -62,16 +61,7 @@ export function BikeServiceClient({
 
   // Record service modal state
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
-  const [selectedScheduleId, setSelectedScheduleId] = useState("");
-  const [selectedComponentId, setSelectedComponentId] = useState("");
-  const [serviceName, setServiceName] = useState("");
-  const [serviceDate, setServiceDate] = useState(new Date().toISOString().split("T")[0]);
-  const [executionType, setExecutionType] = useState<"DIY" | "WORKSHOP">("DIY");
-  const [serviceProvider, setServiceProvider] = useState("Svépomocí");
-  const [partsCost, setPartsCost] = useState("");
-  const [laborCost, setLaborCost] = useState("");
-  const [notes, setNotes] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [selectedScheduleForRecord, setSelectedScheduleForRecord] = useState<any | null>(null);
 
   // Available components for modal
   const componentsList = installedComponents.map((item) => item.component);
@@ -109,64 +99,13 @@ export function BikeServiceClient({
   };
 
   const handleOpenModalWithSchedule = (sched: any) => {
-    setSelectedScheduleId(sched.id);
-    setServiceName(sched.name);
-    if (sched.componentId) {
-      setSelectedComponentId(sched.componentId);
-    } else {
-      setSelectedComponentId("");
-    }
-    setServiceDate(new Date().toISOString().split("T")[0]);
-    setPartsCost("");
-    setLaborCost("");
-    setNotes("");
+    setSelectedScheduleForRecord(sched);
     setIsRecordModalOpen(true);
   };
 
   const handleOpenRecordWithoutPlan = () => {
-    setSelectedScheduleId("");
-    setSelectedComponentId("");
-    setServiceName("");
-    setServiceDate(new Date().toISOString().split("T")[0]);
-    setPartsCost("");
-    setLaborCost("");
-    setNotes("");
+    setSelectedScheduleForRecord(null);
     setIsRecordModalOpen(true);
-  };
-
-  const handleRecordService = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!serviceName.trim()) return;
-
-    setLoading(true);
-    const partsPrice = parseFloat(partsCost || "0");
-    const laborPrice = parseFloat(laborCost || "0");
-    try {
-      createServiceEvent({
-        bikeId: bike.id,
-        serviceScheduleId: selectedScheduleId || null,
-        componentId: selectedComponentId || null,
-        eventType: "MAINTENANCE",
-        serviceDate,
-        bikeKm: Number(bike.currentKm),
-        bikeMinutes: bike.currentMinutes,
-        performedBy: executionType === "DIY" ? "SELF" : "SHOP",
-        shopName: executionType === "WORKSHOP" ? serviceProvider.trim() : null,
-        description: serviceName.trim(),
-        partsPrice,
-        laborPrice,
-        totalPrice: partsPrice + laborPrice,
-        currency: "CZK",
-        notes: notes.trim() || null,
-      });
-
-      setIsRecordModalOpen(false);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Chyba při zápisu servisu.";
-      toast(msg, "error");
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -344,7 +283,7 @@ export function BikeServiceClient({
                         onClick={() => handleToggleActive(sched.id, sched.isActive)}
                         className={`p-1.5 rounded-xl transition-colors ${
                           sched.isActive
-                            ? "text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                            ? "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
                             : "text-emerald-600 hover:bg-emerald-50"
                         }`}
                         title={sched.isActive ? "Deaktivovat plán" : "Aktivovat plán"}
@@ -354,7 +293,7 @@ export function BikeServiceClient({
 
                       <button
                         onClick={() => handleDeletePlan(sched.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+                        className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
                         title="Smazat plán"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -405,7 +344,7 @@ export function BikeServiceClient({
 
                     <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 tabular-nums">
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <Calendar className="w-3.5 h-3.5 text-slate-500" />
                         <span>{formatDateCs(ev.serviceDate)}</span>
                       </span>
                       <span>
@@ -452,187 +391,14 @@ export function BikeServiceClient({
       />
 
       {/* MODAL: Zapsat servis */}
-      <Modal
+      <RecordServiceEventModal
         isOpen={isRecordModalOpen}
         onClose={() => setIsRecordModalOpen(false)}
-        title={selectedScheduleId ? "Zapsat provedení servisu podle plánu" : "Zapsat servis (jednorázový)"}
-        subtitle={bike.name}
-        maxWidth="max-w-lg"
-      >
-        <form onSubmit={handleRecordService} className="space-y-4">
-          <div>
-            <label htmlFor="bike-service-name" className={labelClass}>
-              Název servisního úkonu *
-            </label>
-            <input
-              id="bike-service-name"
-              type="text"
-              required
-              value={serviceName}
-              onChange={(e) => setServiceName(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="bike-service-date" className={labelClass}>
-                Datum provedení
-              </label>
-              <input
-                id="bike-service-date"
-                type="date"
-                required
-                value={serviceDate}
-                onChange={(e) => setServiceDate(e.target.value)}
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="bike-service-execution" className={labelClass}>
-                Provedení
-              </label>
-              <select
-                id="bike-service-execution"
-                value={executionType}
-                onChange={(e) => {
-                  const val = e.target.value as any;
-                  setExecutionType(val);
-                  if (val === "DIY") setServiceProvider("Svépomocí");
-                  else setServiceProvider("");
-                }}
-                className={inputClass}
-              >
-                <option value="DIY">Svépomocí</option>
-                <option value="WORKSHOP">Odborný servis / Dílna</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="bike-service-provider" className={labelClass}>
-              Mechanik / Název servisu
-            </label>
-            <input
-              id="bike-service-provider"
-              type="text"
-              value={serviceProvider}
-              onChange={(e) => setServiceProvider(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="bike-service-parts-cost" className={labelClass}>
-                Cena dílů (Kč)
-              </label>
-              <input
-                id="bike-service-parts-cost"
-                type="number"
-                min="0"
-                value={partsCost}
-                onChange={(e) => setPartsCost(e.target.value)}
-                className={cn(inputClass, "tabular-nums")}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="bike-service-labor-cost" className={labelClass}>
-                Cena práce (Kč)
-              </label>
-              <input
-                id="bike-service-labor-cost"
-                type="number"
-                min="0"
-                value={laborCost}
-                onChange={(e) => setLaborCost(e.target.value)}
-                className={cn(inputClass, "tabular-nums")}
-              />
-            </div>
-          </div>
-
-          {/* Týká se komponenty */}
-          <div>
-            <label htmlFor="bike-service-component" className={labelClass}>
-              Vztahuje se ke komponentě (volitelné)
-            </label>
-            <select
-              id="bike-service-component"
-              value={selectedComponentId}
-              onChange={(e) => setSelectedComponentId(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">-- Pouze celé kolo --</option>
-              {installedComponents.map((item) => (
-                <option key={item.component.id} value={item.component.id}>
-                  {item.category.nameCs}: {item.component.manufacturer} {item.component.model}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="bike-service-schedule" className={labelClass}>
-              Propojený servisní plán (resetuje interval)
-            </label>
-            <select
-              id="bike-service-schedule"
-              value={selectedScheduleId}
-              onChange={(e) => setSelectedScheduleId(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">-- Bez plánu (jednorázový servis) --</option>
-              {schedulesWithStatus.map((s) => (
-                <option key={s.schedule.id} value={s.schedule.id}>
-                  {s.schedule.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="bike-service-notes" className={labelClass}>
-              Poznámka k servisu
-            </label>
-            <textarea
-              id="bike-service-notes"
-              rows={2}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={() => setIsRecordModalOpen(false)}
-              className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
-            >
-              {t("common.cancel")}
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>{t("common.loading")}</span>
-                </>
-              ) : (
-                <>
-                  <Check className="w-4 h-4" />
-                  <span>Zapsat servis</span>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </Modal>
+        fixedBikeId={bike.id}
+        initialSchedule={selectedScheduleForRecord}
+        bikes={[bike]}
+        components={componentsList}
+      />
     </div>
   );
 }

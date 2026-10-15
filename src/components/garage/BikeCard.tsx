@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, t } from "@/lib/i18n";
 import { UpdateOdometerModal } from "./UpdateOdometerModal";
+import { RecordServiceEventModal } from "@/components/maintenance/RecordServiceEventModal";
 import { resolveBikeImage } from "@/lib/domain/bikeImage";
 import { useVault } from "@/context/VaultContext";
 import { bikeKindLabel, resolveLists } from "@/lib/bikeLists";
@@ -69,6 +70,7 @@ export function BikeCard({
   dragHandleProps,
 }: BikeCardProps) {
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const { data } = useVault();
   const lists = resolveLists(data.settings);
@@ -135,7 +137,7 @@ export function BikeCard({
               aria-label="Přetažením myší změníte pořadí kola"
               className="flex items-center gap-1.5 text-xs text-slate-200 font-medium px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700/80 cursor-grab active:cursor-grabbing select-none"
             >
-              <GripVertical className="w-4 h-4 text-slate-400" />
+              <GripVertical className="w-4 h-4 text-slate-300" />
               <span>Přetáhnout</span>
             </div>
 
@@ -220,19 +222,25 @@ export function BikeCard({
             {/* Service alert */}
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500 flex items-center gap-1.5 font-medium">
-                <Wrench className="w-3.5 h-3.5 text-slate-400" />
+                <Wrench className="w-3.5 h-3.5 text-slate-500" />
                 <span>{t("garage.card.nextService")}:</span>
               </span>
-              <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-semibold flex items-center gap-1.5 ${badgeStyle.bg}`}>
+              <button
+                type="button"
+                onClick={() => setIsServiceModalOpen(true)}
+                title="Zapsat servis pro toto kolo"
+                aria-label={`Zapsat servis: ${serviceSummary?.text || t("garage.card.noServiceDue")}`}
+                className={`px-2.5 py-0.5 rounded-full border text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer hover:opacity-90 hover:shadow-xs active:scale-95 transition-all ${badgeStyle.bg}`}
+              >
                 <BadgeIcon className={`w-3 h-3 ${badgeStyle.dot}`} />
                 <span>{serviceSummary?.text || t("garage.card.noServiceDue")}</span>
-              </span>
+              </button>
             </div>
 
             {/* Net Ownership Cost */}
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500 flex items-center gap-1.5 font-medium">
-                <Coins className="w-3.5 h-3.5 text-slate-400" />
+                <Coins className="w-3.5 h-3.5 text-slate-500" />
                 <span>{t("garage.card.netCost")}:</span>
               </span>
               <span className="font-bold text-slate-900 tabular-nums text-sm">
@@ -245,12 +253,23 @@ export function BikeCard({
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               <button
+                type="button"
                 onClick={() => setIsOdometerModalOpen(true)}
                 title="Zapsat stav tachometru"
                 aria-label="Zapsat stav tachometru"
                 className={iconButtonClass}
               >
                 <Gauge className="w-4 h-4 text-slate-700" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsServiceModalOpen(true)}
+                title="Zapsat servis kola"
+                aria-label="Zapsat servis kola"
+                className={iconButtonClass}
+              >
+                <Wrench className="w-4 h-4 text-slate-700" />
               </button>
 
               <Link
@@ -282,6 +301,12 @@ export function BikeCard({
         bikeName={bike.name}
         currentKm={Number(bike.currentKm)}
         currentMinutes={bike.currentMinutes}
+      />
+
+      <RecordServiceEventModal
+        isOpen={isServiceModalOpen}
+        onClose={() => setIsServiceModalOpen(false)}
+        fixedBikeId={bike.id}
       />
 
     </>

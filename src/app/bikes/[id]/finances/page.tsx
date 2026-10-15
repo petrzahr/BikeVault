@@ -1,12 +1,14 @@
 "use client";
 
-import React, { use } from "react";
+import React, { use, useState } from "react";
 import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
 import { DeleteButton } from "@/components/common/DeleteButton";
+import { AddTransactionModal } from "@/components/finances/AddTransactionModal";
 import { calculateTco, getBikeTransactions } from "@/lib/domain/finance";
 import { formatCzk, formatDateCs, t } from "@/lib/i18n";
-import { Coins, TrendingDown, TrendingUp, Calendar, Tag } from "lucide-react";
+import { Coins, TrendingDown, TrendingUp, Calendar, Tag, Plus } from "lucide-react";
+import { buttonClass } from "@/lib/ui";
 import Link from "next/link";
 
 interface BikeFinancesPageProps {
@@ -17,6 +19,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
   const { id } = use(params);
   const { data, getBike, deleteTransaction } = useVault();
   const bike = getBike(id);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   if (!bike) {
     return (
@@ -57,7 +60,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
             {formatCzk(tco.totalExpenses)}
           </div>
           <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
-            Pořízení a servis
+            Nákup kola a servis
           </p>
         </div>
 
@@ -72,7 +75,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
             {formatCzk(tco.totalIncomes)}
           </div>
           <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
-            Prodej dílů
+            Prodej komponent
           </p>
         </div>
 
@@ -87,22 +90,38 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
             {formatCzk(tco.netOwnershipCost)}
           </div>
           <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
-            Čistá bilance kola
+            Celkové čisté náklady (TCO)
           </p>
         </div>
       </div>
 
       {/* Transaction Ledger */}
       <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3">
           <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
             {t("finances.ledger")} ({transactions.length})
           </h3>
+          <button
+            type="button"
+            onClick={() => setIsAddModalOpen(true)}
+            className={buttonClass("primary", "sm")}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Přidat položku</span>
+          </button>
         </div>
 
         {transactions.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-500">
-            Zatím nebyly zaznamenány žádné finanční transakce.
+          <div className="p-8 text-center text-xs text-slate-500 space-y-3">
+            <p>Zatím nebyly zaznamenány žádné finanční transakce.</p>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              className={buttonClass("secondary", "sm")}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Zaznamenat první výdaj / příjem</span>
+            </button>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -125,7 +144,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
                     </div>
 
                     <div className="flex items-center gap-2 text-xs text-slate-500 tabular-nums">
-                      <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                      <Calendar className="w-3.5 h-3.5 text-slate-500" />
                       <span>{formatDateCs(tx.transactionDate)}</span>
                     </div>
                   </div>
@@ -148,6 +167,12 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
           </div>
         )}
       </div>
+
+      <AddTransactionModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        defaultBikeId={bike.id}
+      />
     </div>
   );
 }

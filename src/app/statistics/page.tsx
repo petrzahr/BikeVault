@@ -88,7 +88,7 @@ export default function StatisticsPage() {
             {components.length}
           </div>
           <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
-            Evidované díly
+            Evidované komponenty
           </p>
         </div>
       </div>

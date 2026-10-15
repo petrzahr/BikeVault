@@ -160,7 +160,7 @@ export const LoginScreen: React.FC = () => {
               type="button"
               onClick={handleResetError}
               title="Zkusit jiný účet"
-              className="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-white/60 transition-colors shrink-0"
+              className="p-1 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-white/60 transition-colors shrink-0"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -188,7 +188,7 @@ export const LoginScreen: React.FC = () => {
             )}
           </button>
 
-          <p className="text-[11px] text-center text-slate-400">
+          <p className="text-[11px] text-center text-slate-500">
             Pro vstup do aplikace je vyžadováno přihlášení k vašemu Google účtu.
           </p>
         </div>
@@ -196,7 +196,7 @@ export const LoginScreen: React.FC = () => {
         {/* Oddělovač */}
         <div className="relative flex items-center py-0.5">
           <div className="flex-grow border-t border-slate-200" />
-          <span className="flex-shrink mx-3 text-xs font-medium text-slate-400">nebo</span>
+          <span className="flex-shrink mx-3 text-xs font-medium text-slate-500">nebo</span>
           <div className="flex-grow border-t border-slate-200" />
         </div>
 
@@ -241,7 +241,7 @@ export const LoginScreen: React.FC = () => {
       </div>
 
       {/* Patička */}
-      <footer className="mt-8 text-center text-xs text-slate-400 font-medium">
+      <footer className="mt-8 text-center text-xs text-slate-500 font-medium">
         BikeVault &bull; Vaše kola pod absolutní kontrolou
       </footer>
     </div>

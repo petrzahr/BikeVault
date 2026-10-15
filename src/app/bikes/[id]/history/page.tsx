@@ -86,7 +86,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
   for (const inst of installations) {
     const comp = data.components.find((c) => c.id === inst.componentId);
     const cat = data.categories.find((c) => c.id === comp?.categoryId);
-    const compName = comp ? `${comp.manufacturer} ${comp.model}` : "Komponent";
+    const compName = comp ? `${comp.manufacturer} ${comp.model}` : "Komponenta";
     const catName = cat?.nameCs || "";
 
     timelineItems.push({
@@ -94,7 +94,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       type: "INSTALLATION",
       title: `Montáž: ${compName}`,
       subtitle: `${catName} • při ${formatKm(inst.installedBikeKm)}`,
-      badge: "Komponent",
+      badge: "Komponenta",
       badgeColor: "bg-navy-50 text-navy-700 border-navy-200/80",
       icon: Layers,
     });
@@ -133,7 +133,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       timelineItems.push({
         ...fromDateOnly(odo.entryDate, odo.createdAt),
         type: "INITIAL",
-        title: `Výchozí stav počítadla: ${formatKm(odo.resultingKm)}`,
+        title: `Výchozí nájezd: ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Zavedení kola do garáže"}`,
         badge: `Výchozí stav • ${sourceLabel}`,
         badgeColor: isStrava
@@ -150,28 +150,28 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       timelineItems.push({
         ...fromDateOnly(odo.entryDate, odo.createdAt),
         type: "SNAPSHOT",
-        title: `Odečet počítadla: ${formatKm(odo.resultingKm)} (${deltaKmText})`,
+        title: `Záznam nájezdu: ${formatKm(odo.resultingKm)} (${deltaKmText})`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} (${deltaMinText}) • ${sourceLabel}${odo.note ? ` • ${odo.note}` : ""}`,
-        badge: isStrava ? "Tachometr • Strava" : "Tachometr • Ručně",
+        badge: isStrava ? "Nájezd • Strava" : "Nájezd • Ručně",
         badgeColor: isStrava
           ? "bg-navy-50 text-navy-700 border-navy-200/80"
           : "bg-emerald-50 text-emerald-700 border-emerald-200/80",
         icon: SlidersHorizontal,
         onDelete: odo.id === deletableOdometerId
-          ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `odečet počítadla ${formatKm(odo.resultingKm)} (nájezd se vrátí na předchozí stav)` })
+          ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `záznam nájezdu ${formatKm(odo.resultingKm)} (celkový nájezd se vrátí na předchozí stav)` })
           : undefined,
       });
     } else if (odo.entryType === "CORRECTION") {
       timelineItems.push({
         ...fromDateOnly(odo.entryDate, odo.createdAt),
         type: "CORRECTION",
-        title: `Korekce počítadla na ${formatKm(odo.resultingKm)}`,
+        title: `Korekce nájezdu na ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Manuální oprava"}`,
         badge: `Korekce • ${sourceLabel}`,
         badgeColor: "bg-purple-50 text-purple-700 border-purple-200/80",
         icon: History,
         onDelete: odo.id === deletableOdometerId
-          ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `korekci počítadla na ${formatKm(odo.resultingKm)} (nájezd se vrátí na předchozí stav)` })
+          ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `korekci nájezdu na ${formatKm(odo.resultingKm)} (celkový nájezd se vrátí na předchozí stav)` })
           : undefined,
       });
     }
@@ -225,6 +225,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
                 {item.onDelete && (
                   <div className="mt-2 flex justify-end">
                     <button
+                      type="button"
                       onClick={item.onDelete}
                       className={buttonClass("ghost", "sm", "hover:text-rose-600 hover:bg-rose-50")}
                       title="Smazat záznam"

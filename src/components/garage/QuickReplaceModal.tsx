@@ -60,19 +60,19 @@ export function QuickReplaceModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Vyměnit komponentu"
-      subtitle="Rychlá výměna opotřebovaného dílu za identický kus ze skladu"
+      subtitle="Rychlá výměna opotřebované komponenty za náhradní kus ze skladu"
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* 1. Aktuálně osazený díl */}
+        {/* 1. Aktuálně namontovaná komponenta */}
         <div className="space-y-1">
           <span className="text-xs font-semibold text-slate-700 block">
-            Aktuálně osazený díl
+            Aktuálně namontovaná komponenta
           </span>
           <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="px-2 py-0.5 rounded-md bg-white text-slate-700 border border-slate-200 text-[10px] font-semibold uppercase">
-                {currentCat?.nameCs || "Komponent"}
+                {currentCat?.nameCs || "Komponenta"}
               </span>
               <span className="text-[11px] text-slate-500">
                 na kole od {formatDateCs(installedItem.installation.installedAt)}
@@ -188,7 +188,7 @@ export function QuickReplaceModal({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
           <div>
             <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
-              Tachometr kola
+              Aktuální nájezd kola
             </span>
             <span className="text-base font-bold text-slate-900 tabular-nums">
               {formatKm(Number(bike.currentKm))}
@@ -204,17 +204,17 @@ export function QuickReplaceModal({
           </div>
         </div>
 
-        {/* 4. Důsledek pro původní komponent */}
+        {/* 4. Důsledek pro původní komponentu */}
         <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-xl text-xs space-y-1">
           <div className="flex items-center gap-1.5 font-semibold text-slate-700">
             <Archive className="w-3.5 h-3.5 text-slate-500" />
-            <span>Původní komponent bude označen jako:</span>
+            <span>Původní komponenta bude označena jako:</span>
             <span className="px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 rounded-full font-bold text-[10px]">
               Vyřazeno
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed pl-5">
-            Instalace na tomto kole bude korektně uzavřena k aktuálnímu stavu tachometru. Kompletní historie a nájezd původního dílu zůstanou trvale uchovány v systému.
+            Montáž na tomto kole bude ukončena k aktuálnímu nájezdu kola. Kompletní historie a nájezd původní komponenty zůstanou uchovány v systému.
           </p>
         </div>
 
@@ -235,12 +235,12 @@ export function QuickReplaceModal({
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Měním komponent...</span>
+                <span>Provádím výměnu...</span>
               </>
             ) : (
               <>
                 <RefreshCw className="w-4 h-4" />
-                <span>Vyměnit</span>
+                <span>Vyměnit komponentu</span>
               </>
             )}
           </button>

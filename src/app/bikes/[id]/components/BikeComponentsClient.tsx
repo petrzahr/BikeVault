@@ -352,18 +352,18 @@ export function BikeComponentsClient({
         </div>
       )}
 
-      {/* MODAL: DEMONTOVAT KOMPONENT */}
+      {/* MODAL: DEMONTOVAT KOMPONENTU */}
       <Modal
         isOpen={isRemoveOpen && !!selectedInst}
         onClose={() => setIsRemoveOpen(false)}
-        title="Demontovat komponent"
+        title="Demontovat komponentu"
         subtitle={selectedInst ? `${selectedInst.component.manufacturer} ${selectedInst.component.model}` : undefined}
         maxWidth="max-w-md"
       >
         <form onSubmit={handleRemove} className="space-y-4">
           <div>
             <label className={labelClass}>
-              Kam komponent přesunout?
+              Nový stav komponenty po demontáži
             </label>
             <div className="space-y-2">
               {[
@@ -446,7 +446,7 @@ export function BikeComponentsClient({
               ) : (
                 <>
                   <Check className="w-4 h-4" />
-                  <span>Potvrdit demontáž</span>
+                  <span>Demontovat komponentu</span>
                 </>
               )}
             </button>
@@ -458,7 +458,7 @@ export function BikeComponentsClient({
       <Modal
         isOpen={isTransferOpen && !!selectedInst}
         onClose={() => setIsTransferOpen(false)}
-        title="Přesunout komponent na jiné kolo"
+        title="Přesunout komponentu na jiné kolo"
         subtitle={selectedInst ? `${selectedInst.component.manufacturer} ${selectedInst.component.model}` : undefined}
         maxWidth="max-w-md"
       >
@@ -491,7 +491,7 @@ export function BikeComponentsClient({
 
           <div>
             <label htmlFor="transfer-target-slot" className={labelClass}>
-              Pozice / Slot na cílovém kole
+              Pozice na cílovém kole
             </label>
             <select
               id="transfer-target-slot"
@@ -529,7 +529,7 @@ export function BikeComponentsClient({
               ) : (
                 <>
                   <ArrowRightLeft className="w-4 h-4" />
-                  <span>Provést přesun</span>
+                  <span>Přesunout komponentu</span>
                 </>
               )}
             </button>
@@ -541,14 +541,14 @@ export function BikeComponentsClient({
       <Modal
         isOpen={isInstallOpen}
         onClose={() => setIsInstallOpen(false)}
-        title="Namontovat díl na kolo"
+        title="Namontovat komponentu na kolo"
         subtitle={bike.name}
         maxWidth="max-w-md"
       >
         <form onSubmit={handleInstall} className="space-y-4">
           <div>
             <label htmlFor="install-comp-select" className={labelClass}>
-              Vyberte díl ze skladu
+              Vyberte komponentu ze skladu
             </label>
             {storageComponents.length === 0 ? (
               <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 text-xs text-slate-600 space-y-2">
@@ -557,7 +557,7 @@ export function BikeComponentsClient({
                   href="/components"
                   className="text-navy-600 hover:underline block font-semibold"
                 >
-                  Přejít do Centrálního skladu a přidat komponent →
+                  Přejít do skladu a přidat komponentu →
                 </Link>
               </div>
             ) : (
@@ -568,7 +568,7 @@ export function BikeComponentsClient({
                 onChange={(e) => setSelectedStorageCompId(e.target.value)}
                 className={inputClass}
               >
-                <option value="">-- Vyberte komponent ze skladu --</option>
+                <option value="">-- Vyberte komponentu ze skladu --</option>
                 {storageComponents.map((item) => {
                   const c = item.component || item;
                   return (
@@ -583,7 +583,7 @@ export function BikeComponentsClient({
 
           <div>
             <label htmlFor="install-slot-select" className={labelClass}>
-              Slot na kole
+              Pozice na kole
             </label>
             <select
               id="install-slot-select"
@@ -622,7 +622,7 @@ export function BikeComponentsClient({
               ) : (
                 <>
                   <Plus className="w-4 h-4" />
-                  <span>Namontovat</span>
+                  <span>Namontovat na kolo</span>
                 </>
               )}
             </button>

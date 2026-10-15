@@ -331,7 +331,7 @@ export default function SettingsPage() {
             type="button"
             onClick={() => setStatusMessage(null)}
             aria-label="Zavřít upozornění"
-            className="p-1 min-w-[36px] min-h-[36px] flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-black/5 rounded-lg transition-colors cursor-pointer"
+            className="p-1 min-w-[36px] min-h-[36px] flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-black/5 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -351,7 +351,7 @@ export default function SettingsPage() {
 
               {/* Connection Status Badge */}
               {loadingStatus ? (
-                <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                <div className="flex items-center gap-1.5 text-xs text-slate-500">
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   <span>Zjišťuji stav...</span>
                 </div>
@@ -370,7 +370,7 @@ export default function SettingsPage() {
 
             {/* Content based on state */}
             {loadingStatus ? (
-              <div className="py-8 text-center text-slate-400 text-xs">
+              <div className="py-8 text-center text-slate-500 text-xs">
                 <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-navy-600" />
                 <span>Ověřuji stav spojení se Stravou...</span>
               </div>
@@ -386,10 +386,10 @@ export default function SettingsPage() {
                       <strong>Bezpečný import a párování:</strong> Načte vaše kola a umožní je propojit s koly v BikeVault nebo je založit jako nová.
                     </li>
                     <li>
-                      <strong>BikeVault je autoritativní:</strong> Strava je pouze externím zdrojem pro tachometr. Žádná vaše servisní historie, komponenty, nastavení ani fotky se nepřepisují.
+                      <strong>BikeVault je autoritativní:</strong> Strava slouží jako externí zdroj ujetých kilometrů a času. Vaše servisní historie, komponenty, nastavení ani fotografie se nikdy nepřepisují.
                     </li>
                     <li>
-                      <strong>Ochrana historie nájezdu:</strong> Nižší stav tachometru ze Stravy nikdy automaticky nesníží stav v BikeVaultu.
+                      <strong>Ochrana historie nájezdu:</strong> Nižší stav nájezdu ze Stravy nikdy automaticky nesníží stav v BikeVaultu.
                     </li>
                     <li>
                       <strong>Bezpečnost:</strong> Tokeny jsou bezpečně spravovány na serveru s minimálními oprávněními (pouze čtení).
@@ -403,7 +403,7 @@ export default function SettingsPage() {
                     className={buttonClass("dark", "md")}
                   >
                     <span>Připojit Stravu</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
                   </button>
                 </div>
               </div>
@@ -416,7 +416,7 @@ export default function SettingsPage() {
                     <span className="text-sm font-bold text-slate-900 block truncate">
                       {stravaStatus.athleteName || "Uživatel Strava"}
                     </span>
-                    <span className="text-[10px] text-slate-400 block tabular-nums">
+                    <span className="text-[10px] text-slate-500 block tabular-nums">
                       ID: {stravaStatus.athleteId}
                     </span>
                   </div>
@@ -426,7 +426,7 @@ export default function SettingsPage() {
                     <span className="text-sm font-bold text-slate-900 block">
                       {stravaStatus.lastSyncAt ? formatDateCs(stravaStatus.lastSyncAt) : "Zatím neproběhla"}
                     </span>
-                    <span className="text-[10px] text-slate-400 block">
+                    <span className="text-[10px] text-slate-500 block">
                       {stravaStatus.lastSyncAt ? new Date(stravaStatus.lastSyncAt).toLocaleTimeString("cs-CZ", { hour: "2-digit", minute: "2-digit" }) : "—"}
                     </span>
                   </div>
@@ -436,7 +436,7 @@ export default function SettingsPage() {
                     <span className="text-sm font-bold text-slate-900 block tabular-nums">
                       {linkedBikesCount} {linkedBikesCount === 1 ? "kolo" : linkedBikesCount >= 2 && linkedBikesCount <= 4 ? "kola" : "kol"}
                     </span>
-                    <span className="text-[10px] text-slate-400 block">
+                    <span className="text-[10px] text-slate-500 block">
                       z {data.bikes.length} kol v garáži
                     </span>
                   </div>
@@ -450,7 +450,7 @@ export default function SettingsPage() {
                     className={buttonClass("dark", "md")}
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${syncingAll ? "animate-spin text-navy-400" : ""}`} />
-                    <span>{syncingAll ? "Synchronizuji..." : "Synchronizovat"}</span>
+                    <span>{syncingAll ? "Synchronizuji..." : "Synchronizovat nájezd"}</span>
                   </button>
 
                   <button
@@ -458,7 +458,7 @@ export default function SettingsPage() {
                     className={buttonClass("secondary", "md")}
                   >
                     <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Spravovat kola</span>
+                    <span>Spravovat kola ze Stravy</span>
                   </button>
 
                   <button

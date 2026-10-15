@@ -19,7 +19,7 @@ const compactInput =
   "placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-navy-500/30 focus:border-navy-500";
 
 const iconButton =
-  "p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer " +
+  "p-1.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer " +
   "disabled:opacity-30 disabled:pointer-events-none";
 
 /** Textové pole pro přejmenování / přidání; potvrzení Enterem nebo opuštěním pole, Esc ruší. */
@@ -186,7 +186,7 @@ function ListCard({
       </div>
 
       <div className="space-y-1.5 pt-2.5">
-        {rows.length === 0 && !adding && <p className="text-xs text-slate-400 px-1 py-2">{emptyText}</p>}
+        {rows.length === 0 && !adding && <p className="text-xs text-slate-500 px-1 py-2">{emptyText}</p>}
         {rows.map((row) => (
           <ListRow
             key={row.id}
@@ -221,7 +221,7 @@ function CategorySpecFieldsPanel({ category }: { category: ComponentCategory }) 
   return (
     <div className="ml-2 pl-3 border-l-2 border-slate-200 space-y-1.5 py-2">
       {fields.length === 0 && !adding && (
-        <p className="text-[11px] text-slate-400 px-1">Kategorie zatím nemá žádná vlastní pole specifikace.</p>
+        <p className="text-[11px] text-slate-500 px-1">Kategorie zatím nemá žádná vlastní pole specifikace.</p>
       )}
       {fields.map((field, index) => (
         <ListRow
@@ -297,7 +297,7 @@ function ComponentCategoryRow({
             {expanded ? <ChevronDown className="w-3.5 h-3.5 shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
             <span className="truncate">{category.nameCs}</span>
             {fieldCount > 0 && (
-              <span className="text-[10px] text-slate-400 font-semibold tabular-nums">({fieldCount})</span>
+              <span className="text-[10px] text-slate-500 font-semibold tabular-nums">({fieldCount})</span>
             )}
           </button>
         )}
@@ -430,8 +430,8 @@ export function ListsClient() {
 
       {/* Ostatní seznamy */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <ListCard title="Typ odpružení" addPlaceholder="Nový typ odpružení…" {...flatCard("suspensionTypes", lists.suspensionTypes)} />
-        <ListCard title="Typ pohonu" addPlaceholder="Nový typ pohonu…" {...flatCard("driveTypes", lists.driveTypes)} />
+        <ListCard title="Typy odpružení" addPlaceholder="Nový typ odpružení…" {...flatCard("suspensionTypes", lists.suspensionTypes)} />
+        <ListCard title="Typy pohonu" addPlaceholder="Nový typ pohonu…" {...flatCard("driveTypes", lists.driveTypes)} />
 
         {/* Kategorie komponent — každou lze rozbalit a spravovat jí vlastní pole specifikace */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 flex flex-col">
@@ -447,7 +447,7 @@ export function ListsClient() {
                 key={c.id}
                 category={c}
                 canDelete={!c.isSystem && !usedCategoryIds.has(c.id)}
-                deleteHint={c.isSystem ? "Systémovou kategorii nelze odebrat" : "Kategorii používá komponent"}
+                deleteHint={c.isSystem ? "Systémovou kategorii nelze odebrat" : "Kategorii používá existující komponenta"}
                 onRename={(label) => renameCategory(c.id, label)}
                 onDelete={() => deleteCategory(c.id)}
               />

@@ -408,14 +408,14 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="w-4 h-4 text-slate-600" />
                 <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                  Poslední odečty počítadla
+                  Poslední záznamy nájezdu
                 </h3>
               </div>
             </div>
 
             {odometerEntries.length === 0 ? (
-              <p className="text-xs text-slate-400 italic py-6 text-center">
-                Zatím nebyly zaznamenány žádné odečty počítadla.
+              <p className="text-xs text-slate-500 italic py-6 text-center">
+                Zatím nebyly zaznamenány žádné záznamy nájezdu.
               </p>
             ) : (
               <div className="space-y-2.5">
@@ -446,7 +446,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                           </span>
                         </div>
                         <p className="text-[11px] text-slate-500 truncate max-w-[180px]">
-                          {entry.note || (entry.entryType === "INITIAL" ? "Výchozí stav" : entry.entryType === "CORRECTION" ? "Korekce počítadla" : "Odečet stavu počítadla")}
+                          {entry.note || (entry.entryType === "INITIAL" ? "Výchozí stav" : entry.entryType === "CORRECTION" ? "Korekce nájezdu" : "Záznam nájezdu")}
                         </p>
                       </div>
 
@@ -454,7 +454,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                         <span className="text-[11px] text-slate-500 block tabular-nums">
                           {formatDateCs(entry.entryDate)}
                         </span>
-                        <span className="text-[10px] text-slate-400 tabular-nums">
+                        <span className="text-[10px] text-slate-500 tabular-nums">
                           {formatMinutes(entry.resultingMinutes)}
                         </span>
                       </div>
@@ -469,7 +469,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
             href={`/bikes/${bike.id}/history`}
             className="mt-4 pt-3 border-t border-slate-100 text-xs font-semibold text-navy-600 hover:text-navy-700 flex items-center justify-between"
           >
-            <span>Zobrazit celou historii</span>
+            <span>Zobrazit historii nájezdu</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>

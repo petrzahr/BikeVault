@@ -243,9 +243,9 @@ export function StravaManageBikesModal({
           </div>
         ) : stravaBikes.length === 0 ? (
           <div className="py-10 text-center text-slate-500 bg-slate-50/60 rounded-xl border border-dashed border-slate-200 p-6">
-            <BikeIcon className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+            <BikeIcon className="w-8 h-8 mx-auto text-slate-500 mb-2" />
             <p className="text-xs font-semibold text-slate-700">Na vašem účtu Strava nebyla nalezena žádná kola.</p>
-            <p className="text-[11px] text-slate-400 mt-1">Přidejte kolo do nastavení výbavy na Stravě a poté klikněte na Obnovit.</p>
+            <p className="text-[11px] text-slate-500 mt-1">Přidejte kolo do nastavení výbavy na Stravě a poté klikněte na Obnovit.</p>
           </div>
         ) : (
           /* Strava Bikes List */
@@ -300,13 +300,13 @@ export function StravaManageBikesModal({
                           <Link2 className="w-3.5 h-3.5 text-navy-600 shrink-0" />
                           <span>Propojeno s: </span>
                           <span className="font-bold text-slate-900">{linkedBike.name}</span>
-                          <span className="text-slate-400 text-[11px] tabular-nums">
+                          <span className="text-slate-500 text-[11px] tabular-nums">
                             (aktuálně {formatKm(linkedBike.currentKm)})
                           </span>
                         </div>
                       ) : (
-                        <div className="pt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                          <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
+                        <div className="pt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                          <span className="inline-block w-2 h-2 rounded-full bg-slate-400" />
                           <span>Nenapojeno na BikeVault</span>
                         </div>
                       )}
@@ -484,7 +484,7 @@ export function StravaManageBikesModal({
                     onClick={handleConfirmLink}
                     className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
                   >
-                    Potvrdit propojení
+                    Propojit se Stravou
                   </button>
                 </div>
               </div>
@@ -500,7 +500,7 @@ export function StravaManageBikesModal({
             </h4>
             <p className="text-xs text-slate-600">
               Opravdu chcete odpojit kolo <strong className="text-slate-900">{unlinkingBike.name}</strong> od Stravy?
-              Všechna data v BikeVault, včetně dosavadních záznamů tachometru a komponentů, zůstanou beze změny zachována.
+              Všechna data v BikeVault, včetně dosavadní historie nájezdu a komponent, zůstanou beze změny zachována.
             </p>
             <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2 pt-2">
               <button
@@ -513,7 +513,7 @@ export function StravaManageBikesModal({
                 onClick={handleConfirmUnlink}
                 className={cn(buttonClass("danger", "sm"), "w-full sm:w-auto")}
               >
-                Potvrdit odpojení
+                Odpojit od Stravy
               </button>
             </div>
           </div>

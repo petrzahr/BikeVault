@@ -238,7 +238,7 @@ export function GarageClient({
           <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
             {formatKm(totalMileage)}
           </div>
-          <p className="text-[10px] text-slate-400 hidden md:block truncate mt-0.5 font-medium">
+          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5 font-medium">
             Zaznamenané kilometry
           </p>
         </div>
@@ -253,7 +253,7 @@ export function GarageClient({
           <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
             {formatMinutes(totalMinutes)}
           </div>
-          <p className="text-[10px] text-slate-400 hidden md:block truncate mt-0.5 font-medium">
+          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5 font-medium">
             Provozní hodiny flotily
           </p>
         </div>
@@ -322,7 +322,7 @@ export function GarageClient({
               ? "Zatím jste neoznačili žádné kolo jako prodané."
               : "V archivu se nenachází žádná archivovaná kola."}
           </p>
-          <p className="text-slate-400 text-xs mt-1 max-w-sm mx-auto">
+          <p className="text-slate-500 text-xs mt-1 max-w-sm mx-auto">
             {activeTab === "ACTIVE"
               ? "Založte si své první kolo a začněte sledovat jeho kompletní servisní historii a komponenty."
               : activeTab === "SOLD"

@@ -131,14 +131,14 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
   return (    <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? "Upravit komponent" : t("components.addComponent")}
-      subtitle={isEditing ? "Úprava údajů o dílu v centrálním skladu" : "Založení nového dílu do centrálního skladu"}
+      title={isEditing ? "Upravit komponentu" : t("components.addComponent")}
+      subtitle={isEditing ? "Úprava údajů o komponentě v evidenci skladu" : "Zaevidování nové komponenty do skladu"}
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleCreate} className="space-y-4">
         <div>
           <label htmlFor="comp-category" className={labelClass}>
-            Kategorie komponentu *
+            Kategorie komponenty *
           </label>
           <select
             id="comp-category"
@@ -248,15 +248,19 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {specFields.map((field) => (
-                <input
-                  key={field.key}
-                  type="text"
-                  value={specValues[field.key] || ""}
-                  onChange={(e) => setSpecValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
-                  placeholder={field.label}
-                  aria-label={field.label}
-                  className={inputClass}
-                />
+                <div key={field.key}>
+                  <label htmlFor={`spec-${field.key}`} className={labelClass}>
+                    {field.label}
+                  </label>
+                  <input
+                    id={`spec-${field.key}`}
+                    type="text"
+                    value={specValues[field.key] || ""}
+                    onChange={(e) => setSpecValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
+                    placeholder={`Zadejte ${field.label.toLowerCase()}...`}
+                    className={inputClass}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -289,7 +293,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-            <span>{loading ? t("common.loading") : isEditing ? "Uložit změny" : "Založit díl do skladu"}</span>
+            <span>{loading ? t("common.loading") : isEditing ? "Uložit změny komponenty" : "Uložit komponentu do skladu"}</span>
           </button>
         </div>
       </form>

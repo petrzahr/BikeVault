@@ -223,7 +223,7 @@ export interface FinancialTransaction {
   componentId?: string | null;
   serviceEventId?: string | null;
   type: "EXPENSE" | "INCOME";
-  category: "BIKE_PURCHASE" | "BIKE_SALE" | "COMPONENT_PURCHASE" | "COMPONENT_SALE" | "SERVICE_LABOR" | "SERVICE_PARTS" | "UPGRADE" | "ACCESSORY" | "OTHER";
+  category: "BIKE_PURCHASE" | "BIKE_SALE" | "COMPONENT_PURCHASE" | "COMPONENT_SALE" | "SERVICE_LABOR" | "SERVICE_PARTS" | "CONSUMABLES" | "UPGRADE" | "ACCESSORY" | "REFUND" | "OTHER";
   amount: number;
   currency: string;
   transactionDate: string; // YYYY-MM-DD

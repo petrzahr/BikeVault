@@ -214,7 +214,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
               type="button"
               onClick={() => setStravaSyncNotice(null)}
               aria-label="Zavřít upozornění"
-              className="p-1 min-w-[36px] min-h-[36px] flex items-center justify-center text-slate-400 hover:text-slate-600 rounded-lg transition-colors cursor-pointer ml-1"
+              className="p-1 min-w-[36px] min-h-[36px] flex items-center justify-center text-slate-500 hover:text-slate-700 rounded-lg transition-colors cursor-pointer ml-1"
             >
               <X className="w-4 h-4" />
             </button>
@@ -260,29 +260,29 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
             <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
               <span className="flex items-center gap-1">
-                <Tag className="w-3.5 h-3.5 text-slate-400" />
+                <Tag className="w-3.5 h-3.5 text-slate-500" />
                 <span>{bike.manufacturer} {bike.model} {bike.modelYear ? `(${bike.modelYear})` : ""}</span>
               </span>
               {bike.frameSize && (
                 <span className="flex items-center gap-1">
-                  <span className="text-slate-400 font-medium">Velikost:</span>
+                  <span className="text-slate-500 font-medium">Velikost:</span>
                   <span className="font-semibold text-slate-700">{bike.frameSize}</span>
                 </span>
               )}
               {bike.serialNumber && (
                 <span className="flex items-center gap-1 tabular-nums">
-                  <Hash className="w-3.5 h-3.5 text-slate-400" />
+                  <Hash className="w-3.5 h-3.5 text-slate-500" />
                   <span>SN: {bike.serialNumber}</span>
                 </span>
               )}
               {weightFormatted && (
                 <span className="flex items-center gap-1 tabular-nums font-semibold text-slate-700">
-                  <Scale className="w-3.5 h-3.5 text-slate-400" />
+                  <Scale className="w-3.5 h-3.5 text-slate-500" />
                   <span>{weightFormatted}</span>
                 </span>
               )}
               <span className="flex items-center gap-1 tabular-nums">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <Calendar className="w-3.5 h-3.5 text-slate-500" />
                 <span>Nákup: {formatDateCs(bike.purchaseDate)}</span>
               </span>
             </div>

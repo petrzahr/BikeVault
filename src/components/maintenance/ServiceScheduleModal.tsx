@@ -547,7 +547,7 @@ export function ServiceScheduleModal({
                     </div>
                     <div>
                       <label htmlFor="sched-hist-km" className={labelClass}>
-                        Stav tachometru (km)
+                        Nájezd kola při servisu (km)
                       </label>
                       <input
                         id="sched-hist-km"
@@ -560,7 +560,7 @@ export function ServiceScheduleModal({
                     </div>
                     <div>
                       <label htmlFor="sched-hist-hours" className={labelClass}>
-                        Stav hodin (h)
+                        Doba jízdy při servisu (h)
                       </label>
                       <input
                         id="sched-hist-hours"

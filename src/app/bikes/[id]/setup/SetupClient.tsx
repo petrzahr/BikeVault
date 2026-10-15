@@ -14,7 +14,8 @@ import {
   History, 
   HelpCircle,
   Clock,
-  Sliders
+  Sliders,
+  Loader2
 } from "lucide-react";
 import { t, formatDateCs, formatPsi, formatBar } from "@/lib/i18n";
 import { formatClicksFromClosed, formatTireLabel, formatTireBadge } from "@/lib/domain/setup";
@@ -662,8 +663,17 @@ export function SetupClient({
             disabled={loading}
             className={buttonClass("primary", "md")}
           >
-            <Save className="w-4 h-4" />
-            <span>{loading ? t("common.loading") : t("setup.save")}</span>
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>{t("common.loading")}</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>{t("setup.save")}</span>
+              </>
+            )}
           </button>
         </div>
       </form>
@@ -689,7 +699,7 @@ export function SetupClient({
                     {snap.profileName || "Profil nastavení"}
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-slate-400 tabular-nums">
+                    <span className="text-slate-500 tabular-nums">
                       {formatDateCs(snap.createdAt)}
                     </span>
                     <DeleteButton

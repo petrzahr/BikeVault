@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useVault } from "@/context/VaultContext";
 import { DeleteButton } from "@/components/common/DeleteButton";
 import { 
@@ -10,13 +10,17 @@ import {
   Calendar, 
   Bike as BikeIcon, 
   Tag, 
-  Layers 
+  Layers,
+  Plus 
 } from "lucide-react";
 import { t, formatCzk, formatDateCs } from "@/lib/i18n";
 import { PageHeader } from "@/components/common/PageHeader";
+import { buttonClass } from "@/lib/ui";
+import { AddTransactionModal } from "@/components/finances/AddTransactionModal";
 
 export default function GlobalFinancesPage() {
   const { data, deleteTransaction } = useVault();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const transactions = data.financialTransactions
     .slice()
     .sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime())
@@ -46,7 +50,20 @@ export default function GlobalFinancesPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <PageHeader title={t("finances.title")} />
+      <PageHeader
+        title={t("finances.title")}
+        subtitle="Kompletní přehled nákladů, pořízení, spotřebního materiálu a příjmů"
+        actions={
+          <button
+            type="button"
+            onClick={() => setIsAddModalOpen(true)}
+            className={buttonClass("primary", "md")}
+          >
+            <Plus className="w-4 h-4" />
+            <span>Přidat položku</span>
+          </button>
+        }
+      />
 
       {/* KPI Cards - Sjednocený responzivní ribbon */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-3 sm:p-4 grid grid-cols-3 divide-x divide-slate-100 sm:divide-slate-200/60">
@@ -128,11 +145,32 @@ export default function GlobalFinancesPage() {
           <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
             Všechny finanční položky ({transactions.length})
           </h3>
+          <button
+            type="button"
+            onClick={() => setIsAddModalOpen(true)}
+            className={buttonClass("secondary", "sm")}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Přidat položku</span>
+          </button>
         </div>
 
         {transactions.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-500">
-            Zatím nebyly zaznamenány žádné finanční transakce.
+          <div className="p-12 text-center space-y-3">
+            <p className="text-sm font-semibold text-slate-700">
+              Zatím nebyly zaznamenány žádné finanční transakce.
+            </p>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Zaznamenejte výdaj za dílenský materiál (maziva, tmely), servisní práce, příslušenství nebo nákup kola.
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              className={buttonClass("primary", "md", "mt-2")}
+            >
+              <Plus className="w-4 h-4" />
+              <span>Zapsat první položku</span>
+            </button>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -183,6 +221,11 @@ export default function GlobalFinancesPage() {
           </div>
         )}
       </div>
+
+      <AddTransactionModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
     </div>
   );
 }

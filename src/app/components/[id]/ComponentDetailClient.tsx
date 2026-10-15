@@ -23,7 +23,7 @@ import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleMo
 import { AddComponentModal } from "@/components/garage/AddComponentModal";
 import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
-import { Modal } from "@/components/common/Modal";
+import { RecordServiceEventModal } from "@/components/maintenance/RecordServiceEventModal";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
 import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
@@ -48,7 +48,6 @@ export function ComponentDetailClient({
   const { 
     toggleServiceScheduleActive, 
     deleteServiceSchedule, 
-    createServiceEvent, 
     getComponentServiceSchedules, 
     getComponentServiceEvents, 
     getGarageBikes,
@@ -70,14 +69,6 @@ export function ComponentDetailClient({
   // Record service modal state
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
   const [selectedScheduleForRecord, setSelectedScheduleForRecord] = useState<any | null>(null);
-  const [serviceName, setServiceName] = useState("");
-  const [serviceDate, setServiceDate] = useState(new Date().toISOString().split("T")[0]);
-  const [executionType, setExecutionType] = useState<"DIY" | "WORKSHOP">("DIY");
-  const [serviceProvider, setServiceProvider] = useState("Svépomocí");
-  const [partsCost, setPartsCost] = useState("");
-  const [laborCost, setLaborCost] = useState("");
-  const [notes, setNotes] = useState("");
-  const [recordLoading, setRecordLoading] = useState(false);
 
   const activeBike = activeInstallation?.bike;
   const specFields = getCategorySpecFields(category);
@@ -99,7 +90,7 @@ export function ComponentDetailClient({
   const handleDeleteInstallation = async (inst: any, bike: any) => {
     const message = inst.removedAt
       ? `Smazat záznam o montáži na kolo ${bike?.name || ""}? Použijte jen pro opravu chybně zadané montáže.`
-      : `Smazat záznam o montáži na kolo ${bike?.name || ""}? Díl se vrátí do skladu. Použijte jen pro opravu chybně zadané montáže, pro běžné sundání dílu použijte Demontovat.`;
+      : `Smazat záznam o montáži na kolo ${bike?.name || ""}? Komponenta se vrátí do skladu. Použijte pouze pro opravu chybně zadané montáže; pro běžné sundání z kola použijte Demontovat.`;
     if (!(await confirm({ message, confirmText: "Smazat montáž", isDestructive: true }))) return;
     deleteInstallation(inst.id);
     toast("Záznam o montáži byl smazán.", "success");
@@ -138,58 +129,8 @@ export function ComponentDetailClient({
   };
 
   const handleOpenRecordModal = (item?: any) => {
-    if (item) {
-      const sched = item.schedule;
-      setSelectedScheduleForRecord(sched);
-      setServiceName(sched.name);
-    } else {
-      setSelectedScheduleForRecord(null);
-      setServiceName("");
-    }
-    setServiceDate(new Date().toISOString().split("T")[0]);
-    setPartsCost("");
-    setLaborCost("");
-    setNotes("");
+    setSelectedScheduleForRecord(item ? item.schedule : null);
     setIsRecordModalOpen(true);
-  };
-
-  const handleSaveServiceEvent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!serviceName.trim()) {
-      toast("Zadejte název servisního úkonu.", "error");
-      return;
-    }
-
-    setRecordLoading(true);
-    const partsPrice = parseFloat(partsCost || "0");
-    const laborPrice = parseFloat(laborCost || "0");
-    try {
-      const bikeIdToUse = activeBike?.id || allBikes[0]?.id;
-      createServiceEvent({
-        bikeId: bikeIdToUse,
-        componentId: component.id,
-        serviceScheduleId: selectedScheduleForRecord?.id || null,
-        eventType: "MAINTENANCE",
-        serviceDate,
-        bikeKm: activeBike ? Number(activeBike.currentKm) : 0,
-        bikeMinutes: activeBike ? activeBike.currentMinutes : 0,
-        performedBy: executionType === "DIY" ? "SELF" : "SHOP",
-        shopName: executionType === "WORKSHOP" ? serviceProvider.trim() : null,
-        description: serviceName.trim(),
-        partsPrice,
-        laborPrice,
-        totalPrice: partsPrice + laborPrice,
-        currency: "CZK",
-        notes: notes.trim() || null,
-      });
-
-      setIsRecordModalOpen(false);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Chyba při zápisu servisu.";
-      toast(msg, "error");
-    } finally {
-      setRecordLoading(false);
-    }
   };
 
   return (
@@ -311,7 +252,7 @@ export function ComponentDetailClient({
 
         {schedulesWithStatus.length === 0 ? (
           <div className="p-8 bg-white border border-slate-200/80 rounded-2xl text-center space-y-3 shadow-sm">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               Pro tuto komponentu zatím není nastaven žádný servisní plán.
             </p>
             <button
@@ -402,7 +343,7 @@ export function ComponentDetailClient({
                       </button>
                       <button
                         onClick={() => handleDeleteSchedule(sched.id)}
-                        className="text-slate-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
+                        className="text-slate-500 hover:text-rose-600 p-1 transition-colors cursor-pointer"
                         title="Smazat plán"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -481,7 +422,7 @@ export function ComponentDetailClient({
 
         {installationHistory.length === 0 ? (
           <div className="p-8 bg-white border border-slate-200/80 rounded-2xl text-center shadow-sm">
-            <p className="text-xs text-slate-400">Tento komponent zatím nebyl osazen na žádném kole.</p>
+            <p className="text-xs text-slate-500">Tento komponent zatím nebyl osazen na žádném kole.</p>
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
@@ -519,7 +460,7 @@ export function ComponentDetailClient({
                           onClick={() => handleDeleteInstallation(inst, bike)}
                           title="Smazat chybný záznam o montáži"
                           aria-label="Smazat montáž"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -534,132 +475,15 @@ export function ComponentDetailClient({
       </div>
 
       {/* Record Service Modal */}
-      <Modal
+      <RecordServiceEventModal
         isOpen={isRecordModalOpen}
         onClose={() => setIsRecordModalOpen(false)}
-        title={selectedScheduleForRecord ? `Zapsat servis: ${selectedScheduleForRecord.name}` : "Zapsat provedení servisu"}
-        subtitle="Zaznamenejte provedený servisní úkon do knihy dílu"
-        maxWidth="max-w-lg"
-      >
-        <form onSubmit={handleSaveServiceEvent} className="space-y-4">
-          <div>
-            <label className={labelClass}>
-              Název servisního úkonu *
-            </label>
-            <input
-              type="text"
-              required
-              value={serviceName}
-              onChange={(e) => setServiceName(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelClass}>
-                Datum provedení
-              </label>
-              <input
-                type="date"
-                required
-                value={serviceDate}
-                onChange={(e) => setServiceDate(e.target.value)}
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>
-                Provedení
-              </label>
-              <select
-                value={executionType}
-                onChange={(e) => {
-                  const val = e.target.value as any;
-                  setExecutionType(val);
-                  if (val === "DIY") setServiceProvider("Svépomocí");
-                  else setServiceProvider("");
-                }}
-                className={inputClass}
-              >
-                <option value="DIY">Svépomocí</option>
-                <option value="WORKSHOP">Odborný servis / Dílna</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Mechanik / Název servisu
-            </label>
-            <input
-              type="text"
-              value={serviceProvider}
-              onChange={(e) => setServiceProvider(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={labelClass}>
-                Cena dílů (Kč)
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={partsCost}
-                onChange={(e) => setPartsCost(e.target.value)}
-                className={cn(inputClass, "tabular-nums")}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>
-                Cena práce (Kč)
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={laborCost}
-                onChange={(e) => setLaborCost(e.target.value)}
-                className={cn(inputClass, "tabular-nums")}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className={labelClass}>
-              Poznámka k servisu
-            </label>
-            <textarea
-              rows={2}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={() => setIsRecordModalOpen(false)}
-              className={buttonClass("secondary", "md")}
-            >
-              Zrušit
-            </button>
-            <button
-              type="submit"
-              disabled={recordLoading}
-              className={buttonClass("primary", "md")}
-            >
-              {recordLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-              <span>Zapsat servis</span>
-            </button>
-          </div>
-        </form>
-      </Modal>
+        fixedComponentId={component.id}
+        fixedBikeId={activeBike?.id}
+        initialSchedule={selectedScheduleForRecord}
+        bikes={allBikes}
+        components={[component]}
+      />
 
       {/* Edit Component Modal */}
       <AddComponentModal

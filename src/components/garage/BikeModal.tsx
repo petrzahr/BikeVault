@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Check, Loader2, Upload, Trash2, Scale, Bike as BikeIcon } from "lucide-react";
+import { Check, Loader2, Upload, Trash2, Scale, Bike as BikeIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import { Modal } from "@/components/common/Modal";
@@ -22,6 +22,8 @@ export interface BikeModalProps {
   initialData?: Partial<Bike> & { initialKm?: number; initialHours?: number; stravaGearId?: string } | null;
 }
 
+type BikeModalTab = "IDENTITY" | "SPECS" | "ACQUISITION";
+
 const EMPTY_LABEL = "—";
 
 export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData }: BikeModalProps) {
@@ -29,6 +31,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
   const lists = resolveLists(data.settings);
   const isEditMode = Boolean(bikeToEdit);
 
+  const [activeTab, setActiveTab] = useState<BikeModalTab>("IDENTITY");
   const [name, setName] = useState("");
   const [manufacturer, setManufacturer] = useState("");
   const [model, setModel] = useState("");
@@ -61,6 +64,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
   useEffect(() => {
     if (!isOpen) return;
 
+    setActiveTab("IDENTITY");
     if (bikeToEdit) {
       setName(bikeToEdit.name || "");
       setManufacturer(bikeToEdit.manufacturer || "");
@@ -174,17 +178,33 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
     setPreviewFailed(false);
   };
 
+  const handleNextFromIdentity = () => {
+    if (!name.trim() || !manufacturer.trim() || !model.trim()) {
+      setError("Vyplňte prosím název, výrobce a model kola.");
+      return;
+    }
+    const weightRes = parseWeightInput(weightInput);
+    if (!weightRes.valid) {
+      setError(weightRes.error || "Neplatná hodnota hmotnosti.");
+      return;
+    }
+    setError(null);
+    setActiveTab("SPECS");
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim() || !manufacturer.trim() || !model.trim()) {
       setError("Vyplňte prosím název, výrobce a model kola.");
+      setActiveTab("IDENTITY");
       return;
     }
 
     const weightRes = parseWeightInput(weightInput);
     if (!weightRes.valid) {
       setError(weightRes.error || "Neplatná hodnota hmotnosti.");
+      setActiveTab("IDENTITY");
       return;
     }
 
@@ -265,409 +285,546 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
       }
       maxWidth="max-w-2xl"
     >
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {error && (
           <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium">
             {error}
           </div>
         )}
 
-        {/* Základní identifikační údaje (přesné logické pořadí 1–7) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* 1. Název kola */}
-          <div className="sm:col-span-2">
-            <label htmlFor="bike-name" className={labelClass}>
-              {t("bike.name")} *
-            </label>
-            <input
-              id="bike-name"
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          {/* 2. Výrobce */}
-          <div>
-            <label htmlFor="bike-manufacturer" className={labelClass}>
-              {t("bike.manufacturer")} *
-            </label>
-            <input
-              id="bike-manufacturer"
-              type="text"
-              required
-              value={manufacturer}
-              onChange={(e) => setManufacturer(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          {/* 3. Model */}
-          <div>
-            <label htmlFor="bike-model" className={labelClass}>
-              {t("bike.model")} *
-            </label>
-            <input
-              id="bike-model"
-              type="text"
-              required
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          {/* 4. Modelový rok */}
-          <div>
-            <label htmlFor="bike-model-year" className={labelClass}>
-              {t("bike.modelYear")}
-            </label>
-            <input
-              id="bike-model-year"
-              type="number"
-              value={modelYear}
-              onChange={(e) => setModelYear(e.target.value ? parseInt(e.target.value, 10) : "")}
-              className={cn(inputClass, "tabular-nums")}
-            />
-          </div>
-
-          {/* 5. Velikost rámu */}
-          <div>
-            <label htmlFor="bike-frame-size" className={labelClass}>
-              Velikost rámu
-            </label>
-            <input
-              id="bike-frame-size"
-              type="text"
-              value={frameSize}
-              onChange={(e) => setFrameSize(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          {/* 6. Sériové číslo rámu */}
-          <div>
-            <label htmlFor="bike-serial-number" className={labelClass}>
-              Sériové číslo rámu
-            </label>
-            <input
-              id="bike-serial-number"
-              type="text"
-              value={serialNumber}
-              onChange={(e) => setSerialNumber(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          {/* 7. Hmotnost */}
-          <div>
-            <label htmlFor="bike-weight" className={labelClass}>
-              <Scale className="w-3.5 h-3.5 text-slate-400" />
-              <span>Hmotnost</span>
-            </label>
-            <div className="relative">
-              <input
-                id="bike-weight"
-                type="text"
-                inputMode="decimal"
-                value={weightInput}
-                onChange={(e) => setWeightInput(e.target.value)}
-                className={cn(inputClass, "pr-10 tabular-nums")}
-              />
-              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">
-                kg
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Klasifikace */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
-          <div>
-            <label htmlFor="bike-category" className={labelClass}>
-              {t("bike.category")}
-            </label>
-            <select
-              id="bike-category"
-              value={category}
-              onChange={(e) => {
-                const next = e.target.value;
-                setCategory(next);
-                const allowed = lists.disciplines[next] ?? [];
-                if (!allowed.some((o) => o.value === discipline)) setDiscipline("");
-              }}
-              className={inputClass}
-            >
-              <option value="">{EMPTY_LABEL}</option>
-              {withCurrent(lists.bikeCategories, category).map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="bike-discipline" className={labelClass}>
-              {t("bike.discipline")}
-            </label>
-            <select
-              id="bike-discipline"
-              value={discipline}
-              onChange={(e) => setDiscipline(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">{EMPTY_LABEL}</option>
-              {disciplineOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="bike-suspension-type" className={labelClass}>
-              {t("bike.suspensionType")}
-            </label>
-            <select
-              id="bike-suspension-type"
-              value={suspensionType}
-              onChange={(e) => setSuspensionType(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">{EMPTY_LABEL}</option>
-              {withCurrent(lists.suspensionTypes, suspensionType).map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="bike-drive-type" className={labelClass}>
-              {t("bike.driveType")}
-            </label>
-            <select
-              id="bike-drive-type"
-              value={driveType}
-              onChange={(e) => setDriveType(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">{EMPTY_LABEL}</option>
-              {withCurrent(lists.driveTypes, driveType).map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Nákup a výchozí počítadlo */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label htmlFor="bike-purchase-date" className={labelClass}>
-              {t("bike.purchaseDate")} *
-            </label>
-            <input
-              id="bike-purchase-date"
-              type="date"
-              required
-              value={purchaseDate}
-              onChange={(e) => setPurchaseDate(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="bike-purchase-price" className={labelClass}>
-              {t("bike.purchasePrice")} (Kč)
-            </label>
-            <input
-              id="bike-purchase-price"
-              type="number"
-              min="0"
-              value={purchasePrice}
-              onChange={(e) => setPurchasePrice(e.target.value)}
-              className={cn(inputClass, "tabular-nums")}
-            />
-          </div>
-
-          {/* Stav kola (pouze v editaci) */}
-          {isEditMode && (
-            <div className="sm:col-span-2">
-              <label htmlFor="bike-status" className={labelClass}>
-                Stav kola
-              </label>
-              <select
-                id="bike-status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value as "ACTIVE" | "INACTIVE" | "SOLD" | "ARCHIVED")}
-                className={inputClass}
-              >
-                <option value="ACTIVE">Aktivní</option>
-                <option value="INACTIVE">Neaktivní</option>
-                <option value="SOLD">Prodáno</option>
-                <option value="ARCHIVED">Archivováno</option>
-              </select>
-            </div>
-          )}
-
-          {/* Výchozí nájezd (pouze při zakládání kola) */}
-          {!isEditMode && (
-            <>
-              <div>
-                <label htmlFor="bike-initial-km" className={labelClass}>
-                  {t("bike.initialKm")}
-                </label>
-                <input
-                  id="bike-initial-km"
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  value={initialKm}
-                  onChange={(e) => setInitialKm(e.target.value)}
-                  className={cn(inputClass, "tabular-nums")}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="bike-initial-hours" className={labelClass}>
-                  {t("bike.initialHours")}
-                </label>
-                <input
-                  id="bike-initial-hours"
-                  type="number"
-                  min="0"
-                  value={initialHours}
-                  onChange={(e) => setInitialHours(e.target.value)}
-                  className={cn(inputClass, "tabular-nums")}
-                />
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Fotografie kola - nahrání souboru a náhled */}
-        <div className="space-y-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80">
-          <label className={labelClass}>
-            Fotografie kola
-          </label>
-
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            {/* Náhled fotografie */}
-            <div className="relative w-28 h-20 sm:w-32 sm:h-24 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 shrink-0 flex items-center justify-center">
-              {currentPreviewSource && !previewFailed ? (
-                <img
-                  src={currentPreviewSource}
-                  alt="Náhled fotografie kola"
-                  onError={() => setPreviewFailed(true)}
-                  className="w-full h-full object-cover object-center"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center text-slate-400 p-2 text-center">
-                  <BikeIcon className="w-8 h-8 mb-1 text-slate-300" />
-                  <span className="text-[10px] text-slate-400 font-medium">Bez fotografie</span>
-                </div>
-              )}
-            </div>
-
-            {/* Ovládací prvky pro nahrání a odebrání */}
-            <div className="flex-1 space-y-2">
-              <div className="flex items-center gap-2 flex-wrap">
-                <label className={buttonClass("secondary", "md")}>
-                  <Upload className="w-3.5 h-3.5 text-slate-500" />
-                  <span>{uploadedImage ? "Změnit soubor" : "Nahrát fotografii"}</span>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    onChange={handleFileChange}
-                    className="sr-only"
-                  />
-                </label>
-
-                {uploadedImage && (
-                  <button
-                    type="button"
-                    onClick={handleRemoveUploadedImage}
-                    className={buttonClass("dangerOutline", "md")}
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>Odebrat fotku</span>
-                  </button>
-                )}
-              </div>
-
-              <p className="text-[11px] text-slate-500">
-                Podporované formáty: JPEG, PNG, WebP (max. 10 MB).
-                {uploadedImage && imageUrl && (
-                  <span className="block text-navy-600 font-medium mt-0.5">
-                    Nahraná fotografie má přednost před níže uvedenou URL adresou.
-                  </span>
-                )}
-              </p>
-            </div>
-          </div>
-
-          {/* Externí URL adresa fotografie */}
-          <div className="pt-2 border-t border-slate-200/60">
-            <label htmlFor="bike-image-url" className={labelClass}>
-              URL fotografie kola (volitelné)
-            </label>
-            <input
-              id="bike-image-url"
-              type="url"
-              value={imageUrl}
-              onChange={(e) => {
-                setImageUrl(e.target.value);
-                setPreviewFailed(false);
-              }}
-              className={inputClass}
-            />
-          </div>
-        </div>
-
-        {/* Poznámky */}
-        <div>
-          <label htmlFor="bike-notes" className={labelClass}>
-            {t("bike.notes")}
-          </label>
-          <textarea
-            id="bike-notes"
-            rows={2}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-
-        {/* Tlačítka akcí */}
-        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+        {/* Přepínač sekcí formuláře (Segmented Control) */}
+        <div className="flex p-1 bg-slate-100/90 rounded-xl gap-1 text-xs font-semibold text-slate-600 border border-slate-200/60">
           <button
             type="button"
-            onClick={onClose}
-            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+            onClick={() => setActiveTab("IDENTITY")}
+            className={cn(
+              "flex-1 py-1.5 px-2 rounded-lg transition-all text-center flex items-center justify-center gap-1.5",
+              activeTab === "IDENTITY"
+                ? "bg-white text-navy-900 shadow-sm font-bold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+            )}
           >
-            {t("common.cancel")}
+            <span
+              className={cn(
+                "w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold",
+                activeTab === "IDENTITY" ? "bg-navy-900 text-white" : "bg-slate-200 text-slate-700"
+              )}
+            >
+              1
+            </span>
+            <span>Identita & Foto</span>
           </button>
           <button
-            type="submit"
-            disabled={loading}
-            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
+            type="button"
+            onClick={() => setActiveTab("SPECS")}
+            className={cn(
+              "flex-1 py-1.5 px-2 rounded-lg transition-all text-center flex items-center justify-center gap-1.5",
+              activeTab === "SPECS"
+                ? "bg-white text-navy-900 shadow-sm font-bold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+            )}
           >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-            <span>
-              {loading
-                ? t("common.loading")
-                : isEditMode
-                ? "Uložit změny"
-                : t("bike.save")}
+            <span
+              className={cn(
+                "w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold",
+                activeTab === "SPECS" ? "bg-navy-900 text-white" : "bg-slate-200 text-slate-700"
+              )}
+            >
+              2
             </span>
+            <span>Specifikace</span>
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("ACQUISITION")}
+            className={cn(
+              "flex-1 py-1.5 px-2 rounded-lg transition-all text-center flex items-center justify-center gap-1.5",
+              activeTab === "ACQUISITION"
+                ? "bg-white text-navy-900 shadow-sm font-bold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+            )}
+          >
+            <span
+              className={cn(
+                "w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold",
+                activeTab === "ACQUISITION" ? "bg-navy-900 text-white" : "bg-slate-200 text-slate-700"
+              )}
+            >
+              3
+            </span>
+            <span>Pořízení & Nájezd</span>
+          </button>
+        </div>
+
+        {/* TAB 1: ZÁKLADNÍ IDENTIFIKAČNÍ ÚDAJE & FOTO (přesné logické pořadí polí 1–7) */}
+        <div className={activeTab === "IDENTITY" ? "space-y-4" : "hidden"}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* 1. Název kola */}
+            <div className="sm:col-span-2">
+              <label htmlFor="bike-name" className={labelClass}>
+                {t("bike.name")} *
+              </label>
+              <input
+                id="bike-name"
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={inputClass}
+                placeholder="např. Santa Cruz Megatower"
+              />
+            </div>
+
+            {/* 2. Výrobce */}
+            <div>
+              <label htmlFor="bike-manufacturer" className={labelClass}>
+                {t("bike.manufacturer")} *
+              </label>
+              <input
+                id="bike-manufacturer"
+                type="text"
+                required
+                value={manufacturer}
+                onChange={(e) => setManufacturer(e.target.value)}
+                className={inputClass}
+                placeholder="např. Santa Cruz"
+              />
+            </div>
+
+            {/* 3. Model */}
+            <div>
+              <label htmlFor="bike-model" className={labelClass}>
+                {t("bike.model")} *
+              </label>
+              <input
+                id="bike-model"
+                type="text"
+                required
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                className={inputClass}
+                placeholder="např. Megatower CC"
+              />
+            </div>
+
+            {/* 4. Modelový rok */}
+            <div>
+              <label htmlFor="bike-model-year" className={labelClass}>
+                {t("bike.modelYear")}
+              </label>
+              <input
+                id="bike-model-year"
+                type="number"
+                value={modelYear}
+                onChange={(e) => setModelYear(e.target.value ? parseInt(e.target.value, 10) : "")}
+                className={cn(inputClass, "tabular-nums")}
+              />
+            </div>
+
+            {/* 5. Velikost rámu */}
+            <div>
+              <label htmlFor="bike-frame-size" className={labelClass}>
+                Velikost rámu
+              </label>
+              <input
+                id="bike-frame-size"
+                type="text"
+                value={frameSize}
+                onChange={(e) => setFrameSize(e.target.value)}
+                className={inputClass}
+                placeholder="např. L, XL, 56 cm"
+              />
+            </div>
+
+            {/* 6. Sériové číslo rámu */}
+            <div>
+              <label htmlFor="bike-serial-number" className={labelClass}>
+                Sériové číslo rámu
+              </label>
+              <input
+                id="bike-serial-number"
+                type="text"
+                value={serialNumber}
+                onChange={(e) => setSerialNumber(e.target.value)}
+                className={inputClass}
+                placeholder="např. WSBC..."
+              />
+            </div>
+
+            {/* 7. Hmotnost */}
+            <div>
+              <label htmlFor="bike-weight" className={labelClass}>
+                <Scale className="w-3.5 h-3.5 text-slate-500" />
+                <span>Hmotnost</span>
+              </label>
+              <div className="relative">
+                <input
+                  id="bike-weight"
+                  type="text"
+                  inputMode="decimal"
+                  value={weightInput}
+                  onChange={(e) => setWeightInput(e.target.value)}
+                  className={cn(inputClass, "pr-10 tabular-nums")}
+                  placeholder="např. 14,8"
+                />
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 pointer-events-none">
+                  kg
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Fotografie kola - nahrání souboru a náhled */}
+          <div className="space-y-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80">
+            <label className={labelClass}>
+              Fotografie kola
+            </label>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              {/* Náhled fotografie */}
+              <div className="relative w-28 h-20 sm:w-32 sm:h-24 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 shrink-0 flex items-center justify-center">
+                {currentPreviewSource && !previewFailed ? (
+                  <img
+                    src={currentPreviewSource}
+                    alt="Náhled fotografie kola"
+                    onError={() => setPreviewFailed(true)}
+                    className="w-full h-full object-cover object-center"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-slate-500 p-2 text-center">
+                    <BikeIcon className="w-8 h-8 mb-1 text-slate-400" />
+                    <span className="text-[10px] text-slate-500 font-medium">Bez fotografie</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Ovládací prvky pro nahrání a odebrání */}
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <label className={buttonClass("secondary", "md")}>
+                    <Upload className="w-3.5 h-3.5 text-slate-500" />
+                    <span>{uploadedImage ? "Změnit soubor" : "Nahrát fotografii"}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleFileChange}
+                      className="sr-only"
+                    />
+                  </label>
+
+                  {uploadedImage && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveUploadedImage}
+                      className={buttonClass("dangerOutline", "md")}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Odebrat fotografii</span>
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-[11px] text-slate-500">
+                  Podporované formáty: JPEG, PNG, WebP (max. 10 MB).
+                  {uploadedImage && imageUrl && (
+                    <span className="block text-navy-600 font-medium mt-0.5">
+                      Nahraná fotografie má přednost před níže uvedenou URL adresou.
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* Externí URL adresa fotografie */}
+            <div className="pt-2 border-t border-slate-200/60">
+              <label htmlFor="bike-image-url" className={labelClass}>
+                URL fotografie kola (volitelné)
+              </label>
+              <input
+                id="bike-image-url"
+                type="url"
+                value={imageUrl}
+                onChange={(e) => {
+                  setImageUrl(e.target.value);
+                  setPreviewFailed(false);
+                }}
+                className={inputClass}
+                placeholder="https://..."
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* TAB 2: SPECIFIKACE A KLASIFIKACE */}
+        <div className={activeTab === "SPECS" ? "space-y-4" : "hidden"}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
+            <div>
+              <label htmlFor="bike-category" className={labelClass}>
+                {t("bike.category")}
+              </label>
+              <select
+                id="bike-category"
+                value={category}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  setCategory(next);
+                  const allowed = lists.disciplines[next] ?? [];
+                  if (!allowed.some((o) => o.value === discipline)) setDiscipline("");
+                }}
+                className={inputClass}
+              >
+                <option value="">{EMPTY_LABEL}</option>
+                {withCurrent(lists.bikeCategories, category).map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="bike-discipline" className={labelClass}>
+                {t("bike.discipline")}
+              </label>
+              <select
+                id="bike-discipline"
+                value={discipline}
+                onChange={(e) => setDiscipline(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">{EMPTY_LABEL}</option>
+                {disciplineOptions.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="bike-suspension-type" className={labelClass}>
+                {t("bike.suspensionType")}
+              </label>
+              <select
+                id="bike-suspension-type"
+                value={suspensionType}
+                onChange={(e) => setSuspensionType(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">{EMPTY_LABEL}</option>
+                {withCurrent(lists.suspensionTypes, suspensionType).map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="bike-drive-type" className={labelClass}>
+                {t("bike.driveType")}
+              </label>
+              <select
+                id="bike-drive-type"
+                value={driveType}
+                onChange={(e) => setDriveType(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">{EMPTY_LABEL}</option>
+                {withCurrent(lists.driveTypes, driveType).map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Stav kola (pouze v editaci) */}
+            {isEditMode && (
+              <div className="sm:col-span-2 pt-2 border-t border-slate-200/60">
+                <label htmlFor="bike-status" className={labelClass}>
+                  Stav kola
+                </label>
+                <select
+                  id="bike-status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as "ACTIVE" | "INACTIVE" | "SOLD" | "ARCHIVED")}
+                  className={inputClass}
+                >
+                  <option value="ACTIVE">Aktivní</option>
+                  <option value="INACTIVE">Neaktivní</option>
+                  <option value="SOLD">Prodáno</option>
+                  <option value="ARCHIVED">Archivováno</option>
+                </select>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* TAB 3: POŘÍZENÍ, NÁJEZD & POZNÁMKY */}
+        <div className={activeTab === "ACQUISITION" ? "space-y-4" : "hidden"}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="bike-purchase-date" className={labelClass}>
+                {t("bike.purchaseDate")} *
+              </label>
+              <input
+                id="bike-purchase-date"
+                type="date"
+                required
+                value={purchaseDate}
+                onChange={(e) => setPurchaseDate(e.target.value)}
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="bike-purchase-price" className={labelClass}>
+                {t("bike.purchasePrice")} (Kč)
+              </label>
+              <input
+                id="bike-purchase-price"
+                type="number"
+                min="0"
+                value={purchasePrice}
+                onChange={(e) => setPurchasePrice(e.target.value)}
+                className={cn(inputClass, "tabular-nums")}
+              />
+            </div>
+
+            {/* Výchozí nájezd (pouze při zakládání kola) */}
+            {!isEditMode && (
+              <>
+                <div>
+                  <label htmlFor="bike-initial-km" className={labelClass}>
+                    {t("bike.initialKm")}
+                  </label>
+                  <input
+                    id="bike-initial-km"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={initialKm}
+                    onChange={(e) => setInitialKm(e.target.value)}
+                    className={cn(inputClass, "tabular-nums")}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="bike-initial-hours" className={labelClass}>
+                    {t("bike.initialHours")}
+                  </label>
+                  <input
+                    id="bike-initial-hours"
+                    type="number"
+                    min="0"
+                    value={initialHours}
+                    onChange={(e) => setInitialHours(e.target.value)}
+                    className={cn(inputClass, "tabular-nums")}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Poznámky */}
+          <div>
+            <label htmlFor="bike-notes" className={labelClass}>
+              {t("bike.notes")}
+            </label>
+            <textarea
+              id="bike-notes"
+              rows={3}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className={inputClass}
+              placeholder="Poznámky k nákupu, záruce, specifické konfiguraci..."
+            />
+          </div>
+        </div>
+
+        {/* Tlačítka akcí s navigací kroků a přímým uložením */}
+        <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs py-2.5 -mx-1 px-1 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 z-10">
+          <div>
+            {activeTab === "IDENTITY" ? (
+              <button
+                type="button"
+                onClick={onClose}
+                className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+              >
+                {t("common.cancel")}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeTab === "SPECS") setActiveTab("IDENTITY");
+                  if (activeTab === "ACQUISITION") setActiveTab("SPECS");
+                }}
+                className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto flex items-center justify-center gap-1.5")}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>
+                  {activeTab === "SPECS" ? "Zpět na identitu" : "Zpět na specifikace"}
+                </span>
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            {activeTab !== "ACQUISITION" ? (
+              <>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto flex items-center justify-center gap-1.5")}
+                >
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  <span>{isEditMode ? "Uložit změny" : t("bike.save")}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (activeTab === "IDENTITY") {
+                      handleNextFromIdentity();
+                    } else if (activeTab === "SPECS") {
+                      setActiveTab("ACQUISITION");
+                    }
+                  }}
+                  className={cn(buttonClass("primary", "md"), "w-full sm:w-auto flex items-center justify-center gap-1.5")}
+                >
+                  <span>
+                    {activeTab === "IDENTITY" ? "Další: Specifikace" : "Další: Pořízení"}
+                  </span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className={cn(buttonClass("secondary", "md"), "hidden sm:inline-flex")}
+                >
+                  {t("common.cancel")}
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={cn(buttonClass("primary", "md"), "w-full sm:w-auto flex items-center justify-center gap-1.5")}
+                >
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  <span>
+                    {loading
+                      ? t("common.loading")
+                      : isEditMode
+                      ? "Uložit změny kola"
+                      : t("bike.save")}
+                  </span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </form>
     </Modal>

@@ -97,7 +97,7 @@ export function ComponentsClient({
 
         {/* Panel filtrů a vyhledávání */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div role="tablist" aria-label="Stav komponentů" className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scroll-smooth scrollbar-none">
+          <div role="tablist" aria-label="Stav komponent" className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scroll-smooth scrollbar-none">
             {[
               { id: "ALL", label: t("common.all") },
               { id: "INSTALLED", label: t("components.installed") },
@@ -122,7 +122,7 @@ export function ComponentsClient({
           </div>
 
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-2" aria-hidden="true" />
+            <Search className="w-4 h-4 text-slate-500 absolute left-2.5 top-2" aria-hidden="true" />
             <input
               type="text"
               value={searchQuery}
@@ -138,7 +138,7 @@ export function ComponentsClient({
       {/* Grid komponentů */}
       {filtered.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center shadow-sm">
-          <p className="text-slate-400 text-sm">Nebyly nalezeny žádné odpovídající komponenty.</p>
+          <p className="text-slate-500 text-sm">Nebyly nalezeny žádné odpovídající komponenty.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -176,14 +176,14 @@ export function ComponentsClient({
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="text-[11px] font-semibold text-slate-700 px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-200">
-                      {cat?.nameCs || "Díl"}
+                      {cat?.nameCs || "Komponenta"}
                     </span>
                     {comp.status === "IN_STORAGE" ? (
                       <button
                         onClick={() => openInstall(comp, cat)}
                         className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold border border-navy-600 bg-navy-600 hover:bg-navy-700 hover:border-navy-700 text-white cursor-pointer transition-colors"
                       >
-                        Namontovat
+                        Namontovat na kolo
                       </button>
                     ) : (
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${statusBadge.style} truncate max-w-[180px]`}>
@@ -276,7 +276,7 @@ export function ComponentsClient({
           </div>
 
           <div>
-            <label htmlFor="components-install-slot" className={labelClass}>Slot na kole</label>
+            <label htmlFor="components-install-slot" className={labelClass}>Pozice na kole</label>
             <select
               id="components-install-slot"
               required
@@ -307,7 +307,7 @@ export function ComponentsClient({
               className={buttonClass("primary", "md")}
             >
               <Check className="w-4 h-4" />
-              <span>Namontovat</span>
+              <span>Namontovat na kolo</span>
             </button>
           </div>
         </form>
