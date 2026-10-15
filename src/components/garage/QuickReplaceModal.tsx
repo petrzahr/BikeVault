@@ -187,7 +187,7 @@ export function QuickReplaceModal({
         {/* 3. Stav kola při výměně */}
         <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
           <div>
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
               Tachometr kola
             </span>
             <span className="text-base font-bold text-slate-900 tabular-nums">
@@ -195,7 +195,7 @@ export function QuickReplaceModal({
             </span>
           </div>
           <div>
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
               Odjeto na kole
             </span>
             <span className="text-base font-bold text-slate-900 tabular-nums">

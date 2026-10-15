@@ -80,17 +80,19 @@ export function QuickPressureModal({
             <button
               type="button"
               onClick={() => handleAdjust("front", -0.05)}
-              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
+              aria-label="Snížit tlak vpředu o 0.05 bar"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
             >
               <Minus className="w-4 h-4" />
             </button>
             <div className="text-center tabular-nums font-bold text-2xl text-slate-900">
-              {front.toFixed(2)} <span className="text-xs text-slate-400 font-normal">bar</span>
+              {front.toFixed(2)} <span className="text-xs text-slate-500 font-normal">bar</span>
             </div>
             <button
               type="button"
               onClick={() => handleAdjust("front", +0.05)}
-              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
+              aria-label="Zvýšit tlak vpředu o 0.05 bar"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -111,17 +113,19 @@ export function QuickPressureModal({
             <button
               type="button"
               onClick={() => handleAdjust("rear", -0.05)}
-              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
+              aria-label="Snížit tlak vzadu o 0.05 bar"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
             >
               <Minus className="w-4 h-4" />
             </button>
             <div className="text-center tabular-nums font-bold text-2xl text-slate-900">
-              {rear.toFixed(2)} <span className="text-xs text-slate-400 font-normal">bar</span>
+              {rear.toFixed(2)} <span className="text-xs text-slate-500 font-normal">bar</span>
             </div>
             <button
               type="button"
               onClick={() => handleAdjust("rear", +0.05)}
-              className="w-10 h-10 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
+              aria-label="Zvýšit tlak vzadu o 0.05 bar"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm flex items-center justify-center font-bold text-lg active:scale-95 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
             </button>

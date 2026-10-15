@@ -276,10 +276,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* 1. Název kola */}
           <div className="sm:col-span-2">
-            <label className={labelClass}>
+            <label htmlFor="bike-name" className={labelClass}>
               {t("bike.name")} *
             </label>
             <input
+              id="bike-name"
               type="text"
               required
               value={name}
@@ -290,10 +291,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
           {/* 2. Výrobce */}
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-manufacturer" className={labelClass}>
               {t("bike.manufacturer")} *
             </label>
             <input
+              id="bike-manufacturer"
               type="text"
               required
               value={manufacturer}
@@ -304,10 +306,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
           {/* 3. Model */}
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-model" className={labelClass}>
               {t("bike.model")} *
             </label>
             <input
+              id="bike-model"
               type="text"
               required
               value={model}
@@ -318,10 +321,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
           {/* 4. Modelový rok */}
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-model-year" className={labelClass}>
               {t("bike.modelYear")}
             </label>
             <input
+              id="bike-model-year"
               type="number"
               value={modelYear}
               onChange={(e) => setModelYear(e.target.value ? parseInt(e.target.value, 10) : "")}
@@ -331,10 +335,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
           {/* 5. Velikost rámu */}
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-frame-size" className={labelClass}>
               Velikost rámu
             </label>
             <input
+              id="bike-frame-size"
               type="text"
               value={frameSize}
               onChange={(e) => setFrameSize(e.target.value)}
@@ -344,10 +349,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
           {/* 6. Sériové číslo rámu */}
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-serial-number" className={labelClass}>
               Sériové číslo rámu
             </label>
             <input
+              id="bike-serial-number"
               type="text"
               value={serialNumber}
               onChange={(e) => setSerialNumber(e.target.value)}
@@ -357,12 +363,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
           {/* 7. Hmotnost */}
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-weight" className={labelClass}>
               <Scale className="w-3.5 h-3.5 text-slate-400" />
               <span>Hmotnost</span>
             </label>
             <div className="relative">
               <input
+                id="bike-weight"
                 type="text"
                 inputMode="decimal"
                 value={weightInput}
@@ -379,10 +386,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
         {/* Klasifikace */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-category" className={labelClass}>
               {t("bike.category")}
             </label>
             <select
+              id="bike-category"
               value={category}
               onChange={(e) => {
                 const next = e.target.value;
@@ -402,10 +410,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-discipline" className={labelClass}>
               {t("bike.discipline")}
             </label>
             <select
+              id="bike-discipline"
               value={discipline}
               onChange={(e) => setDiscipline(e.target.value)}
               className={inputClass}
@@ -420,10 +429,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-suspension-type" className={labelClass}>
               {t("bike.suspensionType")}
             </label>
             <select
+              id="bike-suspension-type"
               value={suspensionType}
               onChange={(e) => setSuspensionType(e.target.value)}
               className={inputClass}
@@ -438,10 +448,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-drive-type" className={labelClass}>
               {t("bike.driveType")}
             </label>
             <select
+              id="bike-drive-type"
               value={driveType}
               onChange={(e) => setDriveType(e.target.value)}
               className={inputClass}
@@ -459,10 +470,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
         {/* Nákup a výchozí počítadlo */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-purchase-date" className={labelClass}>
               {t("bike.purchaseDate")} *
             </label>
             <input
+              id="bike-purchase-date"
               type="date"
               required
               value={purchaseDate}
@@ -472,10 +484,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           </div>
 
           <div>
-            <label className={labelClass}>
+            <label htmlFor="bike-purchase-price" className={labelClass}>
               {t("bike.purchasePrice")} (Kč)
             </label>
             <input
+              id="bike-purchase-price"
               type="number"
               min="0"
               value={purchasePrice}
@@ -487,10 +500,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           {/* Stav kola (pouze v editaci) */}
           {isEditMode && (
             <div className="sm:col-span-2">
-              <label className={labelClass}>
+              <label htmlFor="bike-status" className={labelClass}>
                 Stav kola
               </label>
               <select
+                id="bike-status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value as "ACTIVE" | "INACTIVE" | "SOLD" | "ARCHIVED")}
                 className={inputClass}
@@ -507,10 +521,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           {!isEditMode && (
             <>
               <div>
-                <label className={labelClass}>
+                <label htmlFor="bike-initial-km" className={labelClass}>
                   {t("bike.initialKm")}
                 </label>
                 <input
+                  id="bike-initial-km"
                   type="number"
                   step="0.1"
                   min="0"
@@ -521,10 +536,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               </div>
 
               <div>
-                <label className={labelClass}>
+                <label htmlFor="bike-initial-hours" className={labelClass}>
                   {t("bike.initialHours")}
                 </label>
                 <input
+                  id="bike-initial-hours"
                   type="number"
                   min="0"
                   value={initialHours}
@@ -599,10 +615,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
           {/* Externí URL adresa fotografie */}
           <div className="pt-2 border-t border-slate-200/60">
-            <label className={labelClass}>
+            <label htmlFor="bike-image-url" className={labelClass}>
               URL fotografie kola (volitelné)
             </label>
             <input
+              id="bike-image-url"
               type="url"
               value={imageUrl}
               onChange={(e) => {
@@ -616,10 +633,11 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
         {/* Poznámky */}
         <div>
-          <label className={labelClass}>
+          <label htmlFor="bike-notes" className={labelClass}>
             {t("bike.notes")}
           </label>
           <textarea
+            id="bike-notes"
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}

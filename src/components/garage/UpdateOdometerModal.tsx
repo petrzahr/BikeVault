@@ -123,11 +123,12 @@ export function UpdateOdometerModal({
 
         {/* New cumulative kilometers */}
         <div>
-          <label className={labelClass}>
+          <label htmlFor="odo-total-km" className={labelClass}>
             {t("odometer.currentKm")} *
           </label>
           <div className="relative">
             <input
+              id="odo-total-km"
               type="number"
               step="0.1"
               min="0"
@@ -142,12 +143,13 @@ export function UpdateOdometerModal({
 
         {/* New cumulative hours */}
         <div>
-          <label className={labelClass}>
+          <label htmlFor="odo-hours" className={labelClass}>
             {t("odometer.currentHours")} *
           </label>
           <div className="grid grid-cols-2 gap-3">
             <div className="relative">
               <input
+                id="odo-hours"
                 type="number"
                 min="0"
                 required
@@ -159,9 +161,11 @@ export function UpdateOdometerModal({
             </div>
             <div className="relative">
               <input
+                id="odo-minutes"
                 type="number"
                 min="0"
                 max="59"
+                aria-label="Minuty"
                 value={minutesStr}
                 onChange={(e) => setMinutesStr(e.target.value)}
                 className={cn(inputClass, "pr-11 tabular-nums")}
@@ -173,10 +177,11 @@ export function UpdateOdometerModal({
 
         {/* Date */}
         <div>
-          <label className={labelClass}>
+          <label htmlFor="odo-entry-date" className={labelClass}>
             {t("odometer.date")}
           </label>
           <input
+            id="odo-entry-date"
             type="date"
             required
             value={entryDate}
@@ -187,10 +192,11 @@ export function UpdateOdometerModal({
 
         {/* Note */}
         <div>
-          <label className={labelClass}>
+          <label htmlFor="odo-note" className={labelClass}>
             {t("odometer.note")}
           </label>
           <input
+            id="odo-note"
             type="text"
             value={note}
             onChange={(e) => setNote(e.target.value)}

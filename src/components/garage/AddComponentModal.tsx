@@ -137,10 +137,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
     >
       <form onSubmit={handleCreate} className="space-y-4">
         <div>
-          <label className={labelClass}>
+          <label htmlFor="comp-category" className={labelClass}>
             Kategorie komponentu *
           </label>
           <select
+            id="comp-category"
             value={effectiveCategoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             required
@@ -157,10 +158,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="comp-manufacturer" className={labelClass}>
               Výrobce *
             </label>
             <input
+              id="comp-manufacturer"
               type="text"
               required
               value={manufacturer}
@@ -169,10 +171,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             />
           </div>
           <div>
-            <label className={labelClass}>
+            <label htmlFor="comp-model" className={labelClass}>
               Model *
             </label>
             <input
+              id="comp-model"
               type="text"
               required
               value={model}
@@ -184,10 +187,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="comp-variant" className={labelClass}>
               Varianta / specifikace
             </label>
             <input
+              id="comp-variant"
               type="text"
               value={variant}
               onChange={(e) => setVariant(e.target.value)}
@@ -195,10 +199,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             />
           </div>
           <div>
-            <label className={labelClass}>
+            <label htmlFor="comp-serial-number" className={labelClass}>
               Sériové číslo
             </label>
             <input
+              id="comp-serial-number"
               type="text"
               value={serialNumber}
               onChange={(e) => setSerialNumber(e.target.value)}
@@ -209,10 +214,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>
+            <label htmlFor="comp-purchase-price" className={labelClass}>
               Nákupní cena (Kč)
             </label>
             <input
+              id="comp-purchase-price"
               type="number"
               min="0"
               value={purchasePrice}
@@ -221,10 +227,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             />
           </div>
           <div>
-            <label className={labelClass}>
+            <label htmlFor="comp-purchase-date" className={labelClass}>
               Datum nákupu
             </label>
             <input
+              id="comp-purchase-date"
               type="date"
               value={purchaseDate}
               onChange={(e) => setPurchaseDate(e.target.value)}
@@ -247,6 +254,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
                   value={specValues[field.key] || ""}
                   onChange={(e) => setSpecValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
                   placeholder={field.label}
+                  aria-label={field.label}
                   className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-navy-500/20"
                 />
               ))}
@@ -255,10 +263,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
         )}
 
         <div>
-          <label className={labelClass}>
+          <label htmlFor="comp-notes" className={labelClass}>
             Poznámka
           </label>
           <textarea
+            id="comp-notes"
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}

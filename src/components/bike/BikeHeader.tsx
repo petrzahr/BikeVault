@@ -16,7 +16,8 @@ import {
   RefreshCw,
   CheckCircle2,
   AlertTriangle,
-  Trash2
+  Trash2,
+  X
 } from "lucide-react";
 import { t, formatDateCs } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
@@ -210,10 +211,12 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
             )}
             <div className="flex-1">{stravaSyncNotice.text}</div>
             <button
+              type="button"
               onClick={() => setStravaSyncNotice(null)}
-              className="text-slate-400 hover:text-slate-600 font-bold ml-1 cursor-pointer"
+              aria-label="Zavřít upozornění"
+              className="p-1 min-w-[36px] min-h-[36px] flex items-center justify-center text-slate-400 hover:text-slate-600 rounded-lg transition-colors cursor-pointer ml-1"
             >
-              ✕
+              <X className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -226,6 +229,8 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
               <img
                 src={resolvedImage}
                 alt={bike.name}
+                loading="lazy"
+                decoding="async"
                 onError={() => setImageFailed(true)}
                 className="w-full h-full object-cover object-center"
               />

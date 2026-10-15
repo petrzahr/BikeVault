@@ -96,7 +96,7 @@ export function ComponentsClient({
 
         {/* Panel filtrů a vyhledávání */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scrollbar-none">
+          <div role="tablist" aria-label="Stav komponentů" className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scrollbar-none">
             {[
               { id: "ALL", label: t("common.all") },
               { id: "INSTALLED", label: t("components.installed") },
@@ -106,6 +106,8 @@ export function ComponentsClient({
             ].map((tab) => (
               <button
                 key={tab.id}
+                role="tab"
+                aria-selected={filterStatus === tab.id}
                 onClick={() => setFilterStatus(tab.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   filterStatus === tab.id
@@ -119,12 +121,13 @@ export function ComponentsClient({
           </div>
 
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-2" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-2" aria-hidden="true" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("common.search")}
+              aria-label="Hledat komponenty"
               className={cn(inputClass, "pl-8 pr-3")}
             />
           </div>

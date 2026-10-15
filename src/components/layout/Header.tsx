@@ -52,10 +52,19 @@ export const Header: React.FC<HeaderProps> = ({
         setMenuOpen(false);
       }
     };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
     if (menuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [menuOpen]);
 
   const getScreenTitle = () => {
@@ -79,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleMobileMenu}
             aria-label="Otevřít menu"
-            className="p-2 rounded-xl text-white/60 hover:bg-white/10 md:hidden shrink-0"
+            className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-white/70 hover:bg-white/10 md:hidden shrink-0"
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -88,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
             <h1 className="text-base font-bold text-white leading-tight truncate">
               {getScreenTitle()}
             </h1>
-            <p className="text-[11px] text-white/45 font-medium hidden sm:block truncate">
+            <p className="text-[11px] text-white/70 font-medium hidden sm:block truncate">
               BikeVault – Vaše kola pod absolutní kontrolou
             </p>
           </div>

@@ -104,7 +104,7 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               type="button"
               onClick={() => dismiss(t.id)}
               aria-label="Zavřít oznámení"
-              className="shrink-0 opacity-60 hover:opacity-100 cursor-pointer"
+              className="shrink-0 p-1 min-w-[32px] min-h-[32px] flex items-center justify-center -mr-1 -mt-1 rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 transition-opacity cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>

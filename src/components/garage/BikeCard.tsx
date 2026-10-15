@@ -46,7 +46,7 @@ interface BikeCardProps {
 }
 
 const iconButtonClass =
-  "p-2 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200 transition-colors flex items-center justify-center cursor-pointer";
+  "p-2 min-w-[44px] min-h-[44px] bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200 transition-colors flex items-center justify-center cursor-pointer";
 
 export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
   const [isOdometerModalOpen, setIsOdometerModalOpen] = useState(false);
@@ -100,6 +100,8 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
             <img
               src={resolvedImage}
               alt={bike.name}
+              loading="lazy"
+              decoding="async"
               onError={() => setImageFailed(true)}
               className="w-full h-full object-contain object-center group-hover:scale-102 transition-transform duration-300"
             />
@@ -136,7 +138,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
           {/* Key Metrics: Mileage & Hours */}
           <div className="grid grid-cols-2 gap-3 bg-slate-50/80 p-3 rounded-xl border border-slate-200/60">
             <div>
-              <span className="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">
+              <span className="text-[10px] font-semibold text-slate-500 block uppercase tracking-wider">
                 {t("bike.metrics.currentMileage")}
               </span>
               <span className="text-base font-bold text-slate-900 tabular-nums">
@@ -144,7 +146,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
               </span>
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">
+              <span className="text-[10px] font-semibold text-slate-500 block uppercase tracking-wider">
                 {t("bike.metrics.ridingHours")}
               </span>
               <span className="text-base font-bold text-slate-900 tabular-nums">
@@ -203,7 +205,7 @@ export function BikeCard({ bike, serviceSummary, netCost }: BikeCardProps) {
               href={`/bikes/${bike.id}`}
               title={t("garage.card.details")}
               aria-label={t("garage.card.details")}
-              className="p-2 bg-navy-600 hover:bg-navy-700 text-white rounded-xl border border-navy-600 transition-colors flex items-center justify-center cursor-pointer"
+              className="p-2 min-w-[44px] min-h-[44px] bg-navy-600 hover:bg-navy-700 text-white rounded-xl border border-navy-600 transition-colors flex items-center justify-center cursor-pointer"
             >
               <ArrowUpRight className="w-4 h-4" />
             </Link>

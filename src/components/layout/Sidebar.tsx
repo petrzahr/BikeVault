@@ -102,7 +102,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             <button
               onClick={onCloseMobile}
-              className="p-1 rounded-xl text-white/50 hover:text-white/80 md:hidden"
+              aria-label="Zavřít menu"
+              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 md:hidden"
             >
               <X className="w-5 h-5" />
             </button>
@@ -145,10 +146,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                     active
                       ? "bg-navy-600 text-white shadow-sm"
-                      : "text-white/55 hover:bg-white/5 hover:text-white/85"
+                      : "text-white/70 hover:bg-white/10 hover:text-white"
                   }`}
                 >
-                  <span className={active ? "text-white" : "text-white/35"}>
+                  <span className={active ? "text-white" : "text-white/60"}>
                     <Icon className="w-4 h-4" />
                   </span>
                   <span>{item.label}</span>
@@ -161,28 +162,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Spodní rychlý přehled stavu k dnešnímu dni */}
         <div className="p-3.5 m-3 bg-ink-800 border border-white/10 rounded-2xl space-y-2 text-xs">
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-white/50">
+            <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Aktivní kola">Kola v garáži</span>
               <span className="shrink-0 font-medium tabular-nums text-white/90">
                 {activeBikesCount} {activeBikesCount === 1 ? "kolo" : activeBikesCount >= 2 && activeBikesCount <= 4 ? "kola" : "kol"}
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-white/50">
+            <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Celkový nájezd">Celkový nájezd</span>
               <span className="shrink-0 font-medium tabular-nums text-white/90">
                 {formatKm(totalKm)}
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-white/50">
+            <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Aktivní komponenty">Aktivní díly</span>
               <span className="shrink-0 font-medium tabular-nums text-white/90">
                 {installedComponentsCount} ks
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-white/50">
+            <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Vyžaduje servis">Vyžaduje servis</span>
               <span className={`shrink-0 font-medium tabular-nums ${overdueCount > 0 ? "text-rose-400 font-bold" : "text-emerald-400"}`}>
                 {overdueCount > 0 ? `${overdueCount} po termínu` : "V pořádku"}

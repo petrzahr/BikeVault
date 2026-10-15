@@ -271,10 +271,11 @@ export function ServiceScheduleModal({
 
         {/* Název plánu */}
         <div>
-          <label className={labelClass}>
+          <label htmlFor="sched-name" className={labelClass}>
             Název servisního plánu *
           </label>
           <input
+            id="sched-name"
             type="text"
             required
             value={name}
@@ -285,9 +286,9 @@ export function ServiceScheduleModal({
 
         {/* Vztahuje se k */}
         <div className="space-y-2">
-          <label className={labelClass}>
+          <span className={labelClass}>
             Vztahuje se k *
-          </label>
+          </span>
           <div className="grid grid-cols-2 gap-3">
             <label
               className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
@@ -334,10 +335,11 @@ export function ServiceScheduleModal({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
-              <label className={labelClass}>
+              <label htmlFor="sched-bike" className={labelClass}>
                 Kolo
               </label>
               <select
+                id="sched-bike"
                 value={bikeId}
                 onChange={(e) => setBikeId(e.target.value)}
                 className={inputClass}
@@ -353,10 +355,11 @@ export function ServiceScheduleModal({
 
             {appliesTo === "COMPONENT" && (
               <div>
-                <label className={labelClass}>
+                <label htmlFor="sched-component" className={labelClass}>
                   Komponenta
                 </label>
                 <select
+                  id="sched-component"
                   value={componentId}
                   onChange={(e) => setComponentId(e.target.value)}
                   required={appliesTo === "COMPONENT"}
@@ -377,9 +380,9 @@ export function ServiceScheduleModal({
         {/* Intervaly */}
         <div className="space-y-3 pt-2 border-t border-slate-100">
           <div className="flex items-center justify-between">
-            <label className={labelClass}>
+            <span className={labelClass}>
               Nastavení servisního intervalu
-            </label>
+            </span>
             <span className="text-[11px] text-navy-700 font-semibold bg-navy-50 px-2.5 py-0.5 rounded-full border border-navy-200">
               Podle toho, co nastane dříve
             </span>
@@ -387,11 +390,12 @@ export function ServiceScheduleModal({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className={labelClass}>
+              <label htmlFor="sched-hours" className={labelClass}>
                 Podle hodin
               </label>
               <div className="relative">
                 <input
+                  id="sched-hours"
                   type="number"
                   step="1"
                   min="1"
@@ -404,11 +408,12 @@ export function ServiceScheduleModal({
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label htmlFor="sched-km" className={labelClass}>
                 Podle kilometrů
               </label>
               <div className="relative">
                 <input
+                  id="sched-km"
                   type="number"
                   step="10"
                   min="1"
@@ -421,11 +426,12 @@ export function ServiceScheduleModal({
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label htmlFor="sched-months" className={labelClass}>
                 Podle času
               </label>
               <div className="relative">
                 <input
+                  id="sched-months"
                   type="number"
                   step="1"
                   min="1"
@@ -441,10 +447,11 @@ export function ServiceScheduleModal({
           {/* Upozornění s předstihem */}
           <div className="grid grid-cols-2 gap-3 pt-1">
             <div>
-              <label className={labelClass}>
+              <label htmlFor="sched-warn-hours" className={labelClass}>
                 Upozornit s předstihem (h)
               </label>
               <input
+                id="sched-warn-hours"
                 type="number"
                 min="1"
                 value={warningHours}
@@ -454,10 +461,11 @@ export function ServiceScheduleModal({
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label htmlFor="sched-warn-km" className={labelClass}>
                 Upozornit s předstihem (km)
               </label>
               <input
+                id="sched-warn-km"
                 type="number"
                 min="1"
                 value={warningKm}
@@ -526,10 +534,11 @@ export function ServiceScheduleModal({
                 {startingPointType === "HISTORICAL" && (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 bg-white rounded-xl border border-slate-200 mt-2">
                     <div>
-                      <label className={labelClass}>
+                      <label htmlFor="sched-hist-date" className={labelClass}>
                         Datum servisu
                       </label>
                       <input
+                        id="sched-hist-date"
                         type="date"
                         value={lastServiceDate}
                         onChange={(e) => setLastServiceDate(e.target.value)}
@@ -537,10 +546,11 @@ export function ServiceScheduleModal({
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>
+                      <label htmlFor="sched-hist-km" className={labelClass}>
                         Stav tachometru (km)
                       </label>
                       <input
+                        id="sched-hist-km"
                         type="number"
                         step="0.1"
                         value={lastServiceKm}
@@ -549,10 +559,11 @@ export function ServiceScheduleModal({
                       />
                     </div>
                     <div>
-                      <label className={labelClass}>
+                      <label htmlFor="sched-hist-hours" className={labelClass}>
                         Stav hodin (h)
                       </label>
                       <input
+                        id="sched-hist-hours"
                         type="number"
                         step="0.5"
                         value={lastServiceHours}
@@ -605,10 +616,11 @@ export function ServiceScheduleModal({
 
         {/* Poznámky */}
         <div>
-          <label className={labelClass}>
+          <label htmlFor="sched-notes" className={labelClass}>
             Poznámka k plánu
           </label>
           <textarea
+            id="sched-notes"
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}

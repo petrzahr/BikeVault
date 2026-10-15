@@ -57,7 +57,7 @@ const config: Config = {
         danger: "#b3261e",
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', "system-ui", "-apple-system", "sans-serif"],
+        sans: ['var(--font-sans)', '"Plus Jakarta Sans"', "system-ui", "-apple-system", "sans-serif"],
       },
       keyframes: {
         "fade-in": {
