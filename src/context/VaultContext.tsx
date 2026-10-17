@@ -43,8 +43,11 @@ import {
   validateAndParseBackup,
   exportCorruptedRawData,
   getInitialData,
+  setActiveStorageKey,
+  STORAGE_KEY_DEMO,
 } from "@/lib/storage/storageService";
 import { useFeedback } from "@/components/common/Feedback";
+import { isDevAuthBypassEnabled, DEV_BYPASS_USER } from "@/lib/devAuthBypass";
 import { recordOdometerSnapshot, calculateInstallationUsage } from "@/lib/domain/odometer";
 import { compareMileage, compareRideTime, validateLinkConstraint, validateNewBikeGearId } from "@/lib/domain/stravaSync";
 import { formatMinutes } from "@/lib/i18n";
@@ -264,6 +267,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
 
   // Helper to sync with authoritative Google Drive
   const syncWithGoogleDrive = useCallback(async (token: string) => {
+    // The dev bypass never talks to Drive (no download into the demo cache, no upload of demo data)
+    if (isDevAuthBypassEnabled()) return;
     try {
       setSyncStatus("saving");
       setSyncError(null);
@@ -337,6 +342,21 @@ export function VaultProvider({ children }: { children: ReactNode }) {
 
   // 1. Initial load & check Google Auth
   useEffect(() => {
+    // Dev-only: local UI work without Google sign-in; data comes only from the demo cache key, Drive is never called
+    if (isDevAuthBypassEnabled()) {
+      // Pin the demo cache key explicitly: the production key must never be read or written in bypass mode
+      setActiveStorageKey(STORAGE_KEY_DEMO);
+      const cacheResult = loadStoredCacheResult();
+      if (cacheResult.status === "ready") setData(cacheResult.data);
+      setUser(DEV_BYPASS_USER);
+      setIsAuthenticated(true);
+      setAppState("ready");
+      setSyncStatus("offline");
+      setIsLoaded(true);
+      setIsInitialSyncDone(true);
+      return;
+    }
+
     const auth = getStoredAuth();
     const valid = isStoredTokenValid();
 
@@ -396,6 +416,9 @@ export function VaultProvider({ children }: { children: ReactNode }) {
 
     // Always update local cache immediately
     saveStoredCache(data);
+
+    // DATA SAFETY: the dev bypass works on demo data only and must never upload it to Drive
+    if (isDevAuthBypassEnabled()) return;
 
     // If logged in, debounce upload to Drive
     const auth = getStoredAuth();

@@ -14,6 +14,7 @@ No own database: primary data lives in a file on the user's Google Drive. Only S
 - Build / regression check: `npm run build`. Must pass before every commit.
 - Tests: `npm test` (custom tsx scripts in `tests/`, no test framework). Must pass before every commit.
 - Lint: no linter is configured. Don't add ESLint or another linter without asking.
+- Local UI preview without Google sign-in: run `next dev` with `NEXT_PUBLIC_ENABLE_DEMO_DATA=true` and `NEXT_PUBLIC_DEV_AUTH_BYPASS=true` (launch config `dev-demo`, port 3001), then seed `localStorage["bikevault_demo_cache_v1"]` in the browser. Guarded in `src/lib/devAuthBypass.ts` (dev build + localhost only, demo cache key pinned, Drive never called). Never set these vars on Vercel.
 
 ## Integrations (plain fetch, no SDKs)
 - Strava API: OAuth with server-side callback `src/app/api/strava/callback`, code in `src/lib/strava/`.
