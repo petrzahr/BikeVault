@@ -207,7 +207,7 @@ export function GarageClient({
 
       {/* KPI Agregáty garáže */}
       <div className="card p-4 grid grid-cols-3 divide-x divide-slate-100">
-        <div className="px-2 sm:px-4 first:pl-0">
+        <div className="min-w-0 px-2 sm:px-4 first:pl-0">
           <div className="flex items-center gap-1.5 mb-1">
             <BikeIcon className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Nájezd garáže</span>
@@ -220,7 +220,7 @@ export function GarageClient({
           </p>
         </div>
 
-        <div className="px-2 sm:px-4">
+        <div className="min-w-0 px-2 sm:px-4">
           <div className="flex items-center gap-1.5 mb-1">
             <Clock className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Čas v sedle</span>
@@ -233,7 +233,7 @@ export function GarageClient({
           </p>
         </div>
 
-        <div className="px-2 sm:px-4 last:pr-0">
+        <div className="min-w-0 px-2 sm:px-4 last:pr-0">
           <div className="flex items-center gap-1.5 mb-1">
             <Warehouse className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Stav flotily</span>
@@ -246,19 +246,19 @@ export function GarageClient({
           </div>
           <div className="mt-1">
             {overdueBikesCount > 0 ? (
-              <span className="chip chip-rose">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                <span>{overdueBikesCount} {pluralizeCs(overdueBikesCount, "vyžaduje servis", "vyžadují servis", "vyžaduje servis")}</span>
+              <span className="chip chip-rose max-w-full">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{overdueBikesCount} {pluralizeCs(overdueBikesCount, "vyžaduje servis", "vyžadují servis", "vyžaduje servis")}</span>
               </span>
             ) : dueSoonBikesCount > 0 ? (
-              <span className="chip chip-amber">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{dueSoonBikesCount} {pluralizeCs(dueSoonBikesCount, "brzy na servis", "brzy na servis", "brzy na servis")}</span>
+              <span className="chip chip-amber max-w-full">
+                <Clock className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{dueSoonBikesCount} {pluralizeCs(dueSoonBikesCount, "brzy na servis", "brzy na servis", "brzy na servis")}</span>
               </span>
             ) : (
-              <span className="chip chip-emerald">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>100% připraveno k jízdě</span>
+              <span className="chip chip-emerald max-w-full">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">100% připraveno k jízdě</span>
               </span>
             )}
           </div>

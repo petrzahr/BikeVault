@@ -446,8 +446,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                         </p>
                       </div>
 
-                      <div className="text-right">
-                        <span className="text-slate-500 block tabular-nums">
+                      <div className="text-right shrink-0">
+                        <span className="text-slate-500 block tabular-nums whitespace-nowrap">
                           {formatDateCs(entry.entryDate)}
                         </span>
                         <span className="text-slate-500 tabular-nums">

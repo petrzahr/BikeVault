@@ -298,7 +298,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             type="button"
             onClick={() => setActiveTab("IDENTITY")}
             aria-pressed={activeTab === "IDENTITY"}
-            className="segment flex-1 px-2"
+            className="segment flex-1 min-w-0 px-2"
           >
             <span
               className={cn(
@@ -308,13 +308,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             >
               1
             </span>
-            <span>Identita & Foto</span>
+            <span className="truncate">Identita & Foto</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("SPECS")}
             aria-pressed={activeTab === "SPECS"}
-            className="segment flex-1 px-2"
+            className="segment flex-1 min-w-0 px-2"
           >
             <span
               className={cn(
@@ -324,13 +324,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             >
               2
             </span>
-            <span>Specifikace</span>
+            <span className="truncate">Specifikace</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("ACQUISITION")}
             aria-pressed={activeTab === "ACQUISITION"}
-            className="segment flex-1 px-2"
+            className="segment flex-1 min-w-0 px-2"
           >
             <span
               className={cn(
@@ -340,7 +340,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             >
               3
             </span>
-            <span>Pořízení & Nájezd</span>
+            <span className="truncate">Pořízení & Nájezd</span>
           </button>
         </div>
 

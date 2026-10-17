@@ -217,8 +217,8 @@ export function BikeCard({
           {/* Service status & Net cost */}
           <div className="space-y-2 pt-0.5">
             {/* Service alert */}
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500 flex items-center gap-1.5 font-medium">
+            <div className="flex items-center justify-between gap-2 text-xs">
+              <span className="text-slate-500 flex items-center gap-1.5 font-medium shrink-0">
                 <Wrench className="w-3.5 h-3.5 text-slate-500" />
                 <span>{t("garage.card.nextService")}:</span>
               </span>
@@ -227,10 +227,10 @@ export function BikeCard({
                 onClick={() => setIsServiceModalOpen(true)}
                 title="Zapsat servis pro toto kolo"
                 aria-label={`Zapsat servis: ${serviceSummary?.text || t("garage.card.noServiceDue")}`}
-                className={`chip ${badgeStyle.bg} cursor-pointer hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40`}
+                className={`chip ${badgeStyle.bg} min-w-0 cursor-pointer hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40`}
               >
-                <BadgeIcon className={`w-3.5 h-3.5 ${badgeStyle.dot}`} />
-                <span>{serviceSummary?.text || t("garage.card.noServiceDue")}</span>
+                <BadgeIcon className={`w-3.5 h-3.5 shrink-0 ${badgeStyle.dot}`} />
+                <span className="truncate">{serviceSummary?.text || t("garage.card.noServiceDue")}</span>
               </button>
             </div>
 

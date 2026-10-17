@@ -49,7 +49,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
 
       {/* TCO Summary Cards - Sjednocený responzivní ribbon */}
       <div className="card p-4 grid grid-cols-3 divide-x divide-slate-100">
-        <div className="px-2 sm:px-4 first:pl-0">
+        <div className="min-w-0 px-2 sm:px-4 first:pl-0">
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingDown className="w-4 h-4 text-rose-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">{t("finances.totalExpenses")}</span>
@@ -62,7 +62,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
           </p>
         </div>
 
-        <div className="px-2 sm:px-4">
+        <div className="min-w-0 px-2 sm:px-4">
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">{t("finances.totalIncomes")}</span>
@@ -75,7 +75,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
           </p>
         </div>
 
-        <div className="px-2 sm:px-4 last:pr-0">
+        <div className="min-w-0 px-2 sm:px-4 last:pr-0">
           <div className="flex items-center gap-1.5 mb-1">
             <Coins className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">{t("finances.netCost")}</span>

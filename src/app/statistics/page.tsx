@@ -47,7 +47,7 @@ export default function StatisticsPage() {
 
       {/* High-level stats - Sjednocený responzivní ribbon */}
       <div className="card p-4 grid grid-cols-3 divide-x divide-slate-100">
-        <div className="px-2 sm:px-4 first:pl-0">
+        <div className="min-w-0 px-2 sm:px-4 first:pl-0">
           <div className="flex items-center gap-1.5 mb-1">
             <Compass className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Celkový nájezd</span>
@@ -60,7 +60,7 @@ export default function StatisticsPage() {
           </p>
         </div>
 
-        <div className="px-2 sm:px-4">
+        <div className="min-w-0 px-2 sm:px-4">
           <div className="flex items-center gap-1.5 mb-1">
             <Layers className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Čas v sedle</span>
@@ -73,7 +73,7 @@ export default function StatisticsPage() {
           </p>
         </div>
 
-        <div className="px-2 sm:px-4 last:pr-0">
+        <div className="min-w-0 px-2 sm:px-4 last:pr-0">
           <div className="flex items-center gap-1.5 mb-1">
             <ShieldCheck className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Komponenty</span>

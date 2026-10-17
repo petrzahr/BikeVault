@@ -128,7 +128,7 @@ export function ComponentsClient({
           <p>Nebyly nalezeny žádné odpovídající komponenty.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((item) => {
             const comp = item.component;
             const cat = item.category;
@@ -197,8 +197,8 @@ export function ComponentsClient({
                   )}
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                  <span>Cena: <strong className="text-slate-900 tabular-nums font-bold">{formatCzk(comp.purchasePrice)}</strong></span>
+                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-slate-500">
+                  <span className="whitespace-nowrap">Cena: <strong className="text-slate-900 tabular-nums font-bold">{formatCzk(comp.purchasePrice)}</strong></span>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setComponentToEdit(comp)}

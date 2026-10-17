@@ -183,13 +183,6 @@ export function ComponentDetailClient({
               <span>Zapsat servis</span>
             </button>
             <button
-              onClick={handleOpenCreateSchedule}
-              className="btn-primary"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Přidat plán</span>
-            </button>
-            <button
               onClick={() => setIsEditModalOpen(true)}
               className="btn-secondary"
               title="Upravit komponentu"
