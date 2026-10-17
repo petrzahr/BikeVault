@@ -213,6 +213,13 @@ Každý opakovaný prvek má jeden recept jako třídu v `src/app/globals.css` (
 ### Interval gauge (signature)
 - **`IntervalGauge`** (`src/components/common/IntervalGauge.tsx`, geometrie `src/lib/domain/intervalGauge.ts`, recepty `gauge-*`): pravítko servisního intervalu na kartě kola. Stupnice s ryskami po 10 % a 2 %, grafitová výplň do začátku varovné zóny, ocelová ve varovné zóně (obtažená i před dosažením), růžová za limitem; ryska limitu a trojúhelníkový ukazatel aktuálního stavu. Pod ním `0 km … použito / interval · +přetažení` v mono. Ukazuje km nebo hodiny podle toho, co je blíž limitu; plány jen v měsících měřidlo nemají. Je čistě vizuální (`role="img"` s popisem); stav v textu nese štítek vedle.
 
+### Setup sheet
+- **Nastavení kola** (`src/app/bikes/[id]/setup/SetupClient.tsx`, díly v `src/components/setup/SetupParts.tsx`): pořadí pláště → vidlice → tlumič (v terénu se nejčastěji kontrolují pláště). Každá část je `SetupSheet` (plát se záhlavím: díl, namontovaná komponenta, štítek se zdvihem nebo směsí).
+- **`ReadoutField`** (`field field-readout`): velká editovatelná hodnota v mono 24px s jednotkou uvnitř pole a druhou hodnotou pod ním (psi pod bary, SAG v mm). Dvě vedle sebe v `ReadoutRow` dělené linkou.
+- **`SagRuler`**: SAG na pravítku zdvihu, stejné recepty jako měřidlo intervalu (`gauge-*`); bez zdvihu nebo SAG se nezobrazí.
+- **`ClickStepper`** (`stepper`): kliky od zavřeno jako − / hodnota / +, hodnota zůstává editovatelná, nikdy pod 0; prázdná hodnota se změní jen stiskem. Na mobilu 44px.
+- Ukládací lišta je na telefonu přilepená nad spodní navigací.
+
 ### Segmented controls
 - **`segmented` + `segment`**: zapuštěný podklad `slate-50` s linkou, volba 12px semibold; vybraná je grafitová (`slate-900`) s bílým textem. Stav nese ARIA atribut: `aria-pressed`, `aria-selected` (`role="tab"`), `aria-current="page"` (odkazy podsekcí kola). Barvu podle významu (výdaj/příjem) přidává místo utilitou `aria-pressed:bg-…`.
 

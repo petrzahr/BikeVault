@@ -112,6 +112,11 @@
   .field:is([type='number'], [inputmode='decimal'], [inputmode='numeric']) {
     @apply font-mono;
   }
+  /* Big measured value you edit in place (setup pressures, SAG): mono readout inside a field.
+     Double class so it outranks the 16px phone rule for inputs below (it is larger than 16px anyway). */
+  .field.field-readout {
+    @apply min-h-12 py-1.5 font-mono text-2xl font-semibold tracking-[-0.02em];
+  }
   .field[aria-invalid='true'] {
     @apply border-rose-500 focus:border-rose-600 focus:ring-rose-500/30;
   }
@@ -217,6 +222,26 @@
   }
   .readout-unit {
     @apply ml-0.5 font-mono text-xs font-medium tracking-normal text-slate-500;
+  }
+
+  /* Stepper (damping clicks): − / mono value / + joined by hairlines; 44px on mobile. Native spin buttons hidden. */
+  .stepper {
+    @apply inline-flex items-stretch shrink-0 border border-slate-300 rounded-lg overflow-hidden bg-white;
+  }
+  .stepper button {
+    @apply inline-flex items-center justify-center w-8 h-8 max-md:w-11 max-md:h-11 bg-slate-50 text-slate-600 transition-colors cursor-pointer;
+    @apply hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-signal-500/50;
+  }
+  .stepper input {
+    @apply w-12 max-md:w-14 border-x border-slate-300 text-center font-mono text-sm font-semibold text-slate-900 bg-white;
+    @apply focus:outline-none focus:bg-signal-50;
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+  .stepper input::-webkit-inner-spin-button,
+  .stepper input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 
   /* Interval gauge (signature): a ruler with ticks, a graphite fill up to the current usage, the limit tick and

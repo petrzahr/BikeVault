@@ -4,21 +4,16 @@ import React, { useState } from "react";
 import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import { BikeHeader } from "@/components/bike/BikeHeader";
-import { 
-  Gauge, 
-  Save, 
-  Camera, 
-  Check, 
-  Plus, 
-  Minus, 
-  History, 
-  HelpCircle,
-  Clock,
-  Sliders,
+import {
+  Save,
+  Camera,
+  Check,
+  History,
   Loader2
 } from "lucide-react";
 import { t, formatDateCs, formatPsi, formatBar } from "@/lib/i18n";
-import { formatClicksFromClosed, formatTireLabel, formatTireBadge } from "@/lib/domain/setup";
+import { formatTireLabel, formatTireBadge, barToPsi, sagMm } from "@/lib/domain/setup";
+import { SetupSheet, ReadoutRow, ReadoutField, SagRuler, ClickStepper } from "@/components/setup/SetupParts";
 import { Modal, ModalFooter } from "@/components/common/Modal";
 import { DeleteButton } from "@/components/common/DeleteButton";
 
@@ -189,6 +184,19 @@ export function SetupClient({
     }
   };
 
+  const fmt1 = (v: number | null) =>
+    v === null ? null : v.toLocaleString("cs-CZ", { maximumFractionDigits: 1 });
+  const psiLine = (bar: string) => {
+    const psi = fmt1(barToPsi(bar));
+    return psi ? `${psi} psi` : null;
+  };
+  const sagLine = (travel: number | string | null | undefined, sag: string) => {
+    const mm = fmt1(sagMm(travel, sag));
+    return mm ? `${mm} mm` : null;
+  };
+  const forkTravelNum = forkTravel ? Number(forkTravel) : null;
+  const shockTravelNum = frameTravelSpec ?? null;
+
   return (
     <div className="space-y-6 animate-fade-in">
       <BikeHeader bike={bike} />
@@ -222,432 +230,200 @@ export function SetupClient({
 
       {/* Main Setup Form */}
       <form onSubmit={handleSaveSetup} className="space-y-6">
-        {/* Odpružení Grid */}
+        {/* PLÁŠTĚ: first, they are what gets checked on the trail */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* VIDLICE */}
-          {bike.suspensionType !== "RIGID" && (
-            <div className="card p-4 sm:p-5 space-y-4 ">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-signal-50 text-signal-700 flex items-center justify-center font-bold text-xs">
-                    V
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">
-                      {t("setup.fork.title")}
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      {forkComp ? `${forkComp.manufacturer} ${forkComp.model}` : "Nenamontována"}
-                    </p>
-                  </div>
-                </div>
-
-                {forkTravel && (
-                  <span className="chip chip-signal tabular-nums">
-                    {forkTravel} mm
-                  </span>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3.5">
-                <div>
-                  <label className="field-label">
-                    {t("setup.fork.pressure")} (psi)
+          {[
+            {
+              key: "front",
+              title: t("setup.tires.front"),
+              comp: frontTireComp,
+              pressure: frontPressure,
+              setPressure: setFrontPressure,
+              insert: frontInsert,
+              setInsert: setFrontInsert,
+              notes: frontNotes,
+              setNotes: setFrontNotes,
+            },
+            {
+              key: "rear",
+              title: t("setup.tires.rear"),
+              comp: rearTireComp,
+              pressure: rearPressure,
+              setPressure: setRearPressure,
+              insert: rearInsert,
+              setInsert: setRearInsert,
+              notes: rearNotes,
+              setNotes: setRearNotes,
+            },
+          ].map((tire) => (
+            <SetupSheet
+              key={tire.key}
+              title={tire.title}
+              subtitle={tire.comp ? formatTireLabel(tire.comp) : "Neosazeno"}
+              badge={
+                tire.comp && formatTireBadge(tire.comp) ? (
+                  <span className="chip chip-neutral shrink-0">{formatTireBadge(tire.comp)}</span>
+                ) : undefined
+              }
+            >
+              <ReadoutRow>
+                <ReadoutField
+                  label="Tlak"
+                  unit="bar"
+                  step="0.05"
+                  value={tire.pressure}
+                  onChange={tire.setPressure}
+                  secondary={psiLine(tire.pressure)}
+                />
+                <div className="px-4 sm:px-5 py-3 space-y-1 min-w-0">
+                  <label htmlFor={`tire-insert-${tire.key}`} className="section-label block">
+                    {t("setup.tires.insert")}
                   </label>
                   <input
-                    type="number"
-                    step="0.5"
-                    value={forkPressure}
-                    onChange={(e) => setForkPressure(e.target.value)}
+                    id={`tire-insert-${tire.key}`}
+                    type="text"
+                    value={tire.insert}
+                    onChange={(e) => tire.setInsert(e.target.value)}
                     className="field"
                   />
                 </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.fork.sag")}
-                  </label>
-                  <input
-                    type="number"
-                    value={forkSag}
-                    onChange={(e) => setForkSag(e.target.value)}
-                    className="field"
-                  />
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.fork.lsc")}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={forkLsc}
-                      onChange={(e) => setForkLsc(e.target.value)}
-                      className="field"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.fork.hsc")}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={forkHsc}
-                      onChange={(e) => setForkHsc(e.target.value)}
-                      className="field"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.fork.lsr")}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={forkLsr}
-                      onChange={(e) => setForkLsr(e.target.value)}
-                      className="field"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.fork.hsr")}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={forkHsr}
-                      onChange={(e) => setForkHsr(e.target.value)}
-                      className="field"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.fork.tokens")}
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={forkTokens}
-                    onChange={(e) => setForkTokens(e.target.value)}
-                    className="field"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="field-label">
-                  {t("setup.fork.notes")}
+              </ReadoutRow>
+              <div className="px-4 sm:px-5 py-3">
+                <label htmlFor={`tire-notes-${tire.key}`} className="field-label">
+                  {t("setup.tires.notes")}
                 </label>
                 <input
+                  id={`tire-notes-${tire.key}`}
                   type="text"
-                  value={forkNotes}
-                  onChange={(e) => setForkNotes(e.target.value)}
+                  value={tire.notes}
+                  onChange={(e) => tire.setNotes(e.target.value)}
                   className="field"
                 />
               </div>
-            </div>
-          )}
-
-          {/* TLUMIČ */}
-          {bike.suspensionType === "FULL_SUSPENSION" && (
-            <div className="card p-4 sm:p-5 space-y-4 ">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-signal-50 text-signal-700 flex items-center justify-center font-bold text-xs">
-                    T
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">
-                      {t("setup.shock.title")}
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      {shockComp ? `${shockComp.manufacturer} ${shockComp.model}` : "Nenamontován"}
-                    </p>
-                  </div>
-                </div>
-
-                {frameTravelSpec && (
-                  <span className="chip chip-signal tabular-nums">
-                    {frameTravelSpec} mm
-                  </span>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3.5">
-                <div>
-                  <label className="field-label">
-                    {t("setup.shock.pressure")} (psi)
-                  </label>
-                  <input
-                    type="number"
-                    step="1"
-                    value={shockPressure}
-                    onChange={(e) => setShockPressure(e.target.value)}
-                    className="field"
-                  />
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.shock.sag")}
-                  </label>
-                  <input
-                    type="number"
-                    value={shockSag}
-                    onChange={(e) => setShockSag(e.target.value)}
-                    className="field"
-                  />
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.shock.lsc")}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={shockLsc}
-                      onChange={(e) => setShockLsc(e.target.value)}
-                      className="field"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.shock.hsc")}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={shockHsc}
-                      onChange={(e) => setShockHsc(e.target.value)}
-                      className="field"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.shock.lsr")}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={shockLsr}
-                      onChange={(e) => setShockLsr(e.target.value)}
-                      className="field"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.shock.hsr")}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      min="0"
-                      value={shockHsr}
-                      onChange={(e) => setShockHsr(e.target.value)}
-                      className="field"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="field-label">
-                    {t("setup.shock.tokens")}
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={shockTokens}
-                    onChange={(e) => setShockTokens(e.target.value)}
-                    className="field"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="field-label">
-                  {t("setup.shock.notes")}
-                </label>
-                <input
-                  type="text"
-                  value={shockNotes}
-                  onChange={(e) => setShockNotes(e.target.value)}
-                  className="field"
-                />
-              </div>
-            </div>
-          )}
+            </SetupSheet>
+          ))}
         </div>
 
-        {/* PLÁŠTĚ GRID */}
+        {/* ODPRUŽENÍ */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Přední plášť */}
-          <div className="card p-4 sm:p-5 space-y-3.5 ">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">
-                  P
-                </div>
+          {[
+            bike.suspensionType !== "RIGID" && {
+              key: "fork",
+              title: t("setup.fork.title"),
+              subtitle: forkComp ? `${forkComp.manufacturer} ${forkComp.model}` : "Nenamontována",
+              travel: forkTravelNum,
+              pressure: forkPressure,
+              setPressure: setForkPressure,
+              pressureStep: "0.5",
+              sag: forkSag,
+              setSag: setForkSag,
+              clicks: [
+                { label: t("setup.fork.lsc"), value: forkLsc, set: setForkLsc },
+                { label: t("setup.fork.hsc"), value: forkHsc, set: setForkHsc },
+                { label: t("setup.fork.lsr"), value: forkLsr, set: setForkLsr },
+                { label: t("setup.fork.hsr"), value: forkHsr, set: setForkHsr },
+              ],
+              tokensLabel: t("setup.fork.tokens"),
+              tokens: forkTokens,
+              setTokens: setForkTokens,
+              notesLabel: t("setup.fork.notes"),
+              notes: forkNotes,
+              setNotes: setForkNotes,
+            },
+            bike.suspensionType === "FULL_SUSPENSION" && {
+              key: "shock",
+              title: t("setup.shock.title"),
+              subtitle: shockComp ? `${shockComp.manufacturer} ${shockComp.model}` : "Nenamontován",
+              travel: shockTravelNum,
+              pressure: shockPressure,
+              setPressure: setShockPressure,
+              pressureStep: "1",
+              sag: shockSag,
+              setSag: setShockSag,
+              clicks: [
+                { label: t("setup.shock.lsc"), value: shockLsc, set: setShockLsc },
+                { label: t("setup.shock.hsc"), value: shockHsc, set: setShockHsc },
+                { label: t("setup.shock.lsr"), value: shockLsr, set: setShockLsr },
+                { label: t("setup.shock.hsr"), value: shockHsr, set: setShockHsr },
+              ],
+              tokensLabel: t("setup.shock.tokens"),
+              tokens: shockTokens,
+              setTokens: setShockTokens,
+              notesLabel: t("setup.shock.notes"),
+              notes: shockNotes,
+              setNotes: setShockNotes,
+            },
+          ]
+            .filter((s): s is Exclude<typeof s, false> => Boolean(s))
+            .map((s) => (
+              <SetupSheet
+                key={s.key}
+                title={s.title}
+                subtitle={s.subtitle}
+                badge={s.travel ? <span className="chip chip-signal font-mono font-medium shrink-0">{s.travel} mm</span> : undefined}
+              >
+                <ReadoutRow>
+                  <ReadoutField
+                    label="Tlak"
+                    unit="psi"
+                    step={s.pressureStep}
+                    value={s.pressure}
+                    onChange={s.setPressure}
+                  />
+                  <ReadoutField
+                    label="SAG"
+                    unit="%"
+                    step="1"
+                    value={s.sag}
+                    onChange={s.setSag}
+                    secondary={sagLine(s.travel, s.sag)}
+                  />
+                </ReadoutRow>
+                <SagRuler sagPercent={s.sag} travelMm={s.travel} />
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">
-                    {t("setup.tires.front")}
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    {frontTireComp ? formatTireLabel(frontTireComp) : "Neosazeno"}
-                  </p>
+                  {s.clicks.map((c) => (
+                    <ClickStepper key={c.label} label={c.label} value={c.value} onChange={c.set} />
+                  ))}
                 </div>
-              </div>
-
-              {frontTireComp && formatTireBadge(frontTireComp) && (
-                <span className="chip chip-neutral tabular-nums">
-                  {formatTireBadge(frontTireComp)}
-                </span>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-3.5">
-              <div>
-                <label className="field-label">
-                  Tlak (bar)
-                </label>
-                <input
-                  type="number"
-                  step="0.05"
-                  value={frontPressure}
-                  onChange={(e) => setFrontPressure(e.target.value)}
-                  className="field"
-                />
-              </div>
-
-              <div>
-                <label className="field-label">
-                  {t("setup.tires.insert")}
-                </label>
-                <input
-                  type="text"
-                  value={frontInsert}
-                  onChange={(e) => setFrontInsert(e.target.value)}
-                  className="field"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="field-label">
-                {t("setup.tires.notes")}
-              </label>
-              <input
-                type="text"
-                value={frontNotes}
-                onChange={(e) => setFrontNotes(e.target.value)}
-                className="field"
-              />
-            </div>
-          </div>
-
-          {/* Zadní plášť */}
-          <div className="card p-4 sm:p-5 space-y-3.5 ">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">
-                  Z
+                <div className="grid grid-cols-[7rem_1fr] gap-3 px-4 sm:px-5 py-3 border-t border-slate-200 bg-slate-50">
+                  <div>
+                    <label htmlFor={`${s.key}-tokens`} className="field-label">
+                      {s.tokensLabel}
+                    </label>
+                    <input
+                      id={`${s.key}-tokens`}
+                      type="number"
+                      inputMode="numeric"
+                      min="0"
+                      value={s.tokens}
+                      onChange={(e) => s.setTokens(e.target.value)}
+                      className="field"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <label htmlFor={`${s.key}-notes`} className="field-label">
+                      {s.notesLabel}
+                    </label>
+                    <input
+                      id={`${s.key}-notes`}
+                      type="text"
+                      value={s.notes}
+                      onChange={(e) => s.setNotes(e.target.value)}
+                      className="field"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900">
-                    {t("setup.tires.rear")}
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    {rearTireComp ? formatTireLabel(rearTireComp) : "Neosazeno"}
-                  </p>
-                </div>
-              </div>
-
-              {rearTireComp && formatTireBadge(rearTireComp) && (
-                <span className="chip chip-neutral tabular-nums">
-                  {formatTireBadge(rearTireComp)}
-                </span>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-3.5">
-              <div>
-                <label className="field-label">
-                  Tlak (bar)
-                </label>
-                <input
-                  type="number"
-                  step="0.05"
-                  value={rearPressure}
-                  onChange={(e) => setRearPressure(e.target.value)}
-                  className="field"
-                />
-              </div>
-
-              <div>
-                <label className="field-label">
-                  {t("setup.tires.insert")}
-                </label>
-                <input
-                  type="text"
-                  value={rearInsert}
-                  onChange={(e) => setRearInsert(e.target.value)}
-                  className="field"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="field-label">
-                {t("setup.tires.notes")}
-              </label>
-              <input
-                type="text"
-                value={rearNotes}
-                onChange={(e) => setRearNotes(e.target.value)}
-                className="field"
-              />
-            </div>
-          </div>
+              </SetupSheet>
+            ))}
         </div>
 
         {/* Celková poznámka k nastavení */}
         <div className="card p-4 sm:p-5">
-          <label className="field-label">
+          <label htmlFor="setup-general-notes" className="field-label">
             {t("setup.generalNotes")}
           </label>
           <textarea
+            id="setup-general-notes"
             rows={3}
             value={generalNotes}
             onChange={(e) => setGeneralNotes(e.target.value)}
@@ -655,12 +431,12 @@ export function SetupClient({
           />
         </div>
 
-        {/* Submit Bar */}
-        <div className="flex items-center justify-end gap-3 pt-2">
+        {/* Submit Bar: on phones it stays reachable above the bottom navigation */}
+        <div className="sticky z-20 bottom-[calc(4rem+env(safe-area-inset-bottom))] md:static flex items-center justify-end gap-3 max-md:p-2 max-md:bg-white max-md:border max-md:border-slate-200 max-md:rounded-lg">
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary"
+            className="btn-primary max-md:w-full"
           >
             {loading ? (
               <>
@@ -679,26 +455,26 @@ export function SetupClient({
 
       {/* HISTORIE PROFILŮ NASTAVENÍ */}
       {snapshots.length > 0 && (
-        <div className="card p-4 sm:p-5 space-y-4 ">
-          <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+        <div className="card overflow-hidden">
+          <div className="card-header justify-start">
             <History className="w-4 h-4 text-signal-600" />
             <h3 className="text-sm font-bold text-slate-900">
               Uložené profily nastavení ({snapshots.length})
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="divide-y divide-slate-200">
             {snapshots.map((snap) => (
-              <div
-                key={snap.id}
-                className="panel panel-neutral space-y-2.5"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-slate-900">
-                    {snap.profileName || "Profil nastavení"}
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-slate-500 tabular-nums">
+              <div key={snap.id} className="px-4 sm:px-5 py-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="font-bold text-sm text-slate-900 block truncate">
+                      {snap.profileName || "Profil nastavení"}
+                    </span>
+                    {snap.notes && <p className="text-xs text-slate-500">{snap.notes}</p>}
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono text-xs text-slate-500">
                       {formatDateCs(snap.createdAt)}
                     </span>
                     <DeleteButton
@@ -709,17 +485,19 @@ export function SetupClient({
                   </div>
                 </div>
 
-                {snap.notes && (
-                  <p className="text-slate-600 italic">
-                    "{snap.notes}"
-                  </p>
-                )}
-
-                <div className="pt-2 border-t border-slate-200 text-slate-500 space-y-1 tabular-nums">
-                  <div>Vidlice: <span className="text-slate-800 font-medium">{snap.snapshotData?.forkPressurePsi ? formatPsi(snap.snapshotData.forkPressurePsi) : "-"}</span></div>
-                  <div>Tlumič: <span className="text-slate-800 font-medium">{snap.snapshotData?.shockPressurePsi ? formatPsi(snap.snapshotData.shockPressurePsi) : "-"}</span></div>
-                  <div>Pláště: <span className="text-slate-800 font-medium">{formatBar(snap.snapshotData?.frontTirePressureBar)} / {formatBar(snap.snapshotData?.rearTirePressureBar)}</span></div>
-                </div>
+                <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2">
+                  {[
+                    ["Vidlice", snap.snapshotData?.forkPressurePsi ? formatPsi(snap.snapshotData.forkPressurePsi) : "–"],
+                    ["Tlumič", snap.snapshotData?.shockPressurePsi ? formatPsi(snap.snapshotData.shockPressurePsi) : "–"],
+                    ["Přední", formatBar(snap.snapshotData?.frontTirePressureBar)],
+                    ["Zadní", formatBar(snap.snapshotData?.rearTirePressureBar)],
+                  ].map(([k, v]) => (
+                    <div key={k}>
+                      <dt className="section-label">{k}</dt>
+                      <dd className="readout text-sm">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             ))}
           </div>
