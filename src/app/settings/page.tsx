@@ -6,7 +6,6 @@ import {
   Activity,
   Cloud,
   Download,
-  Ruler,
   RefreshCw,
   ExternalLink,
   Unlink,
@@ -47,19 +46,10 @@ const SETTINGS_SECTIONS = [
   { id: "nastaveni-strava", label: "Propojení se Stravou" },
   { id: "nastaveni-disk", label: "Synchronizace s Google Diskem" },
   { id: "nastaveni-zaloha", label: "Záloha do souboru" },
-  { id: "nastaveni-jednotky", label: "Jednotky a formáty" },
   { id: "nastaveni-data", label: "Mazání dat" },
 ] as const;
 
 type SettingsSectionId = (typeof SETTINGS_SECTIONS)[number]["id"];
-
-const UNIT_ROWS = [
-  { label: "Jazyk rozhraní", value: "Čeština" },
-  { label: "Měna", value: "CZK (Kč), celé koruny" },
-  { label: "Tlak v pláštích", value: "bar" },
-  { label: "Tlak odpružení", value: "psi" },
-  { label: "Verze aplikace", value: "1.1.0" },
-];
 
 interface SettingsSectionProps {
   id: SettingsSectionId;
@@ -753,24 +743,7 @@ export default function SettingsPage() {
             </div>
           </SettingsSection>
 
-          {/* 4. Units */}
-          <SettingsSection
-            id="nastaveni-jednotky"
-            icon={Ruler}
-            title="Jednotky a formáty"
-            description="Pevně dané jednotky, ve kterých BikeVault ukládá a zobrazuje hodnoty"
-          >
-            <dl className="divide-y divide-slate-100 text-xs">
-              {UNIT_ROWS.map(({ label, value }) => (
-                <div key={label} className="flex justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
-                  <dt className="text-slate-500">{label}</dt>
-                  <dd className="font-semibold text-slate-900 text-right tabular-nums">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </SettingsSection>
-
-          {/* 5. Data deletion */}
+          {/* 4. Data deletion */}
           <SettingsSection
             id="nastaveni-data"
             icon={Trash2}
