@@ -26,6 +26,7 @@ import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
 import { RecordServiceEventModal } from "@/components/maintenance/RecordServiceEventModal";
+import { toServiceHistoryRows } from "@/lib/domain/serviceHistory";
 
 
 interface BikeServiceClientProps {
@@ -54,6 +55,7 @@ export function BikeServiceClient({
   const schedulesWithStatus = propSchedulesWithStatus ?? getBikeServiceSchedulesWithStatus(bike.id);
   const serviceEvents = propServiceEvents ?? getBikeServiceEvents(bike.id);
   const installedComponents = propInstalledComponents ?? getBikeInstalledComponents(bike.id);
+  const serviceHistoryRows = toServiceHistoryRows(serviceEvents, data.components);
 
   // Plan modal state (Create / Edit)
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
@@ -312,9 +314,8 @@ export function BikeServiceClient({
           </div>
         ) : (
           <div className="card overflow-hidden divide-y divide-slate-100">
-            {serviceEvents.map((item) => {
-              const ev = item.event;
-              const totalCost = Number(ev.partsCost || 0) + Number(ev.laborCost || 0) + Number(ev.otherCost || 0);
+            {serviceHistoryRows.map((item) => {
+              const ev: any = item.event;
 
               return (
                 <div key={ev.id} className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
@@ -357,10 +358,10 @@ export function BikeServiceClient({
 
                   <div className="text-right shrink-0">
                     <span className="text-sm font-bold text-slate-900 tabular-nums block">
-                      {formatCzk(totalCost)}
+                      {formatCzk(item.totalPrice)}
                     </span>
                     <span className="text-xs text-slate-500 tabular-nums">
-                      díly: {formatCzk(ev.partsCost || 0)} • práce: {formatCzk(ev.laborCost || 0)}
+                      díly: {formatCzk(item.partsPrice)} • práce: {formatCzk(item.laborPrice)}
                     </span>
                   </div>
                 </div>
