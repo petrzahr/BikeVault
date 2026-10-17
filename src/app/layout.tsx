@@ -17,12 +17,6 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "BikeVault - Vaše kola pod absolutní kontrolou",
   description: "Digitální servisní kniha, virtuální garáž, správa komponentů a sledování nákladů na vlastnictví jízdních kol s ukládáním na Google Drive.",
-  icons: {
-    icon: [
-      { url: "/favicon.svg?v=2", type: "image/svg+xml" },
-    ],
-    apple: "/favicon.svg?v=2",
-  },
 };
 
 export default function RootLayout({
@@ -33,7 +27,6 @@ export default function RootLayout({
   return (
     <html lang="cs" className={`h-full bg-slate-50 ${plusJakartaSans.variable}`}>
       <head>
-        <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
         <Script
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"
