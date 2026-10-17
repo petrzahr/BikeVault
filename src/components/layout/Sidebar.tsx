@@ -17,7 +17,7 @@ import {
   Bike as BikeIcon 
 } from "lucide-react";
 import { t, formatKm, formatCzk } from "@/lib/i18n";
-import { buttonClass } from "@/lib/ui";
+
 
 export type NavScreen = "garage" | "components" | "maintenance" | "finances" | "statistics" | "settings";
 
@@ -94,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span className="text-base font-extrabold tracking-tight text-white block leading-none">
                   BikeVault
                 </span>
-                <span className="text-[10px] text-white/50 font-medium tracking-wide block mt-0.5 uppercase">
+                <span className="text-xs text-white/60 font-medium block mt-0.5">
                   Garáž & servis kol
                 </span>
               </div>
@@ -103,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               onClick={onCloseMobile}
               aria-label="Zavřít menu"
-              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 md:hidden"
+              className="btn-icon text-white/70 hover:text-white hover:bg-white/10 md:hidden"
             >
               <X className="w-5 h-5" />
             </button>
@@ -116,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onOpenAddBikeModal();
                 onCloseMobile();
               }}
-              className={buttonClass("primary", "md", "w-full")}
+              className="btn-primary w-full"
             >
               <Plus className="w-4 h-4" />
               <span>Přidat nové kolo</span>
@@ -126,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onOpenAddComponentModal();
                 onCloseMobile();
               }}
-              className={buttonClass("outlineDark", "md", "w-full")}
+              className="btn-shell w-full"
             >
               <Plus className="w-4 h-4" />
               <span>Přidat komponentu</span>
@@ -143,7 +143,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   key={item.href}
                   href={item.href}
                   onClick={onCloseMobile}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                  aria-current={active ? "page" : undefined}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
                     active
                       ? "bg-navy-600 text-white shadow-sm"
                       : "text-white/70 hover:bg-white/10 hover:text-white"

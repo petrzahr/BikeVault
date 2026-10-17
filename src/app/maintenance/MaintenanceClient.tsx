@@ -27,7 +27,7 @@ import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleMo
 import { RecordServiceEventModal } from "@/components/maintenance/RecordServiceEventModal";
 import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+import { PageHeader } from "@/components/common/PageHeader";
 
 interface MaintenanceClientProps {
   allSchedules?: any[];
@@ -137,45 +137,40 @@ export function MaintenanceClient({
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Action Bar Header */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-              {t("maintenance.dashboard")}
-            </h1>
-            {overdue.length > 0 && (
-              <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-xs font-semibold">
-                {overdue.length} po termínu
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2.5 self-start sm:self-auto flex-wrap">
+      <PageHeader
+        title={t("maintenance.dashboard")}
+        badge={
+          overdue.length > 0 ? (
+            <span className="chip chip-rose">{overdue.length} po termínu</span>
+          ) : undefined
+        }
+        actions={
+        <>
           <button
             onClick={() => handleOpenRecordModal()}
-            className={buttonClass("secondary", "md")}
+            className="btn-secondary"
           >
-            <Wrench className="w-4 h-4 text-navy-600" />
+            <Wrench className="w-4 h-4" />
             <span>Zapsat servis bez plánu</span>
           </button>
 
           <button
             onClick={handleOpenCreatePlan}
-            className={buttonClass("primary", "md")}
+            className="btn-primary"
           >
             <Plus className="w-4 h-4" />
             <span>Přidat servisní plán</span>
           </button>
-        </div>
-      </div>
+        </>
+        }
+      />
 
       {/* 1. PO TERMÍNU */}
       {overdue.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-rose-600" />
-            <h2 className="text-xs font-bold text-rose-600 uppercase tracking-wider">
+            <h2 className="text-base font-bold text-slate-900">
               {t("maintenance.groups.overdue")} ({overdue.length})
             </h2>
           </div>
@@ -184,11 +179,11 @@ export function MaintenanceClient({
             {overdue.map((item) => (
               <div
                 key={item.schedule.id}
-                className="bg-rose-50/50 border border-rose-200/80 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm hover:border-rose-300 transition-all"
+                className="card p-4 sm:p-5 flex flex-col justify-between space-y-4"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200 text-[11px] font-bold tracking-wide">
+                    <span className="chip chip-rose">
                       {item.status.summaryTextCs}
                     </span>
                     <span className="text-xs text-slate-600 font-medium">
@@ -196,7 +191,7 @@ export function MaintenanceClient({
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-sm font-bold text-slate-900">
                     {item.schedule.name}
                   </h3>
                   {item.component && (
@@ -206,13 +201,13 @@ export function MaintenanceClient({
                   )}
                 </div>
 
-                <div className="pt-3 border-t border-rose-200/60 flex items-center justify-between">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
                   <span className="text-xs text-slate-500 tabular-nums">
                     Interval: {item.schedule.intervalKm ? `${item.schedule.intervalKm} km` : `${item.schedule.intervalHours} h`}
                   </span>
                   <button
                     onClick={() => handleOpenRecordModal(item)}
-                    className={buttonClass("danger", "sm")}
+                    className="btn-primary btn-sm"
                   >
                     Zapsat servis →
                   </button>
@@ -228,7 +223,7 @@ export function MaintenanceClient({
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-amber-600" />
-            <h2 className="text-xs font-bold text-amber-700 uppercase tracking-wider">
+            <h2 className="text-base font-bold text-slate-900">
               {t("maintenance.groups.dueSoon")} ({dueSoon.length})
             </h2>
           </div>
@@ -237,11 +232,11 @@ export function MaintenanceClient({
             {dueSoon.map((item) => (
               <div
                 key={item.schedule.id}
-                className="bg-amber-50/50 border border-amber-200/80 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm hover:border-amber-300 transition-all"
+                className="card p-4 sm:p-5 flex flex-col justify-between space-y-4"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 text-[11px] font-bold tracking-wide">
+                    <span className="chip chip-amber">
                       Zbývá {item.status.summaryTextCs}
                     </span>
                     <span className="text-xs text-slate-600 font-medium">
@@ -249,7 +244,7 @@ export function MaintenanceClient({
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-sm font-bold text-slate-900">
                     {item.schedule.name}
                   </h3>
                   {item.component && (
@@ -259,13 +254,13 @@ export function MaintenanceClient({
                   )}
                 </div>
 
-                <div className="pt-3 border-t border-amber-200/60 flex items-center justify-between">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
                   <span className="text-xs text-slate-500 tabular-nums">
                     Interval: {item.schedule.intervalKm ? `${item.schedule.intervalKm} km` : `${item.schedule.intervalHours} h`}
                   </span>
                   <button
                     onClick={() => handleOpenRecordModal(item)}
-                    className={buttonClass("warning", "sm")}
+                    className="btn-primary btn-sm"
                   >
                     Zapsat servis →
                   </button>
@@ -280,13 +275,13 @@ export function MaintenanceClient({
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <h2 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+          <h2 className="text-base font-bold text-slate-900">
             {t("maintenance.groups.upcoming")} ({upcoming.length})
           </h2>
         </div>
 
         {upcoming.length === 0 ? (
-          <div className="p-6 bg-white border border-slate-200/80 rounded-2xl text-center text-xs text-slate-500 shadow-sm">
+          <div className="card empty-state">
             Žádné další plány v této sekci.
           </div>
         ) : (
@@ -294,17 +289,17 @@ export function MaintenanceClient({
             {upcoming.map((item) => (
               <div
                 key={item.schedule.id}
-                className="bg-white border border-slate-200/80 hover:border-slate-300 p-4 rounded-2xl flex flex-col justify-between space-y-2 shadow-sm transition-all"
+                className="card p-4 flex flex-col justify-between space-y-2"
               >
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-emerald-700 font-semibold">{item.status.summaryTextCs}</span>
+                  <span className="chip chip-emerald">{item.status.summaryTextCs}</span>
                   <span className="text-slate-500 font-medium">{item.bike?.name}</span>
                 </div>
-                <h4 className="text-sm font-bold text-slate-900">
+                <h3 className="text-sm font-bold text-slate-900">
                   {item.schedule.name}
-                </h4>
+                </h3>
                 {item.component && (
-                  <p className="text-[11px] text-slate-500">{item.component.manufacturer} {item.component.model}</p>
+                  <p className="text-xs text-slate-500">{item.component.manufacturer} {item.component.model}</p>
                 )}
               </div>
             ))}
@@ -316,7 +311,7 @@ export function MaintenanceClient({
       <div className="space-y-4 pt-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Sliders className="w-4 h-4 text-navy-600" />
               <span>Správa servisních plánů ({allSchedules.length})</span>
             </h2>
@@ -327,7 +322,7 @@ export function MaintenanceClient({
 
           <button
             onClick={handleOpenCreatePlan}
-            className={buttonClass("primary", "md", "self-start sm:self-auto")}
+            className="btn-primary self-start sm:self-auto"
           >
             <Plus className="w-4 h-4" />
             <span>Přidat plán</span>
@@ -336,7 +331,7 @@ export function MaintenanceClient({
 
         {/* Filters and search */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div className="inline-flex p-1 bg-slate-200/60 rounded-xl">
+          <div className="segmented inline-flex flex-wrap">
             {[
               { id: "ALL", label: `Všechny (${allSchedules.length})` },
               { id: "ACTIVE", label: `Aktivní (${activeSchedules.length})` },
@@ -345,11 +340,8 @@ export function MaintenanceClient({
               <button
                 key={tab.id}
                 onClick={() => setFilterActive(tab.id as any)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  filterActive === tab.id
-                    ? "bg-navy-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                aria-pressed={filterActive === tab.id}
+                className="segment"
               >
                 {tab.label}
               </button>
@@ -357,25 +349,25 @@ export function MaintenanceClient({
           </div>
 
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-slate-500" aria-hidden="true" />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" aria-hidden="true" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Hledat plán, kolo nebo díl..."
               aria-label="Hledat plán, kolo nebo díl"
-              className={cn(inputClass, "pl-9 pr-4")}
+              className="field pl-9 pr-4"
             />
           </div>
         </div>
 
         {/* Schedules Table / Cards */}
         {managedSchedules.length === 0 ? (
-          <div className="p-8 bg-white border border-slate-200/80 rounded-2xl text-center text-xs text-slate-500 shadow-sm">
+          <div className="card empty-state">
             Nebyly nalezeny žádné odpovídající servisní plány.
           </div>
         ) : (
-          <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden divide-y divide-slate-100 shadow-sm">
+          <div className="card overflow-hidden divide-y divide-slate-100">
             {managedSchedules.map((item) => {
               const sched = item.schedule;
               const status = item.status;
@@ -386,14 +378,14 @@ export function MaintenanceClient({
                 <div key={sched.id} className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs hover:bg-slate-50/50 transition-colors">
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${
+                      <span className={`chip ${
                         !sched.isActive
-                          ? "bg-slate-100 text-slate-500 border-slate-200"
+                          ? "chip-neutral"
                           : isOverdue
-                          ? "bg-rose-100 text-rose-800 border-rose-200"
+                          ? "chip-rose"
                           : isDueSoon
-                          ? "bg-amber-100 text-amber-900 border-amber-200"
-                          : "bg-emerald-100 text-emerald-800 border-emerald-200"
+                          ? "chip-amber"
+                          : "chip-emerald"
                       }`}>
                         {!sched.isActive ? "Deaktivováno" : status.summaryTextCs}
                       </span>
@@ -404,14 +396,14 @@ export function MaintenanceClient({
 
                       {item.bike && (
                         <span className="text-xs text-navy-700 font-semibold flex items-center gap-1">
-                          <BikeIcon className="w-3 h-3" />
+                          <BikeIcon className="w-3.5 h-3.5" />
                           <span>{item.bike.name}</span>
                         </span>
                       )}
 
                       {item.component && (
                         <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
-                          <Layers className="w-3 h-3" />
+                          <Layers className="w-3.5 h-3.5" />
                           <span>{item.component.manufacturer} {item.component.model}</span>
                         </span>
                       )}
@@ -434,7 +426,7 @@ export function MaintenanceClient({
                   <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto">
                     <button
                       onClick={() => handleOpenRecordModal(item)}
-                      className={buttonClass("primary", "md")}
+                      className="btn-primary btn-sm"
                     >
                       <Wrench className="w-3.5 h-3.5" />
                       <span>Zapsat servis</span>
@@ -442,7 +434,7 @@ export function MaintenanceClient({
 
                     <button
                       onClick={() => handleOpenEditPlan(sched)}
-                      className={buttonClass("secondary", "sm")}
+                      className="btn-secondary btn-sm"
                       title="Upravit plán"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
@@ -451,20 +443,18 @@ export function MaintenanceClient({
 
                     <button
                       onClick={() => handleToggleActive(sched.id, sched.isActive)}
-                      className={`p-1.5 rounded-xl transition-colors ${
-                        sched.isActive
-                          ? "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                          : "text-emerald-600 hover:bg-emerald-50"
-                      }`}
+                      className={`btn-icon ${sched.isActive ? "" : "text-emerald-700"}`}
                       title={sched.isActive ? "Deaktivovat plán" : "Aktivovat plán"}
+                      aria-label={sched.isActive ? `Deaktivovat plán ${sched.name}` : `Aktivovat plán ${sched.name}`}
                     >
                       <Power className="w-4 h-4" />
                     </button>
 
                     <button
                       onClick={() => handleDeletePlan(sched.id)}
-                      className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+                      className="btn-icon btn-icon-danger"
                       title="Smazat plán (pouze bez servisní historie)"
+                      aria-label={`Smazat plán ${sched.name}`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -478,16 +468,16 @@ export function MaintenanceClient({
 
       {/* 5. HISTORIE POSLEDNÍCH ÚKONŮ */}
       <div className="space-y-3 pt-2">
-        <h2 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+        <h2 className="text-base font-bold text-slate-900">
           {t("maintenance.groups.completed")} (Poslední úkony)
         </h2>
 
         {recentEvents.length === 0 ? (
-          <div className="p-6 bg-white border border-slate-200/80 rounded-2xl text-center text-xs text-slate-500 shadow-sm">
+          <div className="card empty-state">
             Zatím nebyly zapsány žádné servisní úkony.
           </div>
         ) : (
-          <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden divide-y divide-slate-100 shadow-sm">
+          <div className="card overflow-hidden divide-y divide-slate-100">
             {recentEvents.map((item) => (
               <div key={item.event.id} className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
                 <div>

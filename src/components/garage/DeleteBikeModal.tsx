@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import { AlertTriangle } from "lucide-react";
-import { Modal } from "@/components/common/Modal";
+import { Modal, ModalFooter } from "@/components/common/Modal";
 import { useVault } from "@/context/VaultContext";
 import { BikeComponentsDisposition } from "@/lib/domain/deletion";
-import { buttonClass, cn } from "@/lib/ui";
+import { cn } from "@/lib/ui";
 
 interface DeleteBikeModalProps {
   isOpen: boolean;
@@ -31,9 +31,9 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
     <Modal isOpen={isOpen} onClose={onClose} title="Smazat kolo" maxWidth="max-w-md">
       <div className="flex items-start gap-3">
         <div className="p-2 rounded-xl shrink-0 bg-rose-50 text-rose-600">
-          <AlertTriangle className="w-6 h-6" />
+          <AlertTriangle className="w-5 h-5" />
         </div>
-        <div className="text-sm text-slate-600 space-y-2">
+        <div className="text-sm text-slate-700 space-y-2 pt-1.5">
           <p>
             Opravdu chcete smazat kolo <strong className="text-slate-900">{bikeName}</strong>? Smaže se kompletní
             historie nájezdu, servisní záznamy a plány, profily nastavení a finanční transakce kola.
@@ -47,7 +47,7 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
           <legend className="text-xs font-semibold text-slate-700 mb-2">
             Co udělat s namontovanými komponentami ({installedCount})?
           </legend>
-          <label className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer has-[:checked]:border-navy-500 has-[:checked]:bg-navy-50/50">
+          <label className="option-card items-start">
             <input
               type="radio"
               name="components-disposition"
@@ -55,12 +55,12 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
               onChange={() => setDisposition("STORAGE")}
               className="mt-0.5"
             />
-            <span className="text-xs text-slate-600">
+            <span>
               <span className="block font-semibold text-slate-800">Vrátit do skladu</span>
               Komponenty zůstanou v evidenci a půjdou namontovat na jiné kolo.
             </span>
           </label>
-          <label className="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 cursor-pointer has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50/50">
+          <label className="option-card option-card-danger items-start">
             <input
               type="radio"
               name="components-disposition"
@@ -68,7 +68,7 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
               onChange={() => setDisposition("DELETE")}
               className="mt-0.5"
             />
-            <span className="text-xs text-slate-600">
+            <span>
               <span className="block font-semibold text-slate-800">Trvale smazat i komponenty</span>
               Komponenty se trvale odstraní včetně jejich servisních plánů a nákupních záznamů.
             </span>
@@ -76,22 +76,22 @@ export function DeleteBikeModal({ isOpen, onClose, bikeId, bikeName, onDeleted }
         </fieldset>
       )}
 
-      <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3">
+      <ModalFooter>
         <button
           type="button"
           onClick={onClose}
-          className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+          className="btn-secondary"
         >
           Zrušit
         </button>
         <button
           type="button"
           onClick={handleConfirm}
-          className={cn(buttonClass("danger", "md"), "w-full sm:w-auto")}
+          className="btn-danger"
         >
           Smazat kolo
         </button>
-      </div>
+      </ModalFooter>
     </Modal>
   );
 }

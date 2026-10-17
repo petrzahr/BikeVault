@@ -147,8 +147,8 @@ Jedna neutrální škála (`slate`, chladně neutrální, přepsaná v `tailwind
 ### Hierarchy
 - **KPI** (800, 24px, tabulkové číslice): hlavní čísla na kartách (kilometry, náklady, počty).
 - **Page title** (700, 20px, `<h1>`): název obrazovky v `PageHeader` nebo hlavičce detailu. Jeden `<h1>` na stránku.
-- **Section** (700, 16px, `<h2>`): nadpisy sekcí a karet obrazovky.
-- **Title** (700, 14px, `<h3>`): název kola, komponenty, položky v seznamu.
+- **Section** (700, 16px, `<h2>`): nadpisy sekcí obrazovky mimo karty (Po termínu, Servisní plány…) a hlavička podstránky detailu kola.
+- **Title** (700, 14px): nadpis uvnitř karty (záhlaví karty, název kola, komponenty, plánu). Úroveň `<h2>`/`<h3>` podle struktury, velikost vždy 14px.
 - **Body** (500, 12px): data, řádky, popisy. Pole mají 14px (na telefonu 16px kvůli iOS).
 - **Label** (`section-label`: 700, 12px, velká písmena, `tracking-wider`, `slate-500`): popisky KPI a skupin.
 
@@ -185,25 +185,33 @@ Každý opakovaný prvek má jeden recept jako třídu v `src/app/globals.css` (
 ### Fields
 - **`field`** pro `input`, `select`, `textarea`: bílý povrch, linka, 12px zaoblení, 14px text, fokus navy okraj a aura; chyba přes `aria-invalid="true"` růžovým okrajem.
 - **`field-label`**: 12px semibold `slate-700`, 4px nad polem.
+- **`field field-sm`**: kompaktní pole pro přejmenování přímo v řádku seznamu.
+- **Jednotka v poli** (km, h, Kč): `absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 pointer-events-none`.
+
+### Choice cards
+- **`option-card`**: `label` obalující radio/checkbox s popisem; vybraná volba (`:has(:checked)`) má navy nádech a navy okraj, `option-card-danger` pro destruktivní volbu (růžová). Rozložení obsahu (`items-start` / `items-center`) doplňuje místo.
 
 ### Cards
 - **`card`**: bílý povrch, linka `slate-200/80`, 16px zaoblení, `shadow-sm`. Vnitřní okraj doplňuje místo (`p-4 sm:p-5`).
 - **`card-header`**: záhlaví karty se seznamem, linka `slate-100` pod ním.
 
 ### Segmented controls
-- **`segmented` + `segment`**: šedý podklad, volba 12px semibold; vybraná (`aria-pressed="true"`) je navy s bílým textem.
+- **`segmented` + `segment`**: šedý podklad, volba 12px semibold; vybraná je navy s bílým textem. Stav nese ARIA atribut, ne třída: `aria-pressed` (filtr, přepínač), `aria-selected` (`role="tab"`), `aria-current="page"` (odkazy podsekcí kola). Barvu podle významu (výdaj/příjem) přidává místo utilitou `aria-pressed:bg-…`.
 
 ### Chips
 - **`chip` + `chip-neutral` / `chip-navy` / `chip-emerald` / `chip-amber` / `chip-rose`**: 6px zaoblení, 12px semibold, bez rámečku, barva jen podle významu.
 
 ### Panels
-- **`panel` + `panel-error` / `panel-warning` / `panel-info` / `panel-success`**: 12px okraj a zaoblení, linka, 12px text. Ikona vlevo (`flex items-start gap-2.5`) doplňuje místo.
+- **`panel` + `panel-error` / `panel-warning` / `panel-info` / `panel-success` / `panel-neutral`**: 12px okraj a zaoblení, linka, 12px text. `panel-neutral` je šedý zapuštěný box (technický detail, souhrn, nastavení odpružení). Ikona vlevo (`flex items-start gap-2.5`) doplňuje místo. Chybová hláška ve formuláři má `role="alert"`. Toasty používají stejné panely se stínem `shadow-lg`.
+
+### Page header
+- **`PageHeader`** (`src/components/common/PageHeader.tsx`): karta s `<h1>` (20px), volitelným štítkem (`chip`), akcemi vpravo a řádkem pod nadpisem (`children`: záložky, filtry). Používají ji všechny seznamové obrazovky; detail kola a komponenty mají vlastní hlavičku se stejným `<h1>`. Titulek v tmavé hlavičce aplikace není nadpis (`<p>`).
 
 ### Empty states
 - **`empty-state`**: na střed, 32px nahoře a dole, 12px `slate-500`; volitelný nadpis 14px bold `slate-700`.
 
 ### Dialogs
-- **`Modal`** (`src/components/common/Modal.tsx`): hlavička s názvem a křížkem, posouvající se obsah. Akční lišta je `ModalFooter` (`modal-footer`): Zrušit (`btn-secondary`) vlevo od hlavní akce, na úzkém telefonu pod sebou s hlavní akcí nahoře.
+- **`Modal`** (`src/components/common/Modal.tsx`): hlavička s názvem (`<h2>` 16px) a křížkem (`btn-icon`), posouvající se obsah, ztmavení `slate-900/40`. Akční lišta je `ModalFooter` (`modal-footer`): přilepená ke spodnímu okraji dialogu, Zrušit (`btn-secondary`) vlevo od hlavní akce, na telefonu pod sebou přes celou šířku s hlavní akcí nahoře. Průvodce s kroky (BikeModal) používá `ModalFooter className="sm:justify-between"`. Potvrzovací dialogy jdou přes `ConfirmationModal` / `useFeedback().confirm`, nikdy vlastní `fixed inset-0`.
 
 ## Do's and Don'ts
 

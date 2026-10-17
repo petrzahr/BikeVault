@@ -17,7 +17,7 @@ import {
   Trash2
 } from "lucide-react";
 import Link from "next/link";
-import { buttonClass } from "@/lib/ui";
+
 
 interface BikeHistoryPageProps {
   params: Promise<{ id: string }>;
@@ -46,7 +46,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
 
   if (!bike) {
     return (
-      <div className="p-12 text-center text-slate-500 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+      <div className="card empty-state py-12">
         <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
         <Link href="/garage" className="text-navy-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
@@ -95,7 +95,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       title: `Montáž: ${compName}`,
       subtitle: `${catName} • při ${formatKm(inst.installedBikeKm)}`,
       badge: "Komponenta",
-      badgeColor: "bg-navy-50 text-navy-700 border-navy-200/80",
+      badgeColor: "chip-neutral",
       icon: Layers,
     });
 
@@ -106,7 +106,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Demontáž: ${compName}`,
         subtitle: `Ukončení montáže při ${formatKm(inst.removedBikeKm || 0)}`,
         badge: "Demontáž",
-        badgeColor: "bg-slate-100 text-slate-700 border-slate-200/80",
+        badgeColor: "chip-neutral",
         icon: Layers,
       });
     }
@@ -119,7 +119,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       title: `Servis: ${item.description}`,
       subtitle: `${item.shopName || (item.performedBy === "SELF" ? "Svépomocí" : "Servis")} • ${formatCzk(Number(item.totalPrice || 0))}`,
       badge: "Servis",
-      badgeColor: "bg-navy-50 text-navy-700 border-navy-200/80",
+      badgeColor: "chip-navy",
       icon: Wrench,
       onDelete: () => setPendingDelete({ kind: "SERVICE", id: item.id, label: `servisní záznam „${item.description}“ včetně navázané platby` }),
     });
@@ -136,9 +136,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Výchozí nájezd: ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Zavedení kola do garáže"}`,
         badge: `Výchozí stav • ${sourceLabel}`,
-        badgeColor: isStrava
-          ? "bg-navy-50 text-navy-700 border-navy-200/80"
-          : "bg-slate-100 text-slate-700 border-slate-200/80",
+        badgeColor: isStrava ? "chip-navy" : "chip-neutral",
         icon: SlidersHorizontal,
       });
     } else if (odo.entryType === "RIDE") {
@@ -153,9 +151,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Záznam nájezdu: ${formatKm(odo.resultingKm)} (${deltaKmText})`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} (${deltaMinText}) • ${sourceLabel}${odo.note ? ` • ${odo.note}` : ""}`,
         badge: isStrava ? "Nájezd • Strava" : "Nájezd • Ručně",
-        badgeColor: isStrava
-          ? "bg-navy-50 text-navy-700 border-navy-200/80"
-          : "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+        badgeColor: isStrava ? "chip-navy" : "chip-neutral",
         icon: SlidersHorizontal,
         onDelete: odo.id === deletableOdometerId
           ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `záznam nájezdu ${formatKm(odo.resultingKm)} (celkový nájezd se vrátí na předchozí stav)` })
@@ -168,7 +164,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Korekce nájezdu na ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Manuální oprava"}`,
         badge: `Korekce • ${sourceLabel}`,
-        badgeColor: "bg-purple-50 text-purple-700 border-purple-200/80",
+        badgeColor: "chip-amber",
         icon: History,
         onDelete: odo.id === deletableOdometerId
           ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `korekci nájezdu na ${formatKm(odo.resultingKm)} (celkový nájezd se vrátí na předchozí stav)` })
@@ -186,9 +182,9 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
     <div className="space-y-6 animate-fade-in">
       <BikeHeader bike={bike} />
 
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-base font-bold text-slate-900">
             Časová osa a životopis kola
           </h2>
         </div>
@@ -202,13 +198,13 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
             <div key={idx} className="relative group">
               {/* Dot */}
               <div className="absolute -left-6 sm:-left-8 top-1 w-6 h-6 rounded-full bg-white border-2 border-slate-300 group-hover:border-navy-600 transition-colors flex items-center justify-center text-slate-500 group-hover:text-navy-600 shadow-sm">
-                <Icon className="w-3 h-3" />
+                <Icon className="w-3.5 h-3.5" />
               </div>
 
               {/* Card */}
-              <div className="bg-white border border-slate-200/80 hover:border-slate-300 p-4 sm:p-5 rounded-2xl transition-all shadow-sm">
+              <div className="card p-4 sm:p-5">
                 <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${item.badgeColor}`}>
+                  <span className={`chip ${item.badgeColor}`}>
                     {item.badge}
                   </span>
                   <span className="text-xs tabular-nums text-slate-500 font-medium">
@@ -227,11 +223,11 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
                     <button
                       type="button"
                       onClick={item.onDelete}
-                      className={buttonClass("ghost", "sm", "hover:text-rose-600 hover:bg-rose-50")}
+                      className="btn-secondary btn-secondary-danger btn-sm"
                       title="Smazat záznam"
                       aria-label="Smazat záznam"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-3.5 h-3.5" />
                       <span>Smazat</span>
                     </button>
                   </div>

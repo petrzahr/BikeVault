@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Modal } from "@/components/common/Modal";
+import { Modal, ModalFooter } from "@/components/common/Modal";
 import { useVault } from "@/context/VaultContext";
 import { FinancialTransaction } from "@/types/vault";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+import { cn } from "@/lib/ui";
 import { Check, TrendingDown, TrendingUp, Calendar, Coins, Loader2 } from "lucide-react";
 import { t } from "@/lib/i18n";
 
@@ -123,23 +123,20 @@ export function AddTransactionModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
+          <div role="alert" className="panel panel-error font-medium">
             {error}
           </div>
         )}
 
         {/* Přepínač Výdaj / Příjem */}
         <div>
-          <label className={labelClass}>Typ položky</label>
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl border border-slate-200/80">
+          <label className="field-label">Typ položky</label>
+          <div className="segmented grid grid-cols-2">
             <button
               type="button"
               onClick={() => handleTypeChange("EXPENSE")}
-              className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                type === "EXPENSE"
-                  ? "bg-rose-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
+              aria-pressed={type === "EXPENSE"}
+              className="segment aria-pressed:bg-rose-600 aria-pressed:hover:bg-rose-600"
             >
               <TrendingDown className="w-3.5 h-3.5" />
               <span>Výdaj</span>
@@ -147,11 +144,8 @@ export function AddTransactionModal({
             <button
               type="button"
               onClick={() => handleTypeChange("INCOME")}
-              className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                type === "INCOME"
-                  ? "bg-emerald-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
+              aria-pressed={type === "INCOME"}
+              className="segment aria-pressed:bg-emerald-700 aria-pressed:hover:bg-emerald-700"
             >
               <TrendingUp className="w-3.5 h-3.5" />
               <span>Příjem</span>
@@ -161,7 +155,7 @@ export function AddTransactionModal({
 
         {/* Částka */}
         <div>
-          <label htmlFor="tx-amount" className={labelClass}>
+          <label htmlFor="tx-amount" className="field-label">
             Částka (Kč) *
           </label>
           <div className="relative">
@@ -175,7 +169,7 @@ export function AddTransactionModal({
               placeholder="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className={cn(inputClass, "pr-10 tabular-nums text-base font-bold")}
+              className="field pr-10 tabular-nums text-base font-bold"
             />
             <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500 pointer-events-none">
               Kč
@@ -185,7 +179,7 @@ export function AddTransactionModal({
 
         {/* Kategorie */}
         <div>
-          <label htmlFor="tx-category" className={labelClass}>
+          <label htmlFor="tx-category" className="field-label">
             Kategorie položky *
           </label>
           <select
@@ -193,7 +187,7 @@ export function AddTransactionModal({
             required
             value={category}
             onChange={(e) => setCategory(e.target.value as FinancialTransaction["category"])}
-            className={inputClass}
+            className="field"
           >
             {(type === "EXPENSE" ? expenseCategories : incomeCategories).map((cat) => (
               <option key={cat.value} value={cat.value}>
@@ -205,7 +199,7 @@ export function AddTransactionModal({
 
         {/* Popis / položka */}
         <div>
-          <label htmlFor="tx-notes" className={labelClass}>
+          <label htmlFor="tx-notes" className="field-label">
             Popis položky *
           </label>
           <input
@@ -219,14 +213,14 @@ export function AddTransactionModal({
             }
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className={inputClass}
+            className="field"
           />
         </div>
 
         {/* Datum a Kolo (dva sloupce) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label htmlFor="tx-date" className={labelClass}>
+            <label htmlFor="tx-date" className="field-label">
               Datum transakce *
             </label>
             <input
@@ -235,19 +229,19 @@ export function AddTransactionModal({
               required
               value={transactionDate}
               onChange={(e) => setTransactionDate(e.target.value)}
-              className={inputClass}
+              className="field"
             />
           </div>
 
           <div>
-            <label htmlFor="tx-bike" className={labelClass}>
+            <label htmlFor="tx-bike" className="field-label">
               Vazba na kolo (volitelné)
             </label>
             <select
               id="tx-bike"
               value={bikeId}
               onChange={(e) => setBikeId(e.target.value)}
-              className={inputClass}
+              className="field"
             >
               <option value="">— Bez vazby na kolo —</option>
               {data.bikes.map((b) => (
@@ -260,11 +254,11 @@ export function AddTransactionModal({
         </div>
 
         {/* Tlačítka */}
-        <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs py-2.5 -mx-1 px-1 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 z-10">
+        <ModalFooter>
           <button
             type="button"
             onClick={onClose}
-            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+            className="btn-secondary"
           >
             {t("common.cancel")}
           </button>
@@ -272,7 +266,7 @@ export function AddTransactionModal({
             type="submit"
             disabled={loading}
             className={cn(
-              buttonClass(type === "EXPENSE" ? "primary" : "primary", "md"),
+              "btn-primary",
               "w-full sm:w-auto"
             )}
           >
@@ -288,7 +282,7 @@ export function AddTransactionModal({
               </>
             )}
           </button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );

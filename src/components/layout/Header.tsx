@@ -12,7 +12,7 @@ import {
 import { GoogleIcon } from "@/components/common/GoogleIcon";
 import { SyncStatusIcon, SyncStatusLabel } from "@/components/common/SyncStatusIndicator";
 import { SYNC_LABELS, getSyncDisplayState, getSyncTone } from "@/lib/syncStatus";
-import { buttonClass } from "@/lib/ui";
+import { cn } from "@/lib/ui";
 import { StravaStatusBadge } from "@/components/layout/StravaStatusBadge";
 
 interface HeaderProps {
@@ -89,16 +89,16 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleMobileMenu}
             aria-label="Otevřít menu"
-            className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-white/70 hover:bg-white/10 md:hidden shrink-0"
+            className="btn-icon text-white/70 hover:text-white hover:bg-white/10 md:hidden"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           <div className="min-w-0">
-            <h1 className="text-base font-bold text-white leading-tight truncate">
+            <p className="text-base font-bold text-white leading-tight truncate">
               {getScreenTitle()}
-            </h1>
-            <p className="text-[11px] text-white/70 font-medium hidden sm:block truncate">
+            </p>
+            <p className="text-xs text-white/70 font-medium hidden sm:block truncate">
               BikeVault – Vaše kola pod absolutní kontrolou
             </p>
           </div>
@@ -113,7 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={connectGoogleDrive}
               disabled={syncStatus === "saving"}
               title="Připojit Google Disk pro automatickou synchronizaci"
-              className={buttonClass("outlineDark", "sm")}
+              className="btn-shell btn-sm"
             >
               <GoogleIcon className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden sm:inline">
@@ -130,11 +130,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setMenuOpen((prev) => !prev)}
                 title={`Google Disk: ${SYNC_LABELS[syncState]} – klikněte pro podrobnosti a synchronizaci`}
                 aria-label={`Google Disk: ${SYNC_LABELS[syncState]}`}
-                className={buttonClass(
-                  "outlineDark",
-                  "sm",
-                  hasSyncProblem ? "border-rose-400/60 bg-rose-500/10 hover:bg-rose-500/20" : undefined
-                )}
+                className={cn("btn-shell btn-sm", hasSyncProblem ? "border-rose-400/60 bg-rose-500/10 hover:bg-rose-500/20" : undefined)}
               >
                 <GoogleIcon className="w-3.5 h-3.5 shrink-0" />
                 <SyncStatusIcon state={syncState} onDark />
@@ -148,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white border border-slate-200/90 shadow-xl p-3.5 z-50 space-y-3 text-xs animate-scale-in">
+                <div className="absolute right-0 mt-2 w-72 rounded-2xl bg-white border border-slate-200 shadow-lg p-3.5 z-50 space-y-3 text-xs animate-scale-in">
                   {/* Uživatelský profil / Stav */}
                   <div className="flex items-center gap-2.5 pb-2.5 border-b border-slate-100">
                     {user?.photoLink ? (
@@ -166,17 +162,17 @@ export const Header: React.FC<HeaderProps> = ({
                       <p className="font-bold text-slate-900 truncate">
                         {user?.displayName || "Google Uživatel"}
                       </p>
-                      <p className="text-[11px] text-slate-500 truncate">
+                      <p className="text-xs text-slate-500 truncate">
                         {user?.emailAddress || "Propojeno s Google Drive"}
                       </p>
                     </div>
                   </div>
 
                   {/* Informace o synchronizaci */}
-                  <div className="p-2.5 bg-slate-50 rounded-xl space-y-1.5 text-[11px]">
+                  <div className="p-2.5 bg-slate-50 rounded-xl space-y-1.5 text-xs">
                     <div className="flex items-center justify-between text-slate-500">
                       <span>Stav:</span>
-                      <SyncStatusLabel state={syncState} iconClassName="w-3 h-3" />
+                      <SyncStatusLabel state={syncState} iconClassName="w-3.5 h-3.5" />
                     </div>
 
                     <div className="flex items-center justify-between text-slate-500">
@@ -193,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
 
                     {syncError && (
-                      <p className="text-[10px] text-rose-600 pt-1.5 border-t border-slate-100 mt-1.5">
+                      <p className="text-xs text-rose-700 pt-1.5 border-t border-slate-100 mt-1.5">
                         {syncError}
                       </p>
                     )}
@@ -209,7 +205,7 @@ export const Header: React.FC<HeaderProps> = ({
                           setMenuOpen(false);
                         }}
                         disabled={syncStatus === "saving"}
-                        className={buttonClass("warning", "md", "w-full")}
+                        className="btn-primary w-full"
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
                         <span>Obnovit oprávnění Google</span>
@@ -222,7 +218,7 @@ export const Header: React.FC<HeaderProps> = ({
                           setMenuOpen(false);
                         }}
                         disabled={syncStatus === "saving"}
-                        className={buttonClass("soft", "md", "w-full")}
+                        className="btn-secondary w-full"
                       >
                         <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
                         <span>Synchronizovat nyní</span>
@@ -255,7 +251,7 @@ export const Header: React.FC<HeaderProps> = ({
                           await logout({ force: true });
                         }
                       }}
-                      className={buttonClass("secondary", "md", "w-full hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200")}
+                      className="btn-secondary btn-secondary-danger w-full"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span>Odpojit Google Disk</span>

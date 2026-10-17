@@ -8,7 +8,7 @@ import { AddTransactionModal } from "@/components/finances/AddTransactionModal";
 import { calculateTco, getBikeTransactions } from "@/lib/domain/finance";
 import { formatCzk, formatDateCs, t } from "@/lib/i18n";
 import { Coins, TrendingDown, TrendingUp, Calendar, Tag, Plus } from "lucide-react";
-import { buttonClass } from "@/lib/ui";
+
 import Link from "next/link";
 
 interface BikeFinancesPageProps {
@@ -23,7 +23,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
 
   if (!bike) {
     return (
-      <div className="p-12 text-center text-slate-500 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+      <div className="card empty-state py-12">
         <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
         <Link href="/garage" className="text-navy-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
@@ -48,63 +48,57 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
       <BikeHeader bike={bike} />
 
       {/* TCO Summary Cards - Sjednocený responzivní ribbon */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-3 sm:p-4 grid grid-cols-3 divide-x divide-slate-100 sm:divide-slate-200/60">
-        <div className="px-2 sm:px-4 first:pl-1">
-          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
-            <div className="p-1 rounded-md bg-rose-50 text-rose-600 shrink-0 hidden sm:flex">
-              <TrendingDown className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[11px] sm:text-xs font-semibold truncate">{t("finances.totalExpenses")}</span>
+      <div className="card p-4 grid grid-cols-3 divide-x divide-slate-100">
+        <div className="px-2 sm:px-4 first:pl-0">
+          <div className="flex items-center gap-1.5 mb-1">
+            <TrendingDown className="w-4 h-4 text-rose-600 shrink-0 hidden sm:block" />
+            <span className="section-label truncate">{t("finances.totalExpenses")}</span>
           </div>
-          <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
             {formatCzk(tco.totalExpenses)}
           </div>
-          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
+          <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
             Nákup kola a servis
           </p>
         </div>
 
         <div className="px-2 sm:px-4">
-          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
-            <div className="p-1 rounded-md bg-emerald-50 text-emerald-600 shrink-0 hidden sm:flex">
-              <TrendingUp className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[11px] sm:text-xs font-semibold truncate">{t("finances.totalIncomes")}</span>
+          <div className="flex items-center gap-1.5 mb-1">
+            <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0 hidden sm:block" />
+            <span className="section-label truncate">{t("finances.totalIncomes")}</span>
           </div>
-          <div className="text-base sm:text-xl font-bold text-emerald-600 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl font-extrabold text-emerald-700 truncate tabular-nums">
             {formatCzk(tco.totalIncomes)}
           </div>
-          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
+          <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
             Prodej komponent
           </p>
         </div>
 
-        <div className="px-2 sm:px-4 last:pr-1">
-          <div className="flex items-center gap-1.5 text-navy-700 mb-1">
-            <div className="p-1 rounded-md bg-navy-50 text-navy-600 shrink-0 hidden sm:flex">
-              <Coins className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[11px] sm:text-xs font-bold truncate">{t("finances.netCost")}</span>
+        <div className="px-2 sm:px-4 last:pr-0">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Coins className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <span className="section-label truncate">{t("finances.netCost")}</span>
           </div>
-          <div className="text-base sm:text-xl font-bold text-navy-700 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl font-extrabold text-navy-700 truncate tabular-nums">
             {formatCzk(tco.netOwnershipCost)}
           </div>
-          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5">
+          <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
             Celkové čisté náklady (TCO)
           </p>
         </div>
       </div>
 
       {/* Transaction Ledger */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3">
-          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+      <div className="card overflow-hidden">
+        <div className="card-header">
+          <h2 className="text-sm font-bold text-slate-900">
             {t("finances.ledger")} ({transactions.length})
-          </h3>
+          </h2>
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className={buttonClass("primary", "sm")}
+            className="btn-primary btn-sm"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Přidat položku</span>
@@ -112,12 +106,12 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
         </div>
 
         {transactions.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-500 space-y-3">
+          <div className="empty-state space-y-3">
             <p>Zatím nebyly zaznamenány žádné finanční transakce.</p>
             <button
               type="button"
               onClick={() => setIsAddModalOpen(true)}
-              className={buttonClass("secondary", "sm")}
+              className="btn-secondary btn-sm"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Zaznamenat první výdaj / příjem</span>
@@ -133,9 +127,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
                 <div key={tx.id} className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2.5">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
-                        isExpense ? "bg-rose-50 text-rose-700 border-rose-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                      }`}>
+                      <span className={`chip ${isExpense ? "chip-rose" : "chip-emerald"}`}>
                         {t(categoryKey)}
                       </span>
                       <span className="text-sm font-semibold text-slate-900">
@@ -151,7 +143,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
 
                   <div className="flex items-center gap-2">
                     <span className={`text-base font-bold tabular-nums ${
-                      isExpense ? "text-slate-900" : "text-emerald-600"
+                      isExpense ? "text-slate-900" : "text-emerald-700"
                     }`}>
                       {isExpense ? "-" : "+"}{formatCzk(tx.amount)}
                     </span>

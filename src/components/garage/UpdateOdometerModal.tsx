@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import { useVault } from "@/context/VaultContext";
 import { Check, AlertTriangle, Loader2 } from "lucide-react";
 import { t, formatKm, formatMinutes } from "@/lib/i18n";
-import { Modal } from "@/components/common/Modal";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+import { Modal, ModalFooter } from "@/components/common/Modal";
 
 interface UpdateOdometerModalProps {
   isOpen: boolean;
@@ -97,13 +96,13 @@ export function UpdateOdometerModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium">
+          <div role="alert" className="panel panel-error font-medium">
             {error}
           </div>
         )}
 
         {/* Previous State & Delta Box */}
-        <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 space-y-1.5 text-xs">
+        <div className="panel panel-neutral space-y-1.5">
           <div className="flex justify-between items-center text-slate-600">
             <span>{t("odometer.previousState")}:</span>
             <span className="tabular-nums text-slate-900 font-semibold">
@@ -111,10 +110,10 @@ export function UpdateOdometerModal({
             </span>
           </div>
 
-          <div className="flex justify-between items-center pt-1.5 border-t border-slate-200/70">
+          <div className="flex justify-between items-center pt-1.5 border-t border-slate-200">
             <span className="text-slate-600 font-medium">{t("odometer.difference")}:</span>
             <span className={`tabular-nums font-bold ${
-              isDecreasing ? "text-amber-700" : "text-emerald-600"
+              isDecreasing ? "text-amber-800" : "text-emerald-700"
             }`}>
               {deltaKm >= 0 ? `+${formatKm(deltaKm)}` : formatKm(deltaKm)} • {deltaMin >= 0 ? `+${formatMinutes(deltaMin)}` : `-${formatMinutes(Math.abs(deltaMin))}`}
             </span>
@@ -123,7 +122,7 @@ export function UpdateOdometerModal({
 
         {/* New cumulative kilometers */}
         <div>
-          <label htmlFor="odo-total-km" className={labelClass}>
+          <label htmlFor="odo-total-km" className="field-label">
             {t("odometer.currentKm")} *
           </label>
           <div className="relative">
@@ -135,15 +134,15 @@ export function UpdateOdometerModal({
               required
               value={totalKmStr}
               onChange={(e) => setTotalKmStr(e.target.value)}
-              className={cn(inputClass, "pr-12 tabular-nums")}
+              className="field pr-12 tabular-nums"
             />
-            <span className="absolute right-3.5 top-2 text-slate-500 text-xs font-semibold pointer-events-none">km</span>
+            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-semibold pointer-events-none">km</span>
           </div>
         </div>
 
         {/* New cumulative hours */}
         <div>
-          <label htmlFor="odo-hours" className={labelClass}>
+          <label htmlFor="odo-hours" className="field-label">
             {t("odometer.currentHours")} *
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -155,9 +154,9 @@ export function UpdateOdometerModal({
                 required
                 value={hoursStr}
                 onChange={(e) => setHoursStr(e.target.value)}
-                className={cn(inputClass, "pr-8 tabular-nums")}
+                className="field pr-8 tabular-nums"
               />
-              <span className="absolute right-3.5 top-2 text-slate-500 text-xs font-semibold pointer-events-none">h</span>
+              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-semibold pointer-events-none">h</span>
             </div>
             <div className="relative">
               <input
@@ -168,16 +167,16 @@ export function UpdateOdometerModal({
                 aria-label="Minuty"
                 value={minutesStr}
                 onChange={(e) => setMinutesStr(e.target.value)}
-                className={cn(inputClass, "pr-11 tabular-nums")}
+                className="field pr-11 tabular-nums"
               />
-              <span className="absolute right-3.5 top-2 text-slate-500 text-xs font-semibold pointer-events-none">min</span>
+              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-semibold pointer-events-none">min</span>
             </div>
           </div>
         </div>
 
         {/* Date */}
         <div>
-          <label htmlFor="odo-entry-date" className={labelClass}>
+          <label htmlFor="odo-entry-date" className="field-label">
             {t("odometer.date")}
           </label>
           <input
@@ -186,13 +185,13 @@ export function UpdateOdometerModal({
             required
             value={entryDate}
             onChange={(e) => setEntryDate(e.target.value)}
-            className={inputClass}
+            className="field"
           />
         </div>
 
         {/* Note */}
         <div>
-          <label htmlFor="odo-note" className={labelClass}>
+          <label htmlFor="odo-note" className="field-label">
             {t("odometer.note")}
           </label>
           <input
@@ -200,18 +199,18 @@ export function UpdateOdometerModal({
             type="text"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className={inputClass}
+            className="field"
           />
         </div>
 
         {/* Warning if decreasing */}
         {isDecreasing && (
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2 text-xs text-amber-900">
-            <div className="flex items-center gap-2 font-bold text-amber-800">
+          <div className="panel panel-warning space-y-2">
+            <div className="flex items-center gap-2 font-bold">
               <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
               <span>Zadaný stav je nižší než předchozí ({formatKm(currentKm)})</span>
             </div>
-            <p className="text-[11px] leading-relaxed text-amber-800">
+            <p>
               Pokud opravujete předchozí překlep nebo nastavujete nový cyklopočítač, potvrďte korekci níže.
             </p>
             <label className="flex items-center gap-2 pt-1 font-semibold text-slate-800 cursor-pointer select-none">
@@ -227,23 +226,23 @@ export function UpdateOdometerModal({
         )}
 
         {/* Actions */}
-        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+        <ModalFooter>
           <button
             type="button"
             onClick={onClose}
-            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+            className="btn-secondary"
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading || (isDecreasing && !allowCorrection)}
-            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
+            className="btn-primary"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{loading ? t("common.loading") : t("odometer.saveStatus")}</span>
           </button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );

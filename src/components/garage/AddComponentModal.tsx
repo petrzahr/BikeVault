@@ -5,8 +5,7 @@ import { Loader2, Check } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
-import { Modal } from "@/components/common/Modal";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+import { Modal, ModalFooter } from "@/components/common/Modal";
 import { getCategorySpecFields, LEGACY_COMPONENT_SPEC_KEYS, sortCategoriesAz } from "@/lib/bikeLists";
 
 interface AddComponentModalProps {
@@ -137,7 +136,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
     >
       <form onSubmit={handleCreate} className="space-y-4">
         <div>
-          <label htmlFor="comp-category" className={labelClass}>
+          <label htmlFor="comp-category" className="field-label">
             Kategorie komponenty *
           </label>
           <select
@@ -145,7 +144,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             value={effectiveCategoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             required
-            className={inputClass}
+            className="field"
           >
             <option value="">—</option>
             {categories.map((c) => (
@@ -158,7 +157,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="comp-manufacturer" className={labelClass}>
+            <label htmlFor="comp-manufacturer" className="field-label">
               Výrobce *
             </label>
             <input
@@ -167,11 +166,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               required
               value={manufacturer}
               onChange={(e) => setManufacturer(e.target.value)}
-              className={inputClass}
+              className="field"
             />
           </div>
           <div>
-            <label htmlFor="comp-model" className={labelClass}>
+            <label htmlFor="comp-model" className="field-label">
               Model *
             </label>
             <input
@@ -180,14 +179,14 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               required
               value={model}
               onChange={(e) => setModel(e.target.value)}
-              className={inputClass}
+              className="field"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="comp-variant" className={labelClass}>
+            <label htmlFor="comp-variant" className="field-label">
               Varianta / specifikace
             </label>
             <input
@@ -195,11 +194,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               type="text"
               value={variant}
               onChange={(e) => setVariant(e.target.value)}
-              className={inputClass}
+              className="field"
             />
           </div>
           <div>
-            <label htmlFor="comp-serial-number" className={labelClass}>
+            <label htmlFor="comp-serial-number" className="field-label">
               Sériové číslo
             </label>
             <input
@@ -207,14 +206,14 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               type="text"
               value={serialNumber}
               onChange={(e) => setSerialNumber(e.target.value)}
-              className={inputClass}
+              className="field"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="comp-purchase-price" className={labelClass}>
+            <label htmlFor="comp-purchase-price" className="field-label">
               Nákupní cena (Kč)
             </label>
             <input
@@ -223,11 +222,11 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               min="0"
               value={purchasePrice}
               onChange={(e) => setPurchasePrice(e.target.value)}
-              className={cn(inputClass, "tabular-nums")}
+              className="field"
             />
           </div>
           <div>
-            <label htmlFor="comp-purchase-date" className={labelClass}>
+            <label htmlFor="comp-purchase-date" className="field-label">
               Datum nákupu
             </label>
             <input
@@ -235,21 +234,21 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
               type="date"
               value={purchaseDate}
               onChange={(e) => setPurchaseDate(e.target.value)}
-              className={inputClass}
+              className="field"
             />
           </div>
         </div>
 
         {/* Vlastní pole specifikace podle zvolené kategorie */}
         {specFields.length > 0 && (
-          <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80 space-y-2.5">
+          <div className="panel panel-neutral space-y-2.5">
             <span className="text-xs font-semibold text-slate-700 block">
               Specifikace: {selectedCategory?.nameCs}
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {specFields.map((field) => (
                 <div key={field.key}>
-                  <label htmlFor={`spec-${field.key}`} className={labelClass}>
+                  <label htmlFor={`spec-${field.key}`} className="field-label">
                     {field.label}
                   </label>
                   <input
@@ -258,7 +257,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
                     value={specValues[field.key] || ""}
                     onChange={(e) => setSpecValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
                     placeholder={`Zadejte ${field.label.toLowerCase()}...`}
-                    className={inputClass}
+                    className="field"
                   />
                 </div>
               ))}
@@ -267,7 +266,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
         )}
 
         <div>
-          <label htmlFor="comp-notes" className={labelClass}>
+          <label htmlFor="comp-notes" className="field-label">
             Poznámka
           </label>
           <textarea
@@ -275,27 +274,27 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className={inputClass}
+            className="field"
           />
         </div>
 
-        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+        <ModalFooter>
           <button
             type="button"
             onClick={() => onClose()}
-            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+            className="btn-secondary"
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
+            className="btn-primary"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{loading ? t("common.loading") : isEditing ? "Uložit změny komponenty" : "Uložit komponentu do skladu"}</span>
           </button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );

@@ -1,6 +1,5 @@
 import React from 'react';
-import { Modal } from './Modal';
-import { Button } from './Button';
+import { Modal, ModalFooter } from './Modal';
 import { AlertTriangle } from 'lucide-react';
 
 interface ConfirmationModalProps {
@@ -29,28 +28,27 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth="max-w-md">
       <div className="flex items-start gap-3">
         <div className={`p-2 rounded-xl shrink-0 ${isDestructive ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'}`}>
-          <AlertTriangle className="w-6 h-6" />
+          <AlertTriangle className="w-5 h-5" />
         </div>
-        <div className="text-sm text-slate-600 space-y-2">
+        <div className="text-sm text-slate-700 space-y-2 pt-1.5">
           <p>{message}</p>
         </div>
       </div>
-      <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3">
-        <Button variant="secondary" size="md" className="w-full sm:w-auto" onClick={onClose}>
+      <ModalFooter>
+        <button type="button" className="btn-secondary" onClick={onClose}>
           {cancelText}
-        </Button>
-        <Button
-          variant={isDestructive ? 'danger' : 'primary'}
-          size="md"
-          className="w-full sm:w-auto"
+        </button>
+        <button
+          type="button"
+          className={isDestructive ? 'btn-danger' : 'btn-primary'}
           onClick={() => {
             onConfirm();
             onClose();
           }}
         >
           {resolvedConfirmText}
-        </Button>
-      </div>
+        </button>
+      </ModalFooter>
     </Modal>
   );
 };

@@ -26,7 +26,7 @@ import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import { ServiceScheduleModal } from "@/components/maintenance/ServiceScheduleModal";
 import { RecordServiceEventModal } from "@/components/maintenance/RecordServiceEventModal";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+
 
 interface BikeServiceClientProps {
   bike: any;
@@ -113,9 +113,9 @@ export function BikeServiceClient({
       <BikeHeader bike={bike} />
 
       {/* Header Bar */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-base font-bold text-slate-900">
             Servisní plány a servisní kniha
           </h2>
         </div>
@@ -123,16 +123,16 @@ export function BikeServiceClient({
         <div className="flex items-center gap-2.5 self-start sm:self-auto flex-wrap">
           <button
             onClick={handleOpenRecordWithoutPlan}
-            className={buttonClass("secondary", "md")}
+            className="btn-secondary"
             title="Jednorázový servis mimo pravidelný plán"
           >
-            <Wrench className="w-3.5 h-3.5 text-navy-600" />
+            <Wrench className="w-3.5 h-3.5" />
             <span>Zapsat servis bez plánu</span>
           </button>
 
           <button
             onClick={handleOpenCreatePlan}
-            className={buttonClass("primary", "md")}
+            className="btn-primary"
           >
             <Plus className="w-4 h-4" />
             <span>Přidat servisní plán</span>
@@ -143,12 +143,12 @@ export function BikeServiceClient({
       {/* SERVICE SCHEDULES (INTERVALY) */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+          <h3 className="text-base font-bold text-slate-900">
             Servisní plány ({schedulesWithStatus.length})
           </h3>
           <button
             onClick={handleOpenCreatePlan}
-            className="text-xs font-semibold text-navy-600 hover:text-navy-700 inline-flex items-center gap-1"
+            className="btn-text"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Přidat plán</span>
@@ -156,13 +156,13 @@ export function BikeServiceClient({
         </div>
 
         {schedulesWithStatus.length === 0 ? (
-          <div className="p-8 bg-white border border-slate-200/80 rounded-2xl text-center space-y-3 shadow-sm">
-            <p className="text-xs text-slate-500">
+          <div className="card empty-state space-y-3">
+            <p>
               K tomuto kolu ani jeho komponentům zatím nejsou definovány žádné servisní plány.
             </p>
             <button
               onClick={handleOpenCreatePlan}
-              className={buttonClass("soft", "md")}
+              className="btn-secondary"
             >
               <Plus className="w-4 h-4" />
               <span>Vytvořit první servisní plán</span>
@@ -181,68 +181,62 @@ export function BikeServiceClient({
               return (
                 <div
                   key={sched.id}
-                  className={`p-5 rounded-2xl border transition-all flex flex-col justify-between space-y-4 shadow-sm ${
-                    !sched.isActive
-                      ? "bg-slate-50/70 border-slate-200/80 opacity-80"
-                      : isOverdue
-                      ? "border-rose-200/80 bg-rose-50/50"
-                      : isDueSoon
-                      ? "border-amber-200/80 bg-amber-50/50"
-                      : "border-slate-200/80 bg-white hover:border-slate-300"
+                  className={`card p-4 sm:p-5 flex flex-col justify-between space-y-4 ${
+                    !sched.isActive ? "bg-slate-50" : ""
                   }`}
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <span
-                        className={`px-2.5 py-0.5 rounded-full border text-[11px] font-semibold flex items-center gap-1.5 ${
+                        className={`chip ${
                           !sched.isActive
-                            ? "bg-slate-100 text-slate-500 border-slate-200"
+                            ? "chip-neutral"
                             : isOverdue
-                            ? "bg-rose-100 text-rose-800 border-rose-200"
+                            ? "chip-rose"
                             : isDueSoon
-                            ? "bg-amber-100 text-amber-900 border-amber-200"
-                            : "bg-emerald-100 text-emerald-800 border-emerald-200"
+                            ? "chip-amber"
+                            : "chip-emerald"
                         }`}
                       >
                         {!sched.isActive ? (
                           <span>Deaktivováno</span>
                         ) : isOverdue ? (
                           <>
-                            <AlertTriangle className="w-3 h-3 text-rose-600" />
+                            <AlertTriangle className="w-3.5 h-3.5" />
                             <span>{status.summaryTextCs}</span>
                           </>
                         ) : isDueSoon ? (
                           <>
-                            <Clock className="w-3 h-3 text-amber-600" />
+                            <Clock className="w-3.5 h-3.5" />
                             <span>{status.summaryTextCs}</span>
                           </>
                         ) : (
                           <>
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>{status.summaryTextCs}</span>
                           </>
                         )}
                       </span>
 
-                      <span className="text-[11px] tabular-nums text-slate-500 font-semibold">
+                      <span className="text-xs tabular-nums text-slate-500 font-semibold">
                         {sched.intervalHours ? `každých ${sched.intervalHours} h` : ""}
                         {sched.intervalKm ? `každých ${sched.intervalKm} km` : ""}
                         {sched.intervalMonths ? `každých ${sched.intervalMonths} měsíců` : ""}
                       </span>
                     </div>
 
-                    <h4 className="text-base font-bold text-slate-900 tracking-tight">
+                    <h4 className="text-sm font-bold text-slate-900">
                       {sched.name}
                     </h4>
 
                     {comp ? (
-                      <p className="text-xs text-navy-700 font-medium flex items-center gap-1">
-                        <Layers className="w-3 h-3" />
+                      <p className="text-xs text-slate-600 font-medium flex items-center gap-1">
+                        <Layers className="w-3.5 h-3.5" />
                         <span>Komponent: {comp.manufacturer} {comp.model}</span>
                       </p>
                     ) : (
                       <p className="text-xs text-slate-500 flex items-center gap-1">
-                        <BikeIcon className="w-3 h-3" />
+                        <BikeIcon className="w-3.5 h-3.5" />
                         <span>Celé kolo ({bike.name})</span>
                       </p>
                     )}
@@ -256,7 +250,7 @@ export function BikeServiceClient({
                       {sched.lastServiceDate && (
                         <div>Naposledy: {formatDateCs(sched.lastServiceDate)} ({sched.lastServiceBikeHours ? `${sched.lastServiceBikeHours} h` : (sched.lastServiceBikeKm ? `${sched.lastServiceBikeKm} km` : "")})</div>
                       )}
-                      <div>Zbývá: <strong className={isOverdue ? "text-rose-600 tabular-nums" : "text-slate-900 tabular-nums"}>{status.summaryTextCs}</strong></div>
+                      <div>Zbývá: <strong className={isOverdue ? "text-rose-700" : "text-slate-900"}>{status.summaryTextCs}</strong></div>
                     </div>
                   </div>
 
@@ -264,7 +258,7 @@ export function BikeServiceClient({
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                     <button
                       onClick={() => handleOpenModalWithSchedule(sched)}
-                      className={buttonClass("primary", "md")}
+                      className="btn-primary btn-sm"
                     >
                       <Wrench className="w-3.5 h-3.5" />
                       <span>Zapsat servis</span>
@@ -273,30 +267,29 @@ export function BikeServiceClient({
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleOpenEditPlan(sched)}
-                        className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
+                        className="btn-icon"
                         title="Upravit plán"
+                        aria-label={`Upravit plán ${sched.name}`}
                       >
-                        <Edit3 className="w-3.5 h-3.5" />
+                        <Edit3 className="w-4 h-4" />
                       </button>
 
                       <button
                         onClick={() => handleToggleActive(sched.id, sched.isActive)}
-                        className={`p-1.5 rounded-xl transition-colors ${
-                          sched.isActive
-                            ? "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                            : "text-emerald-600 hover:bg-emerald-50"
-                        }`}
+                        className={`btn-icon ${sched.isActive ? "" : "text-emerald-700"}`}
                         title={sched.isActive ? "Deaktivovat plán" : "Aktivovat plán"}
+                        aria-label={sched.isActive ? `Deaktivovat plán ${sched.name}` : `Aktivovat plán ${sched.name}`}
                       >
-                        <Power className="w-3.5 h-3.5" />
+                        <Power className="w-4 h-4" />
                       </button>
 
                       <button
                         onClick={() => handleDeletePlan(sched.id)}
-                        className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+                        className="btn-icon btn-icon-danger"
                         title="Smazat plán"
+                        aria-label={`Smazat plán ${sched.name}`}
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -308,30 +301,30 @@ export function BikeServiceClient({
       </div>
 
       {/* SERVICE HISTORY / SERVISNÍ KNIHA */}
-      <div className="space-y-3 pt-4 border-t border-slate-200">
-        <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+      <div className="space-y-3">
+        <h3 className="text-base font-bold text-slate-900">
           Historie servisu — Servisní kniha ({serviceEvents.length})
         </h3>
 
         {serviceEvents.length === 0 ? (
-          <div className="p-8 bg-white border border-slate-200/80 rounded-2xl text-center text-xs text-slate-500 shadow-sm">
+          <div className="card empty-state">
             Zatím nebyl zapsán žádný servisní zásah.
           </div>
         ) : (
-          <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden divide-y divide-slate-100 shadow-sm">
+          <div className="card overflow-hidden divide-y divide-slate-100">
             {serviceEvents.map((item) => {
               const ev = item.event;
               const totalCost = Number(ev.partsCost || 0) + Number(ev.laborCost || 0) + Number(ev.otherCost || 0);
 
               return (
-                <div key={ev.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                <div key={ev.id} className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2.5">
                       <span className="text-sm font-bold text-slate-900">
                         {ev.name || ev.description}
                       </span>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border ${
-                        ev.executionType === "DIY" || ev.performedBy === "SELF" ? "bg-navy-50 text-navy-700 border-navy-200/80" : "bg-purple-50 text-purple-700 border-purple-200/80"
+                      <span className={`chip ${
+                        ev.executionType === "DIY" || ev.performedBy === "SELF" ? "chip-neutral" : "chip-navy"
                       }`}>
                         {ev.executionType === "DIY" || ev.performedBy === "SELF" ? "Svépomocí" : "Dílna"}
                       </span>
@@ -366,7 +359,7 @@ export function BikeServiceClient({
                     <span className="text-sm font-bold text-slate-900 tabular-nums block">
                       {formatCzk(totalCost)}
                     </span>
-                    <span className="text-[11px] text-slate-500 tabular-nums">
+                    <span className="text-xs text-slate-500 tabular-nums">
                       díly: {formatCzk(ev.partsCost || 0)} • práce: {formatCzk(ev.laborCost || 0)}
                     </span>
                   </div>

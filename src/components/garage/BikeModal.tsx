@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Check, Loader2, Upload, Trash2, Scale, Bike as BikeIcon, ArrowRight, ArrowLeft } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
-import { Modal } from "@/components/common/Modal";
+import { Modal, ModalFooter } from "@/components/common/Modal";
 import { Bike, ListOption } from "@/types/vault";
 import { resolveLists } from "@/lib/bikeLists";
 import {
@@ -12,7 +12,7 @@ import {
   processImageFile,
   resolveBikeImage,
 } from "@/lib/domain/bikeImage";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+import { cn } from "@/lib/ui";
 
 export interface BikeModalProps {
   isOpen: boolean;
@@ -287,27 +287,23 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium">
+          <div role="alert" className="panel panel-error font-medium">
             {error}
           </div>
         )}
 
         {/* Přepínač sekcí formuláře (Segmented Control) */}
-        <div className="flex p-1 bg-slate-100/90 rounded-xl gap-1 text-xs font-semibold text-slate-600 border border-slate-200/60">
+        <div className="segmented flex">
           <button
             type="button"
             onClick={() => setActiveTab("IDENTITY")}
-            className={cn(
-              "flex-1 py-1.5 px-2 rounded-lg transition-all text-center flex items-center justify-center gap-1.5",
-              activeTab === "IDENTITY"
-                ? "bg-white text-navy-900 shadow-sm font-bold"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
-            )}
+            aria-pressed={activeTab === "IDENTITY"}
+            className="segment flex-1 px-2"
           >
             <span
               className={cn(
-                "w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold",
-                activeTab === "IDENTITY" ? "bg-navy-900 text-white" : "bg-slate-200 text-slate-700"
+                "w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold shrink-0",
+                activeTab === "IDENTITY" ? "bg-white text-navy-700" : "bg-slate-200 text-slate-700"
               )}
             >
               1
@@ -317,17 +313,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           <button
             type="button"
             onClick={() => setActiveTab("SPECS")}
-            className={cn(
-              "flex-1 py-1.5 px-2 rounded-lg transition-all text-center flex items-center justify-center gap-1.5",
-              activeTab === "SPECS"
-                ? "bg-white text-navy-900 shadow-sm font-bold"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
-            )}
+            aria-pressed={activeTab === "SPECS"}
+            className="segment flex-1 px-2"
           >
             <span
               className={cn(
-                "w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold",
-                activeTab === "SPECS" ? "bg-navy-900 text-white" : "bg-slate-200 text-slate-700"
+                "w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold shrink-0",
+                activeTab === "SPECS" ? "bg-white text-navy-700" : "bg-slate-200 text-slate-700"
               )}
             >
               2
@@ -337,17 +329,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           <button
             type="button"
             onClick={() => setActiveTab("ACQUISITION")}
-            className={cn(
-              "flex-1 py-1.5 px-2 rounded-lg transition-all text-center flex items-center justify-center gap-1.5",
-              activeTab === "ACQUISITION"
-                ? "bg-white text-navy-900 shadow-sm font-bold"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
-            )}
+            aria-pressed={activeTab === "ACQUISITION"}
+            className="segment flex-1 px-2"
           >
             <span
               className={cn(
-                "w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold",
-                activeTab === "ACQUISITION" ? "bg-navy-900 text-white" : "bg-slate-200 text-slate-700"
+                "w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold shrink-0",
+                activeTab === "ACQUISITION" ? "bg-white text-navy-700" : "bg-slate-200 text-slate-700"
               )}
             >
               3
@@ -361,7 +349,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* 1. Název kola */}
             <div className="sm:col-span-2">
-              <label htmlFor="bike-name" className={labelClass}>
+              <label htmlFor="bike-name" className="field-label">
                 {t("bike.name")} *
               </label>
               <input
@@ -370,14 +358,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className={inputClass}
+                className="field"
                 placeholder="např. Santa Cruz Megatower"
               />
             </div>
 
             {/* 2. Výrobce */}
             <div>
-              <label htmlFor="bike-manufacturer" className={labelClass}>
+              <label htmlFor="bike-manufacturer" className="field-label">
                 {t("bike.manufacturer")} *
               </label>
               <input
@@ -386,14 +374,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 required
                 value={manufacturer}
                 onChange={(e) => setManufacturer(e.target.value)}
-                className={inputClass}
+                className="field"
                 placeholder="např. Santa Cruz"
               />
             </div>
 
             {/* 3. Model */}
             <div>
-              <label htmlFor="bike-model" className={labelClass}>
+              <label htmlFor="bike-model" className="field-label">
                 {t("bike.model")} *
               </label>
               <input
@@ -402,14 +390,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 required
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                className={inputClass}
+                className="field"
                 placeholder="např. Megatower CC"
               />
             </div>
 
             {/* 4. Modelový rok */}
             <div>
-              <label htmlFor="bike-model-year" className={labelClass}>
+              <label htmlFor="bike-model-year" className="field-label">
                 {t("bike.modelYear")}
               </label>
               <input
@@ -417,13 +405,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 type="number"
                 value={modelYear}
                 onChange={(e) => setModelYear(e.target.value ? parseInt(e.target.value, 10) : "")}
-                className={cn(inputClass, "tabular-nums")}
+                className="field"
               />
             </div>
 
             {/* 5. Velikost rámu */}
             <div>
-              <label htmlFor="bike-frame-size" className={labelClass}>
+              <label htmlFor="bike-frame-size" className="field-label">
                 Velikost rámu
               </label>
               <input
@@ -431,14 +419,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 type="text"
                 value={frameSize}
                 onChange={(e) => setFrameSize(e.target.value)}
-                className={inputClass}
+                className="field"
                 placeholder="např. L, XL, 56 cm"
               />
             </div>
 
             {/* 6. Sériové číslo rámu */}
             <div>
-              <label htmlFor="bike-serial-number" className={labelClass}>
+              <label htmlFor="bike-serial-number" className="field-label">
                 Sériové číslo rámu
               </label>
               <input
@@ -446,14 +434,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 type="text"
                 value={serialNumber}
                 onChange={(e) => setSerialNumber(e.target.value)}
-                className={inputClass}
+                className="field"
                 placeholder="např. WSBC..."
               />
             </div>
 
             {/* 7. Hmotnost */}
             <div>
-              <label htmlFor="bike-weight" className={labelClass}>
+              <label htmlFor="bike-weight" className="field-label">
                 <Scale className="w-3.5 h-3.5 text-slate-500" />
                 <span>Hmotnost</span>
               </label>
@@ -464,7 +452,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                   inputMode="decimal"
                   value={weightInput}
                   onChange={(e) => setWeightInput(e.target.value)}
-                  className={cn(inputClass, "pr-10 tabular-nums")}
+                  className="field pr-10 tabular-nums"
                   placeholder="např. 14,8"
                 />
                 <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 pointer-events-none">
@@ -475,8 +463,8 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
           </div>
 
           {/* Fotografie kola - nahrání souboru a náhled */}
-          <div className="space-y-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80">
-            <label className={labelClass}>
+          <div className="panel panel-neutral space-y-3">
+            <label className="field-label">
               Fotografie kola
             </label>
 
@@ -493,7 +481,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 ) : (
                   <div className="flex flex-col items-center justify-center text-slate-500 p-2 text-center">
                     <BikeIcon className="w-8 h-8 mb-1 text-slate-400" />
-                    <span className="text-[10px] text-slate-500 font-medium">Bez fotografie</span>
+                    <span className="text-xs text-slate-500 font-medium">Bez fotografie</span>
                   </div>
                 )}
               </div>
@@ -501,8 +489,8 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               {/* Ovládací prvky pro nahrání a odebrání */}
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <label className={buttonClass("secondary", "md")}>
-                    <Upload className="w-3.5 h-3.5 text-slate-500" />
+                  <label className="btn-secondary">
+                    <Upload className="w-3.5 h-3.5" />
                     <span>{uploadedImage ? "Změnit soubor" : "Nahrát fotografii"}</span>
                     <input
                       type="file"
@@ -516,7 +504,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                     <button
                       type="button"
                       onClick={handleRemoveUploadedImage}
-                      className={buttonClass("dangerOutline", "md")}
+                      className="btn-secondary btn-secondary-danger"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Odebrat fotografii</span>
@@ -524,10 +512,10 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                   )}
                 </div>
 
-                <p className="text-[11px] text-slate-500">
+                <p className="text-xs text-slate-500">
                   Podporované formáty: JPEG, PNG, WebP (max. 10 MB).
                   {uploadedImage && imageUrl && (
-                    <span className="block text-navy-600 font-medium mt-0.5">
+                    <span className="block text-navy-700 font-medium mt-0.5">
                       Nahraná fotografie má přednost před níže uvedenou URL adresou.
                     </span>
                   )}
@@ -536,8 +524,8 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             </div>
 
             {/* Externí URL adresa fotografie */}
-            <div className="pt-2 border-t border-slate-200/60">
-              <label htmlFor="bike-image-url" className={labelClass}>
+            <div className="pt-2 border-t border-slate-200">
+              <label htmlFor="bike-image-url" className="field-label">
                 URL fotografie kola (volitelné)
               </label>
               <input
@@ -548,7 +536,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                   setImageUrl(e.target.value);
                   setPreviewFailed(false);
                 }}
-                className={inputClass}
+                className="field"
                 placeholder="https://..."
               />
             </div>
@@ -557,9 +545,9 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
         {/* TAB 2: SPECIFIKACE A KLASIFIKACE */}
         <div className={activeTab === "SPECS" ? "space-y-4" : "hidden"}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/70">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 panel panel-neutral">
             <div>
-              <label htmlFor="bike-category" className={labelClass}>
+              <label htmlFor="bike-category" className="field-label">
                 {t("bike.category")}
               </label>
               <select
@@ -571,7 +559,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                   const allowed = lists.disciplines[next] ?? [];
                   if (!allowed.some((o) => o.value === discipline)) setDiscipline("");
                 }}
-                className={inputClass}
+                className="field"
               >
                 <option value="">{EMPTY_LABEL}</option>
                 {withCurrent(lists.bikeCategories, category).map((o) => (
@@ -583,14 +571,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             </div>
 
             <div>
-              <label htmlFor="bike-discipline" className={labelClass}>
+              <label htmlFor="bike-discipline" className="field-label">
                 {t("bike.discipline")}
               </label>
               <select
                 id="bike-discipline"
                 value={discipline}
                 onChange={(e) => setDiscipline(e.target.value)}
-                className={inputClass}
+                className="field"
               >
                 <option value="">{EMPTY_LABEL}</option>
                 {disciplineOptions.map((o) => (
@@ -602,14 +590,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             </div>
 
             <div>
-              <label htmlFor="bike-suspension-type" className={labelClass}>
+              <label htmlFor="bike-suspension-type" className="field-label">
                 {t("bike.suspensionType")}
               </label>
               <select
                 id="bike-suspension-type"
                 value={suspensionType}
                 onChange={(e) => setSuspensionType(e.target.value)}
-                className={inputClass}
+                className="field"
               >
                 <option value="">{EMPTY_LABEL}</option>
                 {withCurrent(lists.suspensionTypes, suspensionType).map((o) => (
@@ -621,14 +609,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             </div>
 
             <div>
-              <label htmlFor="bike-drive-type" className={labelClass}>
+              <label htmlFor="bike-drive-type" className="field-label">
                 {t("bike.driveType")}
               </label>
               <select
                 id="bike-drive-type"
                 value={driveType}
                 onChange={(e) => setDriveType(e.target.value)}
-                className={inputClass}
+                className="field"
               >
                 <option value="">{EMPTY_LABEL}</option>
                 {withCurrent(lists.driveTypes, driveType).map((o) => (
@@ -642,14 +630,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             {/* Stav kola (pouze v editaci) */}
             {isEditMode && (
               <div className="sm:col-span-2 pt-2 border-t border-slate-200/60">
-                <label htmlFor="bike-status" className={labelClass}>
+                <label htmlFor="bike-status" className="field-label">
                   Stav kola
                 </label>
                 <select
                   id="bike-status"
                   value={status}
                   onChange={(e) => setStatus(e.target.value as "ACTIVE" | "INACTIVE" | "SOLD" | "ARCHIVED")}
-                  className={inputClass}
+                  className="field"
                 >
                   <option value="ACTIVE">Aktivní</option>
                   <option value="INACTIVE">Neaktivní</option>
@@ -665,7 +653,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
         <div className={activeTab === "ACQUISITION" ? "space-y-4" : "hidden"}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label htmlFor="bike-purchase-date" className={labelClass}>
+              <label htmlFor="bike-purchase-date" className="field-label">
                 {t("bike.purchaseDate")} *
               </label>
               <input
@@ -674,12 +662,12 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 required
                 value={purchaseDate}
                 onChange={(e) => setPurchaseDate(e.target.value)}
-                className={inputClass}
+                className="field"
               />
             </div>
 
             <div>
-              <label htmlFor="bike-purchase-price" className={labelClass}>
+              <label htmlFor="bike-purchase-price" className="field-label">
                 {t("bike.purchasePrice")} (Kč)
               </label>
               <input
@@ -688,7 +676,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 min="0"
                 value={purchasePrice}
                 onChange={(e) => setPurchasePrice(e.target.value)}
-                className={cn(inputClass, "tabular-nums")}
+                className="field"
               />
             </div>
 
@@ -696,7 +684,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             {!isEditMode && (
               <>
                 <div>
-                  <label htmlFor="bike-initial-km" className={labelClass}>
+                  <label htmlFor="bike-initial-km" className="field-label">
                     {t("bike.initialKm")}
                   </label>
                   <input
@@ -706,12 +694,12 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                     min="0"
                     value={initialKm}
                     onChange={(e) => setInitialKm(e.target.value)}
-                    className={cn(inputClass, "tabular-nums")}
+                    className="field"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="bike-initial-hours" className={labelClass}>
+                  <label htmlFor="bike-initial-hours" className="field-label">
                     {t("bike.initialHours")}
                   </label>
                   <input
@@ -720,7 +708,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                     min="0"
                     value={initialHours}
                     onChange={(e) => setInitialHours(e.target.value)}
-                    className={cn(inputClass, "tabular-nums")}
+                    className="field"
                   />
                 </div>
               </>
@@ -729,7 +717,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
 
           {/* Poznámky */}
           <div>
-            <label htmlFor="bike-notes" className={labelClass}>
+            <label htmlFor="bike-notes" className="field-label">
               {t("bike.notes")}
             </label>
             <textarea
@@ -737,20 +725,20 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className={inputClass}
+              className="field"
               placeholder="Poznámky k nákupu, záruce, specifické konfiguraci..."
             />
           </div>
         </div>
 
         {/* Tlačítka akcí s navigací kroků a přímým uložením */}
-        <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs py-2.5 -mx-1 px-1 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 z-10">
-          <div>
+        <ModalFooter className="sm:justify-between">
+          <div className="flex flex-col">
             {activeTab === "IDENTITY" ? (
               <button
                 type="button"
                 onClick={onClose}
-                className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+                className="btn-secondary"
               >
                 {t("common.cancel")}
               </button>
@@ -761,7 +749,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                   if (activeTab === "SPECS") setActiveTab("IDENTITY");
                   if (activeTab === "ACQUISITION") setActiveTab("SPECS");
                 }}
-                className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto flex items-center justify-center gap-1.5")}
+                className="btn-secondary"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>
@@ -771,13 +759,13 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             )}
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-2">
             {activeTab !== "ACQUISITION" ? (
               <>
                 <button
                   type="submit"
                   disabled={loading}
-                  className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto flex items-center justify-center gap-1.5")}
+                  className="btn-secondary"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   <span>{isEditMode ? "Uložit změny" : t("bike.save")}</span>
@@ -791,7 +779,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                       setActiveTab("ACQUISITION");
                     }
                   }}
-                  className={cn(buttonClass("primary", "md"), "w-full sm:w-auto flex items-center justify-center gap-1.5")}
+                  className="btn-primary"
                 >
                   <span>
                     {activeTab === "IDENTITY" ? "Další: Specifikace" : "Další: Pořízení"}
@@ -804,14 +792,14 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 <button
                   type="button"
                   onClick={onClose}
-                  className={cn(buttonClass("secondary", "md"), "hidden sm:inline-flex")}
+                  className="btn-secondary hidden sm:inline-flex"
                 >
                   {t("common.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className={cn(buttonClass("primary", "md"), "w-full sm:w-auto flex items-center justify-center gap-1.5")}
+                  className="btn-primary"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   <span>
@@ -825,7 +813,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
               </>
             )}
           </div>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );

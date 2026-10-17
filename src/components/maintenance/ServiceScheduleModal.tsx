@@ -15,8 +15,7 @@ import {
 import { useVault } from "@/context/VaultContext";
 import { PREDEFINED_SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/domain/serviceTemplates";
 import { formatKm } from "@/lib/i18n";
-import { Modal } from "@/components/common/Modal";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+import { Modal, ModalFooter } from "@/components/common/Modal";
 
 interface ServiceScheduleModalProps {
   isOpen: boolean;
@@ -241,7 +240,7 @@ export function ServiceScheduleModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs flex items-center gap-2">
+          <div role="alert" className="panel panel-error flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{error}</span>
           </div>
@@ -249,7 +248,7 @@ export function ServiceScheduleModal({
 
         {/* Doporučené šablony (pouze při vytváření) */}
         {!isEditing && (
-          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 space-y-2">
+          <div className="panel panel-neutral space-y-2">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
               <Sparkles className="w-3.5 h-3.5 text-navy-600" />
               <span>Rychlé předvyplnění z doporučené šablony:</span>
@@ -260,7 +259,7 @@ export function ServiceScheduleModal({
                   key={tmpl.id}
                   type="button"
                   onClick={() => handleApplyTemplate(tmpl)}
-                  className={buttonClass("secondary", "sm")}
+                  className="btn-secondary btn-sm"
                 >
                   {tmpl.name}
                 </button>
@@ -271,7 +270,7 @@ export function ServiceScheduleModal({
 
         {/* Název plánu */}
         <div>
-          <label htmlFor="sched-name" className={labelClass}>
+          <label htmlFor="sched-name" className="field-label">
             Název servisního plánu *
           </label>
           <input
@@ -280,22 +279,18 @@ export function ServiceScheduleModal({
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={inputClass}
+            className="field"
           />
         </div>
 
         {/* Vztahuje se k */}
         <div className="space-y-2">
-          <span className={labelClass}>
+          <span className="field-label">
             Vztahuje se k *
           </span>
           <div className="grid grid-cols-2 gap-3">
             <label
-              className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
-                appliesTo === "BIKE"
-                  ? "bg-navy-50/70 border-navy-500 text-navy-900 font-semibold"
-                  : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-              }`}
+              className="option-card items-center"
             >
               <input
                 type="radio"
@@ -312,11 +307,7 @@ export function ServiceScheduleModal({
             </label>
 
             <label
-              className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
-                appliesTo === "COMPONENT"
-                  ? "bg-navy-50/70 border-navy-500 text-navy-900 font-semibold"
-                  : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-              }`}
+              className="option-card items-center"
             >
               <input
                 type="radio"
@@ -335,14 +326,14 @@ export function ServiceScheduleModal({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
-              <label htmlFor="sched-bike" className={labelClass}>
+              <label htmlFor="sched-bike" className="field-label">
                 Kolo
               </label>
               <select
                 id="sched-bike"
                 value={bikeId}
                 onChange={(e) => setBikeId(e.target.value)}
-                className={inputClass}
+                className="field"
               >
                 <option value="">-- Bez vazby na konkrétní kolo --</option>
                 {bikes.map((b) => (
@@ -355,7 +346,7 @@ export function ServiceScheduleModal({
 
             {appliesTo === "COMPONENT" && (
               <div>
-                <label htmlFor="sched-component" className={labelClass}>
+                <label htmlFor="sched-component" className="field-label">
                   Komponenta
                 </label>
                 <select
@@ -363,7 +354,7 @@ export function ServiceScheduleModal({
                   value={componentId}
                   onChange={(e) => setComponentId(e.target.value)}
                   required={appliesTo === "COMPONENT"}
-                  className={inputClass}
+                  className="field"
                 >
                   <option value="">-- Vyberte komponentu --</option>
                   {components.map((c) => (
@@ -380,17 +371,17 @@ export function ServiceScheduleModal({
         {/* Intervaly */}
         <div className="space-y-3 pt-2 border-t border-slate-100">
           <div className="flex items-center justify-between">
-            <span className={labelClass}>
+            <span className="field-label">
               Nastavení servisního intervalu
             </span>
-            <span className="text-[11px] text-navy-700 font-semibold bg-navy-50 px-2.5 py-0.5 rounded-full border border-navy-200">
+            <span className="chip chip-navy">
               Podle toho, co nastane dříve
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label htmlFor="sched-hours" className={labelClass}>
+              <label htmlFor="sched-hours" className="field-label">
                 Podle hodin
               </label>
               <div className="relative">
@@ -401,14 +392,14 @@ export function ServiceScheduleModal({
                   min="1"
                   value={intervalHours}
                   onChange={(e) => setIntervalHours(e.target.value)}
-                  className={cn(inputClass, "pl-3 pr-8 tabular-nums")}
+                  className="field pl-3 pr-8 tabular-nums"
                 />
-                <span className="absolute right-3 top-2.5 text-xs text-slate-500 font-semibold pointer-events-none">h</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-semibold pointer-events-none">h</span>
               </div>
             </div>
 
             <div>
-              <label htmlFor="sched-km" className={labelClass}>
+              <label htmlFor="sched-km" className="field-label">
                 Podle kilometrů
               </label>
               <div className="relative">
@@ -419,14 +410,14 @@ export function ServiceScheduleModal({
                   min="1"
                   value={intervalKm}
                   onChange={(e) => setIntervalKm(e.target.value)}
-                  className={cn(inputClass, "pl-3 pr-10 tabular-nums")}
+                  className="field pl-3 pr-10 tabular-nums"
                 />
-                <span className="absolute right-3 top-2.5 text-xs text-slate-500 font-semibold pointer-events-none">km</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-semibold pointer-events-none">km</span>
               </div>
             </div>
 
             <div>
-              <label htmlFor="sched-months" className={labelClass}>
+              <label htmlFor="sched-months" className="field-label">
                 Podle času
               </label>
               <div className="relative">
@@ -437,9 +428,9 @@ export function ServiceScheduleModal({
                   min="1"
                   value={intervalMonths}
                   onChange={(e) => setIntervalMonths(e.target.value)}
-                  className={cn(inputClass, "pl-3 pr-12 tabular-nums")}
+                  className="field pl-3 pr-12 tabular-nums"
                 />
-                <span className="absolute right-3 top-2.5 text-xs text-slate-500 font-semibold pointer-events-none">měs.</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-semibold pointer-events-none">měs.</span>
               </div>
             </div>
           </div>
@@ -447,7 +438,7 @@ export function ServiceScheduleModal({
           {/* Upozornění s předstihem */}
           <div className="grid grid-cols-2 gap-3 pt-1">
             <div>
-              <label htmlFor="sched-warn-hours" className={labelClass}>
+              <label htmlFor="sched-warn-hours" className="field-label">
                 Upozornit s předstihem (h)
               </label>
               <input
@@ -456,12 +447,12 @@ export function ServiceScheduleModal({
                 min="1"
                 value={warningHours}
                 onChange={(e) => setWarningHours(e.target.value)}
-                className={cn(inputClass, "tabular-nums")}
+                className="field"
               />
             </div>
 
             <div>
-              <label htmlFor="sched-warn-km" className={labelClass}>
+              <label htmlFor="sched-warn-km" className="field-label">
                 Upozornit s předstihem (km)
               </label>
               <input
@@ -470,7 +461,7 @@ export function ServiceScheduleModal({
                 min="1"
                 value={warningKm}
                 onChange={(e) => setWarningKm(e.target.value)}
-                className={cn(inputClass, "tabular-nums")}
+                className="field"
               />
             </div>
           </div>
@@ -478,17 +469,13 @@ export function ServiceScheduleModal({
 
         {/* Výchozí bod */}
         <div className="space-y-2 pt-2 border-t border-slate-100">
-          <label className={labelClass}>
+          <label className="field-label">
             Výchozí bod plánu
           </label>
 
           <div className="space-y-2">
             <label
-              className={`flex items-start gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
-                startingPointType === "CURRENT_STATE"
-                  ? "bg-navy-50/70 border-navy-500 text-navy-950 font-medium"
-                  : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-              }`}
+              className="option-card items-start"
             >
               <input
                 type="radio"
@@ -502,18 +489,14 @@ export function ServiceScheduleModal({
                 <span className="font-bold block text-slate-900">
                   Od aktuálního stavu kola (čerstvý start)
                 </span>
-                <span className="text-[11px] text-slate-500 tabular-nums">
+                <span className="text-xs text-slate-500 tabular-nums">
                   Aktuální stav: <strong>{formatKm(currentKmNum)}</strong> • <strong>{currentHoursNum} h</strong> (dnes)
                 </span>
               </div>
             </label>
 
             <label
-              className={`flex items-start gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
-                startingPointType === "HISTORICAL"
-                  ? "bg-navy-50/70 border-navy-500 text-navy-950 font-medium"
-                  : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
-              }`}
+              className="option-card items-start"
             >
               <input
                 type="radio"
@@ -527,14 +510,14 @@ export function ServiceScheduleModal({
                 <span className="font-bold block text-slate-900">
                   Zadat datum a stav posledního servisu (historický počátek)
                 </span>
-                <span className="text-[11px] text-slate-500 block mb-2">
+                <span className="text-xs text-slate-500 block mb-2">
                   Pokud byl servis proveden dříve, BikeVault dopočítá zbývající nájezd od této chvíle.
                 </span>
 
                 {startingPointType === "HISTORICAL" && (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 bg-white rounded-xl border border-slate-200 mt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 bg-white rounded-xl border border-slate-200 mt-2 text-slate-700 font-normal">
                     <div>
-                      <label htmlFor="sched-hist-date" className={labelClass}>
+                      <label htmlFor="sched-hist-date" className="field-label">
                         Datum servisu
                       </label>
                       <input
@@ -542,11 +525,11 @@ export function ServiceScheduleModal({
                         type="date"
                         value={lastServiceDate}
                         onChange={(e) => setLastServiceDate(e.target.value)}
-                        className={inputClass}
+                        className="field"
                       />
                     </div>
                     <div>
-                      <label htmlFor="sched-hist-km" className={labelClass}>
+                      <label htmlFor="sched-hist-km" className="field-label">
                         Nájezd kola při servisu (km)
                       </label>
                       <input
@@ -555,11 +538,11 @@ export function ServiceScheduleModal({
                         step="0.1"
                         value={lastServiceKm}
                         onChange={(e) => setLastServiceKm(e.target.value)}
-                        className={cn(inputClass, "tabular-nums")}
+                        className="field"
                       />
                     </div>
                     <div>
-                      <label htmlFor="sched-hist-hours" className={labelClass}>
+                      <label htmlFor="sched-hist-hours" className="field-label">
                         Doba jízdy při servisu (h)
                       </label>
                       <input
@@ -568,7 +551,7 @@ export function ServiceScheduleModal({
                         step="0.5"
                         value={lastServiceHours}
                         onChange={(e) => setLastServiceHours(e.target.value)}
-                        className={cn(inputClass, "tabular-nums")}
+                        className="field"
                       />
                     </div>
                   </div>
@@ -587,14 +570,14 @@ export function ServiceScheduleModal({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 text-xs">
               <div>
-                <span className="text-slate-500 block text-[11px]">Od servisu odjeto</span>
+                <span className="text-slate-500 block text-xs">Od servisu odjeto</span>
                 <span className="tabular-nums font-bold text-slate-900">
                   {intHoursNum ? `${hoursSince} h` : ""}{intHoursNum && intKmNum ? " / " : ""}{intKmNum ? `${kmSince} km` : ""}
                 </span>
               </div>
 
               <div>
-                <span className="text-slate-500 block text-[11px]">Zbývá do servisu</span>
+                <span className="text-slate-500 block text-xs">Zbývá do servisu</span>
                 <span className={`tabular-nums font-bold ${
                   (remainingHours !== null && remainingHours <= 0) || (remainingKm !== null && remainingKm <= 0)
                     ? "text-rose-600"
@@ -605,7 +588,7 @@ export function ServiceScheduleModal({
               </div>
 
               <div>
-                <span className="text-slate-500 block text-[11px]">Příští servis při</span>
+                <span className="text-slate-500 block text-xs">Příští servis při</span>
                 <span className="tabular-nums font-bold text-navy-700">
                   {nextTargetHours !== null ? `${nextTargetHours} h` : ""}{nextTargetHours !== null && nextTargetKm !== null ? " / " : ""}{nextTargetKm !== null ? `${nextTargetKm} km` : ""}
                 </span>
@@ -616,7 +599,7 @@ export function ServiceScheduleModal({
 
         {/* Poznámky */}
         <div>
-          <label htmlFor="sched-notes" className={labelClass}>
+          <label htmlFor="sched-notes" className="field-label">
             Poznámka k plánu
           </label>
           <textarea
@@ -624,28 +607,28 @@ export function ServiceScheduleModal({
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className={inputClass}
+            className="field"
           />
         </div>
 
         {/* Footer Actions */}
-        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+        <ModalFooter>
           <button
             type="button"
             onClick={onClose}
-            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+            className="btn-secondary"
           >
             Zrušit
           </button>
           <button
             type="submit"
             disabled={loading}
-            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
+            className="btn-primary"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             <span>{isEditing ? "Uložit změny plánu" : "Vytvořit servisní plán"}</span>
           </button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );

@@ -25,7 +25,7 @@ import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import { RecordServiceEventModal } from "@/components/maintenance/RecordServiceEventModal";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
+
 
 interface ComponentDetailClientProps {
   componentData: {
@@ -147,26 +147,26 @@ export function ComponentDetailClient({
       </div>
 
       {/* Component Header Card */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+      <div className="card p-4 sm:p-5 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
+              <span className="chip chip-neutral">
                 {category?.nameCs || "Komponent"}
               </span>
               {component.status === "INSTALLED" && activeBike ? (
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold flex items-center gap-1">
-                  <BikeIcon className="w-3 h-3" />
+                <span className="chip chip-emerald">
+                  <BikeIcon className="w-3.5 h-3.5" />
                   <span>Osazeno na: {activeBike.name}</span>
                 </span>
               ) : (
-                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold">
+                <span className="chip chip-neutral">
                   Skladem
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-xl font-bold text-slate-900">
               {component.manufacturer} {component.model}
             </h1>
             {component.variant && (
@@ -174,33 +174,35 @@ export function ComponentDetailClient({
             )}
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
             <button
               onClick={() => handleOpenRecordModal()}
-              className={buttonClass("secondary", "md")}
+              className="btn-secondary"
             >
-              <Wrench className="w-3.5 h-3.5 text-navy-600" />
+              <Wrench className="w-3.5 h-3.5" />
               <span>Zapsat servis</span>
             </button>
             <button
               onClick={handleOpenCreateSchedule}
-              className={buttonClass("primary", "md")}
+              className="btn-primary"
             >
               <Plus className="w-4 h-4" />
               <span>Přidat plán</span>
             </button>
             <button
               onClick={() => setIsEditModalOpen(true)}
-              className={buttonClass("secondary", "md")}
+              className="btn-secondary"
               title="Upravit komponentu"
+              aria-label="Upravit komponentu"
             >
               <Pencil className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Upravit</span>
             </button>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className={buttonClass("secondary", "md", "hover:bg-rose-50 hover:text-rose-600")}
+              className="btn-secondary btn-secondary-danger"
               title="Smazat komponentu"
+              aria-label="Smazat komponentu"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Smazat</span>
@@ -211,20 +213,20 @@ export function ComponentDetailClient({
         {/* Specs Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
           <div>
-            <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Nákupní cena</span>
+            <span className="section-label block">Nákupní cena</span>
             <span className="text-base font-bold text-slate-900 tabular-nums">{formatCzk(component.purchasePrice)}</span>
           </div>
           <div>
-            <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Datum nákupu</span>
+            <span className="section-label block">Datum nákupu</span>
             <span className="text-sm font-semibold text-slate-900">{component.purchaseDate ? formatDateCs(component.purchaseDate) : "-"}</span>
           </div>
           <div>
-            <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Sériové číslo</span>
+            <span className="section-label block">Sériové číslo</span>
             <span className="text-sm text-slate-700 tabular-nums">{component.serialNumber || "Neuvedeno"}</span>
           </div>
           {specFields.map((field) => (
             <div key={field.key}>
-              <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">{field.label}</span>
+              <span className="section-label block">{field.label}</span>
               <span className="text-sm font-medium text-slate-700">{getSpecValue(field.key) || "-"}</span>
             </div>
           ))}
@@ -233,17 +235,17 @@ export function ComponentDetailClient({
 
       {/* SERVISNÍ PLÁNY SEKCE */}
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <Clock className="w-5 h-5 text-navy-600" />
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-navy-600" />
               <span>Servisní plány komponenty ({schedulesWithStatus.length})</span>
             </h2>
           </div>
 
           <button
             onClick={handleOpenCreateSchedule}
-            className={buttonClass("primary", "md", "self-start sm:self-auto")}
+            className="btn-primary self-start sm:self-auto"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Přidat plán</span>
@@ -251,13 +253,13 @@ export function ComponentDetailClient({
         </div>
 
         {schedulesWithStatus.length === 0 ? (
-          <div className="p-8 bg-white border border-slate-200/80 rounded-2xl text-center space-y-3 shadow-sm">
-            <p className="text-xs text-slate-500">
+          <div className="card empty-state space-y-3">
+            <p>
               Pro tuto komponentu zatím není nastaven žádný servisní plán.
             </p>
             <button
               onClick={handleOpenCreateSchedule}
-              className={buttonClass("soft", "md")}
+              className="btn-secondary"
             >
               <Plus className="w-4 h-4" />
               <span>Vytvořit první plán</span>
@@ -274,57 +276,51 @@ export function ComponentDetailClient({
               return (
                 <div
                   key={sched.id}
-                  className={`p-5 rounded-2xl border transition-all flex flex-col justify-between space-y-4 shadow-sm ${
-                    !sched.isActive
-                      ? "bg-slate-50/70 border-slate-200 opacity-80"
-                      : isOverdue
-                      ? "bg-rose-50/40 border-rose-200"
-                      : isDueSoon
-                      ? "bg-amber-50/40 border-amber-200"
-                      : "bg-white border-slate-200/80 hover:border-slate-300"
+                  className={`card p-4 sm:p-5 flex flex-col justify-between space-y-4 ${
+                    !sched.isActive ? "bg-slate-50" : ""
                   }`}
                 >
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between gap-2">
                       <span
-                        className={`px-2.5 py-0.5 rounded-full border text-[11px] font-semibold flex items-center gap-1.5 ${
+                        className={`chip ${
                           !sched.isActive
-                            ? "bg-slate-100 text-slate-500 border-slate-200"
+                            ? "chip-neutral"
                             : isOverdue
-                            ? "bg-rose-100 text-rose-800 border-rose-200"
+                            ? "chip-rose"
                             : isDueSoon
-                            ? "bg-amber-100 text-amber-900 border-amber-200"
-                            : "bg-emerald-100 text-emerald-800 border-emerald-200"
+                            ? "chip-amber"
+                            : "chip-emerald"
                         }`}
                       >
                         {!sched.isActive ? (
                           <span>Deaktivováno</span>
                         ) : isOverdue ? (
                           <>
-                            <AlertTriangle className="w-3 h-3 text-rose-600" />
+                            <AlertTriangle className="w-3.5 h-3.5" />
                             <span>{status.summaryTextCs}</span>
                           </>
                         ) : isDueSoon ? (
                           <>
-                            <Clock className="w-3 h-3 text-amber-600" />
+                            <Clock className="w-3.5 h-3.5" />
                             <span>{status.summaryTextCs}</span>
                           </>
                         ) : (
                           <>
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>{status.summaryTextCs}</span>
                           </>
                         )}
                       </span>
 
-                      <span className="text-[11px] tabular-nums text-slate-500 font-semibold">
+                      <span className="text-xs tabular-nums text-slate-500 font-semibold">
                         {sched.intervalHours ? `každých ${sched.intervalHours} h` : ""}
                         {sched.intervalKm ? `každých ${sched.intervalKm} km` : ""}
                         {sched.intervalMonths ? `každých ${sched.intervalMonths} měsíců` : ""}
                       </span>
                     </div>
 
-                    <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                    <h3 className="text-sm font-bold text-slate-900">
                       {sched.name}
                     </h3>
 
@@ -337,29 +333,30 @@ export function ComponentDetailClient({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleToggleActive(sched.id)}
-                        className="text-xs text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                        className="btn-text text-slate-600 hover:text-slate-900"
                       >
                         {sched.isActive ? "Pozastavit" : "Aktivovat"}
                       </button>
                       <button
                         onClick={() => handleDeleteSchedule(sched.id)}
-                        className="text-slate-500 hover:text-rose-600 p-1 transition-colors cursor-pointer"
+                        className="btn-icon btn-icon-danger"
                         title="Smazat plán"
+                        aria-label={`Smazat plán ${sched.name}`}
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleOpenEditSchedule(sched)}
-                        className={buttonClass("secondary", "sm")}
+                        className="btn-secondary btn-sm"
                       >
                         Upravit
                       </button>
                       <button
                         onClick={() => handleOpenRecordModal(item)}
-                        className={buttonClass("primary", "md")}
+                        className="btn-primary btn-sm"
                       >
                         Zapsat servis
                       </button>
@@ -374,21 +371,21 @@ export function ComponentDetailClient({
 
       {/* HISTORIE SERVISU SEKCE */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2 border-b border-slate-200 pb-3">
-          <Wrench className="w-5 h-5 text-navy-600" />
+        <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+          <Wrench className="w-4 h-4 text-navy-600" />
           <span>Servisní deník komponenty ({serviceEvents.length})</span>
         </h2>
 
         {serviceEvents.length === 0 ? (
-          <div className="p-8 bg-white border border-slate-200/80 rounded-2xl text-center shadow-sm">
-            <p className="text-xs text-slate-400">Pro tento komponent zatím nebyl proveden žádný servisní záznam.</p>
+          <div className="card empty-state">
+            <p>Pro tento komponent zatím nebyl proveden žádný servisní záznam.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs whitespace-nowrap">
                 <thead>
-                  <tr className="bg-slate-50/75 border-b border-slate-200 text-slate-500 font-semibold select-none">
+                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold select-none">
                     <th className="py-3 px-4">Datum</th>
                     <th className="py-3 px-4">Popis úkonu</th>
                     <th className="py-3 px-4">Provedl</th>
@@ -398,7 +395,7 @@ export function ComponentDetailClient({
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {serviceEvents.map((evt) => (
-                    <tr key={evt.id} className="hover:bg-slate-50/80 transition-colors">
+                    <tr key={evt.id} className="hover:bg-slate-50 transition-colors">
                       <td className="py-3 px-4 font-medium text-slate-700">{formatDateCs(evt.serviceDate)}</td>
                       <td className="py-3 px-4 font-bold text-slate-900">{evt.description}</td>
                       <td className="py-3 px-4 text-slate-600">{evt.shopName || (evt.performedBy === "SELF" ? "Svépomocí" : "Servis")}</td>
@@ -415,21 +412,21 @@ export function ComponentDetailClient({
 
       {/* HISTORIE INSTALACÍ SEKCE */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2 border-b border-slate-200 pb-3">
-          <BikeIcon className="w-5 h-5 text-navy-600" />
+        <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+          <BikeIcon className="w-4 h-4 text-navy-600" />
           <span>Historie osazení na kolech ({installationHistory.length})</span>
         </h2>
 
         {installationHistory.length === 0 ? (
-          <div className="p-8 bg-white border border-slate-200/80 rounded-2xl text-center shadow-sm">
-            <p className="text-xs text-slate-500">Tento komponent zatím nebyl osazen na žádném kole.</p>
+          <div className="card empty-state">
+            <p>Tento komponent zatím nebyl osazen na žádném kole.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs whitespace-nowrap">
                 <thead>
-                  <tr className="bg-slate-50/75 border-b border-slate-200 text-slate-500 font-semibold select-none">
+                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold select-none">
                     <th className="py-3 px-4">Kolo</th>
                     <th className="py-3 px-4">Nainstalováno</th>
                     <th className="py-3 px-4">Demontováno</th>
@@ -440,7 +437,7 @@ export function ComponentDetailClient({
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {installationHistory.map(({ installation: inst, bike }) => (
-                    <tr key={inst.id} className="hover:bg-slate-50/80 transition-colors">
+                    <tr key={inst.id} className="hover:bg-slate-50 transition-colors">
                       <td className="py-3 px-4 font-bold text-slate-900">{bike?.name || "Kolo"}</td>
                       <td className="py-3 px-4 text-slate-600">{formatDateCs(inst.installedAt)}</td>
                       <td className="py-3 px-4 text-slate-600">{inst.removedAt ? formatDateCs(inst.removedAt) : "Dosud osazeno"}</td>
@@ -448,9 +445,7 @@ export function ComponentDetailClient({
                         {formatKm(Math.max(0, Number(inst.removedBikeKm ?? bike?.currentKm ?? 0) - Number(inst.installedBikeKm || 0)))}
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                          inst.removedAt ? "bg-slate-100 text-slate-600 border-slate-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                        }`}>
+                        <span className={`chip ${inst.removedAt ? "chip-neutral" : "chip-emerald"}`}>
                           {inst.removedAt ? "Ukončeno" : "Aktivní osazení"}
                         </span>
                       </td>
@@ -460,9 +455,9 @@ export function ComponentDetailClient({
                           onClick={() => handleDeleteInstallation(inst, bike)}
                           title="Smazat chybný záznam o montáži"
                           aria-label="Smazat montáž"
-                          className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          className="btn-icon btn-icon-danger"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
                     </tr>

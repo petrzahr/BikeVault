@@ -28,7 +28,7 @@ import {
   ChevronRight 
 } from "lucide-react";
 import Link from "next/link";
-import { buttonClass } from "@/lib/ui";
+
 
 interface BikeOverviewPageProps {
   params: Promise<{ id: string }>;
@@ -47,7 +47,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
   const bike = getBike(id);
   if (!bike) {
     return (
-      <div className="p-12 text-center text-slate-500 bg-white border border-slate-200/80 rounded-2xl shadow-sm">
+      <div className="card empty-state py-12">
         <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
         <Link href="/garage" className="text-navy-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
@@ -95,22 +95,22 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           {overdueSchedules.map((item) => (
             <div
               key={item.schedule.id}
-              className="p-4 rounded-2xl bg-rose-50/50 border border-rose-200/80 flex items-center justify-between gap-3 text-rose-800 shadow-sm"
+              className="panel panel-error flex items-center justify-between gap-3"
             >
               <div className="flex items-center gap-3">
                 <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
                 <div>
-                  <h4 className="font-bold text-sm text-rose-900">
+                  <p className="font-bold text-sm">
                     Servis po termínu: {item.schedule.name}
-                  </h4>
-                  <p className="text-xs text-rose-700">
+                  </p>
+                  <p>
                     {item.status.summaryTextCs}
                   </p>
                 </div>
               </div>
               <Link
                 href={`/bikes/${bike.id}/service`}
-                className={buttonClass("danger", "md", "whitespace-nowrap")}
+                className="btn-primary shrink-0"
               >
                 Zapsat servis
               </Link>
@@ -120,22 +120,22 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           {dueSoonSchedules.map((item) => (
             <div
               key={item.schedule.id}
-              className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/80 flex items-center justify-between gap-3 text-amber-900 shadow-sm"
+              className="panel panel-warning flex items-center justify-between gap-3"
             >
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-amber-600 shrink-0" />
                 <div>
-                  <h4 className="font-bold text-sm text-amber-900">
+                  <p className="font-bold text-sm">
                     Blíží se termín servisu: {item.schedule.name}
-                  </h4>
-                  <p className="text-xs text-amber-800">
+                  </p>
+                  <p>
                     Zbývá {item.status.summaryTextCs}
                   </p>
                 </div>
               </div>
               <Link
                 href={`/bikes/${bike.id}/service`}
-                className={buttonClass("warning", "md", "whitespace-nowrap")}
+                className="btn-secondary shrink-0"
               >
                 Detail
               </Link>
@@ -147,12 +147,12 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
       {/* METRICS & TCO SECTION */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+          <h2 className="text-base font-bold text-slate-900">
             Přehled provozu a nákladů (TCO)
           </h2>
           <Link
             href={`/bikes/${bike.id}/finances`}
-            className="text-xs font-semibold text-navy-600 hover:text-navy-700 flex items-center gap-1"
+            className="btn-text"
           >
             <span>Detail financí</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -162,8 +162,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
         {/* Hlavní provozní ukazatele */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Nájezd */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-xs hover:border-slate-300 transition-all">
-            <span className="text-[11px] text-slate-500 block mb-1 font-semibold uppercase tracking-wide">
+          <div className="card p-4">
+            <span className="section-label block mb-1">
               {t("bike.metrics.currentMileage")}
             </span>
             <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
@@ -172,8 +172,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           </div>
 
           {/* Hodiny */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-xs hover:border-slate-300 transition-all">
-            <span className="text-[11px] text-slate-500 block mb-1 font-semibold uppercase tracking-wide">
+          <div className="card p-4">
+            <span className="section-label block mb-1">
               {t("bike.metrics.ridingHours")}
             </span>
             <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
@@ -182,8 +182,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           </div>
 
           {/* Doba vlastnictví */}
-          <div className="bg-white border border-slate-200/80 p-4 rounded-2xl shadow-xs hover:border-slate-300 transition-all">
-            <span className="text-[11px] text-slate-500 block mb-1 font-semibold uppercase tracking-wide">
+          <div className="card p-4">
+            <span className="section-label block mb-1">
               {t("bike.metrics.ownershipDuration")}
             </span>
             <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
@@ -192,21 +192,21 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           </div>
 
           {/* Čisté náklady TCO */}
-          <div className="bg-navy-50/70 border border-navy-200/80 p-4 rounded-2xl shadow-xs">
-            <span className="text-[11px] text-navy-700 block mb-1 font-bold uppercase tracking-wide">
+          <div className="card p-4">
+            <span className="section-label block mb-1">
               {t("bike.metrics.netCost")}
             </span>
-            <span className="text-xl sm:text-2xl font-extrabold text-navy-800 tabular-nums">
+            <span className="text-xl sm:text-2xl font-extrabold text-navy-700 tabular-nums">
               {formatCzk(tco.netOwnershipCost)}
             </span>
           </div>
         </div>
 
         {/* Jednotkové náklady a bilance */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 bg-white border border-slate-200/80 p-3 sm:p-4 rounded-2xl shadow-xs">
+        <div className="card grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 p-3 sm:p-4">
           {/* Cena za km */}
-          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
-            <span className="text-[10px] text-slate-500 block font-medium truncate">
+          <div className="p-2.5 rounded-xl bg-slate-50">
+            <span className="text-xs text-slate-500 block font-medium truncate">
               {t("bike.metrics.costPerKm")}
             </span>
             <span className="text-sm sm:text-base font-bold text-slate-800 tabular-nums">
@@ -215,8 +215,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           </div>
 
           {/* Cena za hodinu */}
-          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
-            <span className="text-[10px] text-slate-500 block font-medium truncate">
+          <div className="p-2.5 rounded-xl bg-slate-50">
+            <span className="text-xs text-slate-500 block font-medium truncate">
               {t("bike.metrics.costPerHour")}
             </span>
             <span className="text-sm sm:text-base font-bold text-slate-800 tabular-nums">
@@ -225,8 +225,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           </div>
 
           {/* Cena za měsíc */}
-          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
-            <span className="text-[10px] text-slate-500 block font-medium truncate">
+          <div className="p-2.5 rounded-xl bg-slate-50">
+            <span className="text-xs text-slate-500 block font-medium truncate">
               {t("bike.metrics.costPerMonth")}
             </span>
             <span className="text-sm sm:text-base font-bold text-slate-800 tabular-nums">
@@ -235,8 +235,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           </div>
 
           {/* Kupní cena */}
-          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
-            <span className="text-[10px] text-slate-500 block font-medium truncate">
+          <div className="p-2.5 rounded-xl bg-slate-50">
+            <span className="text-xs text-slate-500 block font-medium truncate">
               {t("bike.metrics.purchasePrice")}
             </span>
             <span className="text-sm sm:text-base font-bold text-slate-700 tabular-nums">
@@ -245,8 +245,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           </div>
 
           {/* Celkové výdaje */}
-          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
-            <span className="text-[10px] text-slate-500 block font-medium truncate">
+          <div className="p-2.5 rounded-xl bg-slate-50">
+            <span className="text-xs text-slate-500 block font-medium truncate">
               {t("bike.metrics.totalExpenses")}
             </span>
             <span className="text-sm sm:text-base font-bold text-rose-700 tabular-nums">
@@ -255,8 +255,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           </div>
 
           {/* Celkové příjmy */}
-          <div className="p-2 sm:p-2.5 rounded-xl bg-slate-50/70">
-            <span className="text-[10px] text-slate-500 block font-medium truncate">
+          <div className="p-2.5 rounded-xl bg-slate-50">
+            <span className="text-xs text-slate-500 block font-medium truncate">
               {t("bike.metrics.totalIncomes")}
             </span>
             <span className="text-sm sm:text-base font-bold text-emerald-700 tabular-nums">
@@ -269,18 +269,18 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
       {/* COMPACT BIKE SETUP SUMMARY & RECENT LOGS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Compact Setup Summary Card */}
-        <div className="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-2 card p-4 sm:p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <Gauge className="w-4 h-4 text-navy-600" />
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                <h2 className="text-sm font-bold text-slate-900">
                   {t("setup.title")}
-                </h3>
+                </h2>
               </div>
               <Link
                 href={`/bikes/${bike.id}/setup`}
-                className="text-xs font-semibold text-navy-600 hover:text-navy-700 flex items-center gap-1"
+                className="btn-text"
               >
                 <span>{t("setup.edit")}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -290,9 +290,9 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Vidlice */}
               {bike.suspensionType !== "RIGID" && (
-                <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-2">
+                <div className="panel panel-neutral space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+                    <span className="section-label">
                       Vidlice
                     </span>
                     <span className="text-base font-bold text-slate-900 tabular-nums">
@@ -302,7 +302,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   <p className="text-xs text-slate-600 font-medium truncate">
                     {forkComp ? `${forkComp.manufacturer} ${forkComp.model}` : "Neosazeno"}
                   </p>
-                  <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200/60 tabular-nums">
+                  <div className="text-slate-500 space-y-0.5 pt-1 border-t border-slate-200 tabular-nums">
                     {setup?.forkLscClicks !== null && setup?.forkLscClicks !== undefined && (
                       <div>LSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkLscClicks)}</span></div>
                     )}
@@ -321,9 +321,9 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
 
               {/* Tlumič */}
               {bike.suspensionType === "FULL_SUSPENSION" && (
-                <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-2">
+                <div className="panel panel-neutral space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+                    <span className="section-label">
                       Tlumič
                     </span>
                     <span className="text-base font-bold text-slate-900 tabular-nums">
@@ -333,7 +333,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   <p className="text-xs text-slate-600 font-medium truncate">
                     {shockComp ? `${shockComp.manufacturer} ${shockComp.model}` : "Neosazeno"}
                   </p>
-                  <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200/60 tabular-nums">
+                  <div className="text-slate-500 space-y-0.5 pt-1 border-t border-slate-200 tabular-nums">
                     <div>SAG: <span className="text-slate-800 font-medium">{setup?.shockSagPercent ?? "-"} %</span></div>
                     {setup?.shockLscClicks !== null && setup?.shockLscClicks !== undefined && (
                       <div>LSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.shockLscClicks)}</span></div>
@@ -352,9 +352,9 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
               )}
 
               {/* Přední plášť */}
-              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-2">
+              <div className="panel panel-neutral space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+                  <span className="section-label">
                     Přední plášť
                   </span>
                   <span className="text-base font-bold text-slate-900 tabular-nums">
@@ -365,16 +365,16 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   {frontTireComp ? `${frontTireComp.manufacturer} ${frontTireComp.model}` : "Neosazeno"}
                 </p>
                 {setup?.frontTireNotes && (
-                  <p className="text-[11px] text-slate-500 italic">
+                  <p className="text-slate-500 italic">
                     "{setup.frontTireNotes}"
                   </p>
                 )}
               </div>
 
               {/* Zadní plášť */}
-              <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-2">
+              <div className="panel panel-neutral space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+                  <span className="section-label">
                     Zadní plášť
                   </span>
                   <span className="text-base font-bold text-slate-900 tabular-nums">
@@ -385,7 +385,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   {rearTireComp ? `${rearTireComp.manufacturer} ${rearTireComp.model}` : "Neosazeno"}
                 </p>
                 {setup?.rearTireNotes && (
-                  <p className="text-[11px] text-slate-500 italic">
+                  <p className="text-slate-500 italic">
                     "{setup.rearTireNotes}"
                   </p>
                 )}
@@ -393,7 +393,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
             </div>
 
             {setup?.generalNotes && (
-              <div className="mt-4 p-3 bg-slate-50/80 rounded-xl text-xs text-slate-600 border border-slate-200/60">
+              <div className="mt-4 panel panel-neutral">
                 <span className="font-semibold text-slate-800 block mb-0.5">Poznámka k setupu:</span>
                 "{setup.generalNotes}"
               </div>
@@ -402,19 +402,19 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
         </div>
 
         {/* Recent Odometer Activity */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+        <div className="card p-4 sm:p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-slate-600" />
-                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                <SlidersHorizontal className="w-4 h-4 text-navy-600" />
+                <h2 className="text-sm font-bold text-slate-900">
                   Poslední záznamy nájezdu
-                </h3>
+                </h2>
               </div>
             </div>
 
             {odometerEntries.length === 0 ? (
-              <p className="text-xs text-slate-500 italic py-6 text-center">
+              <p className="empty-state">
                 Zatím nebyly zaznamenány žádné záznamy nájezdu.
               </p>
             ) : (
@@ -425,36 +425,32 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   return (
                     <div
                       key={entry.id}
-                      className="p-3 bg-slate-50/80 rounded-xl border border-slate-200/60 flex items-center justify-between gap-3 text-xs"
+                      className="panel panel-neutral flex items-center justify-between gap-3"
                     >
                       <div>
                         <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                           <span className="font-bold text-slate-900 tabular-nums">
                             {formatKm(entry.resultingKm)}
                           </span>
-                          <span className={`text-[11px] tabular-nums font-semibold ${
+                          <span className={`tabular-nums font-semibold ${
                             isDeltaPositive ? "text-emerald-700" : "text-amber-800"
                           }`}>
                             ({isDeltaPositive ? `+${formatKm(entry.deltaKm)}` : formatKm(entry.deltaKm)})
                           </span>
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold border ${
-                            entry.source === "STRAVA"
-                              ? "bg-navy-50 text-navy-700 border-navy-200/70"
-                              : "bg-slate-100 text-slate-600 border-slate-200/70"
-                          }`}>
+                          <span className={`chip ${entry.source === "STRAVA" ? "chip-navy" : "chip-neutral"}`}>
                             {entry.source === "STRAVA" ? "Strava" : "Ručně"}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-500 truncate max-w-[180px]">
+                        <p className="text-slate-500 truncate max-w-[180px]">
                           {entry.note || (entry.entryType === "INITIAL" ? "Výchozí stav" : entry.entryType === "CORRECTION" ? "Korekce nájezdu" : "Záznam nájezdu")}
                         </p>
                       </div>
 
                       <div className="text-right">
-                        <span className="text-[11px] text-slate-500 block tabular-nums">
+                        <span className="text-slate-500 block tabular-nums">
                           {formatDateCs(entry.entryDate)}
                         </span>
-                        <span className="text-[10px] text-slate-500 tabular-nums">
+                        <span className="text-slate-500 tabular-nums">
                           {formatMinutes(entry.resultingMinutes)}
                         </span>
                       </div>
@@ -467,7 +463,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
 
           <Link
             href={`/bikes/${bike.id}/history`}
-            className="mt-4 pt-3 border-t border-slate-100 text-xs font-semibold text-navy-600 hover:text-navy-700 flex items-center justify-between"
+            className="btn-text mt-3 self-start"
           >
             <span>Zobrazit historii nájezdu</span>
             <ChevronRight className="w-3.5 h-3.5" />

@@ -32,7 +32,9 @@ import { StravaLogo } from "@/components/common/StravaIcon";
 import { PublicStravaStatus } from "@/lib/strava/stravaTokenStore";
 import { getValidAccessToken, loginToGoogle } from "@/lib/google/googleAuth";
 import { Bike } from "@/types/vault";
-import { buttonClass } from "@/lib/ui";
+import { Modal, ModalFooter } from "@/components/common/Modal";
+import { PageHeader } from "@/components/common/PageHeader";
+
 
 export const dynamic = "force-dynamic";
 
@@ -273,24 +275,15 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 animate-fade-in max-w-4xl">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            {t("nav.settings")}
-          </h1>
-        </div>
-
-        {/* Tab Switcher */}
-        <div role="tablist" aria-label="Sekce nastavení" className="flex items-center p-1 bg-slate-100/80 rounded-xl border border-slate-200/60 self-start sm:self-auto">
+      <PageHeader
+        title={t("nav.settings")}
+        actions={
+        <div role="tablist" aria-label="Sekce nastavení" className="segmented flex">
           <button
             role="tab"
             aria-selected={activeTab === "preferences"}
             onClick={() => setActiveTab("preferences")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-              activeTab === "preferences"
-                ? "bg-navy-600 text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            className="segment"
           >
             Předvolby
           </button>
@@ -298,27 +291,22 @@ export default function SettingsPage() {
             role="tab"
             aria-selected={activeTab === "integrations"}
             onClick={() => setActiveTab("integrations")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === "integrations"
-                ? "bg-navy-600 text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            className="segment"
           >
             <span>Integrace</span>
             {stravaStatus.connected && (
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500" aria-label="Strava připojena" />
             )}
           </button>
         </div>
-      </div>
+        }
+      />
 
       {/* Status Notifications */}
       {statusMessage && (
         <div
-          className={`p-3.5 rounded-xl text-xs flex items-center gap-3 border shadow-sm animate-fade-in ${
-            statusMessage.type === "success"
-              ? "bg-emerald-50/80 border-emerald-200/80 text-emerald-800"
-              : "bg-rose-50/80 border-rose-200/80 text-rose-800"
+          className={`panel flex items-center gap-3 animate-fade-in ${
+            statusMessage.type === "success" ? "panel-success" : "panel-error"
           }`}
         >
           {statusMessage.type === "success" ? (
@@ -331,7 +319,7 @@ export default function SettingsPage() {
             type="button"
             onClick={() => setStatusMessage(null)}
             aria-label="Zavřít upozornění"
-            className="p-1 min-w-[36px] min-h-[36px] flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-black/5 rounded-lg transition-colors cursor-pointer"
+            className="btn-icon -my-1.5 -mr-1.5 text-current opacity-70 hover:opacity-100 hover:bg-black/5 hover:text-current"
           >
             <X className="w-4 h-4" />
           </button>
@@ -342,7 +330,7 @@ export default function SettingsPage() {
       {activeTab === "integrations" && (
         <div className="space-y-6">
           {/* Strava Integration Card */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-5 shadow-sm">
+          <div className="card p-4 sm:p-5 space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
                 <StravaLogo className="h-7 w-auto" />
@@ -356,12 +344,12 @@ export default function SettingsPage() {
                   <span>Zjišťuji stav...</span>
                 </div>
               ) : stravaStatus.connected ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="chip chip-emerald">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   <span>Připojeno</span>
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                <span className="chip chip-neutral">
                   <span className="w-2 h-2 rounded-full bg-slate-400" />
                   <span>Nepřipojeno</span>
                 </span>
@@ -377,11 +365,11 @@ export default function SettingsPage() {
             ) : !stravaStatus.connected ? (
               /* Disconnected State */
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 text-xs text-slate-600 space-y-2">
+                <div className="panel panel-neutral space-y-2">
                   <p className="font-semibold text-slate-900">
                     Jak funguje integrace se Stravou v BikeVault:
                   </p>
-                  <ul className="list-disc pl-4 space-y-1 text-slate-600">
+                  <ul className="list-disc pl-4 space-y-1">
                     <li>
                       <strong>Bezpečný import a párování:</strong> Načte vaše kola a umožní je propojit s koly v BikeVault nebo je založit jako nová.
                     </li>
@@ -400,10 +388,10 @@ export default function SettingsPage() {
                 <div className="pt-2">
                   <button
                     onClick={handleConnectStrava}
-                    className={buttonClass("dark", "md")}
+                    className="btn-primary"
                   >
                     <span>Připojit Stravu</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -411,32 +399,32 @@ export default function SettingsPage() {
               /* Connected State */
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-500 block">Propojený sportovec</span>
+                  <div className="panel panel-neutral space-y-1">
+                    <span className="font-semibold text-slate-500 block">Propojený sportovec</span>
                     <span className="text-sm font-bold text-slate-900 block truncate">
                       {stravaStatus.athleteName || "Uživatel Strava"}
                     </span>
-                    <span className="text-[10px] text-slate-500 block tabular-nums">
+                    <span className="text-slate-500 block tabular-nums">
                       ID: {stravaStatus.athleteId}
                     </span>
                   </div>
 
-                  <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-500 block">Poslední synchronizace</span>
+                  <div className="panel panel-neutral space-y-1">
+                    <span className="font-semibold text-slate-500 block">Poslední synchronizace</span>
                     <span className="text-sm font-bold text-slate-900 block">
                       {stravaStatus.lastSyncAt ? formatDateCs(stravaStatus.lastSyncAt) : "Zatím neproběhla"}
                     </span>
-                    <span className="text-[10px] text-slate-500 block">
+                    <span className="text-slate-500 block">
                       {stravaStatus.lastSyncAt ? new Date(stravaStatus.lastSyncAt).toLocaleTimeString("cs-CZ", { hour: "2-digit", minute: "2-digit" }) : "—"}
                     </span>
                   </div>
 
-                  <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1">
-                    <span className="text-[11px] font-semibold text-slate-500 block">Stav propojení kol</span>
+                  <div className="panel panel-neutral space-y-1">
+                    <span className="font-semibold text-slate-500 block">Stav propojení kol</span>
                     <span className="text-sm font-bold text-slate-900 block tabular-nums">
                       {linkedBikesCount} {linkedBikesCount === 1 ? "kolo" : linkedBikesCount >= 2 && linkedBikesCount <= 4 ? "kola" : "kol"}
                     </span>
-                    <span className="text-[10px] text-slate-500 block">
+                    <span className="text-slate-500 block">
                       z {data.bikes.length} kol v garáži
                     </span>
                   </div>
@@ -447,23 +435,23 @@ export default function SettingsPage() {
                   <button
                     onClick={handleSyncAllBikes}
                     disabled={syncingAll}
-                    className={buttonClass("dark", "md")}
+                    className="btn-primary"
                   >
-                    <RefreshCw className={`w-3.5 h-3.5 ${syncingAll ? "animate-spin text-navy-400" : ""}`} />
+                    <RefreshCw className={`w-3.5 h-3.5 ${syncingAll ? "animate-spin" : ""}`} />
                     <span>{syncingAll ? "Synchronizuji..." : "Synchronizovat nájezd"}</span>
                   </button>
 
                   <button
                     onClick={() => setIsManageBikesOpen(true)}
-                    className={buttonClass("secondary", "md")}
+                    className="btn-secondary"
                   >
-                    <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
+                    <SlidersHorizontal className="w-3.5 h-3.5" />
                     <span>Spravovat kola ze Stravy</span>
                   </button>
 
                   <button
                     onClick={() => setIsDisconnectConfirmOpen(true)}
-                    className={buttonClass("dangerOutline", "md", "ml-auto")}
+                    className="btn-secondary btn-secondary-danger ml-auto"
                   >
                     <Unlink className="w-3.5 h-3.5" />
                     <span>Odpojit Stravu</span>
@@ -479,60 +467,60 @@ export default function SettingsPage() {
       {activeTab === "preferences" && (
         <div className="space-y-6">
           {/* Preferences Section */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+          <div className="card p-4 sm:p-5 space-y-4">
+            <h2 className="text-base font-bold text-slate-900">
               Měrné jednotky a lokalizace
-            </h3>
+            </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
-                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+              <div className="panel panel-neutral space-y-1.5">
+                <span className="font-semibold text-slate-500 flex items-center gap-1.5">
                   <Globe className="w-4 h-4 text-navy-600" />
                   <span>Jazyk rozhraní</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
                   Čeština (cs-CZ)
                 </span>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-slate-500">
                   100% lokalizované rozhraní pro české cyklisty.
                 </p>
               </div>
 
-              <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
-                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                  <DollarSign className="w-4 h-4 text-emerald-600" />
+              <div className="panel panel-neutral space-y-1.5">
+                <span className="font-semibold text-slate-500 flex items-center gap-1.5">
+                  <DollarSign className="w-4 h-4 text-navy-600" />
                   <span>Výchozí měna</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
                   CZK (Česká koruna — Kč)
                 </span>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-slate-500">
                   Autoritativní finanční výpočty v celých Kč.
                 </p>
               </div>
 
-              <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
-                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+              <div className="panel panel-neutral space-y-1.5">
+                <span className="font-semibold text-slate-500 flex items-center gap-1.5">
                   <Gauge className="w-4 h-4 text-navy-600" />
                   <span>Jednotka tlaku v pláštích</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
                   bar (metrické)
                 </span>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-slate-500">
                   Ukládáno v bar s přesností na 2 desetinná místa (např. 1,55 bar).
                 </p>
               </div>
 
-              <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-1.5">
-                <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
+              <div className="panel panel-neutral space-y-1.5">
+                <span className="font-semibold text-slate-500 flex items-center gap-1.5">
                   <Gauge className="w-4 h-4 text-navy-600" />
                   <span>Jednotka tlaku odpružení</span>
                 </span>
                 <span className="text-base font-bold text-slate-900 block">
                   psi (pounds per square inch)
                 </span>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-slate-500">
                   Standardní jednotka pro vidlice a tlumiče (např. 76 psi, 195 psi).
                 </p>
               </div>
@@ -540,18 +528,18 @@ export default function SettingsPage() {
           </div>
 
           {/* Technical & Database Info */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+          <div className="card p-4 sm:p-5 space-y-4">
             <div className="flex items-center gap-2 text-slate-900">
               <Database className="w-4 h-4 text-navy-600" />
-              <h3 className="text-xs font-bold uppercase tracking-wider">
+              <h2 className="text-base font-bold">
                 Systémové informace BikeVault
-              </h3>
+              </h2>
             </div>
 
             <div className="space-y-2.5 text-xs text-slate-600 divide-y divide-slate-100">
               <div className="flex justify-between py-2">
                 <span>Architektura</span>
-                <span className="font-semibold text-navy-700">Next.js App Router (Hybrid Cloud)</span>
+                <span className="font-semibold text-slate-900">Next.js App Router (Hybrid Cloud)</span>
               </div>
               <div className="flex justify-between py-2">
                 <span>Cloudové úložiště</span>
@@ -583,10 +571,10 @@ export default function SettingsPage() {
           </div>
 
           {/* Danger zone */}
-          <div className="bg-white border border-rose-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+          <div className="card p-4 sm:p-5 space-y-4">
             <div className="flex items-center gap-2 text-rose-700">
               <Trash2 className="w-4 h-4" />
-              <h3 className="text-xs font-bold uppercase tracking-wider">Nebezpečná zóna</h3>
+              <h2 className="text-base font-bold">Nebezpečná zóna</h2>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <p className="text-xs text-slate-600">
@@ -594,7 +582,7 @@ export default function SettingsPage() {
               </p>
               <button
                 onClick={() => setIsClearAllOpen(true)}
-                className={buttonClass("dangerOutline", "md", "shrink-0")}
+                className="btn-secondary btn-secondary-danger shrink-0"
               >
                 Smazat všechna data
               </button>
@@ -638,40 +626,36 @@ export default function SettingsPage() {
       />
 
       {/* Disconnect Confirmation Dialog */}
-      {isDisconnectConfirmOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="disconnect-modal-title"
-            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl border border-slate-200/80 space-y-4 animate-scale-in"
-          >
-            <h3 id="disconnect-modal-title" className="text-base font-bold text-slate-900">
-              Odpojit účet Strava?
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+      <Modal
+        isOpen={isDisconnectConfirmOpen}
+        onClose={() => {
+          if (!disconnecting) setIsDisconnectConfirmOpen(false);
+        }}
+        title="Odpojit účet Strava?"
+        maxWidth="max-w-md"
+      >
+            <p className="text-sm text-slate-700 leading-relaxed">
               Opravdu si přejete odpojit propojení se Stravou? Všechna vaše kola, záznamy tachometru, historie i komponenty v BikeVaultu zůstanou beze změny zachovány. Pouze bude ukončena budoucí synchronizace nájezdu.
             </p>
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <ModalFooter>
               <button
+                type="button"
                 onClick={() => setIsDisconnectConfirmOpen(false)}
                 disabled={disconnecting}
-                className={buttonClass("ghost", "md")}
+                className="btn-secondary"
               >
                 Zrušit
               </button>
               <button
                 onClick={handleConfirmDisconnect}
                 disabled={disconnecting}
-                className={buttonClass("danger", "md")}
+                className="btn-danger"
               >
                 {disconnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unlink className="w-3.5 h-3.5" />}
                 <span>{disconnecting ? "Odpojuji..." : "Potvrdit odpojení"}</span>
               </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </ModalFooter>
+      </Modal>
     </div>
   );
 }

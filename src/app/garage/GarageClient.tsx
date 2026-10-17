@@ -4,9 +4,10 @@ import React, { useState } from "react";
 import { useVault } from "@/context/VaultContext";
 import { Plus, Warehouse, Bike as BikeIcon, Clock, ArrowUpDown, Check, CheckCircle2, AlertTriangle } from "lucide-react";
 import { BikeCard } from "@/components/garage/BikeCard";
+import { PageHeader } from "@/components/common/PageHeader";
 import { AddBikeModal } from "@/components/garage/AddBikeModal";
 import { t, formatKm, formatMinutes, pluralizeCs } from "@/lib/i18n";
-import { buttonClass } from "@/lib/ui";
+
 import { getBikeTransactions } from "@/lib/domain/finance";
 
 interface GarageClientProps {
@@ -137,65 +138,51 @@ export function GarageClient({
   return (
     <div className="space-y-5 pb-12">
       {/* Horní akční lišta */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <h2 className="text-lg font-bold text-slate-900">{t("garage.title")}</h2>
-              <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold tabular-nums border border-slate-200">
-                {totalBikesCount} {pluralizeCs(totalBikesCount, "kolo", "kola", "kol")}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
+      <PageHeader
+        title={t("garage.title")}
+        badge={
+          <span className="chip chip-neutral tabular-nums">
+            {totalBikesCount} {pluralizeCs(totalBikesCount, "kolo", "kola", "kol")}
+          </span>
+        }
+        actions={
+          <>
             {filteredBikes.length > 1 && (
               <button
                 type="button"
                 onClick={() => setIsReordering(!isReordering)}
-                className={`px-3 py-2 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer min-h-[44px] ${
-                  isReordering
-                    ? "bg-navy-700 text-white border-navy-700 shadow-sm"
-                    : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
-                }`}
+                className="btn-secondary"
                 title={isReordering ? "Ukončit řazení kol" : "Uspořádat pořadí kol v garáži"}
                 aria-pressed={isReordering}
               >
                 {isReordering ? (
                   <>
-                    <Check className="w-4 h-4 text-emerald-400" />
+                    <Check className="w-4 h-4 text-emerald-600" />
                     <span>Hotovo</span>
                   </>
                 ) : (
                   <>
-                    <ArrowUpDown className="w-4 h-4 text-slate-500" />
+                    <ArrowUpDown className="w-4 h-4" />
                     <span>Uspořádat</span>
                   </>
                 )}
               </button>
             )}
 
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className={buttonClass("primary", "md", "self-start sm:self-auto")}
-            >
+            <button onClick={() => setIsAddModalOpen(true)} className="btn-primary">
               <Plus className="w-4 h-4" />
               <span>{t("garage.addBike")}</span>
             </button>
-          </div>
-        </div>
-
+          </>
+        }
+      >
         {/* Přepínač záložek: Aktivní / Prodaná / Archivovaná */}
-        <div role="tablist" aria-label="Stav kol v garáži" className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl max-w-sm">
+        <div role="tablist" aria-label="Stav kol v garáži" className="segmented flex max-w-sm">
           <button
             role="tab"
             aria-selected={activeTab === "ACTIVE"}
             onClick={() => setActiveTab("ACTIVE")}
-            className={`flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
-              activeTab === "ACTIVE"
-                ? "bg-navy-600 text-white shadow-sm font-bold"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            className="segment flex-1"
           >
             <span>{t("garage.tabs.active")} ({initialBikes.filter((b) => b.status === "ACTIVE").length})</span>
           </button>
@@ -203,11 +190,7 @@ export function GarageClient({
             role="tab"
             aria-selected={activeTab === "SOLD"}
             onClick={() => setActiveTab("SOLD")}
-            className={`flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
-              activeTab === "SOLD"
-                ? "bg-navy-600 text-white shadow-sm font-bold"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            className="segment flex-1"
           >
             <span>{t("garage.tabs.sold")} ({initialBikes.filter((b) => b.status === "SOLD").length})</span>
           </button>
@@ -215,76 +198,66 @@ export function GarageClient({
             role="tab"
             aria-selected={activeTab === "ARCHIVED"}
             onClick={() => setActiveTab("ARCHIVED")}
-            className={`flex-1 flex items-center justify-center px-3 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
-              activeTab === "ARCHIVED"
-                ? "bg-navy-600 text-white shadow-sm font-bold"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
+            className="segment flex-1"
           >
             <span>{t("garage.tabs.archived")} ({initialBikes.filter((b) => b.status === "ARCHIVED" || b.status === "INACTIVE").length})</span>
           </button>
         </div>
-      </div>
+      </PageHeader>
 
-      {/* KPI Agregáty garáže - Workshop Telemetry Cockpit */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-3.5 sm:p-4 grid grid-cols-3 divide-x divide-slate-100 sm:divide-slate-200/60">
-        <div className="px-2 sm:px-4 first:pl-1">
-          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
-            <div className="p-1 rounded-md bg-navy-50 text-navy-600 shrink-0 hidden sm:flex">
-              <BikeIcon className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 truncate">Nájezd garáže</span>
+      {/* KPI Agregáty garáže */}
+      <div className="card p-4 grid grid-cols-3 divide-x divide-slate-100">
+        <div className="px-2 sm:px-4 first:pl-0">
+          <div className="flex items-center gap-1.5 mb-1">
+            <BikeIcon className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <span className="section-label truncate">Nájezd garáže</span>
           </div>
-          <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
             {formatKm(totalMileage)}
           </div>
-          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5 font-medium">
+          <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
             Zaznamenané kilometry
           </p>
         </div>
 
         <div className="px-2 sm:px-4">
-          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
-            <div className="p-1 rounded-md bg-navy-50 text-navy-600 shrink-0 hidden sm:flex">
-              <Clock className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 truncate">Čas v sedle</span>
+          <div className="flex items-center gap-1.5 mb-1">
+            <Clock className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <span className="section-label truncate">Čas v sedle</span>
           </div>
-          <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
             {formatMinutes(totalMinutes)}
           </div>
-          <p className="text-[10px] text-slate-500 hidden md:block truncate mt-0.5 font-medium">
+          <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
             Provozní hodiny flotily
           </p>
         </div>
 
-        <div className="px-2 sm:px-4 last:pr-1">
-          <div className="flex items-center gap-1.5 text-slate-500 mb-1">
-            <div className="p-1 rounded-md bg-navy-50 text-navy-600 shrink-0 hidden sm:flex">
-              <Warehouse className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 truncate">Stav flotily</span>
+        <div className="px-2 sm:px-4 last:pr-0">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Warehouse className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <span className="section-label truncate">Stav flotily</span>
           </div>
           <div className="flex items-baseline gap-2">
-            <div className="text-base sm:text-xl font-bold text-slate-900 truncate tabular-nums">
+            <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
               {readyBikesCount} / {activeBikes.length}
             </div>
-            <span className="text-[11px] font-medium text-slate-500 hidden sm:inline">připraveno</span>
+            <span className="text-xs text-slate-500 hidden sm:inline">připraveno</span>
           </div>
-          <div className="mt-0.5">
+          <div className="mt-1">
             {overdueBikesCount > 0 ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200/60">
-                <AlertTriangle className="w-2.5 h-2.5" />
+              <span className="chip chip-rose">
+                <AlertTriangle className="w-3.5 h-3.5" />
                 <span>{overdueBikesCount} {pluralizeCs(overdueBikesCount, "vyžaduje servis", "vyžadují servis", "vyžaduje servis")}</span>
               </span>
             ) : dueSoonBikesCount > 0 ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60">
-                <Clock className="w-2.5 h-2.5" />
+              <span className="chip chip-amber">
+                <Clock className="w-3.5 h-3.5" />
                 <span>{dueSoonBikesCount} {pluralizeCs(dueSoonBikesCount, "brzy na servis", "brzy na servis", "brzy na servis")}</span>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60">
-                <CheckCircle2 className="w-2.5 h-2.5" />
+              <span className="chip chip-emerald">
+                <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>100% připraveno k jízdě</span>
               </span>
             )}
@@ -294,15 +267,15 @@ export function GarageClient({
 
       {/* Reorder Announcement Banner */}
       {isReordering && (
-        <div className="bg-navy-900 text-white rounded-xl p-3 px-4 flex items-center justify-between text-xs shadow-sm border border-navy-800">
+        <div className="panel panel-info flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <ArrowUpDown className="w-4 h-4 text-navy-300 shrink-0" />
+            <ArrowUpDown className="w-4 h-4 text-navy-600 shrink-0" />
             <span><strong>Režim uspořádání aktivní:</strong> Pořadí kol měňte šipkami na kartách nebo přetažením myší.</span>
           </div>
           <button
             type="button"
             onClick={() => setIsReordering(false)}
-            className="px-3 py-1 bg-white text-navy-900 hover:bg-slate-100 font-semibold rounded-lg text-xs transition-colors cursor-pointer shrink-0 ml-3"
+            className="btn-secondary btn-sm shrink-0"
           >
             Hotovo
           </button>
@@ -314,8 +287,8 @@ export function GarageClient({
 
       {/* Seznam kol */}
       {filteredBikes.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center shadow-sm">
-          <p className="text-slate-700 font-medium text-sm">
+        <div className="card empty-state py-12">
+          <p className="text-slate-700 font-bold text-sm">
             {activeTab === "ACTIVE"
               ? "Ve virtuální garáži zatím nemáte žádné aktivní kolo."
               : activeTab === "SOLD"
@@ -332,7 +305,7 @@ export function GarageClient({
           {activeTab === "ACTIVE" && (
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className={buttonClass("primary", "md", "mt-4")}
+              className="btn-primary mt-4"
             >
               <Plus className="w-4 h-4" />
               <span>Přidat první kolo</span>

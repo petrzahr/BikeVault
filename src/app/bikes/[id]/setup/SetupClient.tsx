@@ -19,9 +19,8 @@ import {
 } from "lucide-react";
 import { t, formatDateCs, formatPsi, formatBar } from "@/lib/i18n";
 import { formatClicksFromClosed, formatTireLabel, formatTireBadge } from "@/lib/domain/setup";
-import { Modal } from "@/components/common/Modal";
+import { Modal, ModalFooter } from "@/components/common/Modal";
 import { DeleteButton } from "@/components/common/DeleteButton";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 interface SetupClientProps {
   bike: any;
@@ -195,9 +194,9 @@ export function SetupClient({
       <BikeHeader bike={bike} />
 
       {/* Title & Actions Bar */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-base font-bold text-slate-900">
             {t("setup.title")}
           </h2>
         </div>
@@ -206,16 +205,16 @@ export function SetupClient({
           <button
             type="button"
             onClick={() => setIsSnapshotModalOpen(true)}
-            className={buttonClass("secondary", "md")}
+            className="btn-secondary"
           >
-            <Camera className="w-4 h-4 text-navy-600" />
+            <Camera className="w-4 h-4" />
             <span>{t("setup.saveSnapshot")}</span>
           </button>
         </div>
       </div>
 
       {successMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-semibold flex items-center gap-2 animate-fade-in shadow-sm">
+        <div className="panel panel-success font-semibold flex items-center gap-2 animate-fade-in">
           <Check className="w-4 h-4 text-emerald-600" />
           <span>{successMsg}</span>
         </div>
@@ -227,14 +226,14 @@ export function SetupClient({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* VIDLICE */}
           {bike.suspensionType !== "RIGID" && (
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="card p-4 sm:p-5 space-y-4 ">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-navy-50 text-navy-700 border border-navy-200/60 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center font-bold text-xs">
                     V
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    <h3 className="text-sm font-bold text-slate-900">
                       {t("setup.fork.title")}
                     </h3>
                     <p className="text-xs text-slate-500">
@@ -244,7 +243,7 @@ export function SetupClient({
                 </div>
 
                 {forkTravel && (
-                  <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
+                  <span className="chip chip-navy tabular-nums">
                     {forkTravel} mm
                   </span>
                 )}
@@ -252,7 +251,7 @@ export function SetupClient({
 
               <div className="grid grid-cols-2 gap-3.5">
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.fork.pressure")} (psi)
                   </label>
                   <input
@@ -260,24 +259,24 @@ export function SetupClient({
                     step="0.5"
                     value={forkPressure}
                     onChange={(e) => setForkPressure(e.target.value)}
-                    className={cn(inputClass, "tabular-nums")}
+                    className="field"
                   />
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.fork.sag")}
                   </label>
                   <input
                     type="number"
                     value={forkSag}
                     onChange={(e) => setForkSag(e.target.value)}
-                    className={cn(inputClass, "tabular-nums")}
+                    className="field"
                   />
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.fork.lsc")}
                   </label>
                   <div className="relative">
@@ -286,14 +285,14 @@ export function SetupClient({
                       min="0"
                       value={forkLsc}
                       onChange={(e) => setForkLsc(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
+                      className="field"
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.fork.hsc")}
                   </label>
                   <div className="relative">
@@ -302,14 +301,14 @@ export function SetupClient({
                       min="0"
                       value={forkHsc}
                       onChange={(e) => setForkHsc(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
+                      className="field"
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.fork.lsr")}
                   </label>
                   <div className="relative">
@@ -318,14 +317,14 @@ export function SetupClient({
                       min="0"
                       value={forkLsr}
                       onChange={(e) => setForkLsr(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
+                      className="field"
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.fork.hsr")}
                   </label>
                   <div className="relative">
@@ -334,14 +333,14 @@ export function SetupClient({
                       min="0"
                       value={forkHsr}
                       onChange={(e) => setForkHsr(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
+                      className="field"
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.fork.tokens")}
                   </label>
                   <input
@@ -349,20 +348,20 @@ export function SetupClient({
                     min="0"
                     value={forkTokens}
                     onChange={(e) => setForkTokens(e.target.value)}
-                    className={cn(inputClass, "tabular-nums")}
+                    className="field"
                   />
                 </div>
               </div>
 
               <div>
-                <label className={labelClass}>
+                <label className="field-label">
                   {t("setup.fork.notes")}
                 </label>
                 <input
                   type="text"
                   value={forkNotes}
                   onChange={(e) => setForkNotes(e.target.value)}
-                  className={inputClass}
+                  className="field"
                 />
               </div>
             </div>
@@ -370,14 +369,14 @@ export function SetupClient({
 
           {/* TLUMIČ */}
           {bike.suspensionType === "FULL_SUSPENSION" && (
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="card p-4 sm:p-5 space-y-4 ">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-navy-50 text-navy-700 border border-navy-200/60 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center font-bold text-xs">
                     T
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    <h3 className="text-sm font-bold text-slate-900">
                       {t("setup.shock.title")}
                     </h3>
                     <p className="text-xs text-slate-500">
@@ -387,7 +386,7 @@ export function SetupClient({
                 </div>
 
                 {frameTravelSpec && (
-                  <span className="text-[11px] text-navy-700 tabular-nums bg-navy-50 px-2.5 py-1 rounded-full border border-navy-200/80 font-semibold">
+                  <span className="chip chip-navy tabular-nums">
                     {frameTravelSpec} mm
                   </span>
                 )}
@@ -395,7 +394,7 @@ export function SetupClient({
 
               <div className="grid grid-cols-2 gap-3.5">
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.shock.pressure")} (psi)
                   </label>
                   <input
@@ -403,24 +402,24 @@ export function SetupClient({
                     step="1"
                     value={shockPressure}
                     onChange={(e) => setShockPressure(e.target.value)}
-                    className={cn(inputClass, "tabular-nums")}
+                    className="field"
                   />
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.shock.sag")}
                   </label>
                   <input
                     type="number"
                     value={shockSag}
                     onChange={(e) => setShockSag(e.target.value)}
-                    className={cn(inputClass, "tabular-nums")}
+                    className="field"
                   />
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.shock.lsc")}
                   </label>
                   <div className="relative">
@@ -429,14 +428,14 @@ export function SetupClient({
                       min="0"
                       value={shockLsc}
                       onChange={(e) => setShockLsc(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
+                      className="field"
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.shock.hsc")}
                   </label>
                   <div className="relative">
@@ -445,14 +444,14 @@ export function SetupClient({
                       min="0"
                       value={shockHsc}
                       onChange={(e) => setShockHsc(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
+                      className="field"
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.shock.lsr")}
                   </label>
                   <div className="relative">
@@ -461,14 +460,14 @@ export function SetupClient({
                       min="0"
                       value={shockLsr}
                       onChange={(e) => setShockLsr(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
+                      className="field"
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.shock.hsr")}
                   </label>
                   <div className="relative">
@@ -477,14 +476,14 @@ export function SetupClient({
                       min="0"
                       value={shockHsr}
                       onChange={(e) => setShockHsr(e.target.value)}
-                      className={cn(inputClass, "tabular-nums")}
+                      className="field"
                     />
-                    <span className="absolute right-3 top-2.5 text-[10px] text-slate-500 font-medium">od zavřeno</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium pointer-events-none">od zavřeno</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label className="field-label">
                     {t("setup.shock.tokens")}
                   </label>
                   <input
@@ -492,20 +491,20 @@ export function SetupClient({
                     min="0"
                     value={shockTokens}
                     onChange={(e) => setShockTokens(e.target.value)}
-                    className={cn(inputClass, "tabular-nums")}
+                    className="field"
                   />
                 </div>
               </div>
 
               <div>
-                <label className={labelClass}>
+                <label className="field-label">
                   {t("setup.shock.notes")}
                 </label>
                 <input
                   type="text"
                   value={shockNotes}
                   onChange={(e) => setShockNotes(e.target.value)}
-                  className={inputClass}
+                  className="field"
                 />
               </div>
             </div>
@@ -515,14 +514,14 @@ export function SetupClient({
         {/* PLÁŠTĚ GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Přední plášť */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-3.5 shadow-sm">
+          <div className="card p-4 sm:p-5 space-y-3.5 ">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">
                   P
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                  <h3 className="text-sm font-bold text-slate-900">
                     {t("setup.tires.front")}
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -532,7 +531,7 @@ export function SetupClient({
               </div>
 
               {frontTireComp && formatTireBadge(frontTireComp) && (
-                <span className="text-[11px] text-slate-600 tabular-nums bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200/80 font-medium">
+                <span className="chip chip-neutral tabular-nums">
                   {formatTireBadge(frontTireComp)}
                 </span>
               )}
@@ -540,7 +539,7 @@ export function SetupClient({
 
             <div className="grid grid-cols-2 gap-3.5">
               <div>
-                <label className={labelClass}>
+                <label className="field-label">
                   Tlak (bar)
                 </label>
                 <input
@@ -548,45 +547,45 @@ export function SetupClient({
                   step="0.05"
                   value={frontPressure}
                   onChange={(e) => setFrontPressure(e.target.value)}
-                  className={cn(inputClass, "tabular-nums")}
+                  className="field"
                 />
               </div>
 
               <div>
-                <label className={labelClass}>
+                <label className="field-label">
                   {t("setup.tires.insert")}
                 </label>
                 <input
                   type="text"
                   value={frontInsert}
                   onChange={(e) => setFrontInsert(e.target.value)}
-                  className={inputClass}
+                  className="field"
                 />
               </div>
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label className="field-label">
                 {t("setup.tires.notes")}
               </label>
               <input
                 type="text"
                 value={frontNotes}
                 onChange={(e) => setFrontNotes(e.target.value)}
-                className={inputClass}
+                className="field"
               />
             </div>
           </div>
 
           {/* Zadní plášť */}
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-3.5 shadow-sm">
+          <div className="card p-4 sm:p-5 space-y-3.5 ">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 border border-slate-200/80 flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">
                   Z
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                  <h3 className="text-sm font-bold text-slate-900">
                     {t("setup.tires.rear")}
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -596,7 +595,7 @@ export function SetupClient({
               </div>
 
               {rearTireComp && formatTireBadge(rearTireComp) && (
-                <span className="text-[11px] text-slate-600 tabular-nums bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200/80 font-medium">
+                <span className="chip chip-neutral tabular-nums">
                   {formatTireBadge(rearTireComp)}
                 </span>
               )}
@@ -604,7 +603,7 @@ export function SetupClient({
 
             <div className="grid grid-cols-2 gap-3.5">
               <div>
-                <label className={labelClass}>
+                <label className="field-label">
                   Tlak (bar)
                 </label>
                 <input
@@ -612,47 +611,47 @@ export function SetupClient({
                   step="0.05"
                   value={rearPressure}
                   onChange={(e) => setRearPressure(e.target.value)}
-                  className={cn(inputClass, "tabular-nums")}
+                  className="field"
                 />
               </div>
 
               <div>
-                <label className={labelClass}>
+                <label className="field-label">
                   {t("setup.tires.insert")}
                 </label>
                 <input
                   type="text"
                   value={rearInsert}
                   onChange={(e) => setRearInsert(e.target.value)}
-                  className={inputClass}
+                  className="field"
                 />
               </div>
             </div>
 
             <div>
-              <label className={labelClass}>
+              <label className="field-label">
                 {t("setup.tires.notes")}
               </label>
               <input
                 type="text"
                 value={rearNotes}
                 onChange={(e) => setRearNotes(e.target.value)}
-                className={inputClass}
+                className="field"
               />
             </div>
           </div>
         </div>
 
         {/* Celková poznámka k nastavení */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-sm">
-          <label className={labelClass}>
+        <div className="card p-4 sm:p-5">
+          <label className="field-label">
             {t("setup.generalNotes")}
           </label>
           <textarea
             rows={3}
             value={generalNotes}
             onChange={(e) => setGeneralNotes(e.target.value)}
-            className={inputClass}
+            className="field"
           />
         </div>
 
@@ -661,7 +660,7 @@ export function SetupClient({
           <button
             type="submit"
             disabled={loading}
-            className={buttonClass("primary", "md")}
+            className="btn-primary"
           >
             {loading ? (
               <>
@@ -680,10 +679,10 @@ export function SetupClient({
 
       {/* HISTORIE PROFILŮ NASTAVENÍ */}
       {snapshots.length > 0 && (
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+        <div className="card p-4 sm:p-5 space-y-4 ">
           <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
             <History className="w-4 h-4 text-navy-600" />
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h3 className="text-sm font-bold text-slate-900">
               Uložené profily nastavení ({snapshots.length})
             </h3>
           </div>
@@ -692,10 +691,10 @@ export function SetupClient({
             {snapshots.map((snap) => (
               <div
                 key={snap.id}
-                className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 space-y-2.5 text-xs hover:border-slate-300 transition-colors"
+                className="panel panel-neutral space-y-2.5"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-navy-700">
+                  <span className="font-bold text-sm text-slate-900">
                     {snap.profileName || "Profil nastavení"}
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -716,7 +715,7 @@ export function SetupClient({
                   </p>
                 )}
 
-                <div className="pt-2 border-t border-slate-200/60 text-slate-500 space-y-1 tabular-nums">
+                <div className="pt-2 border-t border-slate-200 text-slate-500 space-y-1 tabular-nums">
                   <div>Vidlice: <span className="text-slate-800 font-medium">{snap.snapshotData?.forkPressurePsi ? formatPsi(snap.snapshotData.forkPressurePsi) : "-"}</span></div>
                   <div>Tlumič: <span className="text-slate-800 font-medium">{snap.snapshotData?.shockPressurePsi ? formatPsi(snap.snapshotData.shockPressurePsi) : "-"}</span></div>
                   <div>Pláště: <span className="text-slate-800 font-medium">{formatBar(snap.snapshotData?.frontTirePressureBar)} / {formatBar(snap.snapshotData?.rearTirePressureBar)}</span></div>
@@ -737,7 +736,7 @@ export function SetupClient({
       >
         <form onSubmit={handleSaveSnapshot} className="space-y-4">
           <div>
-            <label htmlFor="snapshot-name" className={labelClass}>
+            <label htmlFor="snapshot-name" className="field-label">
               {t("setup.profileName")} *
             </label>
             <input
@@ -746,12 +745,12 @@ export function SetupClient({
               required
               value={snapshotName}
               onChange={(e) => setSnapshotName(e.target.value)}
-              className={inputClass}
+              className="field"
             />
           </div>
 
           <div>
-            <label htmlFor="snapshot-notes" className={labelClass}>
+            <label htmlFor="snapshot-notes" className="field-label">
               Poznámka k profilu
             </label>
             <textarea
@@ -759,26 +758,23 @@ export function SetupClient({
               rows={2}
               value={snapshotNote}
               onChange={(e) => setSnapshotNote(e.target.value)}
-              className={inputClass}
+              className="field"
             />
           </div>
 
-          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+          <ModalFooter>
             <button
               type="button"
               onClick={() => setIsSnapshotModalOpen(false)}
-              className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+              className="btn-secondary"
             >
               {t("common.cancel")}
             </button>
-            <button
-              type="submit"
-              className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
-            >
+            <button type="submit" className="btn-primary">
               <Check className="w-4 h-4" />
               <span>Uložit profil nastavení</span>
             </button>
-          </div>
+          </ModalFooter>
         </form>
       </Modal>
     </div>

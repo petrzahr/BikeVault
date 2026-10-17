@@ -32,15 +32,15 @@ const TOAST_DURATION_MS = 5000;
 
 const toastStyles: Record<ToastKind, { box: string; icon: React.ReactNode }> = {
   success: {
-    box: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    box: 'panel-success',
     icon: <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />,
   },
   error: {
-    box: 'bg-rose-50 border-rose-200 text-rose-800',
+    box: 'panel-error',
     icon: <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />,
   },
   info: {
-    box: 'bg-navy-50 border-navy-200 text-navy-900',
+    box: 'panel-info',
     icon: <Info className="w-4 h-4 text-navy-600 shrink-0" />,
   },
 };
@@ -94,7 +94,7 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             key={t.id}
             role={t.kind === 'error' ? 'alert' : 'status'}
             className={cn(
-              'pointer-events-auto flex items-start gap-2.5 p-3 rounded-xl border shadow-lg text-xs font-medium animate-fade-in',
+              'panel pointer-events-auto flex items-start gap-2.5 shadow-lg font-medium animate-fade-in',
               toastStyles[t.kind].box,
             )}
           >
@@ -104,7 +104,7 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               type="button"
               onClick={() => dismiss(t.id)}
               aria-label="Zavřít oznámení"
-              className="shrink-0 p-1 min-w-[32px] min-h-[32px] flex items-center justify-center -mr-1 -mt-1 rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 transition-opacity cursor-pointer"
+              className="btn-icon -mr-1.5 -my-1.5 text-current opacity-70 hover:opacity-100 hover:bg-black/5 hover:text-current"
             >
               <X className="w-3.5 h-3.5" />
             </button>

@@ -12,7 +12,7 @@ const ICON_COLOR: Record<SyncTone, string> = {
 
 // Lighter shades for the dark header
 const ICON_COLOR_ON_DARK: Record<SyncTone, string> = {
-  busy: "text-sky-300",
+  busy: "text-navy-200",
   problem: "text-rose-400",
   pending: "text-amber-400",
   ok: "text-emerald-400",
@@ -21,7 +21,7 @@ const ICON_COLOR_ON_DARK: Record<SyncTone, string> = {
 const TEXT_COLOR: Record<SyncTone, string> = {
   busy: "text-navy-700",
   problem: "text-rose-700",
-  pending: "text-amber-700",
+  pending: "text-amber-800",
   ok: "text-emerald-700",
 };
 

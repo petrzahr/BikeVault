@@ -23,7 +23,7 @@ export function DeleteButton({ onConfirm, title, message, confirmText = "Smazat"
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className={`min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer ${className}`}
+        className={`btn-icon btn-icon-danger ${className}`}
         title={title}
         aria-label={title}
       >

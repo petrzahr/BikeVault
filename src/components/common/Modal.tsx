@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useId } from 'react';
 import { X } from 'lucide-react';
+import { cn } from '@/lib/ui';
 
 interface ModalProps {
   isOpen: boolean;
@@ -80,7 +81,7 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div 
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" 
+        className="fixed inset-0 bg-slate-900/40 transition-opacity"
         onClick={onClose} 
         aria-hidden="true"
       />
@@ -90,19 +91,19 @@ export const Modal: React.FC<ModalProps> = ({
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
-          className={`relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 w-full ${maxWidth} border border-slate-200/80`}
+          className={`relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 w-full ${maxWidth} border border-slate-200`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between border-b border-slate-100 px-4 sm:px-6 py-3.5 sm:py-4">
             <div className="min-w-0 pr-2">
-              <h3 id={titleId} className="text-base sm:text-lg font-semibold text-slate-900 truncate">{title}</h3>
+              <h2 id={titleId} className="text-base font-bold text-slate-900 truncate">{title}</h2>
               {subtitle && <p className="text-xs text-slate-500 mt-0.5 truncate">{subtitle}</p>}
             </div>
             <button
               type="button"
               onClick={onClose}
               aria-label="Zavřít"
-              className="rounded-xl p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/30"
+              className="btn-icon -mr-1.5"
             >
               <X className="w-5 h-5" />
             </button>
@@ -115,3 +116,8 @@ export const Modal: React.FC<ModalProps> = ({
     </div>
   );
 };
+
+/** Dialog action bar: cancel first, the primary action last (it ends up on the right, or on top on phones). */
+export const ModalFooter: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
+  <div className={cn('modal-footer', className)}>{children}</div>
+);

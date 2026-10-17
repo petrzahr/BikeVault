@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useVault } from "@/context/VaultContext";
 import { AlertTriangle, Wrench } from "lucide-react";
-import { buttonClass } from "@/lib/ui";
+
 
 export const AlertBanner: React.FC = () => {
   const { getServiceScheduleStatuses, data } = useVault();
@@ -20,12 +20,10 @@ export const AlertBanner: React.FC = () => {
   const bike = data.bikes.find((b) => b.id === firstOverdue.schedule?.bikeId);
 
   return (
-    <div className="p-3.5 rounded-2xl border bg-rose-50/90 border-rose-200/80 text-rose-900 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="panel panel-error flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div className="flex items-center gap-2.5">
-        <div className="p-1.5 rounded-lg bg-rose-100 text-rose-700 shrink-0">
-          <AlertTriangle className="w-4 h-4" />
-        </div>
-        <div className="text-xs">
+        <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+        <div>
           <span className="font-bold">
             Servis po termínu ({overdue.length}):
           </span>{" "}
@@ -35,7 +33,7 @@ export const AlertBanner: React.FC = () => {
 
       <Link
         href="/maintenance"
-        className={buttonClass("dangerOutline", "sm", "self-start sm:self-auto shrink-0")}
+        className="btn-secondary btn-secondary-danger btn-sm self-start sm:self-auto shrink-0"
       >
         <Wrench className="w-3.5 h-3.5" />
         <span>Vyřešit servis</span>

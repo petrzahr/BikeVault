@@ -11,8 +11,7 @@ import {
   Loader2
 } from "lucide-react";
 import { formatKm, formatMinutes, formatDateCs, formatCzk } from "@/lib/i18n";
-import { Modal } from "@/components/common/Modal";
-import { buttonClass, cn } from "@/lib/ui";
+import { Modal, ModalFooter } from "@/components/common/Modal";
 
 interface QuickReplaceModalProps {
   isOpen: boolean;
@@ -69,12 +68,12 @@ export function QuickReplaceModal({
           <span className="text-xs font-semibold text-slate-700 block">
             Aktuálně namontovaná komponenta
           </span>
-          <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl">
+          <div className="panel panel-neutral">
             <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="px-2 py-0.5 rounded-md bg-white text-slate-700 border border-slate-200 text-[10px] font-semibold uppercase">
+              <span className="chip bg-white text-slate-700">
                 {currentCat?.nameCs || "Komponenta"}
               </span>
-              <span className="text-[11px] text-slate-500">
+              <span className="text-xs text-slate-500">
                 na kole od {formatDateCs(installedItem.installation.installedAt)}
               </span>
             </div>
@@ -85,7 +84,7 @@ export function QuickReplaceModal({
               <p className="text-xs text-slate-600 mt-0.5">{currentComp.variant}</p>
             )}
             {currentComp.tireCasing && (
-              <p className="text-xs text-navy-700 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5">
                 {currentComp.wheelDiameter && `${currentComp.wheelDiameter}" `}
                 {currentComp.tireWidth} • {currentComp.tireCasing} • {currentComp.tireCompound}
               </p>
@@ -99,19 +98,19 @@ export function QuickReplaceModal({
             <span className="text-xs font-semibold text-slate-700 block">
               Nahradit za (ze skladu)
             </span>
-            <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+            <span className="chip chip-emerald">
               {matchingCandidates.length === 1 ? "1 kus skladem" : `${matchingCandidates.length} kusy skladem`}
             </span>
           </div>
 
           {matchingCandidates.length === 1 ? (
-            <div className="p-3.5 bg-navy-50/60 border border-navy-200 rounded-xl">
+            <div className="panel panel-info">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <span className="text-xs font-bold text-navy-950">
+                <span className="text-xs font-bold text-slate-900">
                   {matchingCandidates[0].component.manufacturer} {matchingCandidates[0].component.model}
                 </span>
-                <span className="text-[10px] text-navy-700 bg-navy-100/70 px-2 py-0.5 rounded-md font-semibold">
-                  SKLADEM
+                <span className="chip bg-white text-navy-700">
+                  Skladem
                 </span>
               </div>
               {matchingCandidates[0].component.variant && (
@@ -119,16 +118,16 @@ export function QuickReplaceModal({
                   {matchingCandidates[0].component.variant}
                 </p>
               )}
-              <div className="flex flex-wrap items-center gap-3 mt-2 text-[11px] text-slate-500 tabular-nums">
+              <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-500 tabular-nums">
                 {matchingCandidates[0].component.serialNumber && (
                   <span className="flex items-center gap-1">
-                    <Hash className="w-3 h-3 text-slate-500" />
+                    <Hash className="w-3.5 h-3.5" />
                     SN: {matchingCandidates[0].component.serialNumber}
                   </span>
                 )}
                 {matchingCandidates[0].component.purchaseDate && (
                   <span className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3 text-slate-500" />
+                    <Calendar className="w-3.5 h-3.5" />
                     Koupeno: {formatDateCs(matchingCandidates[0].component.purchaseDate)}
                   </span>
                 )}
@@ -145,11 +144,7 @@ export function QuickReplaceModal({
                 return (
                   <label
                     key={c.id}
-                    className={`flex items-start gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
-                      isSelected
-                        ? "bg-navy-50/70 border-navy-500 text-slate-900 font-medium shadow-sm"
-                        : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100/60"
-                    }`}
+                    className="option-card items-start"
                   >
                     <input
                       type="radio"
@@ -164,12 +159,12 @@ export function QuickReplaceModal({
                         <span className="font-bold text-slate-900">
                           {c.manufacturer} {c.model}
                         </span>
-                        <span className="text-[10px] text-slate-500 tabular-nums">
+                        <span className="text-xs text-slate-500 tabular-nums">
                           ID: {c.id.slice(0, 6)}
                         </span>
                       </div>
-                      {c.variant && <p className="text-slate-600 text-[11px]">{c.variant}</p>}
-                      <div className="flex flex-wrap items-center gap-2.5 mt-1 text-[10px] text-slate-500 tabular-nums">
+                      {c.variant && <p className="text-slate-600 text-xs">{c.variant}</p>}
+                      <div className="flex flex-wrap items-center gap-2.5 mt-1 text-xs text-slate-500 tabular-nums">
                         {c.serialNumber && <span>SN: {c.serialNumber}</span>}
                         {c.purchaseDate && <span>Koupeno: {formatDateCs(c.purchaseDate)}</span>}
                         {c.purchasePrice && Number(c.purchasePrice) > 0 && (
@@ -185,9 +180,9 @@ export function QuickReplaceModal({
         </div>
 
         {/* 3. Stav kola při výměně */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 panel panel-neutral">
           <div>
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
+            <span className="section-label block">
               Aktuální nájezd kola
             </span>
             <span className="text-base font-bold text-slate-900 tabular-nums">
@@ -195,7 +190,7 @@ export function QuickReplaceModal({
             </span>
           </div>
           <div>
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">
+            <span className="section-label block">
               Odjeto na kole
             </span>
             <span className="text-base font-bold text-slate-900 tabular-nums">
@@ -205,32 +200,32 @@ export function QuickReplaceModal({
         </div>
 
         {/* 4. Důsledek pro původní komponentu */}
-        <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-xl text-xs space-y-1">
+        <div className="panel panel-neutral text-xs space-y-1">
           <div className="flex items-center gap-1.5 font-semibold text-slate-700">
             <Archive className="w-3.5 h-3.5 text-slate-500" />
             <span>Původní komponenta bude označena jako:</span>
-            <span className="px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 rounded-full font-bold text-[10px]">
+            <span className="chip chip-rose">
               Vyřazeno
             </span>
           </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed pl-5">
+          <p className="text-xs text-slate-500 leading-relaxed pl-5">
             Montáž na tomto kole bude ukončena k aktuálnímu nájezdu kola. Kompletní historie a nájezd původní komponenty zůstanou uchovány v systému.
           </p>
         </div>
 
         {/* Footer buttons */}
-        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+        <ModalFooter>
           <button
             type="button"
             onClick={onClose}
-            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+            className="btn-secondary"
           >
             Zrušit
           </button>
           <button
             type="submit"
             disabled={loading || !selectedReplacementId}
-            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
+            className="btn-primary"
           >
             {loading ? (
               <>
@@ -244,7 +239,7 @@ export function QuickReplaceModal({
               </>
             )}
           </button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );

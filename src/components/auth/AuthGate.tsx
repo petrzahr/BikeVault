@@ -4,7 +4,7 @@ import React, { ReactNode } from "react";
 import { Bike, Loader2, AlertTriangle, Download, LogOut, RefreshCw } from "lucide-react";
 import { useVault } from "@/context/VaultContext";
 import { LoginScreen } from "./LoginScreen";
-import { buttonClass } from "@/lib/ui";
+
 
 interface AuthGateProps {
   children: ReactNode;
@@ -28,7 +28,7 @@ export function AuthGate({ children }: AuthGateProps) {
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
-        <div className="w-16 h-16 rounded-2xl bg-navy-600 text-white shadow-lg shadow-navy-900/20 flex items-center justify-center animate-pulse mb-3.5">
+        <div className="w-16 h-16 rounded-2xl bg-navy-600 text-white shadow-lg flex items-center justify-center animate-pulse motion-reduce:animate-none mb-3.5">
           <Bike className="w-8 h-8" />
         </div>
         <div className="text-slate-900 font-extrabold text-lg tracking-tight">
@@ -51,7 +51,7 @@ export function AuthGate({ children }: AuthGateProps) {
   if (!isInitialSyncDone) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
-        <div className="w-16 h-16 rounded-2xl bg-navy-600 text-white shadow-lg shadow-navy-900/20 flex items-center justify-center animate-pulse mb-3.5">
+        <div className="w-16 h-16 rounded-2xl bg-navy-600 text-white shadow-lg flex items-center justify-center animate-pulse motion-reduce:animate-none mb-3.5">
           <Bike className="w-8 h-8" />
         </div>
         <div className="text-slate-900 font-extrabold text-lg tracking-tight">
@@ -70,8 +70,8 @@ export function AuthGate({ children }: AuthGateProps) {
   if (appState === "loadError") {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
-        <div className="max-w-md w-full bg-white rounded-2xl border border-rose-200 shadow-xl p-6 sm:p-8 text-center">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mb-4 shadow-sm">
+        <div className="card max-w-md w-full p-6 sm:p-8 text-center">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600 mb-4">
             <AlertTriangle className="w-7 h-7" />
           </div>
           <h2 className="text-lg font-bold text-slate-900 mb-2">
@@ -82,11 +82,11 @@ export function AuthGate({ children }: AuthGateProps) {
             <strong>nebyla přepsána</strong>. Zkontrolujte nebo obnovte uložená data.
           </p>
           {loadErrorDetail && (
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-left mb-5">
-              <span className="text-[11px] font-semibold text-slate-700 block mb-1">
+            <div className="panel panel-neutral text-left mb-5">
+              <span className="font-semibold block mb-1">
                 Technický detail:
               </span>
-              <p className="text-[11px] font-mono text-rose-600 break-words line-clamp-4">
+              <p className="font-mono text-rose-700 break-words line-clamp-4">
                 {loadErrorDetail}
               </p>
             </div>
@@ -96,7 +96,7 @@ export function AuthGate({ children }: AuthGateProps) {
               <button
                 type="button"
                 onClick={exportCorruptedFile}
-                className={buttonClass("primary", "md", "w-full")}
+                className="btn-primary w-full"
               >
                 <Download className="w-4 h-4" />
                 <span>Stáhnout původní data pro kontrolu</span>
@@ -105,7 +105,7 @@ export function AuthGate({ children }: AuthGateProps) {
             <button
               type="button"
               onClick={() => logout()}
-              className={buttonClass("secondary", "md", "w-full")}
+              className="btn-secondary w-full"
             >
               <LogOut className="w-4 h-4" />
               <span>Odhlásit se a zkusit znovu</span>
@@ -121,8 +121,8 @@ export function AuthGate({ children }: AuthGateProps) {
   if (appState === "scopeInsufficient") {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
-        <div className="max-w-md w-full bg-white rounded-2xl border border-amber-200 shadow-xl p-6 sm:p-8 text-center">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 mb-4 shadow-sm">
+        <div className="card max-w-md w-full p-6 sm:p-8 text-center">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 mb-4">
             <AlertTriangle className="w-7 h-7" />
           </div>
           <h2 className="text-lg font-bold text-slate-900 mb-2">
@@ -131,11 +131,11 @@ export function AuthGate({ children }: AuthGateProps) {
           <p className="text-xs text-slate-600 leading-relaxed mb-4">
             BikeVault potřebuje znovu povolit přístup ke svým datům na Google Disku.
           </p>
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-left text-[11px] text-slate-600 mb-5 space-y-1">
+          <div className="panel panel-neutral text-left mb-5 space-y-1">
             <p className="font-semibold text-slate-800">Proč je to potřeba?</p>
             <p>
               Aplikace ukládá data přímo na váš osobní Google Disk do souboru{" "}
-              <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono text-[10px]">
+              <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">
                 bikevault_data.json
               </code>
               . Bez tohoto oprávnění nelze data načíst ani bezpečně ukládat.
@@ -146,7 +146,7 @@ export function AuthGate({ children }: AuthGateProps) {
               type="button"
               disabled={syncStatus === "saving"}
               onClick={() => reauthorizeGoogleDrive()}
-              className={buttonClass("primary", "md", "w-full")}
+              className="btn-primary w-full"
             >
               {syncStatus === "saving" ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -158,7 +158,7 @@ export function AuthGate({ children }: AuthGateProps) {
             <button
               type="button"
               onClick={() => logout()}
-              className={buttonClass("secondary", "md", "w-full")}
+              className="btn-secondary w-full"
             >
               <LogOut className="w-4 h-4" />
               <span>Odhlásit se</span>

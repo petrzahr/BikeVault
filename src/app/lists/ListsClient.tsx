@@ -5,7 +5,8 @@ import { Plus, Pencil, Trash2, RotateCcw, ChevronDown, ChevronRight, SlidersHori
 import { useVault } from "@/context/VaultContext";
 import type { ComponentCategory, CustomLists, ListOption } from "@/types/vault";
 import { getCategorySpecFields, makeOptionValue, resolveLists, sortCategoriesAz } from "@/lib/bikeLists";
-import { buttonClass, inputClass } from "@/lib/ui";
+import { PageHeader } from "@/components/common/PageHeader";
+
 
 interface ListRowData {
   id: string;
@@ -13,14 +14,6 @@ interface ListRowData {
   canDelete: boolean;
   deleteHint?: string;
 }
-
-const compactInput =
-  "w-full px-2.5 py-1 bg-white rounded-md border border-slate-200 text-xs text-slate-900 " +
-  "placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-navy-500/30 focus:border-navy-500";
-
-const iconButton =
-  "p-1.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer " +
-  "disabled:opacity-30 disabled:pointer-events-none";
 
 /** Textové pole pro přejmenování / přidání; potvrzení Enterem nebo opuštěním pole, Esc ruší. */
 function InlineInput({
@@ -57,7 +50,7 @@ function InlineInput({
         if (e.key === "Enter") finish(true);
         if (e.key === "Escape") finish(false);
       }}
-      className={compactInput}
+      className="field field-sm"
     />
   );
 }
@@ -80,7 +73,7 @@ function ListRow({
   const canReorder = Boolean(onMoveUp || onMoveDown);
 
   return (
-    <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-slate-50/80 rounded-lg min-h-[36px]">
+    <div className="flex items-center justify-between gap-2 px-3 py-1 bg-slate-50 rounded-lg min-h-9">
       {editing ? (
         <InlineInput
           initial={row.label}
@@ -97,15 +90,15 @@ function ListRow({
         <div className="flex items-center shrink-0">
           {canReorder && (
             <>
-              <button type="button" onClick={onMoveUp} disabled={!onMoveUp} title="Posunout nahoru" aria-label="Posunout nahoru" className={iconButton}>
+              <button type="button" onClick={onMoveUp} disabled={!onMoveUp} title="Posunout nahoru" aria-label="Posunout nahoru" className="btn-icon">
                 <ArrowUp className="w-3.5 h-3.5" />
               </button>
-              <button type="button" onClick={onMoveDown} disabled={!onMoveDown} title="Posunout dolů" aria-label="Posunout dolů" className={iconButton}>
+              <button type="button" onClick={onMoveDown} disabled={!onMoveDown} title="Posunout dolů" aria-label="Posunout dolů" className="btn-icon">
                 <ArrowDown className="w-3.5 h-3.5" />
               </button>
             </>
           )}
-          <button type="button" onClick={() => setEditing(true)} title="Přejmenovat" aria-label="Přejmenovat položku" className={iconButton}>
+          <button type="button" onClick={() => setEditing(true)} title="Přejmenovat" aria-label="Přejmenovat položku" className="btn-icon">
             <Pencil className="w-3.5 h-3.5" />
           </button>
           <button
@@ -114,7 +107,7 @@ function ListRow({
             disabled={!row.canDelete}
             title={row.canDelete ? "Odebrat" : row.deleteHint}
             aria-label={row.canDelete ? "Odebrat položku" : (row.deleteHint || "Nelze odebrat")}
-            className={iconButton}
+            className="btn-icon btn-icon-danger"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
@@ -152,7 +145,7 @@ function ListCard({
   const [renaming, setRenaming] = useState(false);
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 flex flex-col">
+    <div className="card p-4 flex flex-col">
       <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100 min-h-[36px]">
         {renaming && onRenameTitle ? (
           <InlineInput
@@ -168,16 +161,16 @@ function ListCard({
         )}
         {!renaming && (
           <div className="flex items-center shrink-0">
-            <button type="button" onClick={() => setAdding(true)} title="Přidat položku" className={iconButton}>
+            <button type="button" onClick={() => setAdding(true)} title="Přidat položku" className="btn-icon">
               <Plus className="w-3.5 h-3.5" />
             </button>
             {onRenameTitle && (
-              <button type="button" onClick={() => setRenaming(true)} title="Přejmenovat" className={iconButton}>
+              <button type="button" onClick={() => setRenaming(true)} title="Přejmenovat" className="btn-icon">
                 <Pencil className="w-3.5 h-3.5" />
               </button>
             )}
             {onDeleteTitle && (
-              <button type="button" onClick={onDeleteTitle} title="Odebrat" className={iconButton}>
+              <button type="button" onClick={onDeleteTitle} title="Odebrat" className="btn-icon btn-icon-danger">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             )}
@@ -221,7 +214,7 @@ function CategorySpecFieldsPanel({ category }: { category: ComponentCategory }) 
   return (
     <div className="ml-2 pl-3 border-l-2 border-slate-200 space-y-1.5 py-2">
       {fields.length === 0 && !adding && (
-        <p className="text-[11px] text-slate-500 px-1">Kategorie zatím nemá žádná vlastní pole specifikace.</p>
+        <p className="text-xs text-slate-500 px-1">Kategorie zatím nemá žádná vlastní pole specifikace.</p>
       )}
       {fields.map((field, index) => (
         <ListRow
@@ -248,9 +241,9 @@ function CategorySpecFieldsPanel({ category }: { category: ComponentCategory }) 
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="flex items-center gap-1 text-[11px] font-semibold text-navy-600 hover:text-navy-700 px-1 py-1 cursor-pointer"
+          className="btn-text"
         >
-          <Plus className="w-3 h-3" />
+          <Plus className="w-3.5 h-3.5" />
           <span>Přidat vlastní pole</span>
         </button>
       )}
@@ -278,7 +271,7 @@ function ComponentCategoryRow({
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-slate-50/80 rounded-lg min-h-[36px]">
+      <div className="flex items-center justify-between gap-2 px-3 py-1 bg-slate-50 rounded-lg min-h-9">
         {editing ? (
           <InlineInput
             initial={category.nameCs}
@@ -297,7 +290,7 @@ function ComponentCategoryRow({
             {expanded ? <ChevronDown className="w-3.5 h-3.5 shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
             <span className="truncate">{category.nameCs}</span>
             {fieldCount > 0 && (
-              <span className="text-[10px] text-slate-500 font-semibold tabular-nums">({fieldCount})</span>
+              <span className="text-xs text-slate-500 font-semibold tabular-nums">({fieldCount})</span>
             )}
           </button>
         )}
@@ -307,11 +300,11 @@ function ComponentCategoryRow({
               type="button"
               onClick={() => setExpanded((v) => !v)}
               title="Vlastní pole specifikace"
-              className={iconButton}
+              className="btn-icon"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
             </button>
-            <button type="button" onClick={() => setEditing(true)} title="Přejmenovat" className={iconButton}>
+            <button type="button" onClick={() => setEditing(true)} title="Přejmenovat" className="btn-icon">
               <Pencil className="w-3.5 h-3.5" />
             </button>
             <button
@@ -319,7 +312,7 @@ function ComponentCategoryRow({
               onClick={onDelete}
               disabled={!canDelete}
               title={canDelete ? "Odebrat" : deleteHint}
-              className={iconButton}
+              className="btn-icon btn-icon-danger"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -371,24 +364,25 @@ export function ListsClient() {
 
   return (
     <div className="space-y-5 pb-12">
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h2 className="text-lg font-bold text-slate-900">Seznamy</h2>
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+      <PageHeader
+        title="Seznamy"
+        actions={
+          <>
             {data.settings.customLists && (
-              <button type="button" onClick={resetAll} className={buttonClass("secondary", "md")}>
+              <button type="button" onClick={resetAll} className="btn-secondary">
                 <RotateCcw className="w-4 h-4" />
                 <span>Obnovit výchozí</span>
               </button>
             )}
-            <button type="button" onClick={() => setAddingKind(true)} className={buttonClass("primary", "md")}>
+            <button type="button" onClick={() => setAddingKind(true)} className="btn-primary">
               <Plus className="w-4 h-4" />
               <span>Nová kategorie kol</span>
             </button>
-          </div>
-        </div>
+          </>
+        }
+      >
         {addingKind && (
-          <div className="mt-4 max-w-sm">
+          <div className="max-w-sm">
             <InlineInput
               placeholder="Název kategorie kola…"
               onCommit={(label) => {
@@ -399,7 +393,7 @@ export function ListsClient() {
             />
           </div>
         )}
-      </div>
+      </PageHeader>
 
       {/* Kategorie kol s disciplínami */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -434,10 +428,10 @@ export function ListsClient() {
         <ListCard title="Typy pohonu" addPlaceholder="Nový typ pohonu…" {...flatCard("driveTypes", lists.driveTypes)} />
 
         {/* Kategorie komponent — každou lze rozbalit a spravovat jí vlastní pole specifikace */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 flex flex-col">
+        <div className="card p-4 flex flex-col">
           <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100 min-h-[36px]">
             <h3 className="text-sm font-bold text-slate-900 truncate">Kategorie komponent</h3>
-            <button type="button" onClick={() => setAddingCategory(true)} title="Přidat kategorii" className={iconButton}>
+            <button type="button" onClick={() => setAddingCategory(true)} title="Přidat kategorii" className="btn-icon">
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>

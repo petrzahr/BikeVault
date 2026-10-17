@@ -11,9 +11,9 @@ import { t, formatCzk } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import Link from "next/link";
 import { AddComponentModal } from "@/components/garage/AddComponentModal";
-import { Modal } from "@/components/common/Modal";
+import { Modal, ModalFooter } from "@/components/common/Modal";
+import { PageHeader } from "@/components/common/PageHeader";
 import { useFeedback } from "@/components/common/Feedback";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 import { sortCategoriesAz } from "@/lib/bikeLists";
 
 interface ComponentsClientProps {
@@ -75,29 +75,20 @@ export function ComponentsClient({
   return (
     <div className="space-y-5 pb-12">
       {/* Horní akční lišta */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <h2 className="text-lg font-bold text-slate-900">{t("nav.components")}</h2>
-              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold tabular-nums border border-slate-200">
-                {initialComponents.length} celkem
-              </span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className={buttonClass("primary", "md", "self-start sm:self-auto")}
-          >
+      <PageHeader
+        title={t("nav.components")}
+        badge={<span className="chip chip-neutral tabular-nums">{initialComponents.length} celkem</span>}
+        actions={
+          <button onClick={() => setIsAddModalOpen(true)} className="btn-primary">
             <Plus className="w-4 h-4" />
             <span>{t("components.addComponent")}</span>
           </button>
-        </div>
+        }
+      >
 
         {/* Panel filtrů a vyhledávání */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div role="tablist" aria-label="Stav komponent" className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto scroll-smooth scrollbar-none">
+          <div role="tablist" aria-label="Stav komponent" className="segmented flex overflow-x-auto">
             {[
               { id: "ALL", label: t("common.all") },
               { id: "INSTALLED", label: t("components.installed") },
@@ -110,11 +101,7 @@ export function ComponentsClient({
                 role="tab"
                 aria-selected={filterStatus === tab.id}
                 onClick={() => setFilterStatus(tab.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                  filterStatus === tab.id
-                    ? "bg-navy-600 text-white shadow-sm font-bold"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                className="segment"
               >
                 {tab.label}
               </button>
@@ -122,23 +109,23 @@ export function ComponentsClient({
           </div>
 
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-500 absolute left-2.5 top-2" aria-hidden="true" />
+            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("common.search")}
               aria-label="Hledat komponenty"
-              className={cn(inputClass, "pl-8 pr-3")}
+              className="field pl-9 pr-3"
             />
           </div>
         </div>
-      </div>
+      </PageHeader>
 
       {/* Grid komponentů */}
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center shadow-sm">
-          <p className="text-slate-500 text-sm">Nebyly nalezeny žádné odpovídající komponenty.</p>
+        <div className="card empty-state py-12">
+          <p>Nebyly nalezeny žádné odpovídající komponenty.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -149,51 +136,51 @@ export function ComponentsClient({
 
             let statusBadge = {
               text: t("components.inStorage"),
-              style: "bg-slate-100 text-slate-700 border-slate-200/80",
+              style: "chip-neutral",
             };
             if (comp.status === "INSTALLED") {
               statusBadge = {
                 text: activeBike ? `Na kole: ${activeBike.name}` : t("components.installed"),
-                style: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
+                style: "chip-emerald",
               };
             } else if (comp.status === "SOLD") {
               statusBadge = {
                 text: t("components.sold"),
-                style: "bg-purple-50 text-purple-800 border-purple-200/80",
+                style: "chip-navy",
               };
             } else if (comp.status === "DISCARDED") {
               statusBadge = {
                 text: t("components.discarded"),
-                style: "bg-slate-100 text-slate-500 border-slate-200/80",
+                style: "chip-neutral",
               };
             }
 
             return (
               <div
                 key={comp.id}
-                className="bg-white border border-slate-200/80 hover:border-slate-300 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition-all group"
+                className="card p-4 sm:p-5 flex flex-col justify-between space-y-4 hover:border-slate-300 transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[11px] font-semibold text-slate-700 px-2.5 py-0.5 rounded-md bg-slate-100 border border-slate-200">
+                    <span className="chip chip-neutral">
                       {cat?.nameCs || "Komponenta"}
                     </span>
                     {comp.status === "IN_STORAGE" ? (
                       <button
                         onClick={() => openInstall(comp, cat)}
-                        className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold border border-navy-600 bg-navy-600 hover:bg-navy-700 hover:border-navy-700 text-white cursor-pointer transition-colors"
+                        className="btn-primary btn-sm"
                       >
                         Namontovat na kolo
                       </button>
                     ) : (
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${statusBadge.style} truncate max-w-[180px]`}>
+                      <span className={`chip ${statusBadge.style} truncate max-w-[180px]`}>
                         {statusBadge.text}
                       </span>
                     )}
                   </div>
 
                   <Link href={`/components/${comp.id}`} className="block group/title">
-                    <h3 className="text-base font-bold text-slate-900 tracking-tight group-hover/title:text-navy-600 transition-colors">
+                    <h3 className="text-sm font-bold text-slate-900 group-hover/title:text-navy-600 transition-colors">
                       {comp.manufacturer} {comp.model}
                     </h3>
                   </Link>
@@ -215,7 +202,7 @@ export function ComponentsClient({
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setComponentToEdit(comp)}
-                      className="text-slate-500 hover:text-navy-700 font-semibold inline-flex items-center gap-1 cursor-pointer"
+                      className="btn-text"
                       title="Upravit komponentu"
                     >
                       <Pencil className="w-3.5 h-3.5" />
@@ -223,7 +210,7 @@ export function ComponentsClient({
                     </button>
                     <Link
                       href={`/components/${comp.id}`}
-                      className="text-navy-600 hover:text-navy-700 font-semibold inline-flex items-center gap-1"
+                      className="btn-text"
                     >
                       <span>Detail & Servis →</span>
                     </Link>
@@ -252,9 +239,9 @@ export function ComponentsClient({
       >
         <form onSubmit={handleInstall} className="space-y-4">
           <div>
-            <label htmlFor="components-install-bike" className={labelClass}>Kolo</label>
+            <label htmlFor="components-install-bike" className="field-label">Kolo</label>
             {activeBikes.length === 0 ? (
-              <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-200/60 text-xs text-slate-600">
+              <div className="panel panel-neutral">
                 Nemáte žádné aktivní kolo.
               </div>
             ) : (
@@ -263,7 +250,7 @@ export function ComponentsClient({
                 required
                 value={installBikeId}
                 onChange={(e) => setInstallBikeId(e.target.value)}
-                className={inputClass}
+                className="field"
               >
                 <option value="">—</option>
                 {activeBikes.map((b) => (
@@ -276,13 +263,13 @@ export function ComponentsClient({
           </div>
 
           <div>
-            <label htmlFor="components-install-slot" className={labelClass}>Pozice na kole</label>
+            <label htmlFor="components-install-slot" className="field-label">Pozice na kole</label>
             <select
               id="components-install-slot"
               required
               value={installSlot}
               onChange={(e) => setInstallSlot(e.target.value)}
-              className={inputClass}
+              className="field"
             >
               <option value="">—</option>
               {categories.map((c) => (
@@ -293,23 +280,23 @@ export function ComponentsClient({
             </select>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <ModalFooter>
             <button
               type="button"
               onClick={() => setComponentToInstall(null)}
-              className={buttonClass("secondary", "md")}
+              className="btn-secondary"
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={!installBikeId || !installSlot}
-              className={buttonClass("primary", "md")}
+              className="btn-primary"
             >
               <Check className="w-4 h-4" />
               <span>Namontovat na kolo</span>
             </button>
-          </div>
+          </ModalFooter>
         </form>
       </Modal>
     </div>

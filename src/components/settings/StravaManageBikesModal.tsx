@@ -20,7 +20,6 @@ import { compareMileage, compareRideTime } from "@/lib/domain/stravaSync";
 import { formatKm, formatMinutes } from "@/lib/i18n";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { getValidAccessToken } from "@/lib/google/googleAuth";
-import { buttonClass, labelClass, inputClass, cn } from "@/lib/ui";
 
 interface StravaManageBikesModalProps {
   isOpen: boolean;
@@ -207,14 +206,14 @@ export function StravaManageBikesModal({
       <div className="space-y-5">
         {/* Messages */}
         {error && (
-          <div className="p-3.5 bg-rose-50 border border-rose-200/80 rounded-xl text-xs text-rose-700 flex items-start gap-2.5">
-            <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+          <div role="alert" className="panel panel-error flex items-start gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
             <div className="flex-1">{error}</div>
           </div>
         )}
 
         {successMsg && (
-          <div className="p-3.5 bg-emerald-50 border border-emerald-200/80 rounded-xl text-xs text-emerald-700 flex items-start gap-2.5">
+          <div className="panel panel-success flex items-start gap-2.5">
             <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <div className="flex-1">{successMsg}</div>
           </div>
@@ -228,9 +227,9 @@ export function StravaManageBikesModal({
           <button
             onClick={loadStravaBikes}
             disabled={loading}
-            className={buttonClass("secondary", "sm")}
+            className="btn-secondary btn-sm"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-navy-600" : "text-slate-500"}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             <span>Obnovit ze Stravy</span>
           </button>
         </div>
@@ -242,10 +241,10 @@ export function StravaManageBikesModal({
             <p className="text-xs">Načítám kola z vašeho profilu Strava...</p>
           </div>
         ) : stravaBikes.length === 0 ? (
-          <div className="py-10 text-center text-slate-500 bg-slate-50/60 rounded-xl border border-dashed border-slate-200 p-6">
-            <BikeIcon className="w-8 h-8 mx-auto text-slate-500 mb-2" />
-            <p className="text-xs font-semibold text-slate-700">Na vašem účtu Strava nebyla nalezena žádná kola.</p>
-            <p className="text-[11px] text-slate-500 mt-1">Přidejte kolo do nastavení výbavy na Stravě a poté klikněte na Obnovit.</p>
+          <div className="empty-state">
+            <BikeIcon className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+            <p className="text-sm font-bold text-slate-700">Na vašem účtu Strava nebyla nalezena žádná kola.</p>
+            <p>Přidejte kolo do nastavení výbavy na Stravě a poté klikněte na Obnovit.</p>
           </div>
         ) : (
           /* Strava Bikes List */
@@ -258,11 +257,7 @@ export function StravaManageBikesModal({
               return (
                 <div
                   key={sb.id}
-                  className={`p-4 rounded-xl border transition-all ${
-                    isLinked
-                      ? "bg-navy-50/30 border-navy-200/80"
-                      : "bg-white border-slate-200/80 hover:border-slate-300 shadow-sm"
-                  }`}
+                  className={`p-4 rounded-xl border ${isLinked ? "bg-navy-50 border-navy-100" : "bg-white border-slate-200"}`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     {/* Left: Info */}
@@ -270,7 +265,7 @@ export function StravaManageBikesModal({
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-bold text-slate-900">{sb.name}</span>
                         {sb.isPrimary && (
-                          <span className="px-2 py-0.5 text-[10px] font-semibold bg-slate-100 text-slate-600 rounded-full border border-slate-200">
+                          <span className="chip chip-neutral">
                             Výchozí na Stravě
                           </span>
                         )}
@@ -296,11 +291,11 @@ export function StravaManageBikesModal({
 
                       {/* Linked Status */}
                       {isLinked && linkedBike ? (
-                        <div className="pt-1 flex items-center gap-1.5 text-xs text-navy-800 font-medium">
+                        <div className="pt-1 flex items-center gap-1.5 text-xs text-slate-700 font-medium">
                           <Link2 className="w-3.5 h-3.5 text-navy-600 shrink-0" />
                           <span>Propojeno s: </span>
                           <span className="font-bold text-slate-900">{linkedBike.name}</span>
-                          <span className="text-slate-500 text-[11px] tabular-nums">
+                          <span className="text-slate-500 text-xs tabular-nums">
                             (aktuálně {formatKm(linkedBike.currentKm)})
                           </span>
                         </div>
@@ -319,16 +314,17 @@ export function StravaManageBikesModal({
                           <button
                             onClick={() => handleSyncBike(sb)}
                             disabled={isSyncing}
-                            className={buttonClass("secondary", "sm")}
+                            className="btn-secondary btn-sm"
                           >
-                            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin text-navy-600" : "text-slate-500"}`} />
+                            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
                             <span>Synchronizovat</span>
                           </button>
 
                           <button
                             onClick={() => setUnlinkingBike({ bikeId: linkedBike.id, name: linkedBike.name })}
-                            className={buttonClass("secondary", "sm", "hover:bg-rose-50 hover:text-rose-600")}
+                            className="btn-secondary btn-secondary-danger btn-sm"
                             title="Odpojit od Stravy"
+                            aria-label={`Odpojit ${linkedBike.name} od Stravy`}
                           >
                             <Unlink className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">Odpojit</span>
@@ -343,9 +339,9 @@ export function StravaManageBikesModal({
                               setSyncMileageOnLink(true);
                               setError(null);
                             }}
-                            className={buttonClass("secondary", "sm")}
+                            className="btn-secondary btn-sm"
                           >
-                            <Link2 className="w-3.5 h-3.5 text-slate-500" />
+                            <Link2 className="w-3.5 h-3.5" />
                             <span>Propojit s existujícím</span>
                           </button>
 
@@ -354,7 +350,7 @@ export function StravaManageBikesModal({
                               onImportBike(sb);
                               onClose();
                             }}
-                            className={buttonClass("dark", "sm")}
+                            className="btn-primary btn-sm"
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span>Importovat</span>
@@ -371,13 +367,13 @@ export function StravaManageBikesModal({
 
         {/* Modal: Link to Existing Bike */}
         {linkingStravaBike && (
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/90 space-y-3 mt-4 animate-fade-in">
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+          <div className="panel panel-neutral space-y-3 mt-4 animate-fade-in">
+            <h4 className="text-sm font-bold text-slate-900">
               Propojit Strava kolo: {linkingStravaBike.name}
             </h4>
 
             {availableVaultBikes.length === 0 ? (
-              <div className="p-3 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs space-y-2">
+              <div className="panel panel-warning space-y-2">
                 <p>Všechna existující kola v BikeVault jsou již propojena s jinými koly ze Stravy.</p>
                 <p>Můžete toto kolo importovat jako zcela nové kolo do BikeVaultu.</p>
                 <button
@@ -386,7 +382,7 @@ export function StravaManageBikesModal({
                     onImportBike(linkingStravaBike);
                     onClose();
                   }}
-                  className={buttonClass("warning", "md")}
+                  className="btn-secondary"
                 >
                   Importovat jako nové kolo
                 </button>
@@ -394,14 +390,14 @@ export function StravaManageBikesModal({
             ) : (
               <div className="space-y-3 text-xs">
                 <div>
-                  <label htmlFor="strava-vault-bike-select" className={labelClass}>
+                  <label htmlFor="strava-vault-bike-select" className="field-label">
                     Vyberte kolo z BikeVault:
                   </label>
                   <select
                     id="strava-vault-bike-select"
                     value={selectedVaultBikeId}
                     onChange={(e) => setSelectedVaultBikeId(e.target.value)}
-                    className={inputClass}
+                    className="field"
                   >
                     <option value="">—</option>
                     {availableVaultBikes.map((b) => (
@@ -428,7 +424,7 @@ export function StravaManageBikesModal({
                   ].filter(Boolean).join(", ");
 
                   return (
-                    <div className="p-3 rounded-lg bg-white border border-slate-200/80 space-y-2">
+                    <div className="p-3 rounded-xl bg-white border border-slate-200 space-y-2">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">BikeVault ({targetBike.name}):</span>
                         <span className="font-bold text-slate-800 tabular-nums">
@@ -462,7 +458,7 @@ export function StravaManageBikesModal({
                       )}
 
                       {(comparison.type === "LOWER" || timeComparison?.type === "LOWER") && (
-                        <div className="pt-2 border-t border-slate-100 text-[11px] text-amber-700 flex items-start gap-1.5">
+                        <div className="pt-2 border-t border-slate-100 text-xs text-amber-800 flex items-start gap-1.5">
                           <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                           <span>
                             Strava uvádí {comparison.type === "LOWER" && timeComparison?.type === "LOWER" ? "nižší nájezd i méně hodin" : comparison.type === "LOWER" ? "nižší nájezd" : "méně hodin"}. Hodnoty v BikeVault zůstanou zachovány.
@@ -476,13 +472,13 @@ export function StravaManageBikesModal({
                 <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2 pt-2">
                   <button
                     onClick={() => setLinkingStravaBike(null)}
-                    className={cn(buttonClass("secondary", "sm"), "w-full sm:w-auto")}
+                    className="btn-secondary"
                   >
                     Zrušit
                   </button>
                   <button
                     onClick={handleConfirmLink}
-                    className={cn(buttonClass("primary", "md"), "w-full sm:w-auto")}
+                    className="btn-primary"
                   >
                     Propojit se Stravou
                   </button>
@@ -494,8 +490,8 @@ export function StravaManageBikesModal({
 
         {/* Modal: Unlink Confirmation */}
         {unlinkingBike && (
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/90 space-y-3 mt-4 animate-fade-in">
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+          <div className="panel panel-neutral space-y-3 mt-4 animate-fade-in">
+            <h4 className="text-sm font-bold text-slate-900">
               Odpojit kolo od Stravy?
             </h4>
             <p className="text-xs text-slate-600">
@@ -505,13 +501,13 @@ export function StravaManageBikesModal({
             <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setUnlinkingBike(null)}
-                className={cn(buttonClass("secondary", "sm"), "w-full sm:w-auto")}
+                className="btn-secondary"
               >
                 Zrušit
               </button>
               <button
                 onClick={handleConfirmUnlink}
-                className={cn(buttonClass("danger", "sm"), "w-full sm:w-auto")}
+                className="btn-danger"
               >
                 Odpojit od Stravy
               </button>

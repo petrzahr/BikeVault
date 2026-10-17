@@ -27,7 +27,7 @@ import { DeleteBikeModal } from "@/components/garage/DeleteBikeModal";
 import { getValidAccessToken } from "@/lib/google/googleAuth";
 import { resolveBikeImage, formatWeightCs } from "@/lib/domain/bikeImage";
 import { Bike } from "@/types/vault";
-import { buttonClass } from "@/lib/ui";
+
 import { bikeKindLabel, resolveLists } from "@/lib/bikeLists";
 
 interface BikeHeaderProps {
@@ -140,12 +140,12 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
   return (
     <>
-      <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm space-y-4 mb-6">
+      <div className="card p-4 sm:p-5 space-y-4 mb-6">
         {/* Top Back Link & Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <Link
             href="/garage"
-            className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors font-medium"
+            className="btn-text text-slate-600 hover:text-slate-900 self-start"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Zpět do Garáže</span>
@@ -157,35 +157,36 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
               <button
                 onClick={handleSyncWithStrava}
                 disabled={isSyncingStrava}
-                className={buttonClass("secondary", "md")}
+                className="btn-secondary"
                 title="Synchronizovat nájezd se Stravou"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${isSyncingStrava ? "animate-spin text-navy-600" : "text-slate-500"}`} />
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncingStrava ? "animate-spin" : ""}`} />
                 <span>Synchronizovat</span>
               </button>
             )}
 
             <button
               onClick={() => setIsEditModalOpen(true)}
-              className={buttonClass("secondary", "md")}
+              className="btn-secondary"
             >
-              <Pencil className="w-3.5 h-3.5 text-slate-500" />
+              <Pencil className="w-3.5 h-3.5" />
               <span>Upravit kolo</span>
             </button>
 
             <button
               onClick={() => setIsOdometerModalOpen(true)}
-              className={buttonClass("secondary", "md")}
+              className="btn-secondary"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
+              <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>{t("odometer.updateOdometer")}</span>
             </button>
 
 
             <button
               onClick={() => setIsDeleteModalOpen(true)}
-              className={buttonClass("secondary", "md", "text-rose-600 hover:bg-rose-50")}
+              className="btn-secondary btn-secondary-danger"
               title="Smazat kolo"
+              aria-label="Smazat kolo"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Smazat</span>
@@ -196,12 +197,12 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         {/* Strava Notification Banner if any */}
         {stravaSyncNotice && (
           <div
-            className={`p-3 rounded-xl text-xs flex items-start gap-2.5 border shadow-sm animate-fade-in ${
+            className={`panel flex items-start gap-2.5 animate-fade-in ${
               stravaSyncNotice.type === "success"
-                ? "bg-emerald-50/80 border-emerald-200/80 text-emerald-800"
+                ? "panel-success"
                 : stravaSyncNotice.type === "warning"
-                ? "bg-amber-50/80 border-amber-200/80 text-amber-800"
-                : "bg-rose-50/80 border-rose-200/80 text-rose-800"
+                ? "panel-warning"
+                : "panel-error"
             }`}
           >
             {stravaSyncNotice.type === "success" ? (
@@ -214,7 +215,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
               type="button"
               onClick={() => setStravaSyncNotice(null)}
               aria-label="Zavřít upozornění"
-              className="p-1 min-w-[36px] min-h-[36px] flex items-center justify-center text-slate-500 hover:text-slate-700 rounded-lg transition-colors cursor-pointer ml-1"
+              className="btn-icon -my-1.5 -mr-1.5 text-current opacity-70 hover:opacity-100 hover:bg-black/5 hover:text-current"
             >
               <X className="w-4 h-4" />
             </button>
@@ -224,7 +225,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         {/* Bike Title, Image & Metadata */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           {/* Bike Photo Thumbnail / Placeholder */}
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-sm shrink-0 flex items-center justify-center">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center">
             {resolvedImage && !imageFailed ? (
               <img
                 src={resolvedImage}
@@ -243,17 +244,17 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
 
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              <h1 className="text-xl font-bold text-slate-900">
                 {bike.name}
               </h1>
               {bike.stravaGearId && (
-                <span className="px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700 border border-navy-200/80 text-xs font-semibold flex items-center gap-1">
-                  <Link2 className="w-3 h-3 text-navy-600" />
+                <span className="chip chip-navy">
+                  <Link2 className="w-3.5 h-3.5" />
                   <span>Strava propojeno</span>
                 </span>
               )}
-              {bikeKindLabel(lists, bike) && (<span className="px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700 border border-navy-200/80 text-xs font-semibold">{bikeKindLabel(lists, bike)}</span>)}
-              <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-medium">
+              {bikeKindLabel(lists, bike) && (<span className="chip chip-neutral">{bikeKindLabel(lists, bike)}</span>)}
+              <span className={`chip ${bike.status === "ACTIVE" ? "chip-emerald" : "chip-neutral"}`}>
                 {bike.status === "ACTIVE" ? "Aktivní" : bike.status === "SOLD" ? "Prodáno" : "Archivováno"}
               </span>
             </div>
@@ -290,26 +291,23 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
         </div>
 
         {/* Sub-Navigation Tabs */}
-        <div className="pt-2">
-          <div className="flex gap-1.5 p-1 bg-slate-200/60 rounded-xl overflow-x-auto max-w-full sm:max-w-2xl scroll-smooth">
+        <nav aria-label="Sekce kola">
+          <div className="segmented flex overflow-x-auto max-w-full sm:max-w-2xl">
             {tabs.map((tab) => {
               const active = isTabActive(tab.href);
               return (
                 <Link
                   key={tab.href}
                   href={tab.href}
-                  className={`flex-1 flex items-center justify-center px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap rounded-lg transition-all cursor-pointer ${
-                    active
-                      ? "bg-navy-600 text-white shadow-sm font-bold"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
+                  aria-current={active ? "page" : undefined}
+                  className="segment flex-1"
                 >
                   {tab.label}
                 </Link>
               );
             })}
           </div>
-        </div>
+        </nav>
       </div>
 
 

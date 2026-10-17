@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { AlertTriangle } from "lucide-react";
-import { Modal } from "@/components/common/Modal";
-import { buttonClass, cn } from "@/lib/ui";
+import { Modal, ModalFooter } from "@/components/common/Modal";
+import { cn } from "@/lib/ui";
 
 const CONFIRM_WORD = "SMAZAT";
 
@@ -59,11 +59,11 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
         />
       </div>
 
-      <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3">
+      <ModalFooter>
         <button
           type="button"
           onClick={handleClose}
-          className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+          className="btn-secondary"
         >
           Zrušit
         </button>
@@ -71,11 +71,11 @@ export function ClearAllDataModal({ isOpen, onClose, onConfirm, bikesCount, comp
           type="button"
           onClick={handleConfirm}
           disabled={!canConfirm}
-          className={cn(buttonClass("danger", "md"), "w-full sm:w-auto")}
+          className="btn-danger"
         >
           Smazat všechna data
         </button>
-      </div>
+      </ModalFooter>
     </Modal>
   );
 }

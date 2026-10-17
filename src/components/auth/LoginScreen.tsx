@@ -76,7 +76,7 @@ export const LoginScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 sm:p-6 select-none">
       {/* Minimální vstup: kdo jsem, jedna akce, cesta pro ty, kdo přístup nemají */}
-      <div className="max-w-sm w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-7 sm:p-8 space-y-6">
+      <div className="card max-w-sm w-full p-7 sm:p-8 space-y-6">
 
         {/* Logo a hlavička */}
         <div className="text-center space-y-3">
@@ -96,23 +96,21 @@ export const LoginScreen: React.FC = () => {
         {/* Chybové hlášení při selhání přihlášení */}
         {displayError && (
           <div
-            className={`p-3.5 rounded-xl border flex items-start justify-between gap-2.5 text-xs ${
-              isAccessDenied
-                ? "bg-amber-50 border-amber-200 text-amber-800"
-                : "bg-rose-50 border-rose-200 text-rose-700"
+            className={`panel flex items-start justify-between gap-2.5 ${
+              isAccessDenied ? "panel-warning" : "panel-error"
             }`}
           >
             <div className="flex items-start gap-2.5">
               {isAccessDenied ? (
                 <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
               )}
               <div className="space-y-0.5">
                 <span className="font-semibold block">
                   {isAccessDenied ? "Nemáte schválený přístup" : "Přihlášení se nezdařilo"}
                 </span>
-                <p className={isAccessDenied ? "text-amber-700 leading-relaxed" : "text-rose-600 leading-relaxed"}>
+                <p>
                   {isAccessDenied
                     ? "Aplikace BikeVault je momentálně dostupná pouze schváleným testovacím uživatelům. Pošlete žádost o přístup níže."
                     : displayError}
@@ -124,9 +122,10 @@ export const LoginScreen: React.FC = () => {
               type="button"
               onClick={handleResetError}
               title="Zkusit jiný účet"
-              className="p-1 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-white/60 transition-colors shrink-0"
+              aria-label="Zkusit jiný účet"
+              className="btn-icon -m-1.5 text-current hover:bg-white/60 hover:text-current"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -163,13 +162,13 @@ export const LoginScreen: React.FC = () => {
               href={buildGmailComposeUrl()}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-11 md:min-h-8 inline-flex items-center gap-1.5 px-2 rounded-lg font-semibold text-navy-700 hover:bg-navy-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40"
+              className="btn-text"
             >
               <Mail className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
               <span>Požádat o přístup přes Gmail</span>
             </a>
             {copiedEmail ? (
-              <span role="status" className="min-h-11 md:min-h-8 inline-flex items-center gap-1.5 px-2 font-medium text-emerald-600">
+              <span role="status" className="min-h-11 md:min-h-8 inline-flex items-center gap-1.5 px-2 font-semibold text-emerald-700">
                 <Check className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>E-mailová adresa byla zkopírována.</span>
               </span>

@@ -5,9 +5,8 @@ import { Wrench, Check, Loader2, Coins, Bike as BikeIcon, Layers, Calendar, User
 import { t, formatCzk } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
-import { Modal } from "@/components/common/Modal";
+import { Modal, ModalFooter } from "@/components/common/Modal";
 import { Bike, Component, ServiceSchedule } from "@/types/vault";
-import { buttonClass, inputClass, labelClass, cn } from "@/lib/ui";
 
 export interface RecordServiceEventModalProps {
   isOpen: boolean;
@@ -171,14 +170,14 @@ export function RecordServiceEventModal({
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-medium">
+          <div role="alert" className="panel panel-error font-medium">
             {error}
           </div>
         )}
 
         {/* Název úkonu */}
         <div>
-          <label htmlFor="service-event-name" className={labelClass}>
+          <label htmlFor="service-event-name" className="field-label">
             Název servisního úkonu *
           </label>
           <input
@@ -187,7 +186,7 @@ export function RecordServiceEventModal({
             required
             value={serviceName}
             onChange={(e) => setServiceName(e.target.value)}
-            className={inputClass}
+            className="field"
             placeholder="např. Výměna řetězu, Malý servis vidlice, Odvzdušnění brzd..."
           />
         </div>
@@ -195,7 +194,7 @@ export function RecordServiceEventModal({
         {/* Výběr kola (pokud není pevně určeno) */}
         {!fixedBikeId && (
           <div>
-            <label htmlFor="service-event-bike" className={labelClass}>
+            <label htmlFor="service-event-bike" className="field-label">
               <BikeIcon className="w-3.5 h-3.5 text-slate-500" />
               <span>Kolo *</span>
             </label>
@@ -207,7 +206,7 @@ export function RecordServiceEventModal({
                 if (!fixedComponentId) setSelectedComponentId("");
                 setSelectedScheduleId("");
               }}
-              className={inputClass}
+              className="field"
             >
               {bikesList.map((bike) => (
                 <option key={bike.id} value={bike.id}>
@@ -221,7 +220,7 @@ export function RecordServiceEventModal({
         {/* Výběr komponenty (pokud není pevně určena) */}
         {!fixedComponentId && availableComponents.length > 0 && (
           <div>
-            <label htmlFor="service-event-component" className={labelClass}>
+            <label htmlFor="service-event-component" className="field-label">
               <Layers className="w-3.5 h-3.5 text-slate-500" />
               <span>Vztahuje se ke komponentě (volitelné)</span>
             </label>
@@ -232,7 +231,7 @@ export function RecordServiceEventModal({
                 setSelectedComponentId(e.target.value);
                 setSelectedScheduleId("");
               }}
-              className={inputClass}
+              className="field"
             >
               <option value="">-- Pouze celé kolo --</option>
               {availableComponents.map((item) => (
@@ -247,7 +246,7 @@ export function RecordServiceEventModal({
         {/* Propojený servisní plán */}
         {availableSchedules.length > 0 && (
           <div>
-            <label htmlFor="service-event-schedule" className={labelClass}>
+            <label htmlFor="service-event-schedule" className="field-label">
               <Wrench className="w-3.5 h-3.5 text-slate-500" />
               <span>Propojený servisní plán (resetuje interval)</span>
             </label>
@@ -264,7 +263,7 @@ export function RecordServiceEventModal({
                   }
                 }
               }}
-              className={inputClass}
+              className="field"
             >
               <option value="">-- Bez plánu (jednorázový servis) --</option>
               {availableSchedules.map((s) => (
@@ -279,7 +278,7 @@ export function RecordServiceEventModal({
         {/* Datum a typ provedení */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label htmlFor="service-event-date" className={labelClass}>
+            <label htmlFor="service-event-date" className="field-label">
               <Calendar className="w-3.5 h-3.5 text-slate-500" />
               <span>Datum provedení *</span>
             </label>
@@ -289,12 +288,12 @@ export function RecordServiceEventModal({
               required
               value={serviceDate}
               onChange={(e) => setServiceDate(e.target.value)}
-              className={inputClass}
+              className="field"
             />
           </div>
 
           <div>
-            <label htmlFor="service-event-execution" className={labelClass}>
+            <label htmlFor="service-event-execution" className="field-label">
               Provedení
             </label>
             <select
@@ -306,7 +305,7 @@ export function RecordServiceEventModal({
                 if (val === "DIY") setServiceProvider("Svépomocí");
                 else setServiceProvider("");
               }}
-              className={inputClass}
+              className="field"
             >
               <option value="DIY">Svépomocí</option>
               <option value="WORKSHOP">Odborný servis / Dílna</option>
@@ -316,7 +315,7 @@ export function RecordServiceEventModal({
 
         {/* Mechanik / Název servisu */}
         <div>
-          <label htmlFor="service-event-provider" className={labelClass}>
+          <label htmlFor="service-event-provider" className="field-label">
             {executionType === "WORKSHOP" ? (
               <>
                 <Store className="w-3.5 h-3.5 text-slate-500" />
@@ -334,20 +333,20 @@ export function RecordServiceEventModal({
             type="text"
             value={serviceProvider}
             onChange={(e) => setServiceProvider(e.target.value)}
-            className={inputClass}
+            className="field"
             placeholder={executionType === "WORKSHOP" ? "např. Kolofix Praha, Specialized Concept Store..." : "např. Svépomocí, kamarád..."}
           />
         </div>
 
         {/* Náklady na servis */}
-        <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200/80 space-y-3">
+        <div className="panel panel-neutral space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
               <Coins className="w-3.5 h-3.5 text-slate-500" />
               <span>Náklady na servis</span>
             </span>
             {totalCost > 0 && (
-              <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+              <span className="chip bg-white text-slate-900 tabular-nums">
                 Celkem: {formatCzk(totalCost)}
               </span>
             )}
@@ -355,7 +354,7 @@ export function RecordServiceEventModal({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label htmlFor="service-event-parts-cost" className={labelClass}>
+              <label htmlFor="service-event-parts-cost" className="field-label">
                 Cena dílů (Kč)
               </label>
               <input
@@ -364,13 +363,13 @@ export function RecordServiceEventModal({
                 min="0"
                 value={partsCost}
                 onChange={(e) => setPartsCost(e.target.value)}
-                className={cn(inputClass, "tabular-nums")}
+                className="field"
                 placeholder="0"
               />
             </div>
 
             <div>
-              <label htmlFor="service-event-labor-cost" className={labelClass}>
+              <label htmlFor="service-event-labor-cost" className="field-label">
                 Cena práce (Kč)
               </label>
               <input
@@ -379,14 +378,14 @@ export function RecordServiceEventModal({
                 min="0"
                 value={laborCost}
                 onChange={(e) => setLaborCost(e.target.value)}
-                className={cn(inputClass, "tabular-nums")}
+                className="field"
                 placeholder="0"
               />
             </div>
           </div>
 
           {totalCost > 0 && (
-            <p className="text-[11px] text-slate-500">
+            <p className="text-xs text-slate-500">
               Uložením se automaticky vytvoří výdajová transakce v historii financí kola.
             </p>
           )}
@@ -394,7 +393,7 @@ export function RecordServiceEventModal({
 
         {/* Poznámky */}
         <div>
-          <label htmlFor="service-event-notes" className={labelClass}>
+          <label htmlFor="service-event-notes" className="field-label">
             {t("bike.notes")}
           </label>
           <textarea
@@ -402,24 +401,24 @@ export function RecordServiceEventModal({
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className={inputClass}
+            className="field"
             placeholder="Poznámky k postupu servisu, použitým kapalinám či nastavení..."
           />
         </div>
 
         {/* Tlačítka akcí */}
-        <div className="sticky bottom-0 bg-white/95 backdrop-blur-xs py-2.5 -mx-1 px-1 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 sm:gap-3 z-10">
+        <ModalFooter>
           <button
             type="button"
             onClick={onClose}
-            className={cn(buttonClass("secondary", "md"), "w-full sm:w-auto")}
+            className="btn-secondary"
           >
             {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={loading}
-            className={cn(buttonClass("primary", "md"), "w-full sm:w-auto flex items-center justify-center gap-1.5")}
+            className="btn-primary flex items-center justify-center gap-1.5"
           >
             {loading ? (
               <>
@@ -433,7 +432,7 @@ export function RecordServiceEventModal({
               </>
             )}
           </button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );
