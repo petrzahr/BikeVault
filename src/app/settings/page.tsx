@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   SlidersHorizontal,
   Trash2,
+  Upload,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -24,6 +25,9 @@ import { useVault } from "@/context/VaultContext";
 import { StravaManageBikesModal } from "@/components/settings/StravaManageBikesModal";
 import { BikeModal } from "@/components/garage/BikeModal";
 import { ClearAllDataModal } from "@/components/settings/ClearAllDataModal";
+import { RestoreConfirmationModal, type RestoreRequest } from "@/components/settings/RestoreConfirmationModal";
+import { buildRestorePreview, parseBackupForRestore } from "@/lib/storage/backupMerge";
+import { useFeedback } from "@/components/common/Feedback";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { PublicStravaStatus } from "@/lib/strava/stravaTokenStore";
 import { getValidAccessToken, loginToGoogle } from "@/lib/google/googleAuth";
@@ -175,12 +179,39 @@ export default function SettingsPage() {
     reauthorizeGoogleDrive,
     syncNow,
     exportBackup,
+    restoreBackup,
     syncBikeFromStrava,
     clearAllData,
   } = useVault();
   const disconnectDrive = useDisconnectDrive();
   const syncState = getSyncDisplayState(syncStatus, appState);
   const [isClearAllOpen, setIsClearAllOpen] = useState(false);
+  const { toast } = useFeedback();
+  const restoreInputRef = useRef<HTMLInputElement>(null);
+  const [restoreRequest, setRestoreRequest] = useState<RestoreRequest | null>(null);
+  const canRestore = appState === "ready";
+
+  const handleRestoreFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    // Reset so picking the same file again still fires onChange
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const content = await file.text();
+      const backup = parseBackupForRestore(content);
+      setRestoreRequest({ fileName: file.name, content, preview: buildRestorePreview(backup, data) });
+    } catch (err) {
+      toast("Soubor nelze použít jako zálohu: " + (err instanceof Error ? err.message : String(err)), "error");
+    }
+  };
+
+  const handleRestoreConfirm = (content: string) => {
+    setRestoreRequest(null);
+    if (restoreBackup(content)) {
+      toast("Data ze zálohy byla obnovena.", "success");
+    }
+  };
+
   const currentUserId = user?.emailAddress || "default_user";
 
   // Strava status
@@ -674,23 +705,51 @@ export default function SettingsPage() {
             id="nastaveni-zaloha"
             icon={Download}
             title="Záloha do souboru"
-            description="Stáhněte si kopii všech dat do vlastního počítače"
+            description="Stáhněte si kopii všech dat do vlastního počítače nebo z ní data obnovte"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Stáhnout zálohu (JSON)</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Kola, komponenty, servisní historie, finance i nastavení v jednom souboru.
-                </p>
+            <div className="divide-y divide-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Stáhnout zálohu (JSON)</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Kola, komponenty, servisní historie, finance i nastavení v jednom souboru.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={exportBackup}
+                  className="btn-secondary shrink-0 self-start sm:self-center"
+                >
+                  <Download className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Stáhnout zálohu</span>
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={exportBackup}
-                className="btn-secondary shrink-0 self-start sm:self-center"
-              >
-                <Download className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Stáhnout zálohu</span>
-              </button>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Obnovit ze zálohy</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {canRestore
+                      ? "Doplní záznamy ze souboru, které v aplikaci chybí. Nic nesmaže ani nepřepíše."
+                      : "Obnova bude dostupná po načtení dat z Google Disku."}
+                  </p>
+                </div>
+                <input
+                  ref={restoreInputRef}
+                  type="file"
+                  accept=".json,application/json"
+                  className="hidden"
+                  onChange={handleRestoreFile}
+                />
+                <button
+                  type="button"
+                  onClick={() => restoreInputRef.current?.click()}
+                  disabled={!canRestore}
+                  className="btn-secondary shrink-0 self-start sm:self-center"
+                >
+                  <Upload className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Vybrat soubor</span>
+                </button>
+              </div>
             </div>
           </SettingsSection>
 
@@ -746,6 +805,13 @@ export default function SettingsPage() {
         onConfirm={clearAllData}
         bikesCount={data.bikes.length}
         componentsCount={data.components.length}
+      />
+
+      <RestoreConfirmationModal
+        request={restoreRequest}
+        onClose={() => setRestoreRequest(null)}
+        onConfirm={handleRestoreConfirm}
+        onDownloadCurrent={exportBackup}
       />
 
       {/* Manage Strava Bikes Modal */}

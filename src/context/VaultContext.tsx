@@ -40,12 +40,12 @@ import {
   loadStoredCacheResult,
   saveStoredCache,
   clearStoredCache,
-  validateAndParseBackup,
   exportCorruptedRawData,
   getInitialData,
   setActiveStorageKey,
   STORAGE_KEY_DEMO,
 } from "@/lib/storage/storageService";
+import { mergeBackupData, parseBackupForRestore } from "@/lib/storage/backupMerge";
 import { useFeedback } from "@/components/common/Feedback";
 import { isDevAuthBypassEnabled, DEV_BYPASS_USER } from "@/lib/devAuthBypass";
 import { recordOdometerSnapshot, calculateInstallationUsage } from "@/lib/domain/odometer";
@@ -107,7 +107,8 @@ interface VaultContextType {
   reauthorizeGoogleDrive: () => Promise<void>;
   syncNow: () => Promise<void>;
   exportBackup: () => void;
-  importBackup: (jsonContent: string) => Promise<boolean>;
+  /** Add-only merge of a backup file into current data; saved to Drive by the regular autosave. */
+  restoreBackup: (jsonContent: string) => boolean;
   exportCorruptedFile: () => void;
 
   // Bike actions
@@ -558,22 +559,18 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const importBackup = async (jsonContent: string): Promise<boolean> => {
+  const restoreBackup = (jsonContent: string): boolean => {
+    // DATA SAFETY: merge only into data loaded from Drive; the autosave write guards then persist it
+    if (appState !== "ready") {
+      toast("Obnovu ze zálohy lze spustit až po načtení dat z Google Disku.", "error");
+      return false;
+    }
     try {
-      const importedData = validateAndParseBackup(jsonContent);
-      setData(importedData);
-      saveStoredCache(importedData);
-
-      // Trigger sync if online and appState is ready
-      const auth = getStoredAuth();
-      if (auth && isStoredTokenValid() && appState === "ready") {
-        await uploadVaultData(auth.accessToken, importedData, driveFileId || undefined);
-        setLastSyncedAt(new Date());
-        setSyncStatus("synced");
-      }
+      const backup = parseBackupForRestore(jsonContent);
+      mutateData((prev) => mergeBackupData(prev, backup));
       return true;
     } catch (e) {
-      toast("Chyba při importu zálohy: " + (e instanceof Error ? e.message : String(e)), "error");
+      toast("Chyba při obnově ze zálohy: " + (e instanceof Error ? e.message : String(e)), "error");
       return false;
     }
   };
@@ -1793,7 +1790,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     reauthorizeGoogleDrive,
     syncNow,
     exportBackup,
-    importBackup,
+    restoreBackup,
     exportCorruptedFile,
     addBike,
     updateBike,
