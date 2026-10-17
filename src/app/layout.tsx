@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
@@ -17,6 +17,22 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "BikeVault - Vaše kola pod absolutní kontrolou",
   description: "Digitální servisní kniha, virtuální garáž, správa komponentů a sledování nákladů na vlastnictví jízdních kol s ukládáním na Google Drive.",
+  applicationName: "BikeVault",
+  appleWebApp: {
+    capable: true,
+    title: "BikeVault",
+    // Opaque bar: the light login screens would otherwise sit under white status-bar text
+    statusBarStyle: "black",
+  },
+  formatDetection: { telephone: false },
+};
+
+// viewport-fit=cover lets the dark shell run under the notch; safe-area insets are handled in the shell components
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0f1113",
 };
 
 export default function RootLayout({
