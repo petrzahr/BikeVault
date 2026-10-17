@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useVault } from "@/context/VaultContext";
-import { useFeedback } from "@/components/common/Feedback";
+import { useDisconnectDrive } from "@/components/common/useDisconnectDrive";
 import {
   RefreshCw,
   LogOut
@@ -31,11 +31,10 @@ export const Header: React.FC<HeaderProps> = ({
     lastSyncedAt,
     isAuthenticated,
     login,
-    logout,
     reauthorizeGoogleDrive,
     syncNow,
   } = useVault();
-  const { confirm } = useFeedback();
+  const disconnectDrive = useDisconnectDrive();
 
   const isDriveConnected = isAuthenticated;
   const connectGoogleDrive = login;
@@ -208,29 +207,9 @@ export const Header: React.FC<HeaderProps> = ({
 
                     <button
                       type="button"
-                      onClick={async () => {
+                      onClick={() => {
                         setMenuOpen(false);
-                        const ok = await confirm({
-                          title: "Odpojit Google Disk?",
-                          message:
-                            syncStatus === "synced"
-                              ? "Aplikace se odhlásí a vrátí na přihlašovací obrazovku. Vaše data zůstávají na Google Disku a po novém přihlášení se znovu načtou."
-                              : "Některé změny ještě nemusí být uložené na Google Disku. Doporučujeme nejdřív počkat na dokončení synchronizace. Aplikace se odhlásí a vrátí na přihlašovací obrazovku.",
-                          confirmText: "Odpojit a odhlásit",
-                          isDestructive: true,
-                        });
-                        if (!ok) return;
-                        const result = await logout();
-                        if (result.ok) return;
-                        const force = await confirm({
-                          title: "Uložení na Google Disk selhalo",
-                          message: `Poslední změny se nepodařilo uložit na Google Disk (${result.error}). Pokud se odhlásíte, tyto změny budou ztraceny.`,
-                          confirmText: "Odhlásit i tak",
-                          isDestructive: true,
-                        });
-                        if (force) {
-                          await logout({ force: true });
-                        }
+                        void disconnectDrive();
                       }}
                       className="btn-secondary btn-secondary-danger w-full"
                     >
