@@ -13,7 +13,7 @@ No own database: primary data lives in a file on the user's Google Drive. Only S
 - Dev: `npm run dev`
 - Build / regression check: `npm run build`. Must pass before every commit.
 - Tests: `npm test` (custom tsx scripts in `tests/`, no test framework). Must pass before every commit.
-- Lint: `next lint` has no ESLint config yet - don't run it or set it up without asking.
+- Lint: no linter is configured. Don't add ESLint or another linter without asking.
 
 ## Integrations (plain fetch, no SDKs)
 - Strava API: OAuth with server-side callback `src/app/api/strava/callback`, code in `src/lib/strava/`.
