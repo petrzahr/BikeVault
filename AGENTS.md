@@ -10,7 +10,6 @@ No own database: primary data lives in a file on the user's Google Drive. Only S
 - Server-side token store: Upstash Redis (Vercel KV) via REST - `stravaTokenStore.ts`
 
 ## Commands
-- Installed packages and scripts: check `package.json` only (don't scan node_modules).
 - Dev: `npm run dev`
 - Build / regression check: `npm run build`. Must pass before every commit.
 - Tests: `npm test` (custom tsx scripts in `tests/`, no test framework). Must pass before every commit.
