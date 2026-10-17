@@ -61,15 +61,15 @@
   .btn-shell:disabled {
     @apply opacity-40 cursor-not-allowed hover:bg-transparent;
   }
-  /* Header status controls (Strava, Google Drive): kept in their original rounded look on purpose,
-     they are integration badges, not part of the drawing-sheet controls */
+  /* Header status controls (Strava, Google Drive): compact shell outline with square corners; a connected
+     Strava fills itself with signal amber (StravaStatusBadge), errors tint rose (Header) */
   .btn-header {
-    @apply inline-flex items-center justify-center gap-1.5 min-h-7 max-md:min-h-11 px-3 py-1 rounded-[12px] text-xs font-bold whitespace-nowrap transition-colors cursor-pointer;
-    @apply bg-white/5 hover:bg-white/10 text-white border border-white/15;
+    @apply inline-flex items-center justify-center gap-1.5 min-h-7 max-md:min-h-11 px-3 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-colors cursor-pointer;
+    @apply bg-transparent hover:bg-white/10 text-white border border-white/20;
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
   }
   .btn-header:disabled {
-    @apply opacity-40 cursor-not-allowed hover:bg-white/5;
+    @apply opacity-40 cursor-not-allowed hover:bg-transparent;
   }
   /* Smaller size for dense rows and card toolbars; keeps the 44px touch target on mobile */
   .btn-sm {

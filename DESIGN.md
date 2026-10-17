@@ -18,7 +18,6 @@ colors:
   danger-rose: "#e11d48"
   done-emerald: "#047857"
   due-steel: "#2b5ea7"
-  strava: "#fc4c02"
 typography:
   readout:
     fontFamily: "JetBrains Mono, ui-monospace, monospace"
@@ -60,7 +59,6 @@ rounded:
   lg: "3px"
   xl: "3px"
   2xl: "4px"
-  header-badge: "12px"
   full: "9999px"
 spacing:
   xs: "4px"
@@ -142,7 +140,7 @@ Jedna neutrální škála (`slate`, chladně neutrální, přepsaná v `tailwind
 - **Rám** (`slate-900` / `slate-800`): hlavička, postranní panel a spodní lišta, text bílý a `white/70`.
 
 ### Named Rules
-**The Closed Palette Rule.** V komponentách se používají jen rodiny `slate`, `signal`, `rose`, `emerald`, `steel` a `white`. Žádné `gray`, `red`, `amber`, `navy`, `sky`… Hex barva v komponentě je chyba, s výjimkou log (Google, Strava #FC4C02). Tailwind na neexistující třídu neupozorní, proto se kontroluje grepem.
+**The Closed Palette Rule.** V komponentách se používají jen rodiny `slate`, `signal`, `rose`, `emerald`, `steel` a `white`. Žádné `gray`, `red`, `amber`, `navy`, `sky`… Hex barva v komponentě je chyba, s výjimkou log: barevné „G“ Google a oficiální wordmark Strava (`StravaLogo`, jen v Nastavení). Ikona Stravy v hlavičce se barví z palety. Tailwind na neexistující třídu neupozorní, proto se kontroluje grepem.
 
 **The Meaning-Only Rule.** Barva vždy znamená akci nebo stav. Kategorie a typy (např. DIY vs. servis, Strava vs. ruční zápis) se odlišují textem a neutrálním nebo `chip-signal` štítkem, ne další barvou.
 
@@ -176,7 +174,7 @@ Hloubka je lineární, ne stínová: bílé pláty na světlém plátně s vlaso
 
 ## Shapes
 
-Ostré hrany technického výkresu. Celá škála zaoblení je přepsaná v `tailwind.config.ts`, takže existující utility ji následují: `rounded-2xl` = 4px (karty, dialogy, nabídky), `rounded-xl` / `rounded-lg` = 3px (tlačítka, pole, panely, segment), `rounded-md` / `rounded-sm` = 2px (štítky, volba segmentu). Plně kulaté zůstávají jen avatary, tečky a odznaky. Jediná výjimka: stavové prvky integrací v hlavičce (`btn-header`, 12px). Žádné barevné levé pruhy.
+Ostré hrany technického výkresu. Celá škála zaoblení je přepsaná v `tailwind.config.ts`, takže existující utility ji následují: `rounded-2xl` = 4px (karty, dialogy, nabídky), `rounded-xl` / `rounded-lg` = 3px (tlačítka, pole, panely, segment), `rounded-md` / `rounded-sm` = 2px (štítky, volba segmentu). Plně kulaté zůstávají jen avatary, tečky a odznaky. Žádné barevné levé pruhy.
 
 ## Components
 
@@ -188,7 +186,7 @@ Každý opakovaný prvek má jeden recept jako třídu v `src/app/globals.css` (
 - **Secondary (`btn-secondary`):** bílý povrch s linkou `slate-300`, text `slate-700`, hover obtáhne linku i text grafitem. Zrušit, Upravit, Export, akce na kartách, „Detail kola“.
 - **Secondary danger (`btn-secondary btn-secondary-danger`):** vstup do mazání nebo odpojení; červené až při najetí.
 - **Shell (`btn-shell`):** vedlejší akce na tmavém rámu (Přidat komponentu, řazení kol): průhledné s linkou `white/20`.
-- **Header (`btn-header`):** stavové prvky Strava a Google Disk v hlavičce. Mají záměrně původní vzhled (12px zaoblení, `white/5`, linka `white/15`); připojená Strava má svou značkovou oranžovou. Nepoužívá se jinde.
+- **Header (`btn-header`):** stavové prvky Strava a Google Disk v hlavičce: kompaktní obrys rámu (3px, linka `white/20`), výška 28px, na mobilu 44px. Připojená Strava je vyplněná signálovým jantarem s grafitovým textem, nepřipojená má jantarovou ikonu. Disk nese barevné logo Google a stavovou ikonu, chyba tónuje prvek růžově. Nepoužívá se jinde.
 - **Text (`btn-text`, `btn-text-danger`):** nejtišší úroveň, vypadá jako odkaz (`signal-700`).
 - **Icon (`btn-icon`, `btn-icon-danger`):** ikona 16px bez rámečku, při najetí obtažená linkou; 32px plocha, na mobilu 44px; vždy `aria-label`.
 - **Size (`btn-sm`):** menší výška 28px pro husté řádky; na mobilu zůstává 44px.

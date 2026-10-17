@@ -53,11 +53,11 @@ export const StravaStatusBadge: React.FC = () => {
       }
       className={cn(
         "btn-header",
-        // Strava brand orange is the one allowed hex outside the palette (logo exception)
-        connected && "bg-[#FC4C02] hover:bg-[#e34402] border-[#FC4C02]"
+        // Connected = filled in the app's signal amber with graphite text (same pairing as btn-primary)
+        connected && "bg-signal-500 hover:bg-signal-400 border-signal-600 text-slate-900"
       )}
     >
-      <StravaIcon className={cn("w-3.5 h-3.5 shrink-0", !connected && "text-[#FC4C02]")} />
+      <StravaIcon className={cn("w-3.5 h-3.5 shrink-0", !connected && "text-signal-400")} />
       <span className="hidden sm:inline">
         {state === "loading" ? "Strava" : connected ? "Strava připojena" : "Připojit Stravu"}
       </span>
