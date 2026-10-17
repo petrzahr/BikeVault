@@ -242,8 +242,17 @@ export const Header: React.FC<HeaderProps> = ({
                           confirmText: "Odpojit a odhlásit",
                           isDestructive: true,
                         });
-                        if (ok) {
-                          logout();
+                        if (!ok) return;
+                        const result = await logout();
+                        if (result.ok) return;
+                        const force = await confirm({
+                          title: "Uložení na Google Disk selhalo",
+                          message: `Poslední změny se nepodařilo uložit na Google Disk (${result.error}). Pokud se odhlásíte, tyto změny budou ztraceny.`,
+                          confirmText: "Odhlásit i tak",
+                          isDestructive: true,
+                        });
+                        if (force) {
+                          await logout({ force: true });
                         }
                       }}
                       className={buttonClass("secondary", "md", "w-full hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200")}

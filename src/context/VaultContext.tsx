@@ -59,6 +59,7 @@ import {
 import { evaluateServiceSchedule, MaintenanceStatusResult } from "@/lib/domain/maintenance";
 import { areComponentsEquivalentReplacement, findStorageReplacements } from "@/lib/domain/replacement";
 import { getCategorySpecFields, makeSpecFieldKey } from "@/lib/bikeLists";
+import { createAutosaveQueue, AutosaveQueue } from "@/lib/sync/autosaveQueue";
 
 export type SyncStatus = "synced" | "saving" | "offline" | "error";
 export type AppState =
@@ -68,6 +69,14 @@ export type AppState =
   | "loadError"
   | "syncError"
   | "scopeInsufficient";
+
+export type LogoutResult = { ok: true } | { ok: false; error: string };
+
+interface AutosaveJob {
+  token: string;
+  data: BikeVaultData;
+  fileId?: string;
+}
 
 export interface EvaluatedServiceSchedule {
   schedule: ServiceSchedule;
@@ -91,7 +100,7 @@ interface VaultContextType {
 
   // Auth & Sync
   login: () => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (opts?: { force?: boolean }) => Promise<LogoutResult>;
   reauthorizeGoogleDrive: () => Promise<void>;
   syncNow: () => Promise<void>;
   exportBackup: () => void;
@@ -231,7 +240,27 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const [driveFileId, setDriveFileId] = useState<string | null>(null);
 
   const isInitialMount = useRef(true);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autosaveQueueRef = useRef<AutosaveQueue<AutosaveJob> | null>(null);
+  if (!autosaveQueueRef.current) {
+    autosaveQueueRef.current = createAutosaveQueue<AutosaveJob>({
+      delayMs: 1500,
+      run: async (job) => {
+        const fileInfo = await uploadVaultData(job.token, job.data, job.fileId);
+        if (fileInfo.id) {
+          setDriveFileId(fileInfo.id);
+        }
+        setLastSyncedAt(new Date());
+        setSyncStatus("synced");
+        setSyncError(null);
+      },
+      onError: (err) => {
+        console.error("Auto-save error to Drive:", err);
+        setSyncStatus("error");
+        setSyncError(err instanceof Error ? err.message : String(err));
+      },
+    });
+  }
+  const autosaveQueue = autosaveQueueRef.current;
 
   // Helper to sync with authoritative Google Drive
   const syncWithGoogleDrive = useCallback(async (token: string) => {
@@ -377,35 +406,12 @@ export function VaultProvider({ children }: { children: ReactNode }) {
 
     setSyncStatus("saving");
 
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    debounceTimerRef.current = setTimeout(async () => {
-      // Re-verify appState is still ready before network write
-      if (appState !== "ready") return;
-
-      try {
-        const fileInfo = await uploadVaultData(auth.accessToken, data, driveFileId || undefined);
-        if (fileInfo.id) {
-          setDriveFileId(fileInfo.id);
-        }
-        setLastSyncedAt(new Date());
-        setSyncStatus("synced");
-        setSyncError(null);
-      } catch (err: unknown) {
-        console.error("Auto-save error to Drive:", err);
-        setSyncStatus("error");
-        setSyncError(err instanceof Error ? err.message : String(err));
-      }
-    }, 1500);
+    autosaveQueue.schedule({ token: auth.accessToken, data, fileId: driveFileId || undefined });
 
     return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
+      autosaveQueue.cancel();
     };
-  }, [data, driveFileId, isAuthenticated, isInitialSyncDone, appState]);
+  }, [autosaveQueue, data, driveFileId, isAuthenticated, isInitialSyncDone, appState]);
 
   // Update helper with automatic updatedAt timestamp
   const mutateData = useCallback((fn: (prev: BikeVaultData) => BikeVaultData) => {
@@ -439,24 +445,35 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = async () => {
-    // 1. Immediately invalidate ready state & cancel any pending autosave
-    setAppState("authLoading");
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-      debounceTimerRef.current = null;
+  const logout = async (opts?: { force?: boolean }): Promise<LogoutResult> => {
+    // 1. DATA SAFETY: push any debounced/in-flight autosave to Drive before revoking the token.
+    //    The local cache is cleared below, so an unsaved change would be lost for good.
+    if (!opts?.force) {
+      const flushed = await autosaveQueue.flush();
+      if (!flushed.ok) {
+        const error = flushed.error instanceof Error ? flushed.error.message : String(flushed.error);
+        return { ok: false, error };
+      }
+      // Nothing pending, but the last write never reached Drive (failed upload or expired token)
+      if (!flushed.flushed && appState === "ready" && (syncStatus === "error" || syncStatus === "offline")) {
+        return { ok: false, error: syncError ?? "Poslední změny nejsou uložené na Google Disku." };
+      }
     }
-    // 2. Terminate Google Auth
+    // 2. Invalidate ready state & drop anything still queued (forced logout)
+    setAppState("authLoading");
+    autosaveQueue.cancel();
+    // 3. Terminate Google Auth
     await logoutFromGoogle();
     setUser(null);
     setDriveFileId(null);
     setIsAuthenticated(false);
     setIsInitialSyncDone(true);
     setSyncStatus("offline");
-    // 3. Clear in-memory state to clean empty data (never persisted to cloud)
+    // 4. Clear in-memory state to clean empty data (never persisted to cloud)
     setData(createEmptyVaultData());
-    // 4. Clear local cache
+    // 5. Clear local cache
     clearStoredCache();
+    return { ok: true };
   };
 
   const reauthorizeGoogleDrive = async () => {
