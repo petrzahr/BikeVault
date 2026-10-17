@@ -207,6 +207,10 @@ Každý opakovaný prvek má jeden recept jako třídu v `src/app/globals.css` (
 ### Page header
 - **`PageHeader`** (`src/components/common/PageHeader.tsx`): karta s `<h1>` (20px), volitelným štítkem (`chip`), akcemi vpravo a řádkem pod nadpisem (`children`: záložky, filtry). Používají ji všechny seznamové obrazovky; detail kola a komponenty mají vlastní hlavičku se stejným `<h1>`. Titulek v tmavé hlavičce aplikace není nadpis (`<p>`) a je to vždy popisek aktivní položky navigace (`navItems.ts`); slogan „Vaše kola pod absolutní kontrolou“ patří jen pod logo v postranním panelu.
 
+### Settings sections
+- **`SettingsSection`** (`src/app/settings/page.tsx`): Nastavení je jedna posouvaná stránka bez `PageHeader` (`<h1>` je `sr-only`, název nese hlavička aplikace). Každá sekce je `card` se záhlavím: ikona 20px v dlaždici `slate-100`/`slate-500` (jen Mazání dat má `rose-50`/`rose-600`), `<h2>` 16px, popis 12px `slate-500`, akce vpravo, linka `slate-100` pod záhlavím. Řádek uvnitř: text vlevo (`<h3>` 14px bold + popis), tlačítko vpravo; na telefonu pod sebou.
+- **Obsah stránky** (`SettingsOutline`): od 1280px (xl) přilepený sloupec 13rem vpravo, `section-label` „Na této stránce“, aktivní sekce `navy-50`/`navy-700` (`aria-current="location"`).
+
 ### Mobile navigation
 - **`MobileNav`** (`src/components/layout/MobileNav.tsx`): jen pod 768px, pevná spodní lišta v barvě rámu (`slate-900`, linka `white/10`). Pět stejných buněk ≥ 56px: Garáž, Komponenty, Servis, Finance a „Více“ (otevře zásuvku se Statistikami, Seznamy, Nastavením a rychlými akcemi). Ikona 20px v 48×28px poli, popisek 12px; aktivní má navy pole a bílý text, ostatní `white/60`. „Servis“ nese růžový odznak s počtem plánů po termínu. Položky a pravidlo aktivní sekce jsou sdílené se sidebarem (`navItems.ts`). Toasty na mobilu sedí nad lištou.
 

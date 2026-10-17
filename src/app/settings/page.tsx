@@ -1,49 +1,185 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { 
-  Settings, 
-  Globe, 
-  DollarSign, 
-  Gauge, 
-  Shield, 
-  Database, 
-  Layers, 
-  RefreshCw, 
-  ExternalLink, 
-  Unlink, 
-  Check, 
-  AlertTriangle, 
-  Loader2, 
-  Bike as BikeIcon, 
+import {
+  Activity,
+  Cloud,
+  Download,
+  Ruler,
+  RefreshCw,
+  ExternalLink,
+  Unlink,
+  LogOut,
+  AlertTriangle,
+  Loader2,
   CheckCircle2,
   SlidersHorizontal,
   Trash2,
-  X
+  X,
+  type LucideIcon,
 } from "lucide-react";
-import { t, formatDateCs } from "@/lib/i18n";
+import { formatDateCs } from "@/lib/i18n";
 import { useVault } from "@/context/VaultContext";
 import { StravaManageBikesModal } from "@/components/settings/StravaManageBikesModal";
 import { BikeModal } from "@/components/garage/BikeModal";
 import { ClearAllDataModal } from "@/components/settings/ClearAllDataModal";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
-import { StravaLogo } from "@/components/common/StravaIcon";
 import { PublicStravaStatus } from "@/lib/strava/stravaTokenStore";
 import { getValidAccessToken, loginToGoogle } from "@/lib/google/googleAuth";
 import { Bike } from "@/types/vault";
 import { Modal, ModalFooter } from "@/components/common/Modal";
-import { PageHeader } from "@/components/common/PageHeader";
+import { GoogleIcon } from "@/components/common/GoogleIcon";
+import { SyncStatusLabel } from "@/components/common/SyncStatusIndicator";
+import { useDisconnectDrive } from "@/components/common/useDisconnectDrive";
+import { getSyncDisplayState } from "@/lib/syncStatus";
+import { cn } from "@/lib/ui";
 
 
 export const dynamic = "force-dynamic";
 
+// Outline entries match the section headings
+const SETTINGS_SECTIONS = [
+  { id: "nastaveni-strava", label: "Propojení se Stravou" },
+  { id: "nastaveni-disk", label: "Synchronizace s Google Diskem" },
+  { id: "nastaveni-zaloha", label: "Záloha do souboru" },
+  { id: "nastaveni-jednotky", label: "Jednotky a formáty" },
+  { id: "nastaveni-data", label: "Mazání dat" },
+] as const;
+
+type SettingsSectionId = (typeof SETTINGS_SECTIONS)[number]["id"];
+
+const UNIT_ROWS = [
+  { label: "Jazyk rozhraní", value: "Čeština" },
+  { label: "Měna", value: "CZK (Kč), celé koruny" },
+  { label: "Tlak v pláštích", value: "bar" },
+  { label: "Tlak odpružení", value: "psi" },
+  { label: "Verze aplikace", value: "1.1.0" },
+];
+
+interface SettingsSectionProps {
+  id: SettingsSectionId;
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  /** Only data deletion carries meaning; every other section icon stays neutral */
+  danger?: boolean;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+}
+
+const SettingsSection: React.FC<SettingsSectionProps> = ({ id, icon: Icon, title, description, danger, actions, children }) => (
+  <section id={id} tabIndex={-1} aria-labelledby={`${id}-title`} className="card p-4 sm:p-5 space-y-4 scroll-mt-6 focus:outline-none">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+      <div className="flex items-center gap-3 min-w-0">
+        <div className={cn("p-2 rounded-xl shrink-0", danger ? "bg-rose-50 text-rose-600" : "bg-slate-100 text-slate-500")}>
+          <Icon className="w-5 h-5" aria-hidden="true" />
+        </div>
+        <div className="min-w-0">
+          <h2 id={`${id}-title`} className="text-base font-bold text-slate-900">{title}</h2>
+          <p className="text-xs text-slate-500">{description}</p>
+        </div>
+      </div>
+      {actions && <div className="flex items-center gap-2 flex-wrap shrink-0">{actions}</div>}
+    </div>
+    {children}
+  </section>
+);
+
+// Nearest scrolling ancestor: the app content scrolls, not the window
+function getScrollParent(el: HTMLElement | null): HTMLElement | null {
+  let node = el?.parentElement ?? null;
+  while (node) {
+    const { overflowY } = getComputedStyle(node);
+    if (overflowY === "auto" || overflowY === "scroll") return node;
+    node = node.parentElement;
+  }
+  return null;
+}
+
+const scrollToSection = (id: SettingsSectionId) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  el.focus({ preventScroll: true });
+};
+
+const SettingsOutline: React.FC<{ contentRef: React.RefObject<HTMLDivElement | null> }> = ({ contentRef }) => {
+  const [activeId, setActiveId] = useState<SettingsSectionId>(SETTINGS_SECTIONS[0].id);
+  // After a click, keep the chosen item until smooth scrolling settles (bottom sections never reach the top)
+  const clickedUntilRef = useRef(0);
+
+  useEffect(() => {
+    const scroller = getScrollParent(contentRef.current);
+    if (!scroller) return;
+    const update = () => {
+      if (Date.now() < clickedUntilRef.current) {
+        clickedUntilRef.current = Date.now() + 150;
+        return;
+      }
+      const top = scroller.getBoundingClientRect().top + 96;
+      const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 4;
+      let current: SettingsSectionId = SETTINGS_SECTIONS[0].id;
+      for (const { id } of SETTINGS_SECTIONS) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= top) current = id;
+      }
+      setActiveId(atBottom ? SETTINGS_SECTIONS[SETTINGS_SECTIONS.length - 1].id : current);
+    };
+    update();
+    scroller.addEventListener("scroll", update, { passive: true });
+    return () => scroller.removeEventListener("scroll", update);
+  }, [contentRef]);
+
+  const goTo = (id: SettingsSectionId) => {
+    scrollToSection(id);
+    clickedUntilRef.current = Date.now() + 150;
+    setActiveId(id);
+  };
+
+  return (
+    <nav aria-label="Obsah nastavení" className="hidden xl:block sticky top-6 space-y-2">
+      <p className="px-3 section-label">Na této stránce</p>
+      <ul className="space-y-0.5">
+        {SETTINGS_SECTIONS.map(({ id, label }) => (
+          <li key={id}>
+            <button
+              type="button"
+              onClick={() => goTo(id)}
+              aria-current={activeId === id ? "location" : undefined}
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold leading-snug transition-colors text-slate-500 hover:bg-slate-100 hover:text-slate-900 aria-[current=location]:bg-navy-50 aria-[current=location]:text-navy-700"
+            >
+              {label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+};
+
 export default function SettingsPage() {
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") === "integrations" ? "integrations" : "preferences";
-  const [activeTab, setActiveTab] = useState<"preferences" | "integrations">(initialTab);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  const { data, user, syncBikeFromStrava, clearAllData } = useVault();
+  const {
+    data,
+    user,
+    appState,
+    syncStatus,
+    syncError,
+    lastSyncedAt,
+    isAuthenticated,
+    login,
+    reauthorizeGoogleDrive,
+    syncNow,
+    exportBackup,
+    syncBikeFromStrava,
+    clearAllData,
+  } = useVault();
+  const disconnectDrive = useDisconnectDrive();
+  const syncState = getSyncDisplayState(syncStatus, appState);
   const [isClearAllOpen, setIsClearAllOpen] = useState(false);
   const currentUserId = user?.emailAddress || "default_user";
 
@@ -67,22 +203,21 @@ export default function SettingsPage() {
     const errorParam = searchParams.get("strava_error");
     const connectedParam = searchParams.get("strava_connected");
 
-    if (searchParams.get("tab") === "integrations") {
-      setActiveTab("integrations");
-    }
-
     if (errorParam) {
       setStatusMessage({
         type: "error",
         text: `Autorizace se Stravou se nezdařila: ${decodeURIComponent(errorParam)}`,
       });
-      setActiveTab("integrations");
     } else if (connectedParam) {
       setStatusMessage({
         type: "success",
         text: "Účet Strava byl úspěšně propojen.",
       });
-      setActiveTab("integrations");
+    }
+
+    // Older links (header badge, Strava callback) point to the former "integrations" tab
+    if (searchParams.get("tab") === "integrations") {
+      requestAnimationFrame(() => scrollToSection("nastaveni-strava"));
     }
   }, [searchParams]);
 
@@ -273,76 +408,48 @@ export default function SettingsPage() {
   const linkedBikesCount = data.bikes.filter((b) => b.stravaGearId).length;
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-4xl">
-      {/* Header */}
-      <PageHeader
-        title={t("nav.settings")}
-        actions={
-        <div role="tablist" aria-label="Sekce nastavení" className="segmented flex">
-          <button
-            role="tab"
-            aria-selected={activeTab === "preferences"}
-            onClick={() => setActiveTab("preferences")}
-            className="segment"
-          >
-            Předvolby
-          </button>
-          <button
-            role="tab"
-            aria-selected={activeTab === "integrations"}
-            onClick={() => setActiveTab("integrations")}
-            className="segment"
-          >
-            <span>Integrace</span>
-            {stravaStatus.connected && (
-              <span className="w-2 h-2 rounded-full bg-emerald-500" aria-label="Strava připojena" />
-            )}
-          </button>
-        </div>
-        }
-      />
+    <div className="animate-fade-in">
+      {/* The shell header shows the screen name; the page keeps one h1 for assistive tech */}
+      <h1 className="sr-only">Nastavení</h1>
 
-      {/* Status Notifications */}
-      {statusMessage && (
-        <div
-          className={`panel flex items-center gap-3 animate-fade-in ${
-            statusMessage.type === "success" ? "panel-success" : "panel-error"
-          }`}
-        >
-          {statusMessage.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          ) : (
-            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+      <div className="xl:grid xl:grid-cols-[minmax(0,56rem)_13rem] xl:gap-8 xl:items-start">
+        <div ref={contentRef} className="space-y-6 max-w-4xl min-w-0">
+          {/* Status Notifications */}
+          {statusMessage && (
+            <div
+              className={`panel flex items-center gap-3 animate-fade-in ${
+                statusMessage.type === "success" ? "panel-success" : "panel-error"
+              }`}
+            >
+              {statusMessage.type === "success" ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              ) : (
+                <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+              )}
+              <div className="flex-1 font-medium">{statusMessage.text}</div>
+              <button
+                type="button"
+                onClick={() => setStatusMessage(null)}
+                aria-label="Zavřít upozornění"
+                className="btn-icon -my-1.5 -mr-1.5 text-current opacity-70 hover:opacity-100 hover:bg-black/5 hover:text-current"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           )}
-          <div className="flex-1 font-medium">{statusMessage.text}</div>
-          <button
-            type="button"
-            onClick={() => setStatusMessage(null)}
-            aria-label="Zavřít upozornění"
-            className="btn-icon -my-1.5 -mr-1.5 text-current opacity-70 hover:opacity-100 hover:bg-black/5 hover:text-current"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
 
-      {/* TAB 1: INTEGRATIONS */}
-      {activeTab === "integrations" && (
-        <div className="space-y-6">
-          {/* Strava Integration Card */}
-          <div className="card p-4 sm:p-5 space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-3">
-                <StravaLogo className="h-7 w-auto" />
-                <h3 className="sr-only">Strava</h3>
-              </div>
-
-              {/* Connection Status Badge */}
-              {loadingStatus ? (
-                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          {/* 1. Strava */}
+          <SettingsSection
+            id="nastaveni-strava"
+            icon={Activity}
+            title="Propojení se Stravou"
+            description="Nájezd a čas jízdy propojených kol se načítají ze Stravy"
+            actions={
+              loadingStatus ? (
+                <span className="flex items-center gap-1.5 text-xs text-slate-500">
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Zjišťuji stav...</span>
-                </div>
+                  <span>Zjišťuji stav…</span>
+                </span>
               ) : stravaStatus.connected ? (
                 <span className="chip chip-emerald">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -353,17 +460,15 @@ export default function SettingsPage() {
                   <span className="w-2 h-2 rounded-full bg-slate-400" />
                   <span>Nepřipojeno</span>
                 </span>
-              )}
-            </div>
-
-            {/* Content based on state */}
+              )
+            }
+          >
             {loadingStatus ? (
               <div className="py-8 text-center text-slate-500 text-xs">
                 <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-navy-600" />
-                <span>Ověřuji stav spojení se Stravou...</span>
+                <span>Ověřuji stav spojení se Stravou…</span>
               </div>
             ) : !stravaStatus.connected ? (
-              /* Disconnected State */
               <div className="space-y-4">
                 <div className="panel panel-neutral space-y-2">
                   <p className="font-semibold text-slate-900">
@@ -385,18 +490,16 @@ export default function SettingsPage() {
                   </ul>
                 </div>
 
-                <div className="pt-2">
-                  <button
-                    onClick={handleConnectStrava}
-                    className="btn-primary"
-                  >
-                    <span>Připojit Stravu</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleConnectStrava}
+                  className="btn-primary"
+                >
+                  <span>Připojit Stravu</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </button>
               </div>
             ) : (
-              /* Connected State */
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="panel panel-neutral space-y-1">
@@ -430,18 +533,19 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2.5 flex-wrap pt-2 border-t border-slate-100">
+                <div className="flex items-center gap-2.5 flex-wrap pt-4 border-t border-slate-100">
                   <button
+                    type="button"
                     onClick={handleSyncAllBikes}
                     disabled={syncingAll}
                     className="btn-primary"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${syncingAll ? "animate-spin" : ""}`} />
-                    <span>{syncingAll ? "Synchronizuji..." : "Synchronizovat nájezd"}</span>
+                    <span>{syncingAll ? "Synchronizuji…" : "Synchronizovat nájezd"}</span>
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => setIsManageBikesOpen(true)}
                     className="btn-secondary"
                   >
@@ -450,8 +554,9 @@ export default function SettingsPage() {
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => setIsDisconnectConfirmOpen(true)}
-                    className="btn-secondary btn-secondary-danger ml-auto"
+                    className="btn-secondary btn-secondary-danger sm:ml-auto"
                   >
                     <Unlink className="w-3.5 h-3.5" />
                     <span>Odpojit Stravu</span>
@@ -459,137 +564,181 @@ export default function SettingsPage() {
                 </div>
               </div>
             )}
-          </div>
-        </div>
-      )}
+          </SettingsSection>
 
-      {/* TAB 2: PREFERENCES (Existing Settings) */}
-      {activeTab === "preferences" && (
-        <div className="space-y-6">
-          {/* Preferences Section */}
-          <div className="card p-4 sm:p-5 space-y-4">
-            <h2 className="text-base font-bold text-slate-900">
-              Měrné jednotky a lokalizace
-            </h2>
+          {/* 2. Google Drive */}
+          <SettingsSection
+            id="nastaveni-disk"
+            icon={Cloud}
+            title="Synchronizace s Google Diskem"
+            description="Data se průběžně ukládají do souboru aplikace na vašem Google Disku"
+            actions={
+              !isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={login}
+                  disabled={syncStatus === "saving"}
+                  className="btn-secondary"
+                >
+                  <GoogleIcon className="w-4 h-4 shrink-0" />
+                  <span>{syncStatus === "saving" ? "Připojuji…" : "Připojit Google Disk"}</span>
+                </button>
+              ) : (
+                <>
+                  {appState === "scopeInsufficient" ? (
+                    <button
+                      type="button"
+                      onClick={reauthorizeGoogleDrive}
+                      disabled={syncStatus === "saving"}
+                      className="btn-primary"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
+                      <span>Obnovit oprávnění Google</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={syncNow}
+                      disabled={syncStatus === "saving"}
+                      className="btn-secondary"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${syncStatus === "saving" ? "animate-spin" : ""}`} />
+                      <span>Synchronizovat nyní</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => void disconnectDrive()}
+                    className="btn-secondary btn-secondary-danger"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Odpojit Google Disk</span>
+                  </button>
+                </>
+              )
+            }
+          >
+            {!isAuthenticated ? (
+              <div className="panel panel-neutral space-y-2">
+                <p className="font-semibold text-slate-900">Proč připojit Google Disk?</p>
+                <ul className="list-disc pl-4 space-y-1">
+                  <li><strong>Soukromé úložiště:</strong> data leží v souboru, ke kterému má přístup jen BikeVault.</li>
+                  <li><strong>Průběžné ukládání:</strong> každá změna se na pozadí uloží na váš Disk.</li>
+                  <li><strong>Více zařízení:</strong> po přihlášení na jiném zařízení se garáž načte z Disku.</li>
+                </ul>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="panel panel-neutral flex items-center justify-between flex-wrap gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {user?.photoLink ? (
+                      <img
+                        src={user.photoLink}
+                        alt=""
+                        className="w-10 h-10 rounded-full border border-slate-200 shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-navy-100 text-navy-700 flex items-center justify-center font-bold text-sm shrink-0">
+                        {user?.displayName ? user.displayName[0].toUpperCase() : "G"}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-slate-900 truncate">{user?.displayName || "Účet Google"}</p>
+                      <p className="text-slate-500 truncate">{user?.emailAddress || "Připojeno ke Google Disku"}</p>
+                    </div>
+                  </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="panel panel-neutral space-y-1.5">
-                <span className="font-semibold text-slate-500 flex items-center gap-1.5">
-                  <Globe className="w-4 h-4 text-navy-600" />
-                  <span>Jazyk rozhraní</span>
-                </span>
-                <span className="text-base font-bold text-slate-900 block">
-                  Čeština (cs-CZ)
-                </span>
-                <p className="text-slate-500">
-                  100% lokalizované rozhraní pro české cyklisty.
-                </p>
-              </div>
+                  <div className="sm:text-right">
+                    <SyncStatusLabel state={syncState} />
+                    <p className="text-slate-500 mt-0.5 tabular-nums">
+                      Poslední uložení:{" "}
+                      {lastSyncedAt
+                        ? lastSyncedAt.toLocaleString("cs-CZ", { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" })
+                        : "při této relaci"}
+                    </p>
+                  </div>
+                </div>
 
-              <div className="panel panel-neutral space-y-1.5">
-                <span className="font-semibold text-slate-500 flex items-center gap-1.5">
-                  <DollarSign className="w-4 h-4 text-navy-600" />
-                  <span>Výchozí měna</span>
-                </span>
-                <span className="text-base font-bold text-slate-900 block">
-                  CZK (Česká koruna — Kč)
-                </span>
-                <p className="text-slate-500">
-                  Autoritativní finanční výpočty v celých Kč.
-                </p>
+                {syncError && (
+                  <div role="alert" className="panel panel-error flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 shrink-0 mt-px" />
+                    <span>{syncError}</span>
+                  </div>
+                )}
               </div>
+            )}
+          </SettingsSection>
 
-              <div className="panel panel-neutral space-y-1.5">
-                <span className="font-semibold text-slate-500 flex items-center gap-1.5">
-                  <Gauge className="w-4 h-4 text-navy-600" />
-                  <span>Jednotka tlaku v pláštích</span>
-                </span>
-                <span className="text-base font-bold text-slate-900 block">
-                  bar (metrické)
-                </span>
-                <p className="text-slate-500">
-                  Ukládáno v bar s přesností na 2 desetinná místa (např. 1,55 bar).
-                </p>
-              </div>
-
-              <div className="panel panel-neutral space-y-1.5">
-                <span className="font-semibold text-slate-500 flex items-center gap-1.5">
-                  <Gauge className="w-4 h-4 text-navy-600" />
-                  <span>Jednotka tlaku odpružení</span>
-                </span>
-                <span className="text-base font-bold text-slate-900 block">
-                  psi (pounds per square inch)
-                </span>
-                <p className="text-slate-500">
-                  Standardní jednotka pro vidlice a tlumiče (např. 76 psi, 195 psi).
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Technical & Database Info */}
-          <div className="card p-4 sm:p-5 space-y-4">
-            <div className="flex items-center gap-2 text-slate-900">
-              <Database className="w-4 h-4 text-navy-600" />
-              <h2 className="text-base font-bold">
-                Systémové informace BikeVault
-              </h2>
-            </div>
-
-            <div className="space-y-2.5 text-xs text-slate-600 divide-y divide-slate-100">
-              <div className="flex justify-between py-2">
-                <span>Architektura</span>
-                <span className="font-semibold text-slate-900">Next.js App Router (Hybrid Cloud)</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span>Cloudové úložiště</span>
-                <span className="font-semibold text-slate-900 tabular-nums">Google Drive (bikevault_data.json)</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span>Lokální vyrovnávací paměť</span>
-                <span className="font-semibold text-slate-900 tabular-nums">Web Storage (localStorage)</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span>Autentizace</span>
-                <span className="font-semibold text-slate-900">Google Identity Services (OAuth 2.0)</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span>Integrace Strava</span>
-                <span className="font-semibold text-slate-900">
-                  {stravaStatus.connected ? "Aktivní (OAuth 2.0 Server-Side)" : "Neaktivní"}
-                </span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span>Integritní pravidla</span>
-                <span className="font-semibold text-emerald-700">Aktivní (zákaz souběžné montáže, ochrana historie)</span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span>Verze aplikace</span>
-                <span className="font-semibold text-slate-700 tabular-nums">1.1.0 (Strava Integration)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Danger zone */}
-          <div className="card p-4 sm:p-5 space-y-4">
-            <div className="flex items-center gap-2 text-rose-700">
-              <Trash2 className="w-4 h-4" />
-              <h2 className="text-base font-bold">Nebezpečná zóna</h2>
-            </div>
+          {/* 3. Backup file */}
+          <SettingsSection
+            id="nastaveni-zaloha"
+            icon={Download}
+            title="Záloha do souboru"
+            description="Stáhněte si kopii všech dat do vlastního počítače"
+          >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <p className="text-xs text-slate-600">
-                Smaže všechna kola, komponenty a související data. Kategorie a předvolby zůstanou zachovány.
-              </p>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Stáhnout zálohu (JSON)</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Kola, komponenty, servisní historie, finance i nastavení v jednom souboru.
+                </p>
+              </div>
               <button
+                type="button"
+                onClick={exportBackup}
+                className="btn-secondary shrink-0 self-start sm:self-center"
+              >
+                <Download className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Stáhnout zálohu</span>
+              </button>
+            </div>
+          </SettingsSection>
+
+          {/* 4. Units */}
+          <SettingsSection
+            id="nastaveni-jednotky"
+            icon={Ruler}
+            title="Jednotky a formáty"
+            description="Pevně dané jednotky, ve kterých BikeVault ukládá a zobrazuje hodnoty"
+          >
+            <dl className="divide-y divide-slate-100 text-xs">
+              {UNIT_ROWS.map(({ label, value }) => (
+                <div key={label} className="flex justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
+                  <dt className="text-slate-500">{label}</dt>
+                  <dd className="font-semibold text-slate-900 text-right tabular-nums">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </SettingsSection>
+
+          {/* 5. Data deletion */}
+          <SettingsSection
+            id="nastaveni-data"
+            icon={Trash2}
+            danger
+            title="Mazání dat"
+            description="Nevratné smazání garáže. Před smazáním si stáhněte zálohu."
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Smazat všechna data</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Smaže všechna kola, komponenty a související data. Kategorie a předvolby zůstanou zachovány.
+                </p>
+              </div>
+              <button
+                type="button"
                 onClick={() => setIsClearAllOpen(true)}
-                className="btn-secondary btn-secondary-danger shrink-0"
+                className="btn-danger shrink-0 self-start sm:self-center"
               >
                 Smazat všechna data
               </button>
             </div>
-          </div>
+          </SettingsSection>
         </div>
-      )}
+
+        <SettingsOutline contentRef={contentRef} />
+      </div>
 
       <ClearAllDataModal
         isOpen={isClearAllOpen}
