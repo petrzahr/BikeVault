@@ -207,9 +207,10 @@ export function MaintenanceClient({
                   </span>
                   <button
                     onClick={() => handleOpenRecordModal(item)}
-                    className="btn-primary btn-sm"
+                    className="btn-secondary btn-sm"
                   >
-                    Zapsat servis →
+                    <Wrench className="w-3.5 h-3.5" />
+                    <span>Zapsat servis</span>
                   </button>
                 </div>
               </div>
@@ -260,9 +261,10 @@ export function MaintenanceClient({
                   </span>
                   <button
                     onClick={() => handleOpenRecordModal(item)}
-                    className="btn-primary btn-sm"
+                    className="btn-secondary btn-sm"
                   >
-                    Zapsat servis →
+                    <Wrench className="w-3.5 h-3.5" />
+                    <span>Zapsat servis</span>
                   </button>
                 </div>
               </div>
@@ -322,7 +324,7 @@ export function MaintenanceClient({
 
           <button
             onClick={handleOpenCreatePlan}
-            className="btn-primary self-start sm:self-auto"
+            className="btn-secondary self-start sm:self-auto"
           >
             <Plus className="w-4 h-4" />
             <span>Přidat plán</span>
@@ -426,7 +428,7 @@ export function MaintenanceClient({
                   <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto">
                     <button
                       onClick={() => handleOpenRecordModal(item)}
-                      className="btn-primary btn-sm"
+                      className="btn-secondary btn-sm"
                     >
                       <Wrench className="w-3.5 h-3.5" />
                       <span>Zapsat servis</span>

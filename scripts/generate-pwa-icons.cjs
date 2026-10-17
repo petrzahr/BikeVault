@@ -7,21 +7,21 @@ const sharp = require("sharp");
 const publicDir = path.resolve(__dirname, "../public");
 
 const glyph = (scale) => `
-  <g transform="translate(256, 256) scale(${scale}) translate(-12, -12)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <g transform="translate(256, 256) scale(${scale}) translate(-12, -12)" fill="none" stroke="#0f1113" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="18.5" cy="17.5" r="3.5" />
     <circle cx="5.5" cy="17.5" r="3.5" />
     <circle cx="15" cy="5" r="1" />
     <path d="M12 17.5V14l-3-3 4-3 2 3h2" />
   </g>`;
 
-// "any" icon: rounded navy squircle, identical to icon.svg
+// "any" icon: burnt amber plate with sharp corners, identical to icon.svg
 const anySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="115" ry="115" fill="#1c3a63" />${glyph(14)}
+  <rect width="512" height="512" rx="48" ry="48" fill="#cc7a00" />${glyph(14)}
 </svg>`;
 
-// Maskable icon: full-bleed navy, glyph kept inside the 80 % safe zone
+// Maskable icon: full-bleed burnt amber, glyph kept inside the 80 % safe zone
 const maskableSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" fill="#1c3a63" />${glyph(12)}
+  <rect width="512" height="512" fill="#cc7a00" />${glyph(12)}
 </svg>`;
 
 const outputs = [

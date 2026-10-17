@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- Background squircle in navy (#1c3a63) -->
-  <rect width="512" height="512" rx="115" ry="115" fill="#1c3a63" />
-  <!-- BikeVault Bike symbol -->
-  <g transform="translate(256, 256) scale(14) translate(-12, -12)" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Burnt amber plate (signal-500 #cc7a00) with sharp technical-drawing corners, same as the sidebar logo -->
+  <rect width="512" height="512" rx="48" ry="48" fill="#cc7a00" />
+  <!-- BikeVault Bike symbol in graphite (slate-900 #0f1113) -->
+  <g transform="translate(256, 256) scale(14) translate(-12, -12)" fill="none" stroke="#0f1113" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="18.5" cy="17.5" r="3.5" />
     <circle cx="5.5" cy="17.5" r="3.5" />
     <circle cx="15" cy="5" r="1" />
