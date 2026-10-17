@@ -83,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className="h-16 min-h-16 shrink-0 bg-ink-900 border-b border-white/10 sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between gap-2 select-none">
+      <header className="h-16 min-h-16 shrink-0 bg-slate-900 border-b border-white/10 sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between gap-2 select-none">
         {/* Levá strana: mobilní menu + název sekce */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <button

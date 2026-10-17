@@ -9,20 +9,8 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Closed palette (see DESIGN.md): slate = neutral, navy = action, rose / emerald / amber = meaning
       colors: {
-        ink: {
-          50: "#f4f5f6",
-          100: "#e2e4e7",
-          200: "#c9ccd1",
-          300: "#9aa0a8",
-          400: "#6b7076",
-          500: "#4a4f56",
-          600: "#2c2f34",
-          700: "#1c1f23",
-          800: "#121417",
-          900: "#0c0d0f",
-          950: "#08090a",
-        },
         navy: {
           50: "#eef2f7",
           100: "#dbe3ee",
@@ -36,7 +24,7 @@ const config: Config = {
           900: "#0a1626",
           950: "#060d16",
         },
-        // Neutral grey for page backgrounds and text, cool-neutral and consistent with `ink`
+        // Single neutral scale (cool-neutral): canvas, surfaces, lines, text and the dark app shell
         slate: {
           50: "#f4f5f6",
           100: "#e8e9eb",
@@ -50,10 +38,6 @@ const config: Config = {
           900: "#0f1113",
           950: "#08090a",
         },
-        // Functional status colors
-        success: "#1c8354",
-        warning: "#a3610c",
-        danger: "#b3261e",
       },
       fontFamily: {
         sans: ['var(--font-sans)', '"Plus Jakarta Sans"', "system-ui", "-apple-system", "sans-serif"],

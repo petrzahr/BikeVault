@@ -26,6 +26,7 @@ No own database: primary data lives in a file on the user's Google Drive. Only S
 - Anything touching Strava client secret or the token store is server-only (route handlers / server code). Never import it into client components.
 - Validate all external data with Zod: Strava/Drive API responses, route handler input, data read from the Drive file.
 - No database or new storage service without approval.
+- UI: use the component recipes in `src/app/globals.css` (`btn-*`, `field`, `card`, `chip-*`, `panel-*`, `segment`…) and the rules in `DESIGN.md`. Don't compose ad-hoc button/card/chip classes inline.
 
 ## Data & Sync Rules (high risk - user data)
 - The Drive file is the single source of truth. Any change to its data shape needs a versioned migration and backward compatibility - put it in the plan and wait for approval.

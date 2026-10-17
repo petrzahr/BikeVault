@@ -79,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-ink-900 flex flex-col justify-between transition-transform duration-200 ease-in-out ${
+        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-slate-900 flex flex-col justify-between transition-transform duration-200 ease-in-out ${
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
@@ -160,7 +160,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Spodní rychlý přehled stavu k dnešnímu dni */}
-        <div className="p-3.5 mx-4 mb-4 shrink-0 bg-ink-800 border border-white/10 rounded-2xl space-y-2 text-xs">
+        <div className="p-3.5 mx-4 mb-4 shrink-0 bg-slate-800 border border-white/10 rounded-2xl space-y-2 text-xs">
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Aktivní kola">Kola v garáži</span>
