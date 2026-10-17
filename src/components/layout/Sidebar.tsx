@@ -62,16 +62,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex-1 min-h-0 overflow-y-auto p-5 space-y-5">
           {/* Logo a záhlaví */}
           <div className="flex items-center justify-between">
-            <Link href="/garage" onClick={onCloseMobile} className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-navy-600 text-white flex items-center justify-center shadow-md shadow-black/20">
+            <Link href="/garage" onClick={onCloseMobile} className="flex items-center gap-2.5 min-w-0">
+              <div className="w-9 h-9 shrink-0 rounded-xl bg-navy-600 text-white flex items-center justify-center shadow-md shadow-black/20">
                 <BikeIcon className="w-5 h-5" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <span className="text-base font-extrabold tracking-tight text-white block leading-none">
                   BikeVault
                 </span>
-                <span className="text-xs text-white/60 font-medium block mt-0.5">
-                  Garáž & servis kol
+                <span className="text-xs leading-4 text-white/60 font-medium block mt-1">
+                  Vaše kola pod absolutní kontrolou
                 </span>
               </div>
             </Link>

@@ -13,6 +13,7 @@ import { SyncStatusIcon, SyncStatusLabel } from "@/components/common/SyncStatusI
 import { SYNC_LABELS, getSyncDisplayState, getSyncTone } from "@/lib/syncStatus";
 import { cn } from "@/lib/ui";
 import { StravaStatusBadge } from "@/components/layout/StravaStatusBadge";
+import { NAV_ITEMS, isNavItemActive } from "@/components/layout/navItems";
 
 interface HeaderProps {
   activeScreenTitle?: string;
@@ -67,15 +68,8 @@ export const Header: React.FC<HeaderProps> = ({
 
   const getScreenTitle = () => {
     if (activeScreenTitle) return activeScreenTitle;
-    if (pathname === "/" || pathname === "/garage") return "Garáž kol";
-    if (pathname.startsWith("/bikes")) return "Detail kola";
-    if (pathname === "/components" || pathname.startsWith("/components")) return "Sklad komponentů";
-    if (pathname === "/maintenance") return "Plánovač a servisní kniha";
-    if (pathname === "/finances") return "Finanční přehled & TCO";
-    if (pathname === "/statistics") return "Analytika & statistiky";
-    if (pathname === "/lists") return "Správa seznamů";
-    if (pathname === "/settings") return "Nastavení aplikace";
-    return "BikeVault";
+    // Same label as the active navigation item, so header and menu never disagree
+    return NAV_ITEMS.find((item) => isNavItemActive(pathname, item.href))?.label ?? "BikeVault";
   };
 
   return (
@@ -87,9 +81,6 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="min-w-0">
             <p className="text-base font-bold text-white leading-tight truncate">
               {getScreenTitle()}
-            </p>
-            <p className="text-xs text-white/70 font-medium hidden sm:block truncate">
-              BikeVault – Vaše kola pod absolutní kontrolou
             </p>
           </div>
         </div>
