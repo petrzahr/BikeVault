@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Levá strana: název sekce (mobilní menu je ve spodní liště) */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <div className="min-w-0">
-            <p className="text-base font-bold text-white leading-tight truncate">
+            <p className="text-sm font-bold uppercase tracking-[0.08em] [font-stretch:85%] text-white leading-tight truncate">
               {getScreenTitle()}
             </p>
           </div>
@@ -93,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={connectGoogleDrive}
               disabled={syncStatus === "saving"}
               title="Připojit Google Disk pro automatickou synchronizaci"
-              className="btn-shell btn-sm"
+              className="btn-header"
             >
               <GoogleIcon className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden sm:inline">
@@ -110,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setMenuOpen((prev) => !prev)}
                 title={`Google Disk: ${SYNC_LABELS[syncState]} – klikněte pro podrobnosti a synchronizaci`}
                 aria-label={`Google Disk: ${SYNC_LABELS[syncState]}`}
-                className={cn("btn-shell btn-sm", hasSyncProblem ? "border-rose-400/60 bg-rose-500/10 hover:bg-rose-500/20" : undefined)}
+                className={cn("btn-header", hasSyncProblem ? "border-rose-400/60 bg-rose-500/10 hover:bg-rose-500/20" : undefined)}
               >
                 <GoogleIcon className="w-3.5 h-3.5 shrink-0" />
                 <SyncStatusIcon state={syncState} onDark />
@@ -134,7 +134,7 @@ export const Header: React.FC<HeaderProps> = ({
                         className="w-8 h-8 rounded-full border border-slate-200 shrink-0"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-navy-100 text-navy-700 flex items-center justify-center font-bold text-xs shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-signal-100 text-signal-700 flex items-center justify-center font-bold text-xs shrink-0">
                         {user?.displayName ? user.displayName[0].toUpperCase() : "G"}
                       </div>
                     )}

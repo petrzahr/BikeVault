@@ -225,7 +225,7 @@ export function BikeComponentsClient({
                   </div>
 
                   <Link href={`/components/${item.component.id}`} className="block group/title">
-                    <h3 className="text-sm font-bold text-slate-900 group-hover/title:text-navy-600 transition-colors">
+                    <h3 className="text-sm font-bold text-slate-900 group-hover/title:text-signal-600 transition-colors">
                       {item.component.manufacturer} {item.component.model}
                     </h3>
                   </Link>
@@ -381,7 +381,7 @@ export function BikeComponentsClient({
                     value={opt.id}
                     checked={disposition === opt.id}
                     onChange={() => setDisposition(opt.id as any)}
-                    className="text-navy-600 focus:ring-0"
+                    className="text-signal-600 focus:ring-0"
                   />
                   <span>{opt.label}</span>
                 </label>

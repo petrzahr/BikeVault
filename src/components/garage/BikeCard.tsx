@@ -22,6 +22,8 @@ import { RecordServiceEventModal } from "@/components/maintenance/RecordServiceE
 import { resolveBikeImage } from "@/lib/domain/bikeImage";
 import { useVault } from "@/context/VaultContext";
 import { bikeKindLabel, resolveLists } from "@/lib/bikeLists";
+import { IntervalGauge } from "@/components/common/IntervalGauge";
+import type { IntervalGaugeReading } from "@/lib/domain/intervalGauge";
 
 interface BikeCardProps {
   bike: {
@@ -45,6 +47,9 @@ interface BikeCardProps {
   serviceSummary?: {
     urgency: "OVERDUE" | "DUE_SOON" | "OK";
     text: string;
+    scheduleName?: string;
+    statusText?: string;
+    gauge?: IntervalGaugeReading | null;
   };
   netCost?: number;
   isReordering?: boolean;
@@ -92,8 +97,8 @@ export function BikeCard({
         };
       case "DUE_SOON":
         return {
-          bg: "chip-amber",
-          dot: "text-amber-600",
+          bg: "chip-steel",
+          dot: "text-steel-700",
           icon: Clock,
         };
       case "OK":
@@ -111,7 +116,7 @@ export function BikeCard({
 
   return (
     <>
-      <div className="card overflow-hidden hover:border-slate-300 hover:shadow-md transition-all flex flex-col group">
+      <div className="card overflow-hidden hover:border-slate-400 transition-colors flex flex-col group">
         {/* Reorder Toolbar (when reorder mode is active) */}
         {isReordering && (
           <div className="bg-slate-900 text-white px-3 py-2 flex items-center justify-between border-b border-slate-800">
@@ -170,10 +175,10 @@ export function BikeCard({
 
           {/* Top badges */}
           <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-            {kindLabel ? (<span className="chip bg-white/95 text-slate-700 shadow-sm">{kindLabel}</span>) : <span />}
+            {kindLabel ? (<span className="chip bg-white text-slate-700 border border-slate-200">{kindLabel}</span>) : <span />}
 
             {bike.modelYear && (
-              <span className="chip bg-white/95 text-slate-700 shadow-sm">
+              <span className="chip bg-white text-slate-700 border border-slate-200 font-mono font-medium">
                 {bike.modelYear}
               </span>
             )}
@@ -185,7 +190,7 @@ export function BikeCard({
           {/* Header titles */}
           <div>
             <Link href={`/bikes/${bike.id}`} className="block group/title">
-              <h3 className="text-base font-bold text-slate-900 leading-snug group-hover/title:text-navy-600 transition-colors">
+              <h3 className="text-base font-bold text-slate-900 leading-snug group-hover/title:text-signal-700 transition-colors">
                 {bike.name}
               </h3>
             </Link>
@@ -195,43 +200,52 @@ export function BikeCard({
           </div>
 
           {/* Key Metrics: Mileage & Hours */}
-          <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl">
-            <div>
+          <div className="grid grid-cols-2 divide-x divide-slate-200 bg-slate-50 border border-slate-200 rounded-lg">
+            <div className="px-3 py-2">
               <span className="section-label block">
                 {t("bike.metrics.currentMileage")}
               </span>
-              <span className="text-base font-bold text-slate-900 tabular-nums">
+              <span className="readout text-lg">
                 {formatKm(bike.currentKm)}
               </span>
             </div>
-            <div>
+            <div className="px-3 py-2">
               <span className="section-label block">
                 {t("bike.metrics.ridingHours")}
               </span>
-              <span className="text-base font-bold text-slate-900 tabular-nums">
+              <span className="readout text-lg">
                 {formatMinutes(bike.currentMinutes)}
               </span>
             </div>
           </div>
 
           {/* Service status & Net cost */}
-          <div className="space-y-2 pt-0.5">
-            {/* Service alert */}
-            <div className="flex items-center justify-between gap-2 text-xs">
-              <span className="text-slate-500 flex items-center gap-1.5 font-medium shrink-0">
-                <Wrench className="w-3.5 h-3.5 text-slate-500" />
-                <span>{t("garage.card.nextService")}:</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => setIsServiceModalOpen(true)}
-                title="Zapsat servis pro toto kolo"
-                aria-label={`Zapsat servis: ${serviceSummary?.text || t("garage.card.noServiceDue")}`}
-                className={`chip ${badgeStyle.bg} min-w-0 cursor-pointer hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40`}
-              >
-                <BadgeIcon className={`w-3.5 h-3.5 shrink-0 ${badgeStyle.dot}`} />
-                <span className="truncate">{serviceSummary?.text || t("garage.card.noServiceDue")}</span>
-              </button>
+          <div className="space-y-3 pt-0.5">
+            {/* Next service: schedule name + state chip, then the interval ruler */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between gap-2 text-xs">
+                <span className="text-slate-500 flex items-center gap-1.5 font-medium min-w-0">
+                  <Wrench className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                  {serviceSummary?.scheduleName ? (
+                    <span className="font-bold text-slate-900 truncate">{serviceSummary.scheduleName}</span>
+                  ) : (
+                    <span>{t("garage.card.nextService")}:</span>
+                  )}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsServiceModalOpen(true)}
+                  title="Zapsat servis pro toto kolo"
+                  aria-label={`Zapsat servis: ${serviceSummary?.text || t("garage.card.noServiceDue")}`}
+                  className={`chip ${badgeStyle.bg} shrink-0 max-w-[55%] cursor-pointer hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-500/50`}
+                >
+                  <BadgeIcon className={`w-3.5 h-3.5 shrink-0 ${badgeStyle.dot}`} />
+                  <span className="truncate">
+                    {serviceSummary?.statusText ?? serviceSummary?.text ?? t("garage.card.noServiceDue")}
+                  </span>
+                </button>
+              </div>
+              {serviceSummary?.gauge && <IntervalGauge reading={serviceSummary.gauge} />}
             </div>
 
             {/* Net Ownership Cost */}
@@ -240,7 +254,7 @@ export function BikeCard({
                 <Coins className="w-3.5 h-3.5 text-slate-500" />
                 <span>{t("garage.card.netCost")}:</span>
               </span>
-              <span className="font-bold text-slate-900 tabular-nums text-sm">
+              <span className="readout text-sm">
                 {formatCzk(netCost ?? Number(bike.purchasePrice))}
               </span>
             </div>
@@ -282,7 +296,7 @@ export function BikeCard({
             <Link
               href={`/bikes/${bike.id}`}
               title={t("garage.card.details")}
-              className="btn-primary"
+              className="btn-secondary"
             >
               <span>{t("garage.card.details")}</span>
               <ArrowUpRight className="w-4 h-4" />

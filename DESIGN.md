@@ -2,59 +2,65 @@
 name: BikeVault
 description: Garáž, komponenty a servis kol na jednom místě, data v soukromém Google Disku.
 colors:
-  navy: "#1c3a63"
-  navy-deep: "#152c4c"
-  navy-tint: "#eef2f7"
+  signal: "#cc7a00"
+  signal-hover: "#db921c"
+  signal-ink: "#8a4b00"
+  signal-tint: "#fdf4e3"
   canvas: "#f4f5f6"
   surface: "#ffffff"
   fill: "#e8e9eb"
   hairline: "#d3d6da"
+  hairline-strong: "#b3b8be"
   ink: "#0f1113"
   ink-body: "#2a2d32"
   ink-secondary: "#5c6168"
   shell: "#0f1113"
   danger-rose: "#e11d48"
   done-emerald: "#047857"
-  due-amber: "#b45309"
+  due-steel: "#2b5ea7"
+  strava: "#fc4c02"
 typography:
-  kpi:
-    fontFamily: "Plus Jakarta Sans, system-ui, sans-serif"
+  readout:
+    fontFamily: "JetBrains Mono, ui-monospace, monospace"
     fontSize: "24px"
-    fontWeight: 800
-    lineHeight: 1.25
+    fontWeight: 600
+    letterSpacing: "-0.02em"
     fontFeature: "tnum"
   page-title:
-    fontFamily: "Plus Jakarta Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "20px"
     fontWeight: 700
     lineHeight: 1.3
   section:
-    fontFamily: "Plus Jakarta Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "16px"
     fontWeight: 700
     lineHeight: 1.35
   title:
-    fontFamily: "Plus Jakarta Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "14px"
     fontWeight: 700
     lineHeight: 1.4
   body:
-    fontFamily: "Plus Jakarta Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "12px"
     fontWeight: 500
     lineHeight: 1.5
     fontFeature: "tnum"
   label:
-    fontFamily: "Plus Jakarta Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "12px"
     fontWeight: 700
     lineHeight: 1.4
-    letterSpacing: "0.05em"
+    letterSpacing: "0.08em"
+    fontStretch: "80%"
 rounded:
-  sm: "6px"
-  md: "8px"
-  lg: "12px"
-  xl: "16px"
+  sm: "2px"
+  md: "2px"
+  lg: "3px"
+  xl: "3px"
+  2xl: "4px"
+  header-badge: "12px"
   full: "9999px"
 spacing:
   xs: "4px"
@@ -65,13 +71,13 @@ spacing:
   2xl: "24px"
 components:
   button-primary:
-    backgroundColor: "{colors.navy}"
-    textColor: "{colors.surface}"
+    backgroundColor: "{colors.signal}"
+    textColor: "{colors.ink}"
     typography: "{typography.label}"
     rounded: "{rounded.lg}"
     height: "32px"
   button-primary-hover:
-    backgroundColor: "{colors.navy-deep}"
+    backgroundColor: "{colors.signal-hover}"
   button-secondary:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink-body}"
@@ -79,14 +85,14 @@ components:
     height: "32px"
   card:
     backgroundColor: "{colors.surface}"
-    rounded: "{rounded.xl}"
+    rounded: "{rounded.2xl}"
   input:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
     rounded: "{rounded.lg}"
-    padding: "8px 14px"
+    padding: "8px 12px"
   segment-active:
-    backgroundColor: "{colors.navy}"
+    backgroundColor: "{colors.ink}"
     textColor: "{colors.surface}"
     rounded: "{rounded.md}"
   chip:
@@ -98,121 +104,136 @@ components:
 
 ## Overview
 
-**Creative North Star: „Servisní knížka"**
+**Creative North Star: „Technický výkres"**
 
-BikeVault je servisní knížka garáže. Tmavý rám aplikace (hlavička a postranní panel) je dílna, světlé karty jsou stránky knížky: na první pohled je vidět stav kola, kilometry a co je potřeba udělat. Barva hlásí jen akci a stav, všechno ostatní je klidná neutrální šedá. Rozhraní je husté, protože uživatel pracuje se seznamy komponent a servisních záznamů, ale řád drží karty, zarovnání a tabulková čísla.
+BikeVault je servisní knížka garáže, kreslená jako technický list: ploché pláty s vlasovými linkami, ostré hrany, čísla v neproporcionálním písmu jako na měřidle a jedna signální barva pro akci. Tmavý rám aplikace (hlavička, postranní panel, spodní lišta) je dílna, světlé pláty jsou výkresy. Rozhraní je husté, protože uživatel pracuje se seznamy komponent, servisních záznamů a nastavení odpružení; řád drží linky, zarovnání a tabulková čísla. Žádné textury, nýty, slzičkový plech ani dekorativní výstražné pruhy: industriálnost je v přesnosti, ne v kostýmu.
 
 Aplikace má jen světlý vzhled; tmavý je pouze rám (shell).
 
 **Key Characteristics:**
-- Čísla (kilometry, ceny, intervaly) jsou hlavní obsah: tabulkové číslice, KPI 24px extrabold.
-- Navy jedná, růžová varuje před ztrátou, smaragd hlásí hotovo, jantar hlásí blížící se servis. Nic jiného nemá barvu.
-- Ploché karty s 16px zaoblením, žádné vnořené karty.
+- Čísla (km, h, psi, bar, kliky, Kč) jsou hlavní obsah: `readout` v JetBrains Mono, popisky v zúženém Archivu velkými písmeny.
+- Signální jantar jedná, růžová varuje před ztrátou a hlásí po termínu, ocelová modrá hlásí blížící se servis, smaragd hlásí hotovo. Nic jiného nemá barvu.
+- Ploché pláty bez stínů, 4px zaoblení, žádné vnořené karty.
+- Podpis: měřidlo servisního intervalu (pravítko se stupnicí, ryska limitu, ukazatel).
 - Pevná spodní hranice textu 12px.
 - Každý opakovaný prvek má jeden recept (CSS třída).
 
 ## Colors
 
-Jedna neutrální škála (`slate`, chladně neutrální, přepsaná v `tailwind.config.ts`), jedna akční (`navy`) a tři významové (`rose`, `emerald`, `amber`).
+Jedna neutrální škála (`slate`, chladně neutrální, přepsaná v `tailwind.config.ts`), jedna akční (`signal`, pálený jantar) a tři významové (`rose`, `emerald`, `steel`).
 
 ### Primary
-- **Navy** (`navy-600`): primární tlačítka, vybraná volba segmentu, odkazy, fokus, kurzor a výběr textu.
-- **Hluboká navy** (`navy-700`): hover primárního tlačítka a textových odkazů.
-- **Navy nádech** (`navy-50`): informační panely a štítky, aktivní položka navigace.
+- **Signál** (`signal-500`, #cc7a00): výplň primárních tlačítek a aktivní buňky spodní lišty, vždy s grafitovým textem (bílý by nesplnil AA). Logo v postranním panelu.
+- **Signál světlejší** (`signal-400`): hover primárního tlačítka, ikona a značka aktivní položky na tmavém rámu.
+- **Signálový inkoust** (`signal-600`–`800`): textové odkazy, ikony, fokus a kurzor na bílé (`signal-600` 4,9:1, `signal-700` 6,8:1).
+- **Signálový nádech** (`signal-50`): informační panely, štítek `chip-signal`, vybraná volba `option-card`.
 
 ### Secondary (význam)
-- **Růžová** (`rose`): mazání, chyby, servis po termínu.
+- **Růžová** (`rose`): mazání, chyby, servis po termínu (i přetažená část měřidla).
+- **Ocelová modrá** (`steel`): servis se blíží, upozornění (`panel-warning`, `chip-steel`, varovná zóna měřidla). Je modrá záměrně, aby se nepletla s jantarovou akcí.
 - **Smaragd** (`emerald`): hotovo, úspěch, příjem.
-- **Jantar** (`amber`): servis se blíží, upozornění.
 
 ### Neutral
-- **Plátno** (`slate-50`): pozadí obsahu, zapuštěné panely.
-- **Povrch** (`white`): karty, dialogy, pole.
-- **Výplň** (`slate-100`): hover, podklad segmentu, neutrální štítky.
-- **Linka** (`slate-200`, v kartách `slate-200/80`, uvnitř karet `slate-100`): okraje a oddělovače.
-- **Inkoust** (`slate-900`): nadpisy a hodnoty. **Text** (`slate-700`): běžný text a popisky polí. **Vedlejší inkoust** (`slate-500`): metadata, popisky.
-- **Rám** (`slate-900` / `slate-800`): hlavička a postranní panel, text bílý a `white/70`.
+- **Plátno** (`slate-50`): pozadí obsahu, zapuštěné panely a podklad segmentu.
+- **Povrch** (`white`): pláty (karty), dialogy, pole.
+- **Výplň** (`slate-100`): neutrální štítky, dlaždice ikon.
+- **Linka** (`slate-200` na plátech a uvnitř nich, `slate-300` u polí a sekundárních tlačítek, `slate-400` stupnice měřidla): okraje a oddělovače nesou hloubku místo stínů.
+- **Inkoust** (`slate-900`): nadpisy, hodnoty, vybraný segment, výplň měřidla. **Text** (`slate-700`): běžný text a popisky polí. **Vedlejší inkoust** (`slate-500`): metadata, popisky, jednotky.
+- **Rám** (`slate-900` / `slate-800`): hlavička, postranní panel a spodní lišta, text bílý a `white/70`.
 
 ### Named Rules
-**The Closed Palette Rule.** V komponentách se používají jen rodiny `slate`, `navy`, `rose`, `emerald`, `amber` a `white`. Žádné `gray`, `red`, `purple`, `sky`… Hex barva v komponentě je chyba, s výjimkou log (Google, Strava). Tailwind na neexistující třídu neupozorní, proto se kontroluje grepem.
+**The Closed Palette Rule.** V komponentách se používají jen rodiny `slate`, `signal`, `rose`, `emerald`, `steel` a `white`. Žádné `gray`, `red`, `amber`, `navy`, `sky`… Hex barva v komponentě je chyba, s výjimkou log (Google, Strava #FC4C02). Tailwind na neexistující třídu neupozorní, proto se kontroluje grepem.
 
-**The Meaning-Only Rule.** Barva vždy znamená akci nebo stav. Kategorie a typy (např. DIY vs. servis) se odlišují textem a neutrálním nebo navy štítkem, ne další barvou.
+**The Meaning-Only Rule.** Barva vždy znamená akci nebo stav. Kategorie a typy (např. DIY vs. servis, Strava vs. ruční zápis) se odlišují textem a neutrálním nebo `chip-signal` štítkem, ne další barvou.
 
-**The AA Rule.** Text na bílé má kontrast alespoň 4,5:1. Proto jsou smaragdové a jantarové texty v odstínu 700–800 (600 je jen pro ikony), růžové od 600.
+**The AA Rule.** Text na bílé má kontrast alespoň 4,5:1. Proto je na jantarové výplni grafitový text, jantarový text je od `signal-600`, smaragdové a ocelové texty v odstínu 700–800 (600 je jen pro ikony a výplně), růžové od 600.
 
 ## Typography
 
-**Font:** Plus Jakarta Sans (`next/font`, proměnná `--font-sans`), fallback system-ui. Hierarchii nese řez a velikost, ne druhé písmo.
+**Písma:** Archivo (variabilní, osa šířky; `next/font`, proměnná `--font-sans`) pro rozhraní a JetBrains Mono (`--font-mono`, utilita `font-mono`) jen pro měřené hodnoty. Obě se hostují z vlastního buildu, žádná externí doména za běhu. Hierarchii nese řez, velikost a šířka, ne další písmo.
 
 ### Hierarchy
-- **KPI** (800, 24px, tabulkové číslice): hlavní čísla na kartách (kilometry, náklady, počty).
+- **Readout** (`readout`: mono 600, tracking −0,02em; velikost dodává místo, KPI 24px, karty 18px, řádky 14px): hodnoty tachometru, motohodin, nákladů, tlaků. Jednotka může mít `readout-unit`.
 - **Page title** (700, 20px, `<h1>`): název obrazovky v `PageHeader` nebo hlavičce detailu. Jeden `<h1>` na stránku.
-- **Section** (700, 16px, `<h2>`): nadpisy sekcí obrazovky mimo karty (Po termínu, Servisní plány…) a hlavička podstránky detailu kola.
-- **Title** (700, 14px): nadpis uvnitř karty (záhlaví karty, název kola, komponenty, plánu). Úroveň `<h2>`/`<h3>` podle struktury, velikost vždy 14px.
-- **Body** (500, 12px): data, řádky, popisy. Pole mají 14px (na telefonu 16px kvůli iOS).
-- **Label** (`section-label`: 700, 12px, velká písmena, `tracking-wider`, `slate-500`): popisky KPI a skupin.
+- **Section** (700, 16px, `<h2>`): nadpisy sekcí obrazovky mimo karty a hlavička podstránky detailu kola.
+- **Title** (700, 14px): nadpis uvnitř karty. Úroveň `<h2>`/`<h3>` podle struktury, velikost vždy 14px.
+- **Body** (500, 12px): data, řádky, popisy. Pole mají 14px (na telefonu 16px kvůli iOS); číselná pole (`type="number"`, `inputmode="decimal|numeric"`) jsou automaticky mono.
+- **Label** (`section-label`: 700, 12px, velká písmena, tracking 0,08em, šířka 80 %, `slate-500`): popisky hodnot a skupin, jako ražený štítek. Nikdy jako nadtitulek nad nadpisem.
+- **Rám:** titulek v hlavičce a značka BikeVault jsou velkými písmeny v zúženém Archivu.
 
 ### Named Rules
 **The 12px Floor Rule.** Žádný text není menší než 12px (`text-xs`), ani štítky a metadata. `text-[10px]` a `text-[11px]` se nepoužívají; méně důležité se odlišuje barvou a řezem.
 
+**The Mono-Means-Measured Rule.** Mono písmo dostávají jen měřené nebo počítané hodnoty (km, h, psi, bar, %, kliky, Kč, roky, sériová čísla). Text, názvy a popisy nikdy.
+
 ## Layout
 
-Postranní panel 256px vlevo (na mobilu vysouvací zásuvka, otevírá ji „Více“ ve spodní liště), hlavička 64px, na mobilu spodní lišta 56px, obsah s okrajem 16px (mobil) / 24px. Rám respektuje bezpečné okraje (`env(safe-area-inset-*)`: výřez, home indikátor) a výška aplikace je `h-dvh`, ne `100vh`. Rytmus na 4px kroku: uvnitř karet 8–12px, mezi kartami 16–24px. Karty mají vnitřní okraj 16px (mobil) / 20px. Zlomy: 640px (sm), 768px (md, objeví se postranní panel), 1024px (lg).
+Postranní panel 256px vlevo (na mobilu vysouvací zásuvka, otevírá ji „Více“ ve spodní liště), hlavička 64px, na mobilu spodní lišta 56px, obsah s okrajem 16px (mobil) / 24px. Rám respektuje bezpečné okraje (`env(safe-area-inset-*)`) a výška aplikace je `h-dvh`, ne `100vh`. Rytmus na 4px kroku: uvnitř karet 8–12px, mezi kartami 16–24px. Karty mají vnitřní okraj 16px (mobil) / 20px. Zlomy: 640px (sm), 768px (md, objeví se postranní panel), 1024px (lg).
 
 ## Elevation & Depth
 
-Hloubka je tonální: bílé karty na světlém plátně s vlasovou linkou a stínem `shadow-sm`. Výraznější stín mají jen plovoucí vrstvy: nabídky a toasty `shadow-lg`, dialogy `shadow-xl` nad ztmavením `slate-900/40`.
+Hloubka je lineární, ne stínová: bílé pláty na světlém plátně s vlasovou linkou `slate-200`, žádný `shadow-sm` na kartách, tlačítkách ani polích. Hover karty ztmaví linku (`slate-400`). Stín mají jen plovoucí vrstvy: nabídky a toasty `shadow-lg`, dialogy `shadow-xl` nad ztmavením `slate-900/40`.
 
 ## Shapes
 
-Karty, dialogy a nabídky 16px (`rounded-2xl`); tlačítka, pole, panely a podklad segmentu 12px (`rounded-xl`); ikonová tlačítka a volba segmentu 8px (`rounded-lg`); štítky 6px (`rounded-md`); avatary a tečky plně kulaté. Žádné barevné levé pruhy.
+Ostré hrany technického výkresu. Celá škála zaoblení je přepsaná v `tailwind.config.ts`, takže existující utility ji následují: `rounded-2xl` = 4px (karty, dialogy, nabídky), `rounded-xl` / `rounded-lg` = 3px (tlačítka, pole, panely, segment), `rounded-md` / `rounded-sm` = 2px (štítky, volba segmentu). Plně kulaté zůstávají jen avatary, tečky a odznaky. Jediná výjimka: stavové prvky integrací v hlavičce (`btn-header`, 12px). Žádné barevné levé pruhy.
 
 ## Components
 
 Každý opakovaný prvek má jeden recept jako třídu v `src/app/globals.css` (`@layer components`). Nové místo použije třídu, nevymýšlí vlastní kombinaci; místo použití doplňuje jen rozložení (šířka, flex, grid, okraje) přes `cn()`.
 
 ### Buttons
-- **Primary (`btn-primary`):** navy, bílý text 12px bold, výška 32px, na mobilu 44px. Jedna hlavní akce na obrazovku nebo dialog.
-- **Danger (`btn-danger`):** stejný recept v růžové, jen pro nevratnou akci v potvrzovacím dialogu.
-- **Secondary (`btn-secondary`):** bílý povrch s linkou, text `slate-700`, hover navy. Zrušit, Upravit, Export, akce na kartách.
+- **Primary (`btn-primary`):** jantarová výplň `signal-500`, linka `signal-600`, grafitový text 12px bold, výška 32px, na mobilu 44px. Hover světlejší `signal-400`. Jedna hlavní akce na obrazovku nebo dialog.
+- **Danger (`btn-danger`):** stejný recept v růžové s bílým textem, jen pro nevratnou akci v potvrzovacím dialogu.
+- **Secondary (`btn-secondary`):** bílý povrch s linkou `slate-300`, text `slate-700`, hover obtáhne linku i text grafitem. Zrušit, Upravit, Export, akce na kartách, „Detail kola“.
 - **Secondary danger (`btn-secondary btn-secondary-danger`):** vstup do mazání nebo odpojení; červené až při najetí.
-- **Shell (`btn-shell`):** vedlejší akce na tmavém rámu (přihlášení, synchronizace).
-- **Text (`btn-text`, `btn-text-danger`):** nejtišší úroveň, vypadá jako odkaz („Zobrazit vše“, „Zrušit filtr“).
-- **Icon (`btn-icon`, `btn-icon-danger`):** ikona 16px bez rámečku, 32px plocha, na mobilu 44px; vždy `aria-label`.
+- **Shell (`btn-shell`):** vedlejší akce na tmavém rámu (Přidat komponentu, řazení kol): průhledné s linkou `white/20`.
+- **Header (`btn-header`):** stavové prvky Strava a Google Disk v hlavičce. Mají záměrně původní vzhled (12px zaoblení, `white/5`, linka `white/15`); připojená Strava má svou značkovou oranžovou. Nepoužívá se jinde.
+- **Text (`btn-text`, `btn-text-danger`):** nejtišší úroveň, vypadá jako odkaz (`signal-700`).
+- **Icon (`btn-icon`, `btn-icon-danger`):** ikona 16px bez rámečku, při najetí obtažená linkou; 32px plocha, na mobilu 44px; vždy `aria-label`.
 - **Size (`btn-sm`):** menší výška 28px pro husté řádky; na mobilu zůstává 44px.
 - **Disabled:** šedé (`slate-200`), ne průhledné.
 
 ### Fields
-- **`field`** pro `input`, `select`, `textarea`: bílý povrch, linka, 12px zaoblení, 14px text, fokus navy okraj a aura; chyba přes `aria-invalid="true"` růžovým okrajem.
+- **`field`** pro `input`, `select`, `textarea`: bílý povrch, linka `slate-300`, 3px zaoblení, 14px text, fokus jantarový okraj `signal-600` a aura; chyba přes `aria-invalid="true"` růžovým okrajem. Číselná pole mono.
 - **`field-label`**: 12px semibold `slate-700`, 4px nad polem.
 - **`field field-sm`**: kompaktní pole pro přejmenování přímo v řádku seznamu.
 - **Jednotka v poli** (km, h, Kč): `absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 pointer-events-none`.
 
 ### Choice cards
-- **`option-card`**: `label` obalující radio/checkbox s popisem; vybraná volba (`:has(:checked)`) má navy nádech a navy okraj, `option-card-danger` pro destruktivní volbu (růžová). Rozložení obsahu (`items-start` / `items-center`) doplňuje místo.
+- **`option-card`**: `label` obalující radio/checkbox s popisem; vybraná volba (`:has(:checked)`) má jantarový nádech a okraj `signal-600`, `option-card-danger` pro destruktivní volbu (růžová).
 
 ### Cards
-- **`card`**: bílý povrch, linka `slate-200/80`, 16px zaoblení, `shadow-sm`. Vnitřní okraj doplňuje místo (`p-4 sm:p-5`).
-- **`card-header`**: záhlaví karty se seznamem, linka `slate-100` pod ním.
+- **`card`** (plát): bílý povrch, linka `slate-200`, 4px zaoblení, bez stínu. Vnitřní okraj doplňuje místo (`p-4 sm:p-5`).
+- **`card-header`**: záhlaví karty se seznamem, linka `slate-200` pod ním.
+
+### Readouts
+- **`readout`** (+ `readout-unit`): měřená hodnota v mono. KPI pás garáže, statistik a financí, tachometr a motohodiny na kartě kola, čisté náklady, stav v postranním panelu.
+
+### Interval gauge (signature)
+- **`IntervalGauge`** (`src/components/common/IntervalGauge.tsx`, geometrie `src/lib/domain/intervalGauge.ts`, recepty `gauge-*`): pravítko servisního intervalu na kartě kola. Stupnice s ryskami po 10 % a 2 %, grafitová výplň do začátku varovné zóny, ocelová ve varovné zóně (obtažená i před dosažením), růžová za limitem; ryska limitu a trojúhelníkový ukazatel aktuálního stavu. Pod ním `0 km … použito / interval · +přetažení` v mono. Ukazuje km nebo hodiny podle toho, co je blíž limitu; plány jen v měsících měřidlo nemají. Je čistě vizuální (`role="img"` s popisem); stav v textu nese štítek vedle.
 
 ### Segmented controls
-- **`segmented` + `segment`**: šedý podklad, volba 12px semibold; vybraná je navy s bílým textem. Stav nese ARIA atribut, ne třída: `aria-pressed` (filtr, přepínač), `aria-selected` (`role="tab"`), `aria-current="page"` (odkazy podsekcí kola). Barvu podle významu (výdaj/příjem) přidává místo utilitou `aria-pressed:bg-…`.
+- **`segmented` + `segment`**: zapuštěný podklad `slate-50` s linkou, volba 12px semibold; vybraná je grafitová (`slate-900`) s bílým textem. Stav nese ARIA atribut: `aria-pressed`, `aria-selected` (`role="tab"`), `aria-current="page"` (odkazy podsekcí kola). Barvu podle významu (výdaj/příjem) přidává místo utilitou `aria-pressed:bg-…`.
 
 ### Chips
-- **`chip` + `chip-neutral` / `chip-navy` / `chip-emerald` / `chip-amber` / `chip-rose`**: 6px zaoblení, 12px semibold, bez rámečku, barva jen podle významu.
+- **`chip` + `chip-neutral` / `chip-signal` / `chip-emerald` / `chip-steel` / `chip-rose`**: 2px zaoblení, 12px semibold, bez rámečku, barva jen podle významu. Štítky přes fotku kola jsou bílé s linkou, rok mono.
 
 ### Panels
-- **`panel` + `panel-error` / `panel-warning` / `panel-info` / `panel-success` / `panel-neutral`**: 12px okraj a zaoblení, linka, 12px text. `panel-neutral` je šedý zapuštěný box (technický detail, souhrn, nastavení odpružení). Ikona vlevo (`flex items-start gap-2.5`) doplňuje místo. Chybová hláška ve formuláři má `role="alert"`. Toasty používají stejné panely se stínem `shadow-lg`.
+- **`panel` + `panel-error` / `panel-warning` / `panel-info` / `panel-success` / `panel-neutral`**: 12px okraj, 3px zaoblení, linka, 12px text. Varování je ocelové, informace jantarově tónovaná. `panel-neutral` je šedý zapuštěný box. Ikona vlevo (`flex items-start gap-2.5`) doplňuje místo. Chybová hláška ve formuláři má `role="alert"`. Toasty používají stejné panely se stínem `shadow-lg`.
 
 ### Page header
-- **`PageHeader`** (`src/components/common/PageHeader.tsx`): karta s `<h1>` (20px), volitelným štítkem (`chip`), akcemi vpravo a řádkem pod nadpisem (`children`: záložky, filtry). Používají ji všechny seznamové obrazovky; detail kola a komponenty mají vlastní hlavičku se stejným `<h1>`. Titulek v tmavé hlavičce aplikace není nadpis (`<p>`) a je to vždy popisek aktivní položky navigace (`navItems.ts`); slogan „Vaše kola pod absolutní kontrolou“ patří jen pod logo v postranním panelu.
+- **`PageHeader`** (`src/components/common/PageHeader.tsx`): plát s `<h1>` (20px), volitelným štítkem (`chip`), akcemi vpravo a řádkem pod nadpisem (`children`: záložky, filtry). Používají ji všechny seznamové obrazovky; detail kola a komponenty mají vlastní hlavičku se stejným `<h1>`. Titulek v tmavé hlavičce aplikace není nadpis (`<p>`, velká písmena, zúžený) a je to vždy popisek aktivní položky navigace (`navItems.ts`); slogan „Vaše kola pod absolutní kontrolou“ patří jen pod logo v postranním panelu.
+
+### Sidebar
+- **`Sidebar`** (`src/components/layout/Sidebar.tsx`): logo je jantarová dlaždice s grafitovou ikonou a značka BIKEVAULT velkými písmeny. Aktivní položka navigace: podklad `white/10`, ikona `signal-400` a malý jantarový čtverec vpravo (jako ryska nastavení na číselníku). Stavový plát dole má hodnoty v mono.
 
 ### Settings sections
-- **`SettingsSection`** (`src/app/settings/page.tsx`): Nastavení je jedna posouvaná stránka bez `PageHeader` (`<h1>` je `sr-only`, název nese hlavička aplikace). Každá sekce je `card` se záhlavím: ikona 20px v dlaždici `slate-100`/`slate-500` (jen Mazání dat má `rose-50`/`rose-600`), `<h2>` 16px, popis 12px `slate-500`, akce vpravo, linka `slate-100` pod záhlavím. Řádek uvnitř: text vlevo (`<h3>` 14px bold + popis), tlačítko vpravo; na telefonu pod sebou.
-- **Obsah stránky** (`SettingsOutline`): od 1280px (xl) přilepený sloupec 13rem vpravo, `section-label` „Na této stránce“, aktivní sekce `navy-50`/`navy-700` (`aria-current="location"`).
+- **`SettingsSection`** (`src/app/settings/page.tsx`): Nastavení je jedna posouvaná stránka bez `PageHeader` (`<h1>` je `sr-only`, název nese hlavička aplikace). Každá sekce je `card` se záhlavím: ikona 20px v dlaždici `slate-100`/`slate-500` (jen Mazání dat má `rose-50`/`rose-600`), `<h2>` 16px, popis 12px `slate-500`, akce vpravo, linka pod záhlavím. Řádek uvnitř: text vlevo (`<h3>` 14px bold + popis), tlačítko vpravo; na telefonu pod sebou.
+- **Obsah stránky** (`SettingsOutline`): od 1280px (xl) přilepený sloupec 13rem vpravo, `section-label` „Na této stránce“, aktivní sekce `signal-50`/`signal-700` (`aria-current="location"`).
 
 ### Mobile navigation
-- **`MobileNav`** (`src/components/layout/MobileNav.tsx`): jen pod 768px, pevná spodní lišta v barvě rámu (`slate-900`, linka `white/10`). Pět stejných buněk ≥ 56px: Garáž, Komponenty, Servis, Finance a „Více“ (otevře zásuvku se Statistikami, Seznamy, Nastavením a rychlými akcemi). Ikona 20px v 48×28px poli, popisek 12px; aktivní má navy pole a bílý text, ostatní `white/60`. „Servis“ nese růžový odznak s počtem plánů po termínu. Položky a pravidlo aktivní sekce jsou sdílené se sidebarem (`navItems.ts`). Toasty na mobilu sedí nad lištou.
+- **`MobileNav`** (`src/components/layout/MobileNav.tsx`): jen pod 768px, pevná spodní lišta v barvě rámu (`slate-900`, linka `white/10`). Pět stejných buněk ≥ 56px: Garáž, Komponenty, Servis, Finance a „Více“. Ikona 20px v 48×28px poli, popisek 12px; aktivní má jantarové pole `signal-500` s grafitovou ikonou a bílý popisek, ostatní `white/60`. „Servis“ nese růžový odznak s počtem plánů po termínu. Položky a pravidlo aktivní sekce jsou sdílené se sidebarem (`navItems.ts`). Toasty na mobilu sedí nad lištou.
 
 ### Empty states
 - **`empty-state`**: na střed, 32px nahoře a dole, 12px `slate-500`; volitelný nadpis 14px bold `slate-700`.
@@ -224,14 +245,18 @@ Každý opakovaný prvek má jeden recept jako třídu v `src/app/globals.css` (
 
 ### Do:
 - **Do** použij recept; přes `cn()` přidávej jen rozložení.
-- **Do** drž text na 12px a výš, důležitost odlišuj řezem a barvou.
-- **Do** dávej číslům tabulkové číslice.
+- **Do** dávej měřeným hodnotám `readout` / mono, popiskům `section-label`.
+- **Do** drž text na 12px a výš, důležitost odlišuj řezem, šířkou a barvou.
+- **Do** na jantarovou výplň piš grafitem, ne bílou.
 - **Do** ikonovým tlačítkům `aria-label` a na mobilu 44px plochu.
 - **Do** respektuj `prefers-reduced-motion`.
 
 ### Don't:
 - **Don't** skládej vlastní třídy tlačítek, štítků, panelů a karet inline.
-- **Don't** používej barvy mimo uzavřenou paletu ani hex v komponentách.
+- **Don't** používej barvy mimo uzavřenou paletu ani hex v komponentách (kromě log).
+- **Don't** přidávej stíny plátům ani tlačítkům; hloubku nese linka.
+- **Don't** používej mono pro text nebo jako „technický“ kostým.
+- **Don't** přidávej industriální dekor (textury, nýty, výstražné pruhy, šablonové písmo).
 - **Don't** používej `text-[10px]` / `text-[11px]`.
 - **Don't** vnořuj karty do karet.
 - **Don't** přebíjej barvu nebo zaoblení receptu utilitou; potřebuješ-li variantu, přidej ji do receptu a do tohoto souboru.

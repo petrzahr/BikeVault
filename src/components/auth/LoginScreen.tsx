@@ -80,7 +80,7 @@ export const LoginScreen: React.FC = () => {
 
         {/* Logo a hlavička */}
         <div className="text-center space-y-3">
-          <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-navy-600 text-white ${isSyncing ? "animate-pulse motion-reduce:animate-none" : ""}`}>
+          <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-signal-600 text-white ${isSyncing ? "animate-pulse motion-reduce:animate-none" : ""}`}>
             <Bike className="w-8 h-8" aria-hidden="true" />
           </div>
           <div>
@@ -102,7 +102,7 @@ export const LoginScreen: React.FC = () => {
           >
             <div className="flex items-start gap-2.5">
               {isAccessDenied ? (
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <AlertTriangle className="w-4 h-4 text-steel-600 shrink-0 mt-0.5" />
               ) : (
                 <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
               )}
@@ -136,11 +136,11 @@ export const LoginScreen: React.FC = () => {
             type="button"
             onClick={handleLogin}
             disabled={isSyncing}
-            className="w-full min-h-12 flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-bold border border-slate-300 shadow-sm hover:border-navy-300 transition-colors active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40"
+            className="w-full min-h-12 flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-bold border border-slate-300 shadow-sm hover:border-signal-300 transition-colors active:scale-[0.99] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-500/40"
           >
             {isSyncing ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin text-navy-600" />
+                <Loader2 className="w-5 h-5 animate-spin text-signal-600" />
                 <span>Přihlašuji a načítám data…</span>
               </>
             ) : (
@@ -177,7 +177,7 @@ export const LoginScreen: React.FC = () => {
                 type="button"
                 onClick={handleCopyEmail}
                 title={`Zkopírovat adresu ${ACCESS_REQUEST_EMAIL}`}
-                className="min-h-11 md:min-h-8 inline-flex items-center px-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-50 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40"
+                className="min-h-11 md:min-h-8 inline-flex items-center px-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-50 underline underline-offset-2 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-500/40"
               >
                 Zkopírovat kontaktní e-mail
               </button>

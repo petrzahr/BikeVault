@@ -146,7 +146,7 @@ export function ComponentsClient({
             } else if (comp.status === "SOLD") {
               statusBadge = {
                 text: t("components.sold"),
-                style: "chip-navy",
+                style: "chip-signal",
               };
             } else if (comp.status === "DISCARDED") {
               statusBadge = {
@@ -180,7 +180,7 @@ export function ComponentsClient({
                   </div>
 
                   <Link href={`/components/${comp.id}`} className="block group/title">
-                    <h3 className="text-sm font-bold text-slate-900 group-hover/title:text-navy-600 transition-colors">
+                    <h3 className="text-sm font-bold text-slate-900 group-hover/title:text-signal-600 transition-colors">
                       {comp.manufacturer} {comp.model}
                     </h3>
                   </Link>
@@ -191,7 +191,7 @@ export function ComponentsClient({
                   )}
 
                   {comp.tireCasing && (
-                    <p className="text-xs text-navy-700 mt-1 font-medium">
+                    <p className="text-xs text-signal-700 mt-1 font-medium">
                       {comp.tireCasing} • {comp.tireCompound || ""}
                     </p>
                   )}

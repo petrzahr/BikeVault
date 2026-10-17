@@ -28,14 +28,14 @@ export function AuthGate({ children }: AuthGateProps) {
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
-        <div className="w-16 h-16 rounded-2xl bg-navy-600 text-white shadow-lg flex items-center justify-center animate-pulse motion-reduce:animate-none mb-3.5">
+        <div className="w-16 h-16 rounded-2xl bg-signal-600 text-white shadow-lg flex items-center justify-center animate-pulse motion-reduce:animate-none mb-3.5">
           <Bike className="w-8 h-8" />
         </div>
         <div className="text-slate-900 font-extrabold text-lg tracking-tight">
-          Bike<span className="text-navy-600">Vault</span>
+          Bike<span className="text-signal-600">Vault</span>
         </div>
         <div className="flex items-center gap-2 text-slate-500 text-xs mt-2.5 font-medium">
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-navy-600" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-signal-600" />
           <span>Ověřuji přihlášení...</span>
         </div>
       </div>
@@ -51,14 +51,14 @@ export function AuthGate({ children }: AuthGateProps) {
   if (!isInitialSyncDone) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
-        <div className="w-16 h-16 rounded-2xl bg-navy-600 text-white shadow-lg flex items-center justify-center animate-pulse motion-reduce:animate-none mb-3.5">
+        <div className="w-16 h-16 rounded-2xl bg-signal-600 text-white shadow-lg flex items-center justify-center animate-pulse motion-reduce:animate-none mb-3.5">
           <Bike className="w-8 h-8" />
         </div>
         <div className="text-slate-900 font-extrabold text-lg tracking-tight">
-          Bike<span className="text-navy-600">Vault</span>
+          Bike<span className="text-signal-600">Vault</span>
         </div>
         <div className="flex items-center gap-2 text-slate-500 text-xs mt-2.5 font-medium">
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-navy-600" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-signal-600" />
           <span>Načítám data z Google Disku...</span>
         </div>
       </div>
@@ -122,7 +122,7 @@ export function AuthGate({ children }: AuthGateProps) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 select-none">
         <div className="card max-w-md w-full p-6 sm:p-8 text-center">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 mb-4">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-steel-50 flex items-center justify-center text-steel-600 mb-4">
             <AlertTriangle className="w-7 h-7" />
           </div>
           <h2 className="text-lg font-bold text-slate-900 mb-2">

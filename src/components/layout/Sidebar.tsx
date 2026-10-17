@@ -63,11 +63,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Logo a záhlaví */}
           <div className="flex items-center justify-between">
             <Link href="/garage" onClick={onCloseMobile} className="flex items-center gap-2.5 min-w-0">
-              <div className="w-9 h-9 shrink-0 rounded-xl bg-navy-600 text-white flex items-center justify-center shadow-md shadow-black/20">
-                <BikeIcon className="w-5 h-5" />
+              <div className="w-9 h-9 shrink-0 rounded-lg bg-signal-500 text-slate-900 flex items-center justify-center">
+                <BikeIcon className="w-5 h-5" strokeWidth={2.25} />
               </div>
               <div className="min-w-0">
-                <span className="text-base font-extrabold tracking-tight text-white block leading-none">
+                <span className="text-base font-extrabold uppercase tracking-[0.06em] [font-stretch:85%] text-white block leading-none">
                   BikeVault
                 </span>
                 <span className="text-xs leading-4 text-white/60 font-medium block mt-1">
@@ -120,16 +120,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   href={item.href}
                   onClick={onCloseMobile}
                   aria-current={active ? "page" : undefined}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
                     active
-                      ? "bg-navy-600 text-white shadow-sm"
-                      : "text-white/70 hover:bg-white/10 hover:text-white"
+                      ? "bg-white/10 text-white"
+                      : "text-white/70 hover:bg-white/5 hover:text-white"
                   }`}
                 >
-                  <span className={active ? "text-white" : "text-white/60"}>
+                  <span className={active ? "text-signal-400" : "text-white/60"}>
                     <Icon className="w-4 h-4" />
                   </span>
                   <span>{item.label}</span>
+                  {/* Active marker: a small amber square, like a set indicator on a dial */}
+                  {active && <span aria-hidden="true" className="ml-auto w-1.5 h-1.5 bg-signal-400" />}
                 </Link>
               );
             })}
@@ -137,32 +139,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Spodní rychlý přehled stavu k dnešnímu dni */}
-        <div className="p-3.5 mx-4 mb-4 shrink-0 bg-slate-800 border border-white/10 rounded-2xl space-y-2 text-xs">
+        <div className="p-3.5 mx-4 mb-4 shrink-0 bg-slate-800 border border-white/10 rounded-lg space-y-2 text-xs">
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Aktivní kola">Kola v garáži</span>
-              <span className="shrink-0 font-medium tabular-nums text-white/90">
+              <span className="shrink-0 font-mono font-medium text-white/90">
                 {activeBikesCount} {activeBikesCount === 1 ? "kolo" : activeBikesCount >= 2 && activeBikesCount <= 4 ? "kola" : "kol"}
               </span>
             </div>
 
             <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Celkový nájezd">Celkový nájezd</span>
-              <span className="shrink-0 font-medium tabular-nums text-white/90">
+              <span className="shrink-0 font-mono font-medium text-white/90">
                 {formatKm(totalKm)}
               </span>
             </div>
 
             <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Aktivní komponenty">Aktivní díly</span>
-              <span className="shrink-0 font-medium tabular-nums text-white/90">
+              <span className="shrink-0 font-mono font-medium text-white/90">
                 {installedComponentsCount} ks
               </span>
             </div>
 
             <div className="flex items-center justify-between text-white/70">
               <span className="truncate pr-2" title="Vyžaduje servis">Vyžaduje servis</span>
-              <span className={`shrink-0 font-medium tabular-nums ${overdueCount > 0 ? "text-rose-400 font-bold" : "text-emerald-400"}`}>
+              <span className={`shrink-0 font-mono font-medium ${overdueCount > 0 ? "text-rose-300 font-bold" : "text-emerald-400"}`}>
                 {overdueCount > 0 ? `${overdueCount} po termínu` : "V pořádku"}
               </span>
             </div>
@@ -172,7 +174,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="font-bold text-white/80 truncate pr-2" title="Hodnota garáže a dílů">
               Investice do kol
             </span>
-            <span className="shrink-0 font-extrabold text-sm tabular-nums text-white">
+            <span className="shrink-0 font-mono font-bold text-sm text-white">
               {formatCzk(totalInvestment)}
             </span>
           </div>

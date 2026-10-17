@@ -143,7 +143,7 @@ const SettingsOutline: React.FC<{ contentRef: React.RefObject<HTMLDivElement | n
               type="button"
               onClick={() => goTo(id)}
               aria-current={activeId === id ? "location" : undefined}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold leading-snug transition-colors text-slate-500 hover:bg-slate-100 hover:text-slate-900 aria-[current=location]:bg-navy-50 aria-[current=location]:text-navy-700"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold leading-snug transition-colors text-slate-500 hover:bg-slate-100 hover:text-slate-900 aria-[current=location]:bg-signal-50 aria-[current=location]:text-signal-700"
             >
               {label}
             </button>
@@ -501,7 +501,7 @@ export default function SettingsPage() {
           >
             {loadingStatus ? (
               <div className="py-8 text-center text-slate-500 text-xs">
-                <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-navy-600" />
+                <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-signal-600" />
                 <span>Ověřuji stav spojení se Stravou…</span>
               </div>
             ) : !stravaStatus.connected ? (
@@ -674,7 +674,7 @@ export default function SettingsPage() {
                         className="w-10 h-10 rounded-full border border-slate-200 shrink-0"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-navy-100 text-navy-700 flex items-center justify-center font-bold text-sm shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-signal-100 text-signal-700 flex items-center justify-center font-bold text-sm shrink-0">
                         {user?.displayName ? user.displayName[0].toUpperCase() : "G"}
                       </div>
                     )}
@@ -744,7 +744,7 @@ export default function SettingsPage() {
                       type="checkbox"
                       checked={driveBackupEnabled}
                       onChange={(e) => setDriveBackupEnabled(e.target.checked)}
-                      className="w-4 h-4 text-navy-600 rounded border-slate-300 focus:ring-navy-500"
+                      className="w-4 h-4 text-signal-600 rounded border-slate-300 focus:ring-signal-500"
                     />
                     <span className="text-xs font-medium text-slate-500">Zálohovat automaticky</span>
                   </label>

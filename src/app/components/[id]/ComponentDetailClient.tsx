@@ -231,7 +231,7 @@ export function ComponentDetailClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-navy-600" />
+              <Clock className="w-4 h-4 text-signal-600" />
               <span>Servisní plány komponenty ({schedulesWithStatus.length})</span>
             </h2>
           </div>
@@ -282,7 +282,7 @@ export function ComponentDetailClient({
                             : isOverdue
                             ? "chip-rose"
                             : isDueSoon
-                            ? "chip-amber"
+                            ? "chip-steel"
                             : "chip-emerald"
                         }`}
                       >
@@ -365,7 +365,7 @@ export function ComponentDetailClient({
       {/* HISTORIE SERVISU SEKCE */}
       <div className="space-y-4">
         <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-          <Wrench className="w-4 h-4 text-navy-600" />
+          <Wrench className="w-4 h-4 text-signal-600" />
           <span>Servisní deník komponenty ({serviceEvents.length})</span>
         </h2>
 
@@ -406,7 +406,7 @@ export function ComponentDetailClient({
       {/* HISTORIE INSTALACÍ SEKCE */}
       <div className="space-y-4">
         <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-          <BikeIcon className="w-4 h-4 text-navy-600" />
+          <BikeIcon className="w-4 h-4 text-signal-600" />
           <span>Historie osazení na kolech ({installationHistory.length})</span>
         </h2>
 

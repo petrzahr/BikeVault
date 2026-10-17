@@ -9,20 +9,35 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // Closed palette (see DESIGN.md): slate = neutral, navy = action, rose / emerald / amber = meaning
+      // Closed palette (see DESIGN.md): slate = neutral, signal = action, rose / emerald / steel = meaning
       colors: {
-        navy: {
-          50: "#eef2f7",
-          100: "#dbe3ee",
-          200: "#b3c2d8",
-          300: "#7f96b8",
-          400: "#4c6690",
-          500: "#2c4a76",
-          600: "#1c3a63",
-          700: "#152c4c",
-          800: "#0f2038",
-          900: "#0a1626",
-          950: "#060d16",
+        // Burnt amber action colour. 500 is the fill (graphite text on it), 600+ is text and icons on white.
+        signal: {
+          50: "#fdf4e3",
+          100: "#fae5bd",
+          200: "#f3cb85",
+          300: "#e8ac48",
+          400: "#db921c",
+          500: "#cc7a00",
+          600: "#a65f00",
+          700: "#8a4b00",
+          800: "#6b3a00",
+          900: "#4a2800",
+          950: "#2e1900",
+        },
+        // Steel blue: service due soon, warnings. Distinct from the amber action colour on purpose.
+        steel: {
+          50: "#eef3fa",
+          100: "#dce7f5",
+          200: "#b9cdea",
+          300: "#8aabd8",
+          400: "#5a86c2",
+          500: "#3a6aad",
+          600: "#2b5ea7",
+          700: "#1f4a86",
+          800: "#183a6b",
+          900: "#112b50",
+          950: "#0a1a31",
         },
         // Single neutral scale (cool-neutral): canvas, surfaces, lines, text and the dark app shell
         slate: {
@@ -40,7 +55,18 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-sans)', '"Plus Jakarta Sans"', "system-ui", "-apple-system", "sans-serif"],
+        sans: ["var(--font-sans)", "system-ui", "-apple-system", "sans-serif"],
+        // Measurements only (km, h, psi, bar, clicks, prices): never as a "technical" costume for prose
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+      },
+      // Technical-drawing corners: the whole radius scale is sharpened here, so existing rounded-* utilities follow
+      borderRadius: {
+        sm: "2px",
+        md: "2px",
+        lg: "3px",
+        xl: "3px",
+        "2xl": "4px",
+        "3xl": "4px",
       },
       keyframes: {
         "fade-in": {

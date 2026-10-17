@@ -52,7 +52,7 @@ export const StravaStatusBadge: React.FC = () => {
           : "Strava není připojena – otevřít nastavení"
       }
       className={cn(
-        "btn-shell btn-sm",
+        "btn-header",
         // Strava brand orange is the one allowed hex outside the palette (logo exception)
         connected && "bg-[#FC4C02] hover:bg-[#e34402] border-[#FC4C02]"
       )}

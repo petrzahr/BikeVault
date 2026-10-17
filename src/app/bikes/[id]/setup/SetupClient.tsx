@@ -229,7 +229,7 @@ export function SetupClient({
             <div className="card p-4 sm:p-5 space-y-4 ">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-lg bg-signal-50 text-signal-700 flex items-center justify-center font-bold text-xs">
                     V
                   </div>
                   <div>
@@ -243,7 +243,7 @@ export function SetupClient({
                 </div>
 
                 {forkTravel && (
-                  <span className="chip chip-navy tabular-nums">
+                  <span className="chip chip-signal tabular-nums">
                     {forkTravel} mm
                   </span>
                 )}
@@ -372,7 +372,7 @@ export function SetupClient({
             <div className="card p-4 sm:p-5 space-y-4 ">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-navy-50 text-navy-700 flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-lg bg-signal-50 text-signal-700 flex items-center justify-center font-bold text-xs">
                     T
                   </div>
                   <div>
@@ -386,7 +386,7 @@ export function SetupClient({
                 </div>
 
                 {frameTravelSpec && (
-                  <span className="chip chip-navy tabular-nums">
+                  <span className="chip chip-signal tabular-nums">
                     {frameTravelSpec} mm
                   </span>
                 )}
@@ -681,7 +681,7 @@ export function SetupClient({
       {snapshots.length > 0 && (
         <div className="card p-4 sm:p-5 space-y-4 ">
           <div className="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-            <History className="w-4 h-4 text-navy-600" />
+            <History className="w-4 h-4 text-signal-600" />
             <h3 className="text-sm font-bold text-slate-900">
               Uložené profily nastavení ({snapshots.length})
             </h3>

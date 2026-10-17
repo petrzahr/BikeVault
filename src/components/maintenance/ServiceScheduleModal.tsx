@@ -250,7 +250,7 @@ export function ServiceScheduleModal({
         {!isEditing && (
           <div className="panel panel-neutral space-y-2">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-              <Sparkles className="w-3.5 h-3.5 text-navy-600" />
+              <Sparkles className="w-3.5 h-3.5 text-signal-600" />
               <span>Rychlé předvyplnění z doporučené šablony:</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -298,10 +298,10 @@ export function ServiceScheduleModal({
                 value="BIKE"
                 checked={appliesTo === "BIKE"}
                 onChange={() => setAppliesTo("BIKE")}
-                className="text-navy-600 focus:ring-navy-500"
+                className="text-signal-600 focus:ring-signal-500"
               />
               <div className="flex items-center gap-1.5">
-                <BikeIcon className="w-4 h-4 text-navy-600" />
+                <BikeIcon className="w-4 h-4 text-signal-600" />
                 <span>Celé kolo</span>
               </div>
             </label>
@@ -315,10 +315,10 @@ export function ServiceScheduleModal({
                 value="COMPONENT"
                 checked={appliesTo === "COMPONENT"}
                 onChange={() => setAppliesTo("COMPONENT")}
-                className="text-navy-600 focus:ring-navy-500"
+                className="text-signal-600 focus:ring-signal-500"
               />
               <div className="flex items-center gap-1.5">
-                <Layers className="w-4 h-4 text-navy-600" />
+                <Layers className="w-4 h-4 text-signal-600" />
                 <span>Konkrétní komponenta</span>
               </div>
             </label>
@@ -374,7 +374,7 @@ export function ServiceScheduleModal({
             <span className="field-label">
               Nastavení servisního intervalu
             </span>
-            <span className="chip chip-navy">
+            <span className="chip chip-signal">
               Podle toho, co nastane dříve
             </span>
           </div>
@@ -483,7 +483,7 @@ export function ServiceScheduleModal({
                 value="CURRENT_STATE"
                 checked={startingPointType === "CURRENT_STATE"}
                 onChange={() => setStartingPointType("CURRENT_STATE")}
-                className="text-navy-600 focus:ring-navy-500 mt-0.5"
+                className="text-signal-600 focus:ring-signal-500 mt-0.5"
               />
               <div>
                 <span className="font-bold block text-slate-900">
@@ -504,7 +504,7 @@ export function ServiceScheduleModal({
                 value="HISTORICAL"
                 checked={startingPointType === "HISTORICAL"}
                 onChange={() => setStartingPointType("HISTORICAL")}
-                className="text-navy-600 focus:ring-navy-500 mt-0.5"
+                className="text-signal-600 focus:ring-signal-500 mt-0.5"
               />
               <div className="w-full">
                 <span className="font-bold block text-slate-900">
@@ -589,7 +589,7 @@ export function ServiceScheduleModal({
 
               <div>
                 <span className="text-slate-500 block text-xs">Příští servis při</span>
-                <span className="tabular-nums font-bold text-navy-700">
+                <span className="tabular-nums font-bold text-signal-700">
                   {nextTargetHours !== null ? `${nextTargetHours} h` : ""}{nextTargetHours !== null && nextTargetKm !== null ? " / " : ""}{nextTargetKm !== null ? `${nextTargetKm} km` : ""}
                 </span>
               </div>

@@ -9,6 +9,8 @@ import { AddBikeModal } from "@/components/garage/AddBikeModal";
 import { t, formatKm, formatMinutes, pluralizeCs } from "@/lib/i18n";
 
 import { getBikeTransactions } from "@/lib/domain/finance";
+import { getIntervalGaugeReading, type IntervalGaugeReading } from "@/lib/domain/intervalGauge";
+import type { EvaluatedServiceSchedule } from "@/context/VaultContext";
 
 interface GarageClientProps {
   initialBikes?: any[];
@@ -86,6 +88,8 @@ export function GarageClient({
     );
     if (bikeSchedules.length === 0) return undefined;
 
+    const gaugeFor = (s: EvaluatedServiceSchedule) => getIntervalGaugeReading(s.schedule, s.status);
+
     const overdue = bikeSchedules.find(
       (s: { status?: { urgency: string } }) => s.status?.urgency === "OVERDUE"
     );
@@ -93,6 +97,9 @@ export function GarageClient({
       return {
         urgency: "OVERDUE" as const,
         text: `${overdue.schedule.name}: ${overdue.status.summaryTextCs}`,
+        scheduleName: overdue.schedule.name,
+        statusText: overdue.status.summaryTextCs,
+        gauge: gaugeFor(overdue),
       };
     }
     const dueSoon = bikeSchedules.find(
@@ -102,11 +109,22 @@ export function GarageClient({
       return {
         urgency: "DUE_SOON" as const,
         text: `${dueSoon.schedule.name} ${dueSoon.status.summaryTextCs}`,
+        scheduleName: dueSoon.schedule.name,
+        statusText: dueSoon.status.summaryTextCs,
+        gauge: gaugeFor(dueSoon),
       };
     }
+    // All OK: the ruler shows the schedule closest to its limit
+    const withGauge = bikeSchedules
+      .map((s: EvaluatedServiceSchedule) => ({ s, g: gaugeFor(s) }))
+      .filter((x: { s: EvaluatedServiceSchedule; g: IntervalGaugeReading | null }): x is { s: EvaluatedServiceSchedule; g: IntervalGaugeReading } => x.g !== null)
+      .sort((a: { g: IntervalGaugeReading }, b: { g: IntervalGaugeReading }) => b.g.used / b.g.interval - a.g.used / a.g.interval)[0];
     return {
       urgency: "OK" as const,
       text: t("maintenance.statuses.ok"),
+      scheduleName: withGauge?.s.schedule.name,
+      statusText: withGauge?.s.status.summaryTextCs ?? t("maintenance.statuses.ok"),
+      gauge: withGauge?.g ?? null,
     };
   };
 
@@ -206,13 +224,13 @@ export function GarageClient({
       </PageHeader>
 
       {/* KPI Agregáty garáže */}
-      <div className="card p-4 grid grid-cols-3 divide-x divide-slate-100">
+      <div className="card p-4 grid grid-cols-3 divide-x divide-slate-200">
         <div className="min-w-0 px-2 sm:px-4 first:pl-0">
           <div className="flex items-center gap-1.5 mb-1">
-            <BikeIcon className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <BikeIcon className="w-4 h-4 text-signal-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Nájezd garáže</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
+          <div className="readout text-lg sm:text-2xl truncate">
             {formatKm(totalMileage)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -222,10 +240,10 @@ export function GarageClient({
 
         <div className="min-w-0 px-2 sm:px-4">
           <div className="flex items-center gap-1.5 mb-1">
-            <Clock className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <Clock className="w-4 h-4 text-signal-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Čas v sedle</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
+          <div className="readout text-lg sm:text-2xl truncate">
             {formatMinutes(totalMinutes)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -235,11 +253,11 @@ export function GarageClient({
 
         <div className="min-w-0 px-2 sm:px-4 last:pr-0">
           <div className="flex items-center gap-1.5 mb-1">
-            <Warehouse className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <Warehouse className="w-4 h-4 text-signal-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Stav flotily</span>
           </div>
           <div className="flex items-baseline gap-2">
-            <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
+            <div className="readout text-lg sm:text-2xl truncate">
               {readyBikesCount} / {activeBikes.length}
             </div>
             <span className="text-xs text-slate-500 hidden sm:inline">připraveno</span>
@@ -251,7 +269,7 @@ export function GarageClient({
                 <span className="truncate">{overdueBikesCount} {pluralizeCs(overdueBikesCount, "vyžaduje servis", "vyžadují servis", "vyžaduje servis")}</span>
               </span>
             ) : dueSoonBikesCount > 0 ? (
-              <span className="chip chip-amber max-w-full">
+              <span className="chip chip-steel max-w-full">
                 <Clock className="w-3.5 h-3.5 shrink-0" />
                 <span className="truncate">{dueSoonBikesCount} {pluralizeCs(dueSoonBikesCount, "brzy na servis", "brzy na servis", "brzy na servis")}</span>
               </span>
@@ -269,7 +287,7 @@ export function GarageClient({
       {isReordering && (
         <div className="panel panel-info flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <ArrowUpDown className="w-4 h-4 text-navy-600 shrink-0" />
+            <ArrowUpDown className="w-4 h-4 text-signal-600 shrink-0" />
             <span><strong>Režim uspořádání aktivní:</strong> Pořadí kol měňte šipkami na kartách nebo přetažením myší.</span>
           </div>
           <button
@@ -321,7 +339,7 @@ export function GarageClient({
                 draggedId === bike.id ? "opacity-40" : ""
               } ${
                 overId === bike.id && draggedId !== bike.id
-                  ? "ring-2 ring-navy-600 ring-offset-2"
+                  ? "ring-2 ring-signal-600 ring-offset-2"
                   : ""
               }`}
               onDragOver={(e) => {

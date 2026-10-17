@@ -196,7 +196,7 @@ export function BikeServiceClient({
                             : isOverdue
                             ? "chip-rose"
                             : isDueSoon
-                            ? "chip-amber"
+                            ? "chip-steel"
                             : "chip-emerald"
                         }`}
                       >
@@ -325,7 +325,7 @@ export function BikeServiceClient({
                         {ev.name || ev.description}
                       </span>
                       <span className={`chip ${
-                        ev.executionType === "DIY" || ev.performedBy === "SELF" ? "chip-neutral" : "chip-navy"
+                        ev.executionType === "DIY" || ev.performedBy === "SELF" ? "chip-neutral" : "chip-signal"
                       }`}>
                         {ev.executionType === "DIY" || ev.performedBy === "SELF" ? "Svépomocí" : "Dílna"}
                       </span>

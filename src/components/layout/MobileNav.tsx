@@ -25,8 +25,8 @@ const NavCell: React.FC<{ icon: LucideIcon; label: string; active: boolean; badg
   <>
     <span
       className={cn(
-        "relative flex items-center justify-center w-12 h-7 rounded-lg transition-colors",
-        active ? "bg-navy-600 text-white" : "text-white/60"
+        "relative flex items-center justify-center w-12 h-7 rounded-md transition-colors",
+        active ? "bg-signal-500 text-slate-900" : "text-white/60"
       )}
     >
       <Icon className="w-5 h-5" />

@@ -1,16 +1,23 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { VaultProvider } from "@/context/VaultContext";
 import { FeedbackProvider } from "@/components/common/Feedback";
 import { AuthGate } from "@/components/auth/AuthGate";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+// Variable Archivo with the width axis: condensed widths carry the uppercase labels (section-label, readout captions)
+const archivo = Archivo({
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700", "800"],
+  axes: ["wdth"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -41,14 +48,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="cs" className={`h-full bg-slate-50 ${plusJakartaSans.variable}`}>
+    <html lang="cs" className={`h-full bg-slate-50 ${archivo.variable} ${jetBrainsMono.variable}`}>
       <head>
         <Script
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"
         />
       </head>
-      <body className={`${plusJakartaSans.className} h-full text-slate-800 antialiased selection:bg-navy-100 selection:text-navy-900 bg-slate-50`}>
+      <body className={`${archivo.className} h-full text-slate-800 antialiased selection:bg-signal-200 selection:text-slate-900 bg-slate-50`}>
         <FeedbackProvider>
           <VaultProvider>
             <AuthGate>

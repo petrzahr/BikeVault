@@ -48,7 +48,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
     return (
       <div className="card empty-state py-12">
         <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
-        <Link href="/garage" className="text-navy-600 hover:underline text-xs font-semibold">
+        <Link href="/garage" className="text-signal-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
         </Link>
       </div>
@@ -119,7 +119,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
       title: `Servis: ${item.description}`,
       subtitle: `${item.shopName || (item.performedBy === "SELF" ? "Svépomocí" : "Servis")} • ${formatCzk(Number(item.totalPrice || 0))}`,
       badge: "Servis",
-      badgeColor: "chip-navy",
+      badgeColor: "chip-signal",
       icon: Wrench,
       onDelete: () => setPendingDelete({ kind: "SERVICE", id: item.id, label: `servisní záznam „${item.description}“ včetně navázané platby` }),
     });
@@ -136,7 +136,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Výchozí nájezd: ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Zavedení kola do garáže"}`,
         badge: `Výchozí stav • ${sourceLabel}`,
-        badgeColor: isStrava ? "chip-navy" : "chip-neutral",
+        badgeColor: isStrava ? "chip-signal" : "chip-neutral",
         icon: SlidersHorizontal,
       });
     } else if (odo.entryType === "RIDE") {
@@ -151,7 +151,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Záznam nájezdu: ${formatKm(odo.resultingKm)} (${deltaKmText})`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} (${deltaMinText}) • ${sourceLabel}${odo.note ? ` • ${odo.note}` : ""}`,
         badge: isStrava ? "Nájezd • Strava" : "Nájezd • Ručně",
-        badgeColor: isStrava ? "chip-navy" : "chip-neutral",
+        badgeColor: isStrava ? "chip-signal" : "chip-neutral",
         icon: SlidersHorizontal,
         onDelete: odo.id === deletableOdometerId
           ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `záznam nájezdu ${formatKm(odo.resultingKm)} (celkový nájezd se vrátí na předchozí stav)` })
@@ -164,7 +164,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
         title: `Korekce nájezdu na ${formatKm(odo.resultingKm)}`,
         subtitle: `${formatMinutes(odo.resultingMinutes)} • ${sourceLabel} • ${odo.note || "Manuální oprava"}`,
         badge: `Korekce • ${sourceLabel}`,
-        badgeColor: "chip-amber",
+        badgeColor: "chip-steel",
         icon: History,
         onDelete: odo.id === deletableOdometerId
           ? () => setPendingDelete({ kind: "ODOMETER", id: odo.id, label: `korekci nájezdu na ${formatKm(odo.resultingKm)} (celkový nájezd se vrátí na předchozí stav)` })
@@ -197,7 +197,7 @@ export default function BikeHistoryPage({ params }: BikeHistoryPageProps) {
           return (
             <div key={idx} className="relative group">
               {/* Dot */}
-              <div className="absolute -left-6 sm:-left-8 top-1 w-6 h-6 rounded-full bg-white border-2 border-slate-300 group-hover:border-navy-600 transition-colors flex items-center justify-center text-slate-500 group-hover:text-navy-600 shadow-sm">
+              <div className="absolute -left-6 sm:-left-8 top-1 w-6 h-6 rounded-full bg-white border-2 border-slate-300 group-hover:border-signal-600 transition-colors flex items-center justify-center text-slate-500 group-hover:text-signal-600 shadow-sm">
                 <Icon className="w-3.5 h-3.5" />
               </div>
 

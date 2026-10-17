@@ -41,7 +41,7 @@ const toastStyles: Record<ToastKind, { box: string; icon: React.ReactNode }> = {
   },
   info: {
     box: 'panel-info',
-    icon: <Info className="w-4 h-4 text-navy-600 shrink-0" />,
+    icon: <Info className="w-4 h-4 text-signal-600 shrink-0" />,
   },
 };
 

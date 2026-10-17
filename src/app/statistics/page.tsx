@@ -49,10 +49,10 @@ export default function StatisticsPage() {
       <div className="card p-4 grid grid-cols-3 divide-x divide-slate-100">
         <div className="min-w-0 px-2 sm:px-4 first:pl-0">
           <div className="flex items-center gap-1.5 mb-1">
-            <Compass className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <Compass className="w-4 h-4 text-signal-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Celkový nájezd</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl readout text-slate-900 truncate">
             {formatKm(totalKm)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -62,10 +62,10 @@ export default function StatisticsPage() {
 
         <div className="min-w-0 px-2 sm:px-4">
           <div className="flex items-center gap-1.5 mb-1">
-            <Layers className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <Layers className="w-4 h-4 text-signal-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Čas v sedle</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl readout text-slate-900 truncate">
             {formatMinutes(totalMinutes)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -75,10 +75,10 @@ export default function StatisticsPage() {
 
         <div className="min-w-0 px-2 sm:px-4 last:pr-0">
           <div className="flex items-center gap-1.5 mb-1">
-            <ShieldCheck className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <ShieldCheck className="w-4 h-4 text-signal-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">Komponenty</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl readout text-slate-900 truncate">
             {components.length}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -122,7 +122,7 @@ export default function StatisticsPage() {
                   <span className="section-label block">
                     Cena za km
                   </span>
-                  <span className="text-sm font-bold text-navy-700 tabular-nums">
+                  <span className="text-sm font-bold text-signal-700 tabular-nums">
                     {item.costPerKm.toFixed(2)} Kč/km
                   </span>
                 </div>
@@ -138,7 +138,7 @@ export default function StatisticsPage() {
           <span className="section-label block">
             Průměrná životnost řetězu
           </span>
-          <span className="text-2xl font-extrabold text-slate-900 tabular-nums block">
+          <span className="text-2xl readout text-slate-900 block">
             1 500 km
           </span>
           <p className="text-xs text-slate-500">
@@ -150,7 +150,7 @@ export default function StatisticsPage() {
           <span className="section-label block">
             Průměrná životnost plášťů
           </span>
-          <span className="text-2xl font-extrabold text-slate-900 tabular-nums block">
+          <span className="text-2xl readout text-slate-900 block">
             1 200 – 1 800 km
           </span>
           <p className="text-xs text-slate-500">
@@ -162,7 +162,7 @@ export default function StatisticsPage() {
           <span className="section-label block">
             Servisní interval odpružení
           </span>
-          <span className="text-2xl font-extrabold text-slate-900 tabular-nums block">
+          <span className="text-2xl readout text-slate-900 block">
             50 h / 200 h
           </span>
           <p className="text-xs text-slate-500">

@@ -49,7 +49,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
     return (
       <div className="card empty-state py-12">
         <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
-        <Link href="/garage" className="text-navy-600 hover:underline text-xs font-semibold">
+        <Link href="/garage" className="text-signal-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
         </Link>
       </div>
@@ -123,7 +123,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
               className="panel panel-warning flex items-center justify-between gap-3"
             >
               <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-amber-600 shrink-0" />
+                <Clock className="w-5 h-5 text-steel-600 shrink-0" />
                 <div>
                   <p className="font-bold text-sm">
                     Blíží se termín servisu: {item.schedule.name}
@@ -166,7 +166,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
             <span className="section-label block mb-1">
               {t("bike.metrics.currentMileage")}
             </span>
-            <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
+            <span className="text-xl sm:text-2xl readout text-slate-900">
               {formatKm(bike.currentKm)}
             </span>
           </div>
@@ -176,7 +176,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
             <span className="section-label block mb-1">
               {t("bike.metrics.ridingHours")}
             </span>
-            <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
+            <span className="text-xl sm:text-2xl readout text-slate-900">
               {formatMinutes(bike.currentMinutes)}
             </span>
           </div>
@@ -186,7 +186,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
             <span className="section-label block mb-1">
               {t("bike.metrics.ownershipDuration")}
             </span>
-            <span className="text-xl sm:text-2xl font-extrabold text-slate-900 tabular-nums">
+            <span className="text-xl sm:text-2xl readout text-slate-900">
               {tco.ownershipMonths} {tco.ownershipMonths === 1 ? "měsíc" : tco.ownershipMonths >= 2 && tco.ownershipMonths <= 4 ? "měsíce" : "měsíců"}
             </span>
           </div>
@@ -196,7 +196,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
             <span className="section-label block mb-1">
               {t("bike.metrics.netCost")}
             </span>
-            <span className="text-xl sm:text-2xl font-extrabold text-navy-700 tabular-nums">
+            <span className="text-xl sm:text-2xl readout text-signal-700">
               {formatCzk(tco.netOwnershipCost)}
             </span>
           </div>
@@ -273,7 +273,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           <div>
             <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <Gauge className="w-4 h-4 text-navy-600" />
+                <Gauge className="w-4 h-4 text-signal-600" />
                 <h2 className="text-sm font-bold text-slate-900">
                   {t("setup.title")}
                 </h2>
@@ -406,7 +406,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
           <div>
             <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-navy-600" />
+                <SlidersHorizontal className="w-4 h-4 text-signal-600" />
                 <h2 className="text-sm font-bold text-slate-900">
                   Poslední záznamy nájezdu
                 </h2>
@@ -433,11 +433,11 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                             {formatKm(entry.resultingKm)}
                           </span>
                           <span className={`tabular-nums font-semibold ${
-                            isDeltaPositive ? "text-emerald-700" : "text-amber-800"
+                            isDeltaPositive ? "text-emerald-700" : "text-steel-800"
                           }`}>
                             ({isDeltaPositive ? `+${formatKm(entry.deltaKm)}` : formatKm(entry.deltaKm)})
                           </span>
-                          <span className={`chip ${entry.source === "STRAVA" ? "chip-navy" : "chip-neutral"}`}>
+                          <span className={`chip ${entry.source === "STRAVA" ? "chip-signal" : "chip-neutral"}`}>
                             {entry.source === "STRAVA" ? "Strava" : "Ručně"}
                           </span>
                         </div>

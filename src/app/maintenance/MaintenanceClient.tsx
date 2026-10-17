@@ -222,7 +222,7 @@ export function MaintenanceClient({
       {dueSoon.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-amber-600" />
+            <Clock className="w-4 h-4 text-steel-600" />
             <h2 className="text-base font-bold text-slate-900">
               {t("maintenance.groups.dueSoon")} ({dueSoon.length})
             </h2>
@@ -236,7 +236,7 @@ export function MaintenanceClient({
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="chip chip-amber">
+                    <span className="chip chip-steel">
                       Zbývá {item.status.summaryTextCs}
                     </span>
                     <span className="text-xs text-slate-600 font-medium">
@@ -312,7 +312,7 @@ export function MaintenanceClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-navy-600" />
+              <Sliders className="w-4 h-4 text-signal-600" />
               <span>Správa servisních plánů ({allSchedules.length})</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -384,7 +384,7 @@ export function MaintenanceClient({
                           : isOverdue
                           ? "chip-rose"
                           : isDueSoon
-                          ? "chip-amber"
+                          ? "chip-steel"
                           : "chip-emerald"
                       }`}>
                         {!sched.isActive ? "Deaktivováno" : status.summaryTextCs}
@@ -395,7 +395,7 @@ export function MaintenanceClient({
                       </span>
 
                       {item.bike && (
-                        <span className="text-xs text-navy-700 font-semibold flex items-center gap-1">
+                        <span className="text-xs text-signal-700 font-semibold flex items-center gap-1">
                           <BikeIcon className="w-3.5 h-3.5" />
                           <span>{item.bike.name}</span>
                         </span>
@@ -484,7 +484,7 @@ export function MaintenanceClient({
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm font-bold text-slate-900">{item.event.name || item.event.description}</span>
                     {item.bike && (
-                      <span className="text-xs text-navy-700 font-medium">({item.bike.name})</span>
+                      <span className="text-xs text-signal-700 font-medium">({item.bike.name})</span>
                     )}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-slate-500 tabular-nums">

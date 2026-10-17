@@ -25,7 +25,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
     return (
       <div className="card empty-state py-12">
         <h2 className="text-base font-bold text-slate-800 mb-2">Kolo nenalezeno</h2>
-        <Link href="/garage" className="text-navy-600 hover:underline text-xs font-semibold">
+        <Link href="/garage" className="text-signal-600 hover:underline text-xs font-semibold">
           Zpět do Garáže
         </Link>
       </div>
@@ -54,7 +54,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
             <TrendingDown className="w-4 h-4 text-rose-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">{t("finances.totalExpenses")}</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl readout text-slate-900 truncate">
             {formatCzk(tco.totalExpenses)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -67,7 +67,7 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
             <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">{t("finances.totalIncomes")}</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-emerald-700 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl readout text-emerald-700 truncate">
             {formatCzk(tco.totalIncomes)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -77,10 +77,10 @@ export default function BikeFinancesPage({ params }: BikeFinancesPageProps) {
 
         <div className="min-w-0 px-2 sm:px-4 last:pr-0">
           <div className="flex items-center gap-1.5 mb-1">
-            <Coins className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <Coins className="w-4 h-4 text-signal-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">{t("finances.netCost")}</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-navy-700 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl readout text-signal-700 truncate">
             {formatCzk(tco.netOwnershipCost)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">

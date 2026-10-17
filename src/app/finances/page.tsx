@@ -72,7 +72,7 @@ export default function GlobalFinancesPage() {
             <TrendingDown className="w-4 h-4 text-rose-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">{t("finances.totalExpenses")}</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-slate-900 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl readout text-slate-900 truncate">
             {formatCzk(totalExpenses)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -85,7 +85,7 @@ export default function GlobalFinancesPage() {
             <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">{t("finances.totalIncomes")}</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-emerald-700 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl readout text-emerald-700 truncate">
             {formatCzk(totalIncomes)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -95,10 +95,10 @@ export default function GlobalFinancesPage() {
 
         <div className="min-w-0 px-2 sm:px-4 last:pr-0">
           <div className="flex items-center gap-1.5 mb-1">
-            <Coins className="w-4 h-4 text-navy-600 shrink-0 hidden sm:block" />
+            <Coins className="w-4 h-4 text-signal-600 shrink-0 hidden sm:block" />
             <span className="section-label truncate">{t("finances.netCost")} (TCO)</span>
           </div>
-          <div className="text-lg sm:text-2xl font-extrabold text-navy-700 truncate tabular-nums">
+          <div className="text-lg sm:text-2xl readout text-signal-700 truncate">
             {formatCzk(netTotal)}
           </div>
           <p className="text-xs text-slate-500 hidden md:block truncate mt-0.5">
@@ -181,7 +181,7 @@ export default function GlobalFinancesPage() {
                         {t(categoryKey)}
                       </span>
                       {item.bike && (
-                        <span className="text-xs text-navy-700 font-semibold">
+                        <span className="text-xs text-signal-700 font-semibold">
                           [{item.bike.name}]
                         </span>
                       )}

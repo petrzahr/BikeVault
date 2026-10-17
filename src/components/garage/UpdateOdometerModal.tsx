@@ -113,7 +113,7 @@ export function UpdateOdometerModal({
           <div className="flex justify-between items-center pt-1.5 border-t border-slate-200">
             <span className="text-slate-600 font-medium">{t("odometer.difference")}:</span>
             <span className={`tabular-nums font-bold ${
-              isDecreasing ? "text-amber-800" : "text-emerald-700"
+              isDecreasing ? "text-steel-800" : "text-emerald-700"
             }`}>
               {deltaKm >= 0 ? `+${formatKm(deltaKm)}` : formatKm(deltaKm)} • {deltaMin >= 0 ? `+${formatMinutes(deltaMin)}` : `-${formatMinutes(Math.abs(deltaMin))}`}
             </span>
@@ -207,7 +207,7 @@ export function UpdateOdometerModal({
         {isDecreasing && (
           <div className="panel panel-warning space-y-2">
             <div className="flex items-center gap-2 font-bold">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
+              <AlertTriangle className="w-4 h-4 shrink-0 text-steel-600" />
               <span>Zadaný stav je nižší než předchozí ({formatKm(currentKm)})</span>
             </div>
             <p>
@@ -218,7 +218,7 @@ export function UpdateOdometerModal({
                 type="checkbox"
                 checked={allowCorrection}
                 onChange={(e) => setAllowCorrection(e.target.checked)}
-                className="w-4 h-4 text-navy-600 rounded border-slate-300 focus:ring-navy-500"
+                className="w-4 h-4 text-signal-600 rounded border-slate-300 focus:ring-signal-500"
               />
               <span>Potvrdit snížení celkového nájezdu (korekce)</span>
             </label>

@@ -109,7 +109,7 @@ export function QuickReplaceModal({
                 <span className="text-xs font-bold text-slate-900">
                   {matchingCandidates[0].component.manufacturer} {matchingCandidates[0].component.model}
                 </span>
-                <span className="chip bg-white text-navy-700">
+                <span className="chip bg-white text-signal-700">
                   Skladem
                 </span>
               </div>
@@ -152,7 +152,7 @@ export function QuickReplaceModal({
                       value={c.id}
                       checked={isSelected}
                       onChange={() => setSelectedReplacementId(c.id)}
-                      className="mt-0.5 text-navy-600 focus:ring-navy-500"
+                      className="mt-0.5 text-signal-600 focus:ring-signal-500"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">

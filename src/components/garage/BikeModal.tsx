@@ -303,7 +303,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             <span
               className={cn(
                 "w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold shrink-0",
-                activeTab === "IDENTITY" ? "bg-white text-navy-700" : "bg-slate-200 text-slate-700"
+                activeTab === "IDENTITY" ? "bg-white text-signal-700" : "bg-slate-200 text-slate-700"
               )}
             >
               1
@@ -319,7 +319,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             <span
               className={cn(
                 "w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold shrink-0",
-                activeTab === "SPECS" ? "bg-white text-navy-700" : "bg-slate-200 text-slate-700"
+                activeTab === "SPECS" ? "bg-white text-signal-700" : "bg-slate-200 text-slate-700"
               )}
             >
               2
@@ -335,7 +335,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
             <span
               className={cn(
                 "w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold shrink-0",
-                activeTab === "ACQUISITION" ? "bg-white text-navy-700" : "bg-slate-200 text-slate-700"
+                activeTab === "ACQUISITION" ? "bg-white text-signal-700" : "bg-slate-200 text-slate-700"
               )}
             >
               3
@@ -515,7 +515,7 @@ export function BikeModal({ isOpen, onClose, onSuccess, bikeToEdit, initialData 
                 <p className="text-xs text-slate-500">
                   Podporované formáty: JPEG, PNG, WebP (max. 10 MB).
                   {uploadedImage && imageUrl && (
-                    <span className="block text-navy-700 font-medium mt-0.5">
+                    <span className="block text-signal-700 font-medium mt-0.5">
                       Nahraná fotografie má přednost před níže uvedenou URL adresou.
                     </span>
                   )}

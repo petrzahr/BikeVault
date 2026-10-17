@@ -4,24 +4,24 @@ import { cn } from "@/lib/ui";
 import { SYNC_LABELS, getSyncTone, type SyncDisplayState, type SyncTone } from "@/lib/syncStatus";
 
 const ICON_COLOR: Record<SyncTone, string> = {
-  busy: "text-navy-600",
+  busy: "text-signal-600",
   problem: "text-rose-600",
-  pending: "text-amber-600",
+  pending: "text-steel-600",
   ok: "text-emerald-600",
 };
 
 // Lighter shades for the dark header
 const ICON_COLOR_ON_DARK: Record<SyncTone, string> = {
-  busy: "text-navy-200",
+  busy: "text-signal-200",
   problem: "text-rose-400",
-  pending: "text-amber-400",
+  pending: "text-steel-400",
   ok: "text-emerald-400",
 };
 
 const TEXT_COLOR: Record<SyncTone, string> = {
-  busy: "text-navy-700",
+  busy: "text-signal-700",
   problem: "text-rose-700",
-  pending: "text-amber-800",
+  pending: "text-steel-800",
   ok: "text-emerald-700",
 };
 

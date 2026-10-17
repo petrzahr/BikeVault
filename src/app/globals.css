@@ -14,13 +14,14 @@
 
   input[type='checkbox'],
   input[type='radio'] {
-    accent-color: theme('colors.navy.600');
+    accent-color: theme('colors.signal.600');
   }
 }
 
 /* Every repeated element has exactly one recipe here. A new place uses the class instead of
    inventing its own combination; the place of use only adds layout (width, flex, grid, margins).
-   Rules and rationale live in DESIGN.md. */
+   Rules and rationale live in DESIGN.md. World: technical drawing / spec sheet – flat plates,
+   hairlines instead of shadows, sharp corners (radius scale in tailwind.config.ts), burnt amber action. */
 @layer components {
   /* Buttons: primary → secondary → text, plus icon. 32px on desktop, 44px touch target on mobile.
      A disabled button is grey, not transparent, so it never reads as active. */
@@ -28,35 +29,46 @@
   .btn-danger,
   .btn-secondary,
   .btn-shell {
-    @apply inline-flex items-center justify-center gap-1.5 min-h-8 max-md:min-h-11 px-4 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer;
-    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40 focus-visible:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-1.5 min-h-8 max-md:min-h-11 px-4 py-1.5 rounded-lg border text-xs font-bold tracking-[0.02em] whitespace-nowrap transition-colors cursor-pointer;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-500/50 focus-visible:ring-offset-2;
   }
+  /* Burnt amber fill with graphite text (white on 500 would fail AA) */
   .btn-primary {
-    @apply bg-navy-600 hover:bg-navy-700 text-white shadow-sm;
+    @apply bg-signal-500 hover:bg-signal-400 border-signal-600 text-slate-900;
   }
   .btn-danger {
-    @apply bg-rose-600 hover:bg-rose-700 text-white shadow-sm;
+    @apply bg-rose-600 hover:bg-rose-700 border-rose-700 text-white;
   }
   .btn-primary:disabled,
   .btn-danger:disabled {
-    @apply bg-slate-200 text-slate-500 shadow-none cursor-not-allowed;
+    @apply bg-slate-200 border-slate-200 text-slate-500 cursor-not-allowed;
   }
-  /* Secondary (Cancel, Edit, Export…): surface with a hairline, hover deepens to navy */
+  /* Secondary (Cancel, Edit, Export…): surface with a hairline, hover draws the outline in ink */
   .btn-secondary {
-    @apply bg-white text-slate-700 border border-slate-200 shadow-sm hover:text-navy-700 hover:border-navy-300;
+    @apply bg-white text-slate-700 border-slate-300 hover:text-slate-900 hover:border-slate-900;
   }
   /* Entry into delete / disconnect: stays neutral, turns red only on hover; the irreversible red action is in the dialog */
   .btn-secondary-danger {
-    @apply hover:text-rose-700 hover:border-rose-300 focus-visible:text-rose-700;
+    @apply hover:text-rose-700 hover:border-rose-600 focus-visible:text-rose-700;
   }
   .btn-secondary:disabled {
-    @apply bg-slate-50 text-slate-400 border-slate-200 shadow-none cursor-not-allowed;
+    @apply bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed;
   }
-  /* Secondary action on the dark app shell (header, sidebar) */
+  /* Secondary action on the dark app shell (sidebar, toolbars) */
   .btn-shell {
-    @apply bg-white/5 hover:bg-white/10 text-white border border-white/15 focus-visible:ring-offset-slate-900;
+    @apply bg-transparent hover:bg-white/10 text-white border-white/20 focus-visible:ring-offset-slate-900;
   }
   .btn-shell:disabled {
+    @apply opacity-40 cursor-not-allowed hover:bg-transparent;
+  }
+  /* Header status controls (Strava, Google Drive): kept in their original rounded look on purpose,
+     they are integration badges, not part of the drawing-sheet controls */
+  .btn-header {
+    @apply inline-flex items-center justify-center gap-1.5 min-h-7 max-md:min-h-11 px-3 py-1 rounded-[12px] text-xs font-bold whitespace-nowrap transition-colors cursor-pointer;
+    @apply bg-white/5 hover:bg-white/10 text-white border border-white/15;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+  }
+  .btn-header:disabled {
     @apply opacity-40 cursor-not-allowed hover:bg-white/5;
   }
   /* Smaller size for dense rows and card toolbars; keeps the 44px touch target on mobile */
@@ -65,8 +77,8 @@
   }
   /* Text action: the quietest level, reads as a link */
   .btn-text {
-    @apply inline-flex items-center gap-1.5 whitespace-nowrap max-md:min-h-11 px-1 rounded-lg text-xs font-semibold text-navy-600 hover:text-navy-700 hover:underline underline-offset-2 transition-colors cursor-pointer;
-    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40;
+    @apply inline-flex items-center gap-1.5 whitespace-nowrap max-md:min-h-11 px-1 rounded-lg text-xs font-semibold text-signal-700 hover:text-signal-800 hover:underline underline-offset-2 transition-colors cursor-pointer;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-500/50;
   }
   .btn-text-danger {
     @apply text-rose-600 hover:text-rose-700;
@@ -74,91 +86,95 @@
   .btn-text:disabled {
     @apply text-slate-400 no-underline cursor-not-allowed;
   }
-  /* Icon action in a row or on a card: grey at rest, colour on hover only by meaning; always aria-label */
+  /* Icon action in a row or on a card: grey at rest, outlined on hover, colour only by meaning; always aria-label */
   .btn-icon {
-    @apply inline-flex items-center justify-center shrink-0 min-w-11 min-h-11 md:min-w-8 md:min-h-8 p-1.5 rounded-lg text-slate-500 transition-colors cursor-pointer;
-    @apply hover:text-slate-800 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40;
+    @apply inline-flex items-center justify-center shrink-0 min-w-11 min-h-11 md:min-w-8 md:min-h-8 p-1.5 rounded-lg border border-transparent text-slate-500 transition-colors cursor-pointer;
+    @apply hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-500/50;
   }
   .btn-icon-danger {
-    @apply hover:text-rose-600 hover:bg-rose-50 focus-visible:text-rose-600;
+    @apply hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 focus-visible:text-rose-600;
   }
   .btn-icon:disabled {
-    @apply opacity-50 cursor-not-allowed bg-transparent text-slate-500;
+    @apply opacity-50 cursor-not-allowed bg-transparent border-transparent text-slate-500;
   }
 
   /* Form field (input, select, textarea) and its label */
   .field {
-    @apply w-full min-h-10 max-md:min-h-11 px-3.5 py-2 text-sm text-slate-900 bg-white border border-slate-200 rounded-xl shadow-sm transition-colors;
-    @apply placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-navy-500/30 focus:border-navy-500;
-    @apply disabled:bg-slate-50 disabled:text-slate-500 disabled:shadow-none disabled:cursor-not-allowed;
+    @apply w-full min-h-10 max-md:min-h-11 px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg transition-colors;
+    @apply placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-signal-500/30 focus:border-signal-600;
+    @apply disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed;
   }
   /* Compact inline field (rename in a list row) */
   .field-sm {
-    @apply min-h-8 max-md:min-h-10 px-2.5 py-1 text-xs rounded-lg shadow-none;
+    @apply min-h-8 max-md:min-h-10 px-2.5 py-1 text-xs;
+  }
+  /* Numeric fields hold measurements (psi, bar, km, clicks, Kč): same mono figures as the readouts */
+  .field:is([type='number'], [inputmode='decimal'], [inputmode='numeric']) {
+    @apply font-mono;
   }
   .field[aria-invalid='true'] {
-    @apply border-rose-400 focus:border-rose-500 focus:ring-rose-500/30;
+    @apply border-rose-500 focus:border-rose-600 focus:ring-rose-500/30;
   }
   /* Flex so an optional leading icon sits on the same line as the label text */
   .field-label {
     @apply flex items-center gap-1.5 text-xs font-semibold text-slate-700 mb-1;
   }
 
-  /* Card: the one container of screens. Content padding is set by the place (p-4 / p-5);
-     a card with a list or table gets card-header separated by a hairline. */
+  /* Card = plate: the one container of screens. Flat, a hairline instead of a shadow. Content padding is set by
+     the place (p-4 / p-5); a card with a list or table gets card-header separated by a hairline. */
   .card {
-    @apply bg-white border border-slate-200/80 rounded-2xl shadow-sm;
+    @apply bg-white border border-slate-200 rounded-2xl;
   }
   .card-header {
-    @apply flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 border-b border-slate-100;
+    @apply flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 border-b border-slate-200;
   }
 
-  /* Segmented control: grey track, the chosen option is filled navy (aria-pressed).
+  /* Segmented control: inset track with a hairline, the chosen option is filled graphite (aria-pressed).
      Layout (inline-flex / grid, width) is decided by the place. */
   .segmented {
-    @apply gap-1 p-1 bg-slate-100 rounded-xl;
+    @apply gap-0.5 p-0.5 bg-slate-50 border border-slate-200 rounded-lg;
   }
   .segment {
-    @apply inline-flex items-center justify-center gap-1.5 min-h-7 max-md:min-h-10 px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 whitespace-nowrap transition-colors cursor-pointer;
-    @apply hover:text-slate-900 hover:bg-white/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500/40;
+    @apply inline-flex items-center justify-center gap-1.5 min-h-7 max-md:min-h-10 px-3 py-1 rounded-md text-xs font-semibold text-slate-600 whitespace-nowrap transition-colors cursor-pointer;
+    @apply hover:text-slate-900 hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-signal-500/50;
   }
   .segment[aria-pressed='true'],
   .segment[aria-selected='true'],
   .segment[aria-current='page'] {
-    @apply bg-navy-600 text-white shadow-sm hover:bg-navy-600 hover:text-white;
+    @apply bg-slate-900 text-white hover:bg-slate-900 hover:text-white;
   }
 
-  /* Choice card: a label wrapping a radio/checkbox with a description. Selected = navy tint and border
+  /* Choice card: a label wrapping a radio/checkbox with a description. Selected = amber tint and border
      (works via :has(:checked); `option-card-danger` for a destructive choice). Inner layout is decided by the place. */
   .option-card {
-    @apply flex gap-3 p-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-700 cursor-pointer transition-colors hover:border-slate-300;
+    @apply flex gap-3 p-3 rounded-lg border border-slate-300 bg-white text-xs text-slate-700 cursor-pointer transition-colors hover:border-slate-500;
   }
   .option-card:has(:checked),
   .option-card[aria-checked='true'] {
-    @apply bg-navy-50 border-navy-500 text-slate-900;
+    @apply bg-signal-50 border-signal-600 text-slate-900;
   }
   .option-card-danger:has(:checked) {
-    @apply bg-rose-50 border-rose-500;
+    @apply bg-rose-50 border-rose-600;
   }
   .option-card:has(:focus-visible) {
-    @apply ring-2 ring-navy-500/40;
+    @apply ring-2 ring-signal-500/50;
   }
 
   /* Chip (status, counts, tags): one shape, colour only by meaning */
   .chip {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold leading-4 whitespace-nowrap;
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-semibold leading-4 whitespace-nowrap;
   }
   .chip-neutral {
     @apply bg-slate-100 text-slate-700;
   }
-  .chip-navy {
-    @apply bg-navy-50 text-navy-700;
+  .chip-signal {
+    @apply bg-signal-50 text-signal-800;
   }
   .chip-emerald {
     @apply bg-emerald-50 text-emerald-800;
   }
-  .chip-amber {
-    @apply bg-amber-50 text-amber-800;
+  .chip-steel {
+    @apply bg-steel-50 text-steel-700;
   }
   .chip-rose {
     @apply bg-rose-50 text-rose-700;
@@ -166,16 +182,16 @@
 
   /* Coloured panel: error, warning, info, success. Inner layout (icon row, stacked content) is decided by the place. */
   .panel {
-    @apply p-3 rounded-xl border text-xs leading-relaxed;
+    @apply p-3 rounded-lg border text-xs leading-relaxed;
   }
   .panel-error {
     @apply bg-rose-50 border-rose-200 text-rose-800;
   }
   .panel-warning {
-    @apply bg-amber-50 border-amber-200 text-amber-900;
+    @apply bg-steel-50 border-steel-200 text-steel-900;
   }
   .panel-info {
-    @apply bg-navy-50 border-navy-100 text-navy-900;
+    @apply bg-signal-50 border-signal-200 text-signal-900;
   }
   .panel-success {
     @apply bg-emerald-50 border-emerald-200 text-emerald-900;
@@ -190,9 +206,38 @@
     @apply py-8 px-5 text-center text-xs text-slate-500 space-y-1;
   }
 
-  /* Short uppercase group label (KPI captions, form sections) */
+  /* Short uppercase caption of a value or group (KPI captions, spec rows, form sections): condensed, stamped */
   .section-label {
-    @apply text-xs font-bold uppercase tracking-wider text-slate-500;
+    @apply text-xs font-bold uppercase tracking-[0.08em] text-slate-500 [font-stretch:80%];
+  }
+
+  /* Readout: a measured value (km, h, psi, bar, Kč) in mono figures; the unit is a quieter `readout-unit` */
+  .readout {
+    @apply font-mono font-semibold text-slate-900 tracking-[-0.02em];
+  }
+  .readout-unit {
+    @apply ml-0.5 font-mono text-xs font-medium tracking-normal text-slate-500;
+  }
+
+  /* Interval gauge (signature): a ruler with ticks, a graphite fill up to the current usage, the limit tick and
+     a pointer. Bar colour follows urgency: graphite OK, steel due soon, rose past the limit. See IntervalGauge.tsx */
+  .gauge-track {
+    @apply relative h-[22px];
+  }
+  .gauge-scale {
+    @apply absolute inset-x-0 top-0 bottom-2 border-b border-slate-400;
+    background:
+      linear-gradient(to right, theme('colors.slate.400') 1px, transparent 1px) 0 100% / 10% 7px repeat-x,
+      linear-gradient(to right, theme('colors.slate.300') 1px, transparent 1px) 0 100% / 2% 4px repeat-x;
+  }
+  .gauge-bar {
+    @apply absolute left-0 bottom-2 h-1.5;
+  }
+  .gauge-limit {
+    @apply absolute -top-0.5 bottom-1 w-0.5 bg-slate-900;
+  }
+  .gauge-pointer {
+    @apply absolute bottom-0 w-0 h-0 -translate-x-[5px] border-x-[5px] border-x-transparent border-b-[7px] border-b-slate-900;
   }
 
   /* Dialog action bar (ModalFooter): pinned to the bottom of the scrolling dialog body, cancel left of the primary
@@ -201,7 +246,7 @@
      indicator inset. */
   .modal-footer {
     @apply sticky bottom-[calc(-1rem-env(safe-area-inset-bottom))] sm:-bottom-5 z-10 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 mt-5;
-    @apply -mx-4 sm:-mx-6 mb-[calc(-1rem-env(safe-area-inset-bottom))] sm:-mb-5 px-4 sm:px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:py-4 bg-white border-t border-slate-100;
+    @apply -mx-4 sm:-mx-6 mb-[calc(-1rem-env(safe-area-inset-bottom))] sm:-mb-5 px-4 sm:px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:py-4 bg-white border-t border-slate-200;
   }
 }
 
@@ -213,21 +258,21 @@
 }
 
 body {
-  font-family: var(--font-sans), 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  caret-color: theme('colors.navy.600');
+  caret-color: theme('colors.signal.600');
   -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {
-  background-color: theme('colors.navy.100');
-  color: theme('colors.navy.900');
+  background-color: theme('colors.signal.200');
+  color: theme('colors.slate.900');
 }
 
 /* Fallback focus for elements without a recipe; recipes draw their own ring */
 :focus-visible {
-  outline: 2px solid theme('colors.navy.600');
+  outline: 2px solid theme('colors.signal.500');
   outline-offset: 2px;
 }
 
@@ -246,7 +291,7 @@ body {
   }
 }
 
-/* Custom scrollbar in the neutral palette */
+/* Custom scrollbar in the neutral palette, square like the rest of the sheet */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -257,10 +302,9 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme('colors.slate.200');
-  border-radius: 9999px;
+  background: theme('colors.slate.300');
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme('colors.slate.400');
+  background: theme('colors.slate.500');
 }

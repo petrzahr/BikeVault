@@ -237,7 +237,7 @@ export function StravaManageBikesModal({
         {/* Loading state */}
         {loading && stravaBikes.length === 0 ? (
           <div className="py-12 text-center text-slate-500 space-y-2">
-            <Loader2 className="w-6 h-6 animate-spin mx-auto text-navy-600" />
+            <Loader2 className="w-6 h-6 animate-spin mx-auto text-signal-600" />
             <p className="text-xs">Načítám kola z vašeho profilu Strava...</p>
           </div>
         ) : stravaBikes.length === 0 ? (
@@ -257,7 +257,7 @@ export function StravaManageBikesModal({
               return (
                 <div
                   key={sb.id}
-                  className={`p-4 rounded-xl border ${isLinked ? "bg-navy-50 border-navy-100" : "bg-white border-slate-200"}`}
+                  className={`p-4 rounded-xl border ${isLinked ? "bg-signal-50 border-signal-100" : "bg-white border-slate-200"}`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     {/* Left: Info */}
@@ -292,7 +292,7 @@ export function StravaManageBikesModal({
                       {/* Linked Status */}
                       {isLinked && linkedBike ? (
                         <div className="pt-1 flex items-center gap-1.5 text-xs text-slate-700 font-medium">
-                          <Link2 className="w-3.5 h-3.5 text-navy-600 shrink-0" />
+                          <Link2 className="w-3.5 h-3.5 text-signal-600 shrink-0" />
                           <span>Propojeno s: </span>
                           <span className="font-bold text-slate-900">{linkedBike.name}</span>
                           <span className="text-slate-500 text-xs tabular-nums">
@@ -450,7 +450,7 @@ export function StravaManageBikesModal({
                               type="checkbox"
                               checked={syncMileageOnLink}
                               onChange={(e) => setSyncMileageOnLink(e.target.checked)}
-                              className="rounded text-navy-600 focus:ring-navy-500"
+                              className="rounded text-signal-600 focus:ring-signal-500"
                             />
                             <span>Aktualizovat ze Stravy</span>
                           </label>
@@ -458,7 +458,7 @@ export function StravaManageBikesModal({
                       )}
 
                       {(comparison.type === "LOWER" || timeComparison?.type === "LOWER") && (
-                        <div className="pt-2 border-t border-slate-100 text-xs text-amber-800 flex items-start gap-1.5">
+                        <div className="pt-2 border-t border-slate-100 text-xs text-steel-800 flex items-start gap-1.5">
                           <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                           <span>
                             Strava uvádí {comparison.type === "LOWER" && timeComparison?.type === "LOWER" ? "nižší nájezd i méně hodin" : comparison.type === "LOWER" ? "nižší nájezd" : "méně hodin"}. Hodnoty v BikeVault zůstanou zachovány.

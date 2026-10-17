@@ -208,7 +208,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
             {stravaSyncNotice.type === "success" ? (
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             ) : (
-              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-4 h-4 text-steel-600 shrink-0 mt-0.5" />
             )}
             <div className="flex-1">{stravaSyncNotice.text}</div>
             <button
@@ -248,7 +248,7 @@ export function BikeHeader({ bike }: BikeHeaderProps) {
                 {bike.name}
               </h1>
               {bike.stravaGearId && (
-                <span className="chip chip-navy">
+                <span className="chip chip-signal">
                   <Link2 className="w-3.5 h-3.5" />
                   <span>Strava propojeno</span>
                 </span>
