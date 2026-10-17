@@ -37,6 +37,12 @@ import {
   CorruptedCloudDataError,
 } from "@/lib/google/driveSync";
 import {
+  getLastDriveBackupAt,
+  isDriveBackupEnabled,
+  setDriveBackupEnabled as persistDriveBackupEnabled,
+  tryRunDriveBackup,
+} from "@/lib/google/driveBackup";
+import {
   loadStoredCacheResult,
   saveStoredCache,
   clearStoredCache,
@@ -110,6 +116,11 @@ interface VaultContextType {
   /** Add-only merge of a backup file into current data; saved to Drive by the regular autosave. */
   restoreBackup: (jsonContent: string) => boolean;
   exportCorruptedFile: () => void;
+  // Automatic JSON snapshots into a visible Drive folder
+  driveBackupEnabled: boolean;
+  setDriveBackupEnabled: (enabled: boolean) => void;
+  lastDriveBackupAt: Date | null;
+  runDriveBackupNow: () => Promise<void>;
 
   // Bike actions
   addBike: (
@@ -242,6 +253,13 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<GoogleUser | null>(null);
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [driveFileId, setDriveFileId] = useState<string | null>(null);
+  // localStorage is read after mount to keep server and client render identical
+  const [driveBackupEnabled, setDriveBackupEnabledState] = useState(true);
+  const [lastDriveBackupAt, setLastDriveBackupAt] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setDriveBackupEnabledState(isDriveBackupEnabled());
+  }, []);
 
   const isInitialMount = useRef(true);
   const autosaveQueueRef = useRef<AutosaveQueue<AutosaveJob> | null>(null);
@@ -276,8 +294,9 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       setLoadErrorDetail(null);
 
       // Fetch user profile if missing
-      fetchGoogleUserProfile(token).then((u) => {
+      const profilePromise = fetchGoogleUserProfile(token).then((u) => {
         if (u) setUser(u);
+        return u;
       });
 
       const fileInfo = await findVaultFile(token);
@@ -292,6 +311,16 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         setLastSyncedAt(new Date());
         setSyncStatus("synced");
         setAppState("ready");
+
+        // Backups are independent of the autosave queue and must never affect sync; throttled to once per 24 h
+        void profilePromise.then((u) => {
+          if (!u?.permissionId) return;
+          const accountId = u.permissionId;
+          setLastDriveBackupAt(getLastDriveBackupAt(accountId));
+          void tryRunDriveBackup(token, accountId, cloudData).then((result) => {
+            if (result.ran) setLastDriveBackupAt(new Date());
+          });
+        });
       } else {
         // First production run on Google Drive: create new file with clean empty data (NO demo data)
         const initialCleanData = createEmptyVaultData();
@@ -490,6 +519,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     await logoutFromGoogle();
     setUser(null);
     setDriveFileId(null);
+    setLastDriveBackupAt(null);
     setIsAuthenticated(false);
     setIsInitialSyncDone(true);
     setSyncStatus("offline");
@@ -551,6 +581,31 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const setDriveBackupEnabled = useCallback((enabled: boolean) => {
+    persistDriveBackupEnabled(enabled);
+    setDriveBackupEnabledState(enabled);
+  }, []);
+
+  const runDriveBackupNow = async () => {
+    const auth = getStoredAuth();
+    if (isDevAuthBypassEnabled() || appState !== "ready" || !auth || !isStoredTokenValid()) {
+      toast("Zálohu na Google Disk lze vytvořit až po načtení dat z Google Disku.", "error");
+      return;
+    }
+    const accountId = user?.permissionId ?? (await fetchGoogleUserProfile(auth.accessToken))?.permissionId;
+    if (!accountId) {
+      toast("Zálohu se nepodařilo vytvořit: nelze ověřit účet Google.", "error");
+      return;
+    }
+    const result = await tryRunDriveBackup(auth.accessToken, accountId, data, { force: true });
+    if (result.ran) {
+      setLastDriveBackupAt(new Date());
+      toast("Záloha byla uložena na Google Disk.", "success");
+    } else {
+      toast(`Zálohu se nepodařilo vytvořit: ${result.reason || "neznámá chyba"}`, "error");
+    }
   };
 
   const exportCorruptedFile = () => {
@@ -1791,6 +1846,10 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     syncNow,
     exportBackup,
     restoreBackup,
+    driveBackupEnabled,
+    setDriveBackupEnabled,
+    lastDriveBackupAt,
+    runDriveBackupNow,
     exportCorruptedFile,
     addBike,
     updateBike,

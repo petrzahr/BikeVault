@@ -21,6 +21,8 @@ export interface GoogleUser {
   displayName?: string;
   emailAddress?: string;
   photoLink?: string;
+  /** Stable Drive account id, used to key per-account local state (backup timestamps) */
+  permissionId?: string;
 }
 
 export interface StoredAuthData {
@@ -299,6 +301,7 @@ export async function fetchGoogleUserProfile(token: string): Promise<GoogleUser 
         displayName: data.user.displayName,
         emailAddress: data.user.emailAddress,
         photoLink: data.user.photoLink,
+        permissionId: typeof data.user.permissionId === "string" ? data.user.permissionId : undefined,
       };
       const current = getStoredAuth();
       if (current) {

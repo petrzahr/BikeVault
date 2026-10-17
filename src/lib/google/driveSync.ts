@@ -135,7 +135,7 @@ export async function downloadVaultData(token: string, fileId: string): Promise<
 /**
  * Sestaví tělo požadavku pro multipart upload
  */
-function buildMultipartRequestBody(
+export function buildMultipartRequestBody(
   metadata: Record<string, unknown>,
   payloadJson: string,
   boundary: string

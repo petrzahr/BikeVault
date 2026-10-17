@@ -30,6 +30,7 @@ import { useFeedback } from "@/components/common/Feedback";
 import { StravaBikeSummary } from "@/lib/strava/stravaApi";
 import { PublicStravaStatus } from "@/lib/strava/stravaTokenStore";
 import { getValidAccessToken, loginToGoogle } from "@/lib/google/googleAuth";
+import { DRIVE_BACKUP_FOLDER_NAME, DRIVE_BACKUP_MAX_COUNT } from "@/lib/google/driveBackup";
 import { Bike } from "@/types/vault";
 import { Modal, ModalFooter } from "@/components/common/Modal";
 import { GoogleIcon } from "@/components/common/GoogleIcon";
@@ -45,7 +46,7 @@ export const dynamic = "force-dynamic";
 const SETTINGS_SECTIONS = [
   { id: "nastaveni-strava", label: "Propojení se Stravou" },
   { id: "nastaveni-disk", label: "Synchronizace s Google Diskem" },
-  { id: "nastaveni-zaloha", label: "Záloha do souboru" },
+  { id: "nastaveni-zaloha", label: "Zálohy" },
   { id: "nastaveni-data", label: "Mazání dat" },
 ] as const;
 
@@ -170,6 +171,10 @@ export default function SettingsPage() {
     syncNow,
     exportBackup,
     restoreBackup,
+    driveBackupEnabled,
+    setDriveBackupEnabled,
+    lastDriveBackupAt,
+    runDriveBackupNow,
     syncBikeFromStrava,
     clearAllData,
   } = useVault();
@@ -180,6 +185,16 @@ export default function SettingsPage() {
   const restoreInputRef = useRef<HTMLInputElement>(null);
   const [restoreRequest, setRestoreRequest] = useState<RestoreRequest | null>(null);
   const canRestore = appState === "ready";
+  const [isDriveBackupRunning, setIsDriveBackupRunning] = useState(false);
+
+  const handleDriveBackupNow = async () => {
+    setIsDriveBackupRunning(true);
+    try {
+      await runDriveBackupNow();
+    } finally {
+      setIsDriveBackupRunning(false);
+    }
+  };
 
   const handleRestoreFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -690,15 +705,52 @@ export default function SettingsPage() {
             )}
           </SettingsSection>
 
-          {/* 3. Backup file */}
+          {/* 3. Backups */}
           <SettingsSection
             id="nastaveni-zaloha"
             icon={Download}
-            title="Záloha do souboru"
-            description="Stáhněte si kopii všech dat do vlastního počítače nebo z ní data obnovte"
+            title="Zálohy"
+            description="Automatické zálohy na Google Disk a kopie všech dat do vlastního počítače"
           >
             <div className="divide-y divide-slate-100">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Automatické zálohy na Disk</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Při spuštění aplikace (nejvýše jednou za 24 hodin) se uloží kopie dat do složky
+                    <strong> „{DRIVE_BACKUP_FOLDER_NAME}“</strong> na vašem Google Disku. Uchovává se posledních{" "}
+                    {DRIVE_BACKUP_MAX_COUNT} záloh.
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Poslední záloha: {lastDriveBackupAt ? lastDriveBackupAt.toLocaleString("cs-CZ") : "zatím žádná"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0 self-start sm:self-center">
+                  <button
+                    type="button"
+                    onClick={() => void handleDriveBackupNow()}
+                    disabled={!canRestore || isDriveBackupRunning}
+                    className="btn-secondary"
+                  >
+                    {isDriveBackupRunning ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                    ) : (
+                      <Cloud className="w-3.5 h-3.5" aria-hidden="true" />
+                    )}
+                    <span>Zálohovat nyní</span>
+                  </button>
+                  <label className="flex items-center gap-2 max-md:min-h-11 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={driveBackupEnabled}
+                      onChange={(e) => setDriveBackupEnabled(e.target.checked)}
+                      className="w-4 h-4 text-navy-600 rounded border-slate-300 focus:ring-navy-500"
+                    />
+                    <span className="text-xs font-medium text-slate-500">Zálohovat automaticky</span>
+                  </label>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-4">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">Stáhnout zálohu (JSON)</h3>
                   <p className="text-xs text-slate-500 mt-0.5">
