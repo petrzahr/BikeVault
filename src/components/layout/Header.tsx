@@ -7,11 +7,11 @@ import { useFeedback } from "@/components/common/Feedback";
 import {
   Menu,
   RefreshCw,
-  LogOut,
-  CheckCircle2,
-  AlertCircle
+  LogOut
 } from "lucide-react";
 import { GoogleIcon } from "@/components/common/GoogleIcon";
+import { SyncStatusIcon, SyncStatusLabel } from "@/components/common/SyncStatusIndicator";
+import { SYNC_LABELS, getSyncDisplayState, getSyncTone } from "@/lib/syncStatus";
 import { buttonClass } from "@/lib/ui";
 import { StravaStatusBadge } from "@/components/layout/StravaStatusBadge";
 
@@ -41,7 +41,8 @@ export const Header: React.FC<HeaderProps> = ({
 
   const isDriveConnected = isAuthenticated;
   const connectGoogleDrive = login;
-
+  const syncState = getSyncDisplayState(syncStatus, appState);
+  const hasSyncProblem = getSyncTone(syncState) === "problem";
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -127,33 +128,23 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 type="button"
                 onClick={() => setMenuOpen((prev) => !prev)}
-                title="Google Disk připojen – klikněte pro podrobnosti a synchronizaci"
-                className={buttonClass("outlineDark", "sm")}
+                title={`Google Disk: ${SYNC_LABELS[syncState]} – klikněte pro podrobnosti a synchronizaci`}
+                aria-label={`Google Disk: ${SYNC_LABELS[syncState]}`}
+                className={buttonClass(
+                  "outlineDark",
+                  "sm",
+                  hasSyncProblem ? "border-rose-400/60 bg-rose-500/10 hover:bg-rose-500/20" : undefined
+                )}
               >
                 <GoogleIcon className="w-3.5 h-3.5 shrink-0" />
-                <span className="relative flex h-2 w-2">
-                  {syncStatus === "saving" && (
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-navy-400 opacity-75"></span>
-                  )}
-                  <span
-                    className={`relative inline-flex rounded-full h-2 w-2 ${
-                      syncStatus === "saving"
-                        ? "bg-navy-500"
-                        : syncStatus === "error" || appState === "scopeInsufficient"
-                        ? "bg-amber-500"
-                        : "bg-emerald-500"
-                    }`}
-                  ></span>
-                </span>
-                <span className="hidden sm:inline">
-                  {syncStatus === "saving"
-                    ? "Synchronizuji změny"
-                    : appState === "scopeInsufficient"
-                    ? "Chybí oprávnění"
-                    : syncStatus === "error"
-                    ? "Chyba"
-                    : "Synchronizováno"}
-                </span>
+                <SyncStatusIcon state={syncState} onDark />
+                {/* Problém je vidět i na mobilu, ostatní stavy jen na širších displejích */}
+                {hasSyncProblem && (
+                  <span className="sm:hidden">
+                    {syncState === "scopeInsufficient" ? "Oprávnění" : "Chyba"}
+                  </span>
+                )}
+                <span className="hidden sm:inline">{SYNC_LABELS[syncState]}</span>
               </button>
 
               {menuOpen && (
@@ -185,24 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <div className="p-2.5 bg-slate-50 rounded-xl space-y-1.5 text-[11px]">
                     <div className="flex items-center justify-between text-slate-500">
                       <span>Stav:</span>
-                      <span className="font-semibold flex items-center gap-1">
-                        {syncStatus === "saving" ? (
-                          <>
-                            <RefreshCw className="w-3 h-3 animate-spin text-navy-600" />
-                            <span className="text-navy-600">Probíhá zápis</span>
-                          </>
-                        ) : syncStatus === "error" ? (
-                          <>
-                            <AlertCircle className="w-3 h-3 text-amber-600" />
-                            <span className="text-amber-600">Chyba</span>
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                            <span className="text-emerald-700">Synchronizováno</span>
-                          </>
-                        )}
-                      </span>
+                      <SyncStatusLabel state={syncState} iconClassName="w-3 h-3" />
                     </div>
 
                     <div className="flex items-center justify-between text-slate-500">
@@ -258,17 +232,21 @@ export const Header: React.FC<HeaderProps> = ({
                     <button
                       type="button"
                       onClick={async () => {
+                        setMenuOpen(false);
                         const ok = await confirm({
-                          message: "Opravdu se chcete odhlásit z aplikace BikeVault?",
-                          confirmText: "Odhlásit",
+                          title: "Odpojit Google Disk?",
+                          message:
+                            syncStatus === "synced"
+                              ? "Aplikace se odhlásí a vrátí na přihlašovací obrazovku. Vaše data zůstávají na Google Disku a po novém přihlášení se znovu načtou."
+                              : "Některé změny ještě nemusí být uložené na Google Disku. Doporučujeme nejdřív počkat na dokončení synchronizace. Aplikace se odhlásí a vrátí na přihlašovací obrazovku.",
+                          confirmText: "Odpojit a odhlásit",
                           isDestructive: true,
                         });
                         if (ok) {
                           logout();
-                          setMenuOpen(false);
                         }
                       }}
-                      className={buttonClass("ghost", "md", "w-full hover:text-rose-600 hover:bg-rose-50")}
+                      className={buttonClass("secondary", "md", "w-full hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200")}
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span>Odpojit Google Disk</span>
