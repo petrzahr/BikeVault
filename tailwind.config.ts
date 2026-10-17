@@ -51,10 +51,15 @@ const config: Config = {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        "sheet-in": {
+          from: { transform: "translateY(100%)" },
+          to: { transform: "translateY(0)" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.2s ease-out",
         "scale-in": "scale-in 0.15s ease-out",
+        "sheet-in": "sheet-in 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
       },
     },
   },

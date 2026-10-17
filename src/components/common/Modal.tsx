@@ -85,13 +85,14 @@ export const Modal: React.FC<ModalProps> = ({
         onClick={onClose} 
         aria-hidden="true"
       />
-      <div className="flex min-h-full items-center justify-center p-3 sm:p-4 text-center">
-        <div 
+      {/* Phones: bottom sheet within thumb reach; from sm up: centered dialog */}
+      <div className="flex min-h-full items-end sm:items-center justify-center pt-12 sm:p-4 text-center">
+        <div
           ref={modalRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
-          className={`relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 w-full ${maxWidth} border border-slate-200`}
+          className={`relative transform overflow-hidden rounded-t-2xl sm:rounded-2xl bg-white text-left shadow-xl transition-all max-sm:animate-sheet-in sm:my-8 w-full ${maxWidth} border border-slate-200 max-sm:border-x-0 max-sm:border-b-0`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between border-b border-slate-100 px-4 sm:px-6 py-3.5 sm:py-4">
@@ -108,7 +109,7 @@ export const Modal: React.FC<ModalProps> = ({
               <X className="w-5 h-5" />
             </button>
           </div>
-          <div className="px-4 sm:px-6 py-4 sm:py-5 max-h-[82vh] overflow-y-auto overscroll-contain">
+          <div className="px-4 sm:px-6 pt-4 sm:py-5 pb-[calc(1rem+env(safe-area-inset-bottom))] max-h-[85dvh] sm:max-h-[82dvh] overflow-y-auto overscroll-contain">
             {children}
           </div>
         </div>

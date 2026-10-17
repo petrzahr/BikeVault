@@ -157,7 +157,7 @@ Jedna neutrální škála (`slate`, chladně neutrální, přepsaná v `tailwind
 
 ## Layout
 
-Postranní panel 256px vlevo (na mobilu vysouvací zásuvka), hlavička 64px, obsah s okrajem 16px (mobil) / 24px. Rytmus na 4px kroku: uvnitř karet 8–12px, mezi kartami 16–24px. Karty mají vnitřní okraj 16px (mobil) / 20px. Zlomy: 640px (sm), 768px (md, objeví se postranní panel), 1024px (lg).
+Postranní panel 256px vlevo (na mobilu vysouvací zásuvka, otevírá ji „Více“ ve spodní liště), hlavička 64px, na mobilu spodní lišta 56px, obsah s okrajem 16px (mobil) / 24px. Rám respektuje bezpečné okraje (`env(safe-area-inset-*)`: výřez, home indikátor) a výška aplikace je `h-dvh`, ne `100vh`. Rytmus na 4px kroku: uvnitř karet 8–12px, mezi kartami 16–24px. Karty mají vnitřní okraj 16px (mobil) / 20px. Zlomy: 640px (sm), 768px (md, objeví se postranní panel), 1024px (lg).
 
 ## Elevation & Depth
 
@@ -207,11 +207,14 @@ Každý opakovaný prvek má jeden recept jako třídu v `src/app/globals.css` (
 ### Page header
 - **`PageHeader`** (`src/components/common/PageHeader.tsx`): karta s `<h1>` (20px), volitelným štítkem (`chip`), akcemi vpravo a řádkem pod nadpisem (`children`: záložky, filtry). Používají ji všechny seznamové obrazovky; detail kola a komponenty mají vlastní hlavičku se stejným `<h1>`. Titulek v tmavé hlavičce aplikace není nadpis (`<p>`).
 
+### Mobile navigation
+- **`MobileNav`** (`src/components/layout/MobileNav.tsx`): jen pod 768px, pevná spodní lišta v barvě rámu (`slate-900`, linka `white/10`). Pět stejných buněk ≥ 56px: Garáž, Komponenty, Servis, Finance a „Více“ (otevře zásuvku se Statistikami, Seznamy, Nastavením a rychlými akcemi). Ikona 20px v 48×28px poli, popisek 12px; aktivní má navy pole a bílý text, ostatní `white/60`. „Servis“ nese růžový odznak s počtem plánů po termínu. Položky a pravidlo aktivní sekce jsou sdílené se sidebarem (`navItems.ts`). Toasty na mobilu sedí nad lištou.
+
 ### Empty states
 - **`empty-state`**: na střed, 32px nahoře a dole, 12px `slate-500`; volitelný nadpis 14px bold `slate-700`.
 
 ### Dialogs
-- **`Modal`** (`src/components/common/Modal.tsx`): hlavička s názvem (`<h2>` 16px) a křížkem (`btn-icon`), posouvající se obsah, ztmavení `slate-900/40`. Akční lišta je `ModalFooter` (`modal-footer`): přilepená ke spodnímu okraji dialogu, Zrušit (`btn-secondary`) vlevo od hlavní akce, na telefonu pod sebou přes celou šířku s hlavní akcí nahoře. Průvodce s kroky (BikeModal) používá `ModalFooter className="sm:justify-between"`. Potvrzovací dialogy jdou přes `ConfirmationModal` / `useFeedback().confirm`, nikdy vlastní `fixed inset-0`.
+- **`Modal`** (`src/components/common/Modal.tsx`): hlavička s názvem (`<h2>` 16px) a křížkem (`btn-icon`), posouvající se obsah, ztmavení `slate-900/40`. Pod 640px je to spodní panel (přes celou šířku, zaoblený jen nahoře, vyjede zdola, max. 85dvh, spodní okraj počítá s home indikátorem); od 640px vycentrovaný dialog. Akční lišta je `ModalFooter` (`modal-footer`): přilepená ke spodnímu okraji dialogu, Zrušit (`btn-secondary`) vlevo od hlavní akce, na telefonu pod sebou přes celou šířku s hlavní akcí nahoře. Průvodce s kroky (BikeModal) používá `ModalFooter className="sm:justify-between"`. Potvrzovací dialogy jdou přes `ConfirmationModal` / `useFeedback().confirm`, nikdy vlastní `fixed inset-0`.
 
 ## Do's and Don'ts
 

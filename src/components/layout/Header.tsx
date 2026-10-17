@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import {
-  Menu,
   RefreshCw,
   LogOut
 } from "lucide-react";
@@ -16,12 +15,10 @@ import { cn } from "@/lib/ui";
 import { StravaStatusBadge } from "@/components/layout/StravaStatusBadge";
 
 interface HeaderProps {
-  onToggleMobileMenu: () => void;
   activeScreenTitle?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  onToggleMobileMenu,
   activeScreenTitle,
 }) => {
   const pathname = usePathname();
@@ -83,17 +80,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className="h-16 min-h-16 shrink-0 bg-slate-900 border-b border-white/10 sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between gap-2 select-none">
-        {/* Levá strana: mobilní menu + název sekce */}
+      {/* Content row stays 64px; the top inset (notch, landscape) grows the bar instead of covering the title */}
+      <header className="box-content h-16 min-h-16 shrink-0 bg-slate-900 border-b border-white/10 sticky top-0 z-30 pt-[env(safe-area-inset-top)] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(1.5rem,env(safe-area-inset-left))] sm:pr-[max(1.5rem,env(safe-area-inset-right))] flex items-center justify-between gap-2 select-none">
+        {/* Levá strana: název sekce (mobilní menu je ve spodní liště) */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          <button
-            onClick={onToggleMobileMenu}
-            aria-label="Otevřít menu"
-            className="btn-icon text-white/70 hover:text-white hover:bg-white/10 md:hidden"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-
           <div className="min-w-0">
             <p className="text-base font-bold text-white leading-tight truncate">
               {getScreenTitle()}

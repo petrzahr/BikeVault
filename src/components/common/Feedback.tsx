@@ -86,7 +86,7 @@ export const FeedbackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       {children}
 
       <div
-        className="fixed bottom-4 right-4 left-4 sm:left-auto sm:w-96 z-[60] flex flex-col gap-2 pointer-events-none"
+        className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] md:bottom-4 right-4 left-4 sm:left-auto sm:w-96 z-[60] flex flex-col gap-2 pointer-events-none"
         aria-live="polite"
       >
         {toasts.map((t) => (

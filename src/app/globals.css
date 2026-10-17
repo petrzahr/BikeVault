@@ -197,10 +197,11 @@
 
   /* Dialog action bar (ModalFooter): pinned to the bottom of the scrolling dialog body, cancel left of the primary
      action; on narrow phones buttons stack full width with the primary on top. The negative margins match the
-     Modal body padding so the bar spans the dialog edge to edge. */
+     Modal body padding so the bar spans the dialog edge to edge; on phones (bottom sheet) both include the home
+     indicator inset. */
   .modal-footer {
-    @apply sticky -bottom-4 sm:-bottom-5 z-10 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 mt-5;
-    @apply -mx-4 sm:-mx-6 -mb-4 sm:-mb-5 px-4 sm:px-6 py-3 sm:py-4 bg-white border-t border-slate-100;
+    @apply sticky bottom-[calc(-1rem-env(safe-area-inset-bottom))] sm:-bottom-5 z-10 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 mt-5;
+    @apply -mx-4 sm:-mx-6 mb-[calc(-1rem-env(safe-area-inset-bottom))] sm:-mb-5 px-4 sm:px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:py-4 bg-white border-t border-slate-100;
   }
 }
 
@@ -216,6 +217,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   caret-color: theme('colors.navy.600');
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {

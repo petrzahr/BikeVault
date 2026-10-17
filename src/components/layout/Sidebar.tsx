@@ -4,19 +4,13 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useVault } from "@/context/VaultContext";
-import { 
-  Warehouse, 
-  Layers, 
-  Wrench, 
-  Coins, 
-  BarChart3, 
-  Settings,
-  ListChecks,
-  Plus, 
-  X, 
-  Bike as BikeIcon 
+import {
+  Plus,
+  X,
+  Bike as BikeIcon
 } from "lucide-react";
-import { t, formatKm, formatCzk } from "@/lib/i18n";
+import { formatKm, formatCzk } from "@/lib/i18n";
+import { NAV_ITEMS, isNavItemActive, countOverdueSchedules } from "./navItems";
 
 
 export type NavScreen = "garage" | "components" | "maintenance" | "finances" | "statistics" | "settings";
@@ -37,32 +31,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const pathname = usePathname();
   const { data, getServiceScheduleStatuses } = useVault();
 
-  const navItems = [
-    { href: "/garage", label: t("nav.garage"), icon: Warehouse },
-    { href: "/components", label: t("nav.components"), icon: Layers },
-    { href: "/maintenance", label: t("nav.maintenance"), icon: Wrench },
-    { href: "/finances", label: t("nav.finances"), icon: Coins },
-    { href: "/statistics", label: t("nav.statistics"), icon: BarChart3 },
-    { href: "/lists", label: t("nav.lists"), icon: ListChecks },
-    { href: "/settings", label: t("nav.settings"), icon: Settings },
-  ];
-
-  const isActive = (href: string) => {
-    if (href === "/garage") {
-      return pathname === "/" || pathname === "/garage" || pathname.startsWith("/bikes");
-    }
-    return pathname.startsWith(href);
-  };
+  const isActive = (href: string) => isNavItemActive(pathname, href);
 
   // Quick stats
   const activeBikesCount = data.bikes.filter((b) => b.status === "ACTIVE").length;
   const totalKm = data.bikes.reduce((acc, b) => acc + Number(b.currentKm || 0), 0);
   const installedComponentsCount = data.components.filter((c) => c.status === "INSTALLED").length;
-  const serviceStatuses = getServiceScheduleStatuses();
-  const overdueCount = serviceStatuses.filter(
-    (s: { schedule?: { isActive: boolean }; status?: { urgency: string } }) =>
-      s.schedule?.isActive && s.status?.urgency === "OVERDUE"
-  ).length;
+  const overdueCount = countOverdueSchedules(getServiceScheduleStatuses());
 
   const totalInvestment = 
     data.bikes.reduce((acc, b) => acc + Number(b.purchasePrice || 0), 0) +
@@ -79,7 +54,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-slate-900 flex flex-col justify-between transition-transform duration-200 ease-in-out ${
+        id="app-drawer"
+        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-slate-900 flex flex-col justify-between max-md:pt-[env(safe-area-inset-top)] max-md:pb-[env(safe-area-inset-bottom)] max-md:pl-[env(safe-area-inset-left)] transition-transform duration-200 ease-in-out ${
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
@@ -135,7 +111,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Navigační položky */}
           <nav className="space-y-1">
-            {navItems.map((item) => {
+            {NAV_ITEMS.map((item) => {
               const active = isActive(item.href);
               const Icon = item.icon;
               return (
