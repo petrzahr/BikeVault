@@ -59,9 +59,6 @@ export function SetupClient({
   const [forkLsr, setForkLsr] = useState(numField(initialSetup?.forkLsrClicks));
   const [forkHsr, setForkHsr] = useState(numField(initialSetup?.forkHsrClicks));
   const [forkTokens, setForkTokens] = useState(numField(initialSetup?.forkVolumeSpacers));
-  const [forkTravel, setForkTravel] = useState(
-    forkTravelSpec ? String(forkTravelSpec) : initialSetup?.forkTravelMm ? String(initialSetup.forkTravelMm) : ""
-  );
   const [forkNotes, setForkNotes] = useState(initialSetup?.forkNotes || "");
 
   // Tlumič
@@ -73,6 +70,10 @@ export function SetupClient({
   const [shockHsr, setShockHsr] = useState(numField(initialSetup?.shockHsrClicks));
   const [shockTokens, setShockTokens] = useState(numField(initialSetup?.shockVolumeSpacers));
   const [shockNotes, setShockNotes] = useState(initialSetup?.shockNotes || "");
+
+  // Zdvih: odvozený z props při každém renderu (spec namontovaného dílu, u vidlice fallback na uložené nastavení).
+  const forkTravelNum = forkTravelSpec || initialSetup?.forkTravelMm || null;
+  const shockTravelNum = frameTravelSpec ?? null;
 
   // Pláště
   const [frontPressure, setFrontPressure] = useState(numField(initialSetup?.frontTirePressureBar));
@@ -109,7 +110,7 @@ export function SetupClient({
         forkLsrClicks: forkLsr ? parseInt(forkLsr, 10) : null,
         forkHsrClicks: forkHsr ? parseInt(forkHsr, 10) : null,
         forkVolumeSpacers: forkTokens ? parseInt(forkTokens, 10) : null,
-        forkTravelMm: forkTravel ? parseInt(forkTravel, 10) : null,
+        forkTravelMm: forkTravelNum,
         forkNotes: forkNotes.trim() || null,
 
         shockPressurePsi: shockPressure ? parseFloat(shockPressure) : null,
@@ -155,7 +156,7 @@ export function SetupClient({
         forkLsrClicks: forkLsr ? parseInt(forkLsr, 10) : null,
         forkHsrClicks: forkHsr ? parseInt(forkHsr, 10) : null,
         forkVolumeSpacers: forkTokens ? parseInt(forkTokens, 10) : null,
-        forkTravelMm: forkTravel ? parseInt(forkTravel, 10) : null,
+        forkTravelMm: forkTravelNum,
         forkNotes: forkNotes.trim() || null,
         shockPressurePsi: shockPressure ? parseFloat(shockPressure) : null,
         shockSagPercent: shockSag ? parseInt(shockSag, 10) : null,
@@ -194,8 +195,6 @@ export function SetupClient({
     const mm = fmt1(sagMm(travel, sag));
     return mm ? `${mm} mm` : null;
   };
-  const forkTravelNum = forkTravel ? Number(forkTravel) : null;
-  const shockTravelNum = frameTravelSpec ?? null;
 
   return (
     <div className="space-y-6 animate-fade-in">
