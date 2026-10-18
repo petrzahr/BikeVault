@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
 import { calculateTco, getBikeTransactions } from "@/lib/domain/finance";
-import { formatClicksFromClosed, getSupportedAdjusters } from "@/lib/domain/setup";
+import { formatClicksFromClosed, formatTireBadge, formatTireLabel, getSupportedAdjusters } from "@/lib/domain/setup";
 import { 
   formatKm, 
   formatMinutes, 
@@ -365,7 +365,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 font-medium truncate">
-                  {frontTireComp ? `${frontTireComp.manufacturer} ${frontTireComp.model}` : "Neosazeno"}
+                  {frontTireComp ? [formatTireLabel(frontTireComp), formatTireBadge(frontTireComp)].filter(Boolean).join(" | ") : "Neosazeno"}
                 </p>
                 {setup?.frontTireNotes && (
                   <p className="text-slate-500 italic">
@@ -385,7 +385,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 font-medium truncate">
-                  {rearTireComp ? `${rearTireComp.manufacturer} ${rearTireComp.model}` : "Neosazeno"}
+                  {rearTireComp ? [formatTireLabel(rearTireComp), formatTireBadge(rearTireComp)].filter(Boolean).join(" | ") : "Neosazeno"}
                 </p>
                 {setup?.rearTireNotes && (
                   <p className="text-slate-500 italic">
