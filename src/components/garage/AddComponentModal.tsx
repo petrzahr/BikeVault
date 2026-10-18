@@ -8,7 +8,7 @@ import { useFeedback } from "@/components/common/Feedback";
 import { Modal, ModalFooter } from "@/components/common/Modal";
 import { getCategorySpecFields, LEGACY_COMPONENT_SPEC_KEYS, sortCategoriesAz } from "@/lib/bikeLists";
 import { DAMPING_ADJUSTERS, getSupportedAdjusters } from "@/lib/domain/setup";
-import type { DampingAdjuster } from "@/types/vault";
+import type { Component, DampingAdjuster } from "@/types/vault";
 
 /** Kategorie, u kterých se eviduje nastavitelné tlumení. */
 const DAMPED_CATEGORY_CODES = ["FORK", "REAR_SHOCK"];
@@ -17,16 +17,19 @@ interface AddComponentModalProps {
   isOpen: boolean;
   onClose: () => void;
   componentToEdit?: any | null;
+  /** Předvyplní formulář podle existující komponenty; uložení založí novou. */
+  componentToDuplicate?: Component | null;
 }
 
 const isLegacySpecKey = (key: string): boolean =>
   (LEGACY_COMPONENT_SPEC_KEYS as readonly string[]).includes(key);
 
-export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, onClose, componentToEdit }) => {
+export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, onClose, componentToEdit, componentToDuplicate }) => {
   const { data, addComponent, updateComponent } = useVault();
   const { toast } = useFeedback();
   const categories = sortCategoriesAz(data.categories);
   const isEditing = Boolean(componentToEdit);
+  const isDuplicating = !isEditing && Boolean(componentToDuplicate);
 
   const [categoryId, setCategoryId] = useState("");
   const effectiveCategoryId = categoryId;
@@ -51,24 +54,36 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
   useEffect(() => {
     if (!isOpen) return;
 
+    const source = componentToEdit ?? componentToDuplicate;
+    if (source) {
+      setCategoryId(source.categoryId || "");
+      setManufacturer(source.manufacturer || "");
+      setModel(source.model || "");
+      setVariant(source.variant || "");
+      const values: Record<string, string> = {};
+      LEGACY_COMPONENT_SPEC_KEYS.forEach((key) => {
+        if (source[key]) values[key] = String(source[key]);
+      });
+      if (source.customFields) Object.assign(values, source.customFields);
+      setSpecValues(values);
+      setAdjusters(getSupportedAdjusters(source));
+    }
+
     if (componentToEdit) {
-      setCategoryId(componentToEdit.categoryId || "");
-      setManufacturer(componentToEdit.manufacturer || "");
-      setModel(componentToEdit.model || "");
-      setVariant(componentToEdit.variant || "");
       setSerialNumber(componentToEdit.serialNumber || "");
       setPurchaseDate(componentToEdit.purchaseDate ? componentToEdit.purchaseDate.split("T")[0] : new Date().toISOString().split("T")[0]);
       setPurchasePrice(componentToEdit.purchasePrice != null ? String(componentToEdit.purchasePrice) : "");
       setInitialKm(componentToEdit.initialKm != null ? String(componentToEdit.initialKm) : "0");
       setInitialHours(componentToEdit.initialMinutes != null ? String(componentToEdit.initialMinutes / 60) : "0");
-      const values: Record<string, string> = {};
-      LEGACY_COMPONENT_SPEC_KEYS.forEach((key) => {
-        if (componentToEdit[key]) values[key] = String(componentToEdit[key]);
-      });
-      if (componentToEdit.customFields) Object.assign(values, componentToEdit.customFields);
-      setSpecValues(values);
-      setAdjusters(getSupportedAdjusters(componentToEdit));
       setNotes(componentToEdit.notes || "");
+    } else if (componentToDuplicate) {
+      // Nový kus: údaje vázané na konkrétní nákup se nepřebírají
+      setSerialNumber("");
+      setPurchaseDate(new Date().toISOString().split("T")[0]);
+      setPurchasePrice("");
+      setInitialKm("0");
+      setInitialHours("0");
+      setNotes("");
     } else {
       setCategoryId("");
       setManufacturer("");
@@ -83,7 +98,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
       setAdjusters([...DAMPING_ADJUSTERS]);
       setNotes("");
     }
-  }, [isOpen, componentToEdit]);
+  }, [isOpen, componentToEdit, componentToDuplicate]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,8 +156,14 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
   return (    <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? "Upravit komponentu" : t("components.addComponent")}
-      subtitle={isEditing ? "Úprava údajů o komponentě v evidenci skladu" : "Zaevidování nové komponenty do skladu"}
+      title={isEditing ? "Upravit komponentu" : isDuplicating ? "Duplikovat komponentu" : t("components.addComponent")}
+      subtitle={
+        isEditing
+          ? "Úprava údajů o komponentě v evidenci skladu"
+          : isDuplicating
+            ? "Nový kus podle existující komponenty — doplň cenu, datum a sériové číslo"
+            : "Zaevidování nové komponenty do skladu"
+      }
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleCreate} className="space-y-4">

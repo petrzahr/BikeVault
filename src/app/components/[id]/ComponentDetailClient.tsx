@@ -15,7 +15,8 @@ import {
   Trash2,
   Check,
   Loader2,
-  Pencil
+  Pencil,
+  Copy
 } from "lucide-react";
 import { formatKm, formatMinutes, formatCzk, formatDateCs } from "@/lib/i18n";
 import { getCategorySpecFields, LEGACY_COMPONENT_SPEC_KEYS } from "@/lib/bikeLists";
@@ -81,6 +82,7 @@ export function ComponentDetailClient({
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
 
   const handleDeleteComponent = () => {
     deleteComponent(component.id);
@@ -190,6 +192,15 @@ export function ComponentDetailClient({
             >
               <Pencil className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Upravit</span>
+            </button>
+            <button
+              onClick={() => setIsDuplicateModalOpen(true)}
+              className="btn-secondary"
+              title="Duplikovat komponentu"
+              aria-label="Duplikovat komponentu"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Duplikovat</span>
             </button>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
@@ -478,6 +489,11 @@ export function ComponentDetailClient({
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         componentToEdit={component}
+      />
+      <AddComponentModal
+        isOpen={isDuplicateModalOpen}
+        onClose={() => setIsDuplicateModalOpen(false)}
+        componentToDuplicate={component}
       />
 
       {/* Edit / Create Schedule Modal */}

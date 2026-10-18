@@ -5,6 +5,7 @@ import {
   Plus,
   Search,
   Pencil,
+  Copy,
   Check
 } from "lucide-react";
 import { t, formatCzk } from "@/lib/i18n";
@@ -34,6 +35,7 @@ export function ComponentsClient({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [componentToEdit, setComponentToEdit] = useState<any | null>(null);
+  const [componentToDuplicate, setComponentToDuplicate] = useState<any | null>(null);
 
   // Install from storage
   const [componentToInstall, setComponentToInstall] = useState<any | null>(null);
@@ -208,6 +210,14 @@ export function ComponentsClient({
                       <Pencil className="w-3.5 h-3.5" />
                       <span>Upravit</span>
                     </button>
+                    <button
+                      onClick={() => setComponentToDuplicate(comp)}
+                      className="btn-text"
+                      title="Duplikovat komponentu"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Duplikovat</span>
+                    </button>
                     <Link
                       href={`/components/${comp.id}`}
                       className="btn-text"
@@ -227,6 +237,11 @@ export function ComponentsClient({
         isOpen={!!componentToEdit}
         onClose={() => setComponentToEdit(null)}
         componentToEdit={componentToEdit}
+      />
+      <AddComponentModal
+        isOpen={!!componentToDuplicate}
+        onClose={() => setComponentToDuplicate(null)}
+        componentToDuplicate={componentToDuplicate}
       />
 
       {/* MODAL: NAMONTOVAT ZE SKLADU */}
