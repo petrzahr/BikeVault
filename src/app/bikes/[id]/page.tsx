@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { useVault } from "@/context/VaultContext";
 import { BikeHeader } from "@/components/bike/BikeHeader";
 import { calculateTco, getBikeTransactions } from "@/lib/domain/finance";
-import { formatClicksFromClosed } from "@/lib/domain/setup";
+import { formatClicksFromClosed, getSupportedAdjusters } from "@/lib/domain/setup";
 import { 
   formatKm, 
   formatMinutes, 
@@ -82,6 +82,8 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
   // Installed components lookup
   const forkComp = installedComponents.find((c) => c.installation.slot === "FORK")?.component;
   const shockComp = installedComponents.find((c) => c.installation.slot === "REAR_SHOCK")?.component;
+  const forkAdjusters = getSupportedAdjusters(forkComp);
+  const shockAdjusters = getSupportedAdjusters(shockComp);
   const frontTireComp = installedComponents.find((c) => c.installation.slot === "FRONT_TIRE")?.component;
   const rearTireComp = installedComponents.find((c) => c.installation.slot === "REAR_TIRE")?.component;
 
@@ -304,16 +306,16 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   </p>
                   <div className="text-slate-500 space-y-0.5 pt-1 border-t border-slate-200 tabular-nums">
                     <div>SAG: <span className="text-slate-800 font-medium">{setup?.forkSagPercent ?? "-"} %</span></div>
-                    {setup?.forkLscClicks !== null && setup?.forkLscClicks !== undefined && (
+                    {forkAdjusters.includes("LSC") && setup?.forkLscClicks !== null && setup?.forkLscClicks !== undefined && (
                       <div>LSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkLscClicks)}</span></div>
                     )}
-                    {setup?.forkHscClicks !== null && setup?.forkHscClicks !== undefined && (
+                    {forkAdjusters.includes("HSC") && setup?.forkHscClicks !== null && setup?.forkHscClicks !== undefined && (
                       <div>HSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkHscClicks)}</span></div>
                     )}
-                    {setup?.forkLsrClicks !== null && setup?.forkLsrClicks !== undefined && (
+                    {forkAdjusters.includes("LSR") && setup?.forkLsrClicks !== null && setup?.forkLsrClicks !== undefined && (
                       <div>LSR: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkLsrClicks)}</span></div>
                     )}
-                    {setup?.forkHsrClicks !== null && setup?.forkHsrClicks !== undefined && (
+                    {forkAdjusters.includes("HSR") && setup?.forkHsrClicks !== null && setup?.forkHsrClicks !== undefined && (
                       <div>HSR: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkHsrClicks)}</span></div>
                     )}
                   </div>
@@ -336,16 +338,16 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                   </p>
                   <div className="text-slate-500 space-y-0.5 pt-1 border-t border-slate-200 tabular-nums">
                     <div>SAG: <span className="text-slate-800 font-medium">{setup?.shockSagPercent ?? "-"} %</span></div>
-                    {setup?.shockLscClicks !== null && setup?.shockLscClicks !== undefined && (
+                    {shockAdjusters.includes("LSC") && setup?.shockLscClicks !== null && setup?.shockLscClicks !== undefined && (
                       <div>LSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.shockLscClicks)}</span></div>
                     )}
-                    {setup?.shockHscClicks !== null && setup?.shockHscClicks !== undefined && (
+                    {shockAdjusters.includes("HSC") && setup?.shockHscClicks !== null && setup?.shockHscClicks !== undefined && (
                       <div>HSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.shockHscClicks)}</span></div>
                     )}
-                    {setup?.shockLsrClicks !== null && setup?.shockLsrClicks !== undefined && (
+                    {shockAdjusters.includes("LSR") && setup?.shockLsrClicks !== null && setup?.shockLsrClicks !== undefined && (
                       <div>LSR: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.shockLsrClicks)}</span></div>
                     )}
-                    {setup?.shockHsrClicks !== null && setup?.shockHsrClicks !== undefined && (
+                    {shockAdjusters.includes("HSR") && setup?.shockHsrClicks !== null && setup?.shockHsrClicks !== undefined && (
                       <div>HSR: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.shockHsrClicks)}</span></div>
                     )}
                   </div>

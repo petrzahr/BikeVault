@@ -89,6 +89,8 @@ export interface ComponentCategory {
   specFields?: ComponentSpecField[] | null;
 }
 
+export type DampingAdjuster = "LSC" | "HSC" | "LSR" | "HSR";
+
 export interface Component {
   id: string;
   categoryId: string;
@@ -110,6 +112,8 @@ export interface Component {
   tireCasing?: string | null;
   tireCompound?: string | null;
   isTubeless?: boolean;
+  /** Nastavitelné tlumení vidlice/tlumiče; chybí/null = všechny čtyři (viz getSupportedAdjusters). */
+  dampingAdjusters?: DampingAdjuster[] | null;
   /** Hodnoty vlastních polí specifikace mimo pevné schéma výše, klíčované podle ComponentSpecField.key. */
   customFields?: Record<string, string> | null;
   notes?: string | null;

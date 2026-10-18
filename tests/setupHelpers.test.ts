@@ -5,7 +5,7 @@
  */
 
 import assert from "node:assert";
-import { barToPsi, sagMm, stepClicks } from "../src/lib/domain/setup";
+import { barToPsi, sagMm, stepClicks, getSupportedAdjusters } from "../src/lib/domain/setup";
 
 console.log("\n=== RUNNING SETUP HELPER TESTS ===\n");
 
@@ -32,5 +32,15 @@ assert.strictEqual(stepClicks("0", -1), "0");
 assert.strictEqual(stepClicks("", 1), "1");
 assert.strictEqual(stepClicks("", -1), "0");
 console.log("✅ PASSED: stepClicks");
+
+// Missing/malformed = all four (older data); stored subset is validated and kept in canonical order
+assert.deepStrictEqual(getSupportedAdjusters(undefined), ["LSC", "HSC", "LSR", "HSR"]);
+assert.deepStrictEqual(getSupportedAdjusters({}), ["LSC", "HSC", "LSR", "HSR"]);
+assert.deepStrictEqual(getSupportedAdjusters({ dampingAdjusters: null }), ["LSC", "HSC", "LSR", "HSR"]);
+assert.deepStrictEqual(getSupportedAdjusters({ dampingAdjusters: "LSC" }), ["LSC", "HSC", "LSR", "HSR"]);
+assert.deepStrictEqual(getSupportedAdjusters({ dampingAdjusters: ["LSR", "LSC", "LSC"] }), ["LSC", "LSR"]);
+assert.deepStrictEqual(getSupportedAdjusters({ dampingAdjusters: ["XYZ", 3, "HSR"] }), ["HSR"]);
+assert.deepStrictEqual(getSupportedAdjusters({ dampingAdjusters: [] }), []);
+console.log("✅ PASSED: getSupportedAdjusters");
 
 console.log("\n=== ALL SETUP HELPER TESTS PASSED ===\n");

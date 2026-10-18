@@ -7,6 +7,11 @@ import { useVault } from "@/context/VaultContext";
 import { useFeedback } from "@/components/common/Feedback";
 import { Modal, ModalFooter } from "@/components/common/Modal";
 import { getCategorySpecFields, LEGACY_COMPONENT_SPEC_KEYS, sortCategoriesAz } from "@/lib/bikeLists";
+import { DAMPING_ADJUSTERS, getSupportedAdjusters } from "@/lib/domain/setup";
+import type { DampingAdjuster } from "@/types/vault";
+
+/** Kategorie, u kterých se eviduje nastavitelné tlumení. */
+const DAMPED_CATEGORY_CODES = ["FORK", "REAR_SHOCK"];
 
 interface AddComponentModalProps {
   isOpen: boolean;
@@ -27,6 +32,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
   const effectiveCategoryId = categoryId;
   const selectedCategory = categories.find((c) => c.id === effectiveCategoryId);
   const specFields = getCategorySpecFields(selectedCategory);
+  const isDamped = DAMPED_CATEGORY_CODES.includes(selectedCategory?.code ?? "");
 
   const [manufacturer, setManufacturer] = useState("");
   const [model, setModel] = useState("");
@@ -37,6 +43,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
   const [initialKm, setInitialKm] = useState("0");
   const [initialHours, setInitialHours] = useState("0");
   const [specValues, setSpecValues] = useState<Record<string, string>>({});
+  const [adjusters, setAdjusters] = useState<DampingAdjuster[]>([...DAMPING_ADJUSTERS]);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -60,6 +67,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
       });
       if (componentToEdit.customFields) Object.assign(values, componentToEdit.customFields);
       setSpecValues(values);
+      setAdjusters(getSupportedAdjusters(componentToEdit));
       setNotes(componentToEdit.notes || "");
     } else {
       setCategoryId("");
@@ -72,6 +80,7 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
       setInitialKm("0");
       setInitialHours("0");
       setSpecValues({});
+      setAdjusters([...DAMPING_ADJUSTERS]);
       setNotes("");
     }
   }, [isOpen, componentToEdit]);
@@ -107,6 +116,8 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
         initialMinutes: Math.round((initialHours ? parseFloat(initialHours) : 0) * 60),
         ...legacySpecFields,
         customFields: Object.keys(customFields).length ? customFields : undefined,
+        // Všechny čtyři = výchozí stav, neukládá se (stejně jako u starších dat).
+        dampingAdjusters: isDamped && adjusters.length < DAMPING_ADJUSTERS.length ? adjusters : undefined,
         notes: notes.trim() || undefined,
       };
 
@@ -261,6 +272,34 @@ export const AddComponentModal: React.FC<AddComponentModalProps> = ({ isOpen, on
                   />
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {isDamped && (
+          <div>
+            <span id="comp-adjusters-label" className="field-label">
+              Nastavitelné tlumení
+            </span>
+            <div role="group" aria-labelledby="comp-adjusters-label" className="segmented inline-flex">
+              {DAMPING_ADJUSTERS.map((a) => {
+                const active = adjusters.includes(a);
+                return (
+                  <button
+                    key={a}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() =>
+                      setAdjusters((prev) =>
+                        active ? prev.filter((x) => x !== a) : DAMPING_ADJUSTERS.filter((x) => x === a || prev.includes(x)),
+                      )
+                    }
+                    className="segment font-mono"
+                  >
+                    {a}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

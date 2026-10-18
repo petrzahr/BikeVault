@@ -2,6 +2,8 @@
  * Domain utilities for Bike Setup, Suspension and Tire pressures.
  */
 
+import type { DampingAdjuster } from "@/types/vault";
+
 export function hasFrontSuspension(suspensionType: string): boolean {
   return suspensionType === "FRONT_SUSPENSION" || suspensionType === "FULL_SUSPENSION";
 }
@@ -52,6 +54,20 @@ export function sagMm(travelMm: number | string | null | undefined, sagPercent: 
 export function stepClicks(current: string, delta: number): string {
   const n = toNumber(current) ?? 0;
   return String(Math.max(0, Math.round(n) + delta));
+}
+
+export const DAMPING_ADJUSTERS: readonly DampingAdjuster[] = ["LSC", "HSC", "LSR", "HSR"];
+
+/**
+ * Damping adjusters a fork/shock supports, in canonical order.
+ * Missing or malformed value (older data, no component mounted) = all four.
+ */
+export function getSupportedAdjusters(
+  component: { dampingAdjusters?: unknown } | null | undefined,
+): DampingAdjuster[] {
+  const stored = component?.dampingAdjusters;
+  if (!Array.isArray(stored)) return [...DAMPING_ADJUSTERS];
+  return DAMPING_ADJUSTERS.filter((a) => stored.includes(a));
 }
 
 interface TireSpecComponent {

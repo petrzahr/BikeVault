@@ -12,10 +12,11 @@ import {
   Loader2
 } from "lucide-react";
 import { t, formatDateCs, formatPsi, formatBar } from "@/lib/i18n";
-import { formatTireLabel, formatTireBadge, barToPsi, sagMm } from "@/lib/domain/setup";
+import { formatTireLabel, formatTireBadge, barToPsi, sagMm, getSupportedAdjusters } from "@/lib/domain/setup";
 import { SetupSheet, ReadoutRow, ReadoutField, SagRuler, ClickStepper } from "@/components/setup/SetupParts";
 import { Modal, ModalFooter } from "@/components/common/Modal";
 import { DeleteButton } from "@/components/common/DeleteButton";
+import type { DampingAdjuster } from "@/types/vault";
 
 interface SetupClientProps {
   bike: any;
@@ -74,6 +75,10 @@ export function SetupClient({
   // Zdvih: odvozený z props při každém renderu (spec namontovaného dílu, u vidlice fallback na uložené nastavení).
   const forkTravelNum = forkTravelSpec || initialSetup?.forkTravelMm || null;
   const shockTravelNum = frameTravelSpec ?? null;
+
+  // Nepodporované tlumení se jen skryje; uložené hodnoty zůstávají ve stavu i při uložení.
+  const forkAdjusters = getSupportedAdjusters(forkComp);
+  const shockAdjusters = getSupportedAdjusters(shockComp);
 
   // Pláště
   const [frontPressure, setFrontPressure] = useState(numField(initialSetup?.frontTirePressureBar));
@@ -317,11 +322,11 @@ export function SetupClient({
               sag: forkSag,
               setSag: setForkSag,
               clicks: [
-                { label: t("setup.fork.lsc"), value: forkLsc, set: setForkLsc },
-                { label: t("setup.fork.hsc"), value: forkHsc, set: setForkHsc },
-                { label: t("setup.fork.lsr"), value: forkLsr, set: setForkLsr },
-                { label: t("setup.fork.hsr"), value: forkHsr, set: setForkHsr },
-              ],
+                { key: "LSC", label: t("setup.fork.lsc"), value: forkLsc, set: setForkLsc },
+                { key: "HSC", label: t("setup.fork.hsc"), value: forkHsc, set: setForkHsc },
+                { key: "LSR", label: t("setup.fork.lsr"), value: forkLsr, set: setForkLsr },
+                { key: "HSR", label: t("setup.fork.hsr"), value: forkHsr, set: setForkHsr },
+              ].filter((c) => forkAdjusters.includes(c.key as DampingAdjuster)),
               tokensLabel: t("setup.fork.tokens"),
               tokens: forkTokens,
               setTokens: setForkTokens,
@@ -340,11 +345,11 @@ export function SetupClient({
               sag: shockSag,
               setSag: setShockSag,
               clicks: [
-                { label: t("setup.shock.lsc"), value: shockLsc, set: setShockLsc },
-                { label: t("setup.shock.hsc"), value: shockHsc, set: setShockHsc },
-                { label: t("setup.shock.lsr"), value: shockLsr, set: setShockLsr },
-                { label: t("setup.shock.hsr"), value: shockHsr, set: setShockHsr },
-              ],
+                { key: "LSC", label: t("setup.shock.lsc"), value: shockLsc, set: setShockLsc },
+                { key: "HSC", label: t("setup.shock.hsc"), value: shockHsc, set: setShockHsc },
+                { key: "LSR", label: t("setup.shock.lsr"), value: shockLsr, set: setShockLsr },
+                { key: "HSR", label: t("setup.shock.hsr"), value: shockHsr, set: setShockHsr },
+              ].filter((c) => shockAdjusters.includes(c.key as DampingAdjuster)),
               tokensLabel: t("setup.shock.tokens"),
               tokens: shockTokens,
               setTokens: setShockTokens,
@@ -379,11 +384,13 @@ export function SetupClient({
                   />
                 </ReadoutRow>
                 <SagRuler sagPercent={s.sag} travelMm={s.travel} />
-                <div>
-                  {s.clicks.map((c) => (
-                    <ClickStepper key={c.label} label={c.label} value={c.value} onChange={c.set} />
-                  ))}
-                </div>
+                {s.clicks.length > 0 && (
+                  <div>
+                    {s.clicks.map((c) => (
+                      <ClickStepper key={c.key} label={c.label} value={c.value} onChange={c.set} />
+                    ))}
+                  </div>
+                )}
                 <div className="grid grid-cols-[7rem_1fr] gap-3 px-4 sm:px-5 py-3 border-t border-slate-200 bg-slate-50">
                   <div>
                     <label htmlFor={`${s.key}-tokens`} className="field-label">
