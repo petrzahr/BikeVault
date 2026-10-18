@@ -303,6 +303,7 @@ export default function BikeOverviewPage({ params }: BikeOverviewPageProps) {
                     {forkComp ? `${forkComp.manufacturer} ${forkComp.model}` : "Neosazeno"}
                   </p>
                   <div className="text-slate-500 space-y-0.5 pt-1 border-t border-slate-200 tabular-nums">
+                    <div>SAG: <span className="text-slate-800 font-medium">{setup?.forkSagPercent ?? "-"} %</span></div>
                     {setup?.forkLscClicks !== null && setup?.forkLscClicks !== undefined && (
                       <div>LSC: <span className="text-slate-800 font-medium">{formatClicksFromClosed(setup.forkLscClicks)}</span></div>
                     )}
