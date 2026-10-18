@@ -199,25 +199,27 @@ export function ComponentsClient({
                   )}
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-slate-500">
-                  <span className="whitespace-nowrap">Cena: <strong className="text-slate-900 tabular-nums font-bold">{formatCzk(comp.purchasePrice)}</strong></span>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setComponentToEdit(comp)}
-                      className="btn-text"
-                      title="Upravit komponentu"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                      <span>Upravit</span>
-                    </button>
-                    <button
-                      onClick={() => setComponentToDuplicate(comp)}
-                      className="btn-text"
-                      title="Duplikovat komponentu"
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Duplikovat</span>
-                    </button>
+                <div className="pt-3 border-t border-slate-100 space-y-2 text-xs text-slate-500">
+                  <span className="block whitespace-nowrap">Cena: <strong className="text-slate-900 tabular-nums font-bold">{formatCzk(comp.purchasePrice)}</strong></span>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setComponentToEdit(comp)}
+                        className="btn-text"
+                        title="Upravit komponentu"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        <span>Upravit</span>
+                      </button>
+                      <button
+                        onClick={() => setComponentToDuplicate(comp)}
+                        className="btn-text"
+                        title="Duplikovat komponentu"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Duplikovat</span>
+                      </button>
+                    </div>
                     <Link
                       href={`/components/${comp.id}`}
                       className="btn-text"
