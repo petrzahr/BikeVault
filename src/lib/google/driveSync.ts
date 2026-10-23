@@ -5,7 +5,7 @@
  */
 
 import { BikeVaultData } from "@/types/vault";
-import { clearStoredAuth, InsufficientDriveScopeError } from "./googleAuth";
+import { clearStoredAuth, getStoredAuth, InsufficientDriveScopeError } from "./googleAuth";
 import { validateVaultData } from "../storage/storageService";
 
 export { InsufficientDriveScopeError };
@@ -53,7 +53,7 @@ export async function findVaultFile(token: string): Promise<DriveFileInfo | null
   });
 
   if (res.status === 401) {
-    clearStoredAuth();
+    if (getStoredAuth()?.accessToken === token) clearStoredAuth();
     throw new Error("Platnost přihlášení k Google Disku vypršela. Přihlaste se prosím znovu.");
   }
 
@@ -93,7 +93,7 @@ export async function downloadVaultData(token: string, fileId: string): Promise<
   });
 
   if (res.status === 401) {
-    clearStoredAuth();
+    if (getStoredAuth()?.accessToken === token) clearStoredAuth();
     throw new Error("Platnost přihlášení k Google Disku vypršela. Přihlaste se prosím znovu.");
   }
 
@@ -203,7 +203,7 @@ export async function uploadVaultData(
   });
 
   if (res.status === 401) {
-    clearStoredAuth();
+    if (getStoredAuth()?.accessToken === token) clearStoredAuth();
     throw new Error("Platnost přihlášení k Google Disku vypršela. Přihlaste se prosím znovu.");
   }
 

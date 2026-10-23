@@ -18,42 +18,18 @@ import {
 import {
   DEFAULT_CATEGORIES,
   DEFAULT_SETTINGS,
-  createEmptyVaultData,
 } from "@/constants/defaultData";
+import { getStoredAuth, isStoredTokenValid, fetchGoogleUserProfile } from "@/lib/google/googleAuth";
+import type { GoogleUser } from "@/lib/google/googleAuth";
 import {
-  getStoredAuth,
-  isStoredTokenValid,
-  hasDriveScope,
-  loginToGoogle,
-  logoutFromGoogle,
-  fetchGoogleUserProfile,
-  GoogleUser,
-  InsufficientDriveScopeError,
-} from "@/lib/google/googleAuth";
-import {
-  findVaultFile,
-  downloadVaultData,
-  uploadVaultData,
-  CorruptedCloudDataError,
-} from "@/lib/google/driveSync";
-import {
-  getLastDriveBackupAt,
   isDriveBackupEnabled,
   setDriveBackupEnabled as persistDriveBackupEnabled,
   tryRunDriveBackup,
 } from "@/lib/google/driveBackup";
-import {
-  loadStoredCacheResult,
-  saveStoredCache,
-  clearStoredCache,
-  exportCorruptedRawData,
-  getInitialData,
-  setActiveStorageKey,
-  STORAGE_KEY_DEMO,
-} from "@/lib/storage/storageService";
+import { exportCorruptedRawData, getInitialData } from "@/lib/storage/storageService";
 import { mergeBackupData, parseBackupForRestore } from "@/lib/storage/backupMerge";
 import { useFeedback } from "@/components/common/Feedback";
-import { isDevAuthBypassEnabled, DEV_BYPASS_USER } from "@/lib/devAuthBypass";
+import { isDevAuthBypassEnabled } from "@/lib/devAuthBypass";
 import { recordOdometerSnapshot, calculateInstallationUsage } from "@/lib/domain/odometer";
 import { compareMileage, compareRideTime, validateLinkConstraint, validateNewBikeGearId } from "@/lib/domain/stravaSync";
 import { formatMinutes } from "@/lib/i18n";
@@ -68,24 +44,9 @@ import {
 import { evaluateServiceSchedule, MaintenanceStatusResult } from "@/lib/domain/maintenance";
 import { areComponentsEquivalentReplacement, findStorageReplacements } from "@/lib/domain/replacement";
 import { getCategorySpecFields, makeSpecFieldKey } from "@/lib/bikeLists";
-import { createAutosaveQueue, AutosaveQueue } from "@/lib/sync/autosaveQueue";
-
-export type SyncStatus = "synced" | "saving" | "offline" | "error";
-export type AppState =
-  | "authLoading"
-  | "cloudLoading"
-  | "ready"
-  | "loadError"
-  | "syncError"
-  | "scopeInsufficient";
-
-export type LogoutResult = { ok: true } | { ok: false; error: string };
-
-interface AutosaveJob {
-  token: string;
-  data: BikeVaultData;
-  fileId?: string;
-}
+import { createVaultSyncLifecycle } from "@/lib/sync/vaultSyncLifecycle";
+import type { SyncStatus, AppState, LogoutResult } from "@/lib/sync/vaultSyncLifecycle";
+export type { SyncStatus, AppState, LogoutResult } from "@/lib/sync/vaultSyncLifecycle";
 
 export interface EvaluatedServiceSchedule {
   schedule: ServiceSchedule;
@@ -241,333 +202,27 @@ function generateId(prefix = "id"): string {
 
 export function VaultProvider({ children }: { children: ReactNode }) {
   const { toast } = useFeedback();
-  const [data, setData] = useState<BikeVaultData>(getInitialData());
-  const [appState, setAppState] = useState<AppState>("authLoading");
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isInitialSyncDone, setIsInitialSyncDone] = useState(false);
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>("offline");
-  const [syncError, setSyncError] = useState<string | null>(null);
-  const [loadErrorDetail, setLoadErrorDetail] = useState<string | null>(null);
-  const [corruptedRawPayload, setCorruptedRawPayload] = useState<string | null>(null);
-  const [user, setUser] = useState<GoogleUser | null>(null);
-  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
-  const [driveFileId, setDriveFileId] = useState<string | null>(null);
-  // localStorage is read after mount to keep server and client render identical
+  const lifecycleRef = useRef<ReturnType<typeof createVaultSyncLifecycle> | null>(null);
+  if (!lifecycleRef.current) lifecycleRef.current = createVaultSyncLifecycle(getInitialData());
+  const lifecycle = lifecycleRef.current;
+  const [snapshot, setSnapshot] = useState(lifecycle.getState);
+  const {
+    data, appState, isLoaded, isAuthenticated, isInitialSyncDone, syncStatus,
+    syncError, loadErrorDetail, corruptedRawPayload, user, lastSyncedAt, lastDriveBackupAt,
+  } = snapshot;
   const [driveBackupEnabled, setDriveBackupEnabledState] = useState(true);
-  const [lastDriveBackupAt, setLastDriveBackupAt] = useState<Date | null>(null);
 
   useEffect(() => {
     setDriveBackupEnabledState(isDriveBackupEnabled());
-  }, []);
+    const unsubscribe = lifecycle.subscribe(setSnapshot);
+    void lifecycle.initialize();
+    return () => { unsubscribe(); lifecycle.dispose(); };
+  }, [lifecycle]);
 
-  const isInitialMount = useRef(true);
-  const autosaveQueueRef = useRef<AutosaveQueue<AutosaveJob> | null>(null);
-  if (!autosaveQueueRef.current) {
-    autosaveQueueRef.current = createAutosaveQueue<AutosaveJob>({
-      delayMs: 1500,
-      run: async (job) => {
-        const fileInfo = await uploadVaultData(job.token, job.data, job.fileId);
-        if (fileInfo.id) {
-          setDriveFileId(fileInfo.id);
-        }
-        setLastSyncedAt(new Date());
-        setSyncStatus("synced");
-        setSyncError(null);
-      },
-      onError: (err) => {
-        console.error("Auto-save error to Drive:", err);
-        setSyncStatus("error");
-        setSyncError(err instanceof Error ? err.message : String(err));
-      },
-    });
-  }
-  const autosaveQueue = autosaveQueueRef.current;
-
-  // Helper to sync with authoritative Google Drive
-  const syncWithGoogleDrive = useCallback(async (token: string) => {
-    // The dev bypass never talks to Drive (no download into the demo cache, no upload of demo data)
-    if (isDevAuthBypassEnabled()) return;
-    try {
-      setSyncStatus("saving");
-      setSyncError(null);
-      setLoadErrorDetail(null);
-
-      // Fetch user profile if missing
-      const profilePromise = fetchGoogleUserProfile(token).then((u) => {
-        if (u) setUser(u);
-        return u;
-      });
-
-      const fileInfo = await findVaultFile(token);
-      if (fileInfo) {
-        setDriveFileId(fileInfo.id);
-        const cloudData = await downloadVaultData(token, fileInfo.id);
-
-        // Authoritative cloud data wins: update state and populate local cache
-        setData(cloudData);
-        saveStoredCache(cloudData);
-
-        setLastSyncedAt(new Date());
-        setSyncStatus("synced");
-        setAppState("ready");
-
-        // Backups are independent of the autosave queue and must never affect sync; throttled to once per 24 h
-        void profilePromise.then((u) => {
-          if (!u?.permissionId) return;
-          const accountId = u.permissionId;
-          setLastDriveBackupAt(getLastDriveBackupAt(accountId));
-          void tryRunDriveBackup(token, accountId, cloudData).then((result) => {
-            if (result.ran) setLastDriveBackupAt(new Date());
-          });
-        });
-      } else {
-        // First production run on Google Drive: create new file with clean empty data (NO demo data)
-        const initialCleanData = createEmptyVaultData();
-        const newFile = await uploadVaultData(token, initialCleanData);
-        setDriveFileId(newFile.id);
-        setData(initialCleanData);
-        saveStoredCache(initialCleanData);
-
-        setLastSyncedAt(new Date());
-        setSyncStatus("synced");
-        setAppState("ready");
-      }
-      setIsInitialSyncDone(true);
-    } catch (err: unknown) {
-      console.error("Sync error:", err);
-      const isCorrupted = err instanceof CorruptedCloudDataError;
-      const isScopeError =
-        err instanceof InsufficientDriveScopeError ||
-        (err instanceof Error &&
-          (err.message.includes("ACCESS_TOKEN_SCOPE_INSUFFICIENT") ||
-            err.message.includes("insufficient_scope") ||
-            err.message.includes("insufficientPermissions") ||
-            err.message.includes("Insufficient Permission")));
-
-      const errorMsg = isScopeError
-        ? "BikeVault potřebuje znovu povolit přístup ke svým datům na Google Disku."
-        : err instanceof Error ? err.message : String(err);
-
-      setSyncStatus("error");
-      setSyncError(errorMsg);
-      setIsInitialSyncDone(true);
-
-      if (isCorrupted) {
-        // DATA SAFETY: Never overwrite corrupted cloud data with cache or empty data!
-        setAppState("loadError");
-        setLoadErrorDetail(errorMsg);
-        if (err.rawPayload) {
-          setCorruptedRawPayload(
-            typeof err.rawPayload === "string" ? err.rawPayload : JSON.stringify(err.rawPayload, null, 2)
-          );
-        }
-      } else if (isScopeError) {
-        setAppState("scopeInsufficient");
-      } else {
-        setAppState((prev) => (prev === "ready" ? "ready" : "syncError"));
-      }
-    }
-  }, []);
-
-  // 1. Initial load & check Google Auth
-  useEffect(() => {
-    // Dev-only: local UI work without Google sign-in; data comes only from the demo cache key, Drive is never called
-    if (isDevAuthBypassEnabled()) {
-      // Pin the demo cache key explicitly: the production key must never be read or written in bypass mode
-      setActiveStorageKey(STORAGE_KEY_DEMO);
-      const cacheResult = loadStoredCacheResult();
-      if (cacheResult.status === "ready") setData(cacheResult.data);
-      setUser(DEV_BYPASS_USER);
-      setIsAuthenticated(true);
-      setAppState("ready");
-      setSyncStatus("offline");
-      setIsLoaded(true);
-      setIsInitialSyncDone(true);
-      return;
-    }
-
-    const auth = getStoredAuth();
-    const valid = isStoredTokenValid();
-
-    if (auth && valid) {
-      setIsAuthenticated(true);
-      if (auth.user) {
-        setUser(auth.user);
-      }
-
-      // Pokud token v úložišti postrádá drive scope, přejdeme do stavu scopeInsufficient
-      if (auth.scopes && !hasDriveScope(auth.scopes)) {
-        setAppState("scopeInsufficient");
-        setSyncStatus("error");
-        setSyncError("BikeVault potřebuje znovu povolit přístup ke svým datům na Google Disku.");
-        setIsLoaded(true);
-        setIsInitialSyncDone(true);
-        return;
-      }
-
-      setAppState("cloudLoading");
-
-      // Load cached data from local cache for instant UI response (no flicker)
-      const cacheResult = loadStoredCacheResult();
-      if (cacheResult.status === "ready" && !cacheResult.isNewInstall) {
-        setData(cacheResult.data);
-      } else if (cacheResult.status === "loadError") {
-        console.warn("Local cache could not be read cleanly:", cacheResult.error);
-        if (cacheResult.corruptedRaw) {
-          setCorruptedRawPayload(cacheResult.corruptedRaw);
-        }
-      }
-
-      setIsLoaded(true);
-      // Trigger background sync from authoritative Google Drive
-      syncWithGoogleDrive(auth.accessToken);
-    } else {
-      // Not authenticated - require Google login
-      setIsAuthenticated(false);
-      setAppState("authLoading");
-      setIsLoaded(true);
-      setIsInitialSyncDone(true);
-      setSyncStatus("offline");
-    }
-  }, [syncWithGoogleDrive]);
-
-  // 2. Debounced auto-save on state change (Protected by WRITE GUARDS)
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
-    // WRITE GUARD: Only autosave when authenticated, initial sync done, and appState is 'ready'
-    if (!isAuthenticated || !isInitialSyncDone || appState !== "ready") {
-      return;
-    }
-
-    // Always update local cache immediately
-    saveStoredCache(data);
-
-    // DATA SAFETY: the dev bypass works on demo data only and must never upload it to Drive
-    if (isDevAuthBypassEnabled()) return;
-
-    // If logged in, debounce upload to Drive
-    const auth = getStoredAuth();
-    if (!auth || !isStoredTokenValid()) {
-      setSyncStatus("offline");
-      return;
-    }
-
-    setSyncStatus("saving");
-
-    autosaveQueue.schedule({ token: auth.accessToken, data, fileId: driveFileId || undefined });
-
-    return () => {
-      autosaveQueue.cancel();
-    };
-  }, [autosaveQueue, data, driveFileId, isAuthenticated, isInitialSyncDone, appState]);
-
-  // Update helper with automatic updatedAt timestamp
-  const mutateData = useCallback((fn: (prev: BikeVaultData) => BikeVaultData) => {
-    setData((prev) => {
-      const next = fn(prev);
-      return {
-        ...next,
-        updatedAt: new Date().toISOString(),
-      };
-    });
-  }, []);
-
-  // --- AUTH METHODS ---
-  const login = async () => {
-    try {
-      setSyncStatus("saving");
-      setSyncError(null);
-      setLoadErrorDetail(null);
-      setAppState("cloudLoading");
-      const token = await loginToGoogle();
-      const profile = await fetchGoogleUserProfile(token);
-      if (profile) setUser(profile);
-      setIsAuthenticated(true);
-      setIsInitialSyncDone(false);
-      await syncWithGoogleDrive(token);
-    } catch (err: unknown) {
-      setSyncStatus("error");
-      const msg = err instanceof Error ? err.message : String(err);
-      setSyncError(msg);
-      throw err;
-    }
-  };
-
-  const logout = async (opts?: { force?: boolean }): Promise<LogoutResult> => {
-    // 1. DATA SAFETY: push any debounced/in-flight autosave to Drive before revoking the token.
-    //    The local cache is cleared below, so an unsaved change would be lost for good.
-    if (!opts?.force) {
-      const flushed = await autosaveQueue.flush();
-      if (!flushed.ok) {
-        const error = flushed.error instanceof Error ? flushed.error.message : String(flushed.error);
-        return { ok: false, error };
-      }
-      // Nothing pending, but the last write never reached Drive (failed upload or expired token)
-      if (!flushed.flushed && appState === "ready" && (syncStatus === "error" || syncStatus === "offline")) {
-        return { ok: false, error: syncError ?? "Poslední změny nejsou uložené na Google Disku." };
-      }
-    }
-    // 2. Invalidate ready state & drop anything still queued (forced logout)
-    setAppState("authLoading");
-    autosaveQueue.cancel();
-    // 3. Terminate Google Auth
-    await logoutFromGoogle();
-    setUser(null);
-    setDriveFileId(null);
-    setLastDriveBackupAt(null);
-    setIsAuthenticated(false);
-    setIsInitialSyncDone(true);
-    setSyncStatus("offline");
-    // 4. Clear in-memory state to clean empty data (never persisted to cloud)
-    setData(createEmptyVaultData());
-    // 5. Clear local cache
-    clearStoredCache();
-    return { ok: true };
-  };
-
-  const reauthorizeGoogleDrive = async () => {
-    try {
-      setSyncStatus("saving");
-      setSyncError(null);
-      setLoadErrorDetail(null);
-      setAppState("cloudLoading");
-      // Prompt "consent" forces Google to display permission screen for drive.file
-      const token = await loginToGoogle("consent");
-      const profile = await fetchGoogleUserProfile(token);
-      if (profile) setUser(profile);
-      setIsAuthenticated(true);
-      setIsInitialSyncDone(false);
-      await syncWithGoogleDrive(token);
-    } catch (err: unknown) {
-      setSyncStatus("error");
-      const isScopeError =
-        err instanceof InsufficientDriveScopeError ||
-        (err instanceof Error &&
-          (err.message.includes("ACCESS_TOKEN_SCOPE_INSUFFICIENT") ||
-            err.message.includes("insufficient_scope") ||
-            err.message.includes("Insufficient Permission")));
-      const msg = isScopeError
-        ? "BikeVault potřebuje znovu povolit přístup ke svým datům na Google Disku."
-        : err instanceof Error ? err.message : String(err);
-      setSyncError(msg);
-      setAppState("scopeInsufficient");
-      throw err;
-    }
-  };
-
-  const syncNow = async () => {
-    const auth = getStoredAuth();
-    if (!auth || !isStoredTokenValid()) {
-      await login();
-      return;
-    }
-    await syncWithGoogleDrive(auth.accessToken);
-  };
+  const mutateData = useCallback((fn: (previous: BikeVaultData) => BikeVaultData) => {
+    lifecycle.mutateData(fn);
+  }, [lifecycle]);
+  const { login, logout, reauthorizeGoogleDrive, syncNow } = lifecycle;
 
   const exportBackup = () => {
     const jsonStr = JSON.stringify(data, null, 2);
@@ -594,14 +249,17 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       toast("Zálohu na Google Disk lze vytvořit až po načtení dat z Google Disku.", "error");
       return;
     }
+    const session = lifecycle.getGeneration();
     const accountId = user?.permissionId ?? (await fetchGoogleUserProfile(auth.accessToken))?.permissionId;
+    if (session !== lifecycle.getGeneration()) return;
     if (!accountId) {
       toast("Zálohu se nepodařilo vytvořit: nelze ověřit účet Google.", "error");
       return;
     }
     const result = await tryRunDriveBackup(auth.accessToken, accountId, data, { force: true });
+    if (session !== lifecycle.getGeneration()) return;
     if (result.ran) {
-      setLastDriveBackupAt(new Date());
+      lifecycle.setLastDriveBackupAt(new Date());
       toast("Záloha byla uložena na Google Disk.", "success");
     } else {
       toast(`Zálohu se nepodařilo vytvořit: ${result.reason || "neznámá chyba"}`, "error");
