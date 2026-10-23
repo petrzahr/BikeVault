@@ -46,11 +46,17 @@ No own database: primary data lives in a file on the user's Google Drive. Only S
 - Add a test script in `tests/` reproducing the bug when practical and include it in `npm test`.
 - Verify with `npm run build` and `npm test` before reporting the bug as fixed.
 
+## Task Sessions
+- One task = one session. When work turns up several independent tasks (e.g. three bugs found in a review), don't fix them in the current session: propose one session per task (a start-session card, `own_initiative`, context `fresh`), each with a self-contained brief: affected files, root cause or symptom, what done looks like.
+- Only propose; never start sessions on your own. I start each one.
+- Each task session runs in its own worktree (`use_worktree: true`) on a branch cut from `develop`, and follows the normal Plan First / approval flow inside that session.
+- Quick follow-ups that only finish the current task stay in the current session.
+
 ## Git Workflow
-- Work on the `develop` branch.
+- The base branch is `develop`. The main session works on `develop`; task sessions work on their own worktree branch cut from `develop` and commit there. Merge a task branch into `develop` only when I ask.
 - After an approved task is implemented and build + tests pass, automatically:
   - Check changed files with `git status`.
-  - Stage only the changes belonging to the approved task and create a local commit (Conventional Commits).
+  - Stage only the changes belonging to the approved task and create a local commit on the current branch (Conventional Commits).
 
 ## Context Preservation & File Exclusions
 To conserve token limits and avoid context rot:
