@@ -66,9 +66,15 @@ import {
   clearVaultData,
 } from "@/lib/domain/deletion";
 import { evaluateServiceSchedule, MaintenanceStatusResult } from "@/lib/domain/maintenance";
-import { areComponentsEquivalentReplacement, findStorageReplacements } from "@/lib/domain/replacement";
+import { findStorageReplacements } from "@/lib/domain/replacement";
 import { getCategorySpecFields, makeSpecFieldKey } from "@/lib/bikeLists";
 import { createAutosaveQueue, AutosaveQueue } from "@/lib/sync/autosaveQueue";
+import {
+  installComponent as installComponentInData,
+  removeComponent as removeComponentInData,
+  transferComponent as transferComponentInData,
+  quickReplaceComponent as quickReplaceComponentInData,
+} from "@/lib/domain/installations";
 
 export type SyncStatus = "synced" | "saving" | "offline" | "error";
 export type AppState =
@@ -1166,58 +1172,15 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  // Preflight preserves synchronous UI errors; re-evaluate against the latest state.
+  const applyInstallationOperation = (operation: (current: BikeVaultData) => BikeVaultData) => {
+    const next = operation(data);
+    mutateData((prev) => prev === data ? next : operation(prev));
+  };
+
   const installComponent = (bikeId: string, componentId: string, slot: string) => {
-    const bike = data.bikes.find((b) => b.id === bikeId);
-    if (!bike) throw new Error("Kolo nebylo nalezeno");
-
-    const now = new Date().toISOString();
-
-    mutateData((prev) => {
-      // Close any active installation on this slot
-      const updatedInstallations = prev.componentInstallations.map((inst) => {
-        if (inst.bikeId === bikeId && inst.slot === slot && !inst.removedAt) {
-          return {
-            ...inst,
-            removedAt: now,
-            removedBikeKm: bike.currentKm,
-            removedBikeMinutes: bike.currentMinutes,
-          };
-        }
-        return inst;
-      });
-
-      // Update displaced components to IN_STORAGE
-      const activeSlotInst = prev.componentInstallations.find(
-        (i) => i.bikeId === bikeId && i.slot === slot && !i.removedAt
-      );
-
-      const updatedComponents = prev.components.map((c) => {
-        if (activeSlotInst && c.id === activeSlotInst.componentId) {
-          return { ...c, status: "IN_STORAGE" as const, updatedAt: now };
-        }
-        if (c.id === componentId) {
-          return { ...c, status: "INSTALLED" as const, updatedAt: now };
-        }
-        return c;
-      });
-
-      const newInst: ComponentInstallation = {
-        id: generateId("inst"),
-        bikeId,
-        componentId,
-        slot,
-        installedAt: now,
-        installedBikeKm: bike.currentKm,
-        installedBikeMinutes: bike.currentMinutes,
-        createdAt: now,
-      };
-
-      return {
-        ...prev,
-        componentInstallations: [newInst, ...updatedInstallations],
-        components: updatedComponents,
-      };
-    });
+    const runtime = { now: new Date().toISOString(), id: generateId("inst") };
+    applyInstallationOperation((current) => installComponentInData(current, runtime, bikeId, componentId, slot));
   };
 
   const removeComponent = (
@@ -1226,54 +1189,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     salePrice?: number,
     saleDate?: string
   ) => {
-    const inst = data.componentInstallations.find((i) => i.id === installationId);
-    if (!inst) throw new Error("Instalace nebyla nalezena");
-    const bike = data.bikes.find((b) => b.id === inst.bikeId);
-    if (!bike) throw new Error("Kolo nebylo nalezeno");
-
-    const now = new Date().toISOString();
-
-    const newTx: FinancialTransaction[] = [];
-    if (disposition === "SOLD" && salePrice && salePrice > 0) {
-      newTx.push({
-        id: generateId("fin"),
-        bikeId: bike.id,
-        componentId: inst.componentId,
-        type: "INCOME",
-        category: "COMPONENT_SALE",
-        amount: salePrice,
-        currency: "CZK",
-        transactionDate: saleDate || now.split("T")[0],
-        notes: "Prodej demontovaného komponentu",
-        createdAt: now,
-      });
-    }
-
-    mutateData((prev) => ({
-      ...prev,
-      componentInstallations: prev.componentInstallations.map((i) =>
-        i.id === installationId
-          ? {
-              ...i,
-              removedAt: now,
-              removedBikeKm: bike.currentKm,
-              removedBikeMinutes: bike.currentMinutes,
-            }
-          : i
-      ),
-      components: prev.components.map((c) =>
-        c.id === inst.componentId
-          ? {
-              ...c,
-              status: disposition,
-              soldPrice: disposition === "SOLD" ? salePrice : undefined,
-              soldDate: disposition === "SOLD" ? saleDate : undefined,
-              updatedAt: now,
-            }
-          : c
-      ),
-      financialTransactions: [...newTx, ...prev.financialTransactions],
-    }));
+    const runtime = { now: new Date().toISOString(), id: generateId("fin") };
+    applyInstallationOperation((current) => removeComponentInData(current, runtime, installationId, disposition, salePrice, saleDate));
   };
 
   // Oprava chybného záznamu: montáž zmizí z historie, jako by nikdy neproběhla.
@@ -1296,44 +1213,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   };
 
   const transferComponent = (installationId: string, targetBikeId: string, targetSlot: string) => {
-    const inst = data.componentInstallations.find((i) => i.id === installationId);
-    if (!inst) throw new Error("Instalace nebyla nalezena");
-    const sourceBike = data.bikes.find((b) => b.id === inst.bikeId);
-    const targetBike = data.bikes.find((b) => b.id === targetBikeId);
-    if (!sourceBike || !targetBike) throw new Error("Kolo nebylo nalezeno");
-
-    const now = new Date().toISOString();
-
-    const newInst: ComponentInstallation = {
-      id: generateId("inst"),
-      bikeId: targetBikeId,
-      componentId: inst.componentId,
-      slot: targetSlot,
-      installedAt: now,
-      installedBikeKm: targetBike.currentKm,
-      installedBikeMinutes: targetBike.currentMinutes,
-      createdAt: now,
-    };
-
-    mutateData((prev) => ({
-      ...prev,
-      componentInstallations: [
-        newInst,
-        ...prev.componentInstallations.map((i) =>
-          i.id === installationId
-            ? {
-                ...i,
-                removedAt: now,
-                removedBikeKm: sourceBike.currentKm,
-                removedBikeMinutes: sourceBike.currentMinutes,
-              }
-            : i
-        ),
-      ],
-      components: prev.components.map((c) =>
-        c.id === inst.componentId ? { ...c, status: "INSTALLED" as const, updatedAt: now } : c
-      ),
-    }));
+    const runtime = { now: new Date().toISOString(), id: generateId("inst") };
+    applyInstallationOperation((current) => transferComponentInData(current, runtime, installationId, targetBikeId, targetSlot));
   };
 
   const quickReplaceComponent = (
@@ -1341,76 +1222,8 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     currentInstallationId: string,
     replacementComponentId: string
   ) => {
-    const bike = data.bikes.find((b) => b.id === bikeId);
-    if (!bike) throw new Error("Kolo nebylo nalezeno");
-
-    const currentInst = data.componentInstallations.find((i) => i.id === currentInstallationId);
-    if (!currentInst) throw new Error("Aktivní instalace nebyla nalezena");
-
-    const currentComp = data.components.find((c) => c.id === currentInst.componentId);
-    const replacementComp = data.components.find((c) => c.id === replacementComponentId);
-    if (!currentComp || !replacementComp) throw new Error("Komponent nebyl nalezen");
-
-    const currentCat = data.categories.find((cat) => cat.id === currentComp.categoryId);
-    const repCat = data.categories.find((cat) => cat.id === replacementComp.categoryId);
-
-    // Validate equivalence using domain rules
-    const isEquiv = areComponentsEquivalentReplacement(
-      currentComp,
-      currentCat?.code,
-      replacementComp,
-      repCat?.code
-    );
-    if (!isEquiv) {
-      throw new Error("Vybraný komponent neodpovídá parametrům původního dílu pro rychlou výměnu");
-    }
-
-    const now = new Date().toISOString();
-    const newInstId = generateId("inst");
-
-    const newInst: ComponentInstallation = {
-      id: newInstId,
-      bikeId,
-      componentId: replacementComponentId,
-      slot: currentInst.slot,
-      installedAt: now,
-      installedBikeKm: bike.currentKm,
-      installedBikeMinutes: bike.currentMinutes,
-      createdAt: now,
-    };
-
-    mutateData((prev) => ({
-      ...prev,
-      componentInstallations: [
-        newInst,
-        ...prev.componentInstallations.map((i) =>
-          i.id === currentInstallationId
-            ? {
-                ...i,
-                removedAt: now,
-                removedBikeKm: bike.currentKm,
-                removedBikeMinutes: bike.currentMinutes,
-              }
-            : i
-        ),
-      ],
-      components: prev.components.map((c) => {
-        if (c.id === currentComp.id) return { ...c, status: "DISCARDED" as const, updatedAt: now };
-        if (c.id === replacementComp.id) return { ...c, status: "INSTALLED" as const, updatedAt: now };
-        return c;
-      }),
-      bikeSetups: prev.bikeSetups.map((s) => {
-        if (s.bikeId !== bikeId) return s;
-        return {
-          ...s,
-          forkInstallationId: s.forkInstallationId === currentInstallationId ? newInstId : s.forkInstallationId,
-          shockInstallationId: s.shockInstallationId === currentInstallationId ? newInstId : s.shockInstallationId,
-          frontTireInstallationId: s.frontTireInstallationId === currentInstallationId ? newInstId : s.frontTireInstallationId,
-          rearTireInstallationId: s.rearTireInstallationId === currentInstallationId ? newInstId : s.rearTireInstallationId,
-          updatedAt: now,
-        };
-      }),
-    }));
+    const runtime = { now: new Date().toISOString(), id: generateId("inst") };
+    applyInstallationOperation((current) => quickReplaceComponentInData(current, runtime, bikeId, currentInstallationId, replacementComponentId));
   };
 
   // --- SERVICE MUTATIONS ---
