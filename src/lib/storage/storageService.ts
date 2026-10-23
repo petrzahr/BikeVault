@@ -1,5 +1,7 @@
+import { validateVaultData } from "./vaultDocument";
+export { validateVaultData, validateAndParseBackup } from "./vaultDocument";
 import { BikeVaultData } from "@/types/vault";
-import { DEFAULT_CATEGORIES, DEFAULT_SETTINGS, createEmptyVaultData } from "@/constants/defaultData";
+import { createEmptyVaultData } from "@/constants/defaultData";
 
 export const STORAGE_KEY_PRODUCTION = "bikevault_data_v1";
 export const STORAGE_KEY_TEST = "bikevault_test_cache_v1";
@@ -58,63 +60,6 @@ export function getInitialData(): BikeVaultData {
 }
 
 /**
- * Striktní validace schématu BikeVaultData.
- * Ověřuje, zda data obsahují povinné entity a kolekce.
- */
-export function validateVaultData(data: unknown): { valid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  if (!data || typeof data !== "object") {
-    return { valid: false, errors: ["Data musí být platný JSON objekt."] };
-  }
-
-  const candidate = data as Partial<BikeVaultData>;
-
-  if (typeof candidate.version !== "number" || candidate.version < 1) {
-    errors.push("Chybí nebo je neplatná verze schématu (pole 'version').");
-  }
-
-  if (!Array.isArray(candidate.bikes)) {
-    errors.push("Pole 'bikes' musí být pole.");
-  }
-  if (!Array.isArray(candidate.components)) {
-    errors.push("Pole 'components' musí být pole.");
-  }
-  if (!Array.isArray(candidate.componentInstallations)) {
-    errors.push("Pole 'componentInstallations' musí být pole.");
-  }
-  if (!Array.isArray(candidate.odometerEntries)) {
-    errors.push("Pole 'odometerEntries' musí být pole.");
-  }
-  if (!Array.isArray(candidate.bikeSetups)) {
-    errors.push("Pole 'bikeSetups' musí být pole.");
-  }
-  if (!Array.isArray(candidate.setupSnapshots)) {
-    errors.push("Pole 'setupSnapshots' musí být pole.");
-  }
-  if (!Array.isArray(candidate.serviceSchedules)) {
-    errors.push("Pole 'serviceSchedules' musí být pole.");
-  }
-  if (!Array.isArray(candidate.serviceEvents)) {
-    errors.push("Pole 'serviceEvents' musí být pole.");
-  }
-  if (!Array.isArray(candidate.financialTransactions)) {
-    errors.push("Pole 'financialTransactions' musí být pole.");
-  }
-  if (!Array.isArray(candidate.categories)) {
-    errors.push("Pole 'categories' musí být pole.");
-  }
-  if (!candidate.settings || typeof candidate.settings !== "object") {
-    errors.push("Chybí nebo je neplatný objekt uživatelského nastavení 'settings'.");
-  }
-
-  return {
-    valid: errors.length === 0,
-    errors,
-  };
-}
-
-/**
  * Uloží poškozený obsah pod záložní recovery klíč do localStorage
  */
 export function createRecoveryBackup(rawContent: string, prefix = RECOVERY_KEY_PREFIX): string {
@@ -157,8 +102,8 @@ export function loadStoredCacheResult(targetKey?: string): LoadCacheResult {
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw);
-    } catch (parseErr) {
-      console.error("[BikeVault] Chyba parsování JSON v cache:", parseErr);
+    } catch {
+      console.error("[BikeVault] Chyba parsování JSON v cache.");
       const recoveryKey = createRecoveryBackup(raw);
       return {
         status: "loadError",
@@ -241,24 +186,4 @@ export function exportCorruptedRawData(rawContent: string): void {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-}
-
-/**
- * Validace a načtení JSON souboru se zálohou (Backup).
- * Nikdy nepřidává demo fixtures ani vzorová data.
- */
-export function validateAndParseBackup(jsonStr: string): BikeVaultData {
-  const parsed = JSON.parse(jsonStr);
-  const validation = validateVaultData(parsed);
-  if (!validation.valid) {
-    throw new Error(`Záložní soubor neobsahuje platnou strukturu BikeVault: ${validation.errors.join("; ")}`);
-  }
-
-  const candidate = parsed as BikeVaultData;
-  return {
-    ...candidate,
-    categories: candidate.categories?.length ? candidate.categories : DEFAULT_CATEGORIES,
-    settings: { ...DEFAULT_SETTINGS, ...candidate.settings },
-    updatedAt: new Date().toISOString(),
-  };
 }

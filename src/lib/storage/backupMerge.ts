@@ -1,6 +1,5 @@
 import { BikeVaultData } from "@/types/vault";
-import { createEmptyVaultData } from "@/constants/defaultData";
-import { validateAndParseBackup } from "@/lib/storage/storageService";
+import { interpretVaultDocument, validateAndParseBackup } from "./vaultDocument";
 
 /** Collections a restore merges, keyed by record `id`. Settings are never touched. */
 type RecordCollectionKey = Exclude<keyof BikeVaultData, "version" | "updatedAt" | "settings">;
@@ -52,18 +51,12 @@ function recordsToAdd<T>(current: readonly T[], incoming: readonly T[]): T[] {
  * version than this app understands, so their data are never merged half-understood.
  */
 export function parseBackupForRestore(jsonContent: string): BikeVaultData {
-  const backup = validateAndParseBackup(jsonContent);
-  const supportedVersion = createEmptyVaultData().version;
-  if (backup.version > supportedVersion) {
-    throw new Error(
-      `Záloha pochází z novější verze BikeVault (schéma ${backup.version}, podporováno ${supportedVersion}).`
-    );
-  }
-  return backup;
+  return validateAndParseBackup(jsonContent);
 }
 
 /** Counts what mergeBackupData would do, per collection. Groups with no records are omitted. */
 export function buildRestorePreview(backup: BikeVaultData, current: BikeVaultData): RestorePreview {
+  interpretVaultDocument(backup);
   const groups = GROUPS.map(({ key, label }) => {
     const incoming = (backup[key] as unknown[]).filter(hasValidId);
     const added = recordsToAdd(current[key] as unknown[], incoming).length;
@@ -77,6 +70,7 @@ export function buildRestorePreview(backup: BikeVaultData, current: BikeVaultDat
  * is not present yet. Existing records are never overwritten or removed and settings stay as they are.
  */
 export function mergeBackupData(current: BikeVaultData, backup: BikeVaultData): BikeVaultData {
+  interpretVaultDocument(backup);
   const next: BikeVaultData = { ...current };
   for (const { key } of GROUPS) {
     const added = recordsToAdd(current[key] as unknown[], backup[key] as unknown[]);

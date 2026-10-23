@@ -6,7 +6,7 @@
 
 import { BikeVaultData } from "@/types/vault";
 import { clearStoredAuth, InsufficientDriveScopeError } from "./googleAuth";
-import { validateVaultData } from "../storage/storageService";
+import { validateVaultData } from "../storage/vaultDocument";
 
 export { InsufficientDriveScopeError };
 
