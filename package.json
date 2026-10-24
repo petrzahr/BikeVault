@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "tsx tests/domain.test.ts && tsx tests/productionInitializationAndDataIsolation.test.ts && tsx tests/bikeEditingAndFormImprovements.test.ts && tsx tests/stravaIntegration.test.ts && tsx tests/multiUserStravaIntegration.test.ts && tsx tests/kvTokenStorageAdapter.test.ts && tsx tests/googleTokenValidation.test.ts && tsx tests/driveScopeReconsent.test.ts && tsx tests/deletion.test.ts && tsx tests/syncStatus.test.ts && tsx tests/logoutFlush.test.ts && tsx tests/devAuthBypass.test.ts && tsx tests/serviceHistory.test.ts && tsx tests/backupMerge.test.ts && tsx tests/driveBackup.test.ts && tsx tests/intervalGauge.test.ts && tsx tests/setupHelpers.test.ts && tsx tests/installations.test.ts && tsx tests/vaultDocument.test.ts"
+    "test": "tsx tests/domain.test.ts && tsx tests/productionInitializationAndDataIsolation.test.ts && tsx tests/bikeEditingAndFormImprovements.test.ts && tsx tests/stravaIntegration.test.ts && tsx tests/multiUserStravaIntegration.test.ts && tsx tests/kvTokenStorageAdapter.test.ts && tsx tests/googleTokenValidation.test.ts && tsx tests/driveScopeReconsent.test.ts && tsx tests/deletion.test.ts && tsx tests/syncStatus.test.ts && tsx tests/logoutFlush.test.ts && tsx tests/devAuthBypass.test.ts && tsx tests/serviceHistory.test.ts && tsx tests/backupMerge.test.ts && tsx tests/driveBackup.test.ts && tsx tests/intervalGauge.test.ts && tsx tests/setupHelpers.test.ts && tsx tests/installations.test.ts && tsx tests/vaultDocument.test.ts && tsx tests/vaultSyncLifecycle.test.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

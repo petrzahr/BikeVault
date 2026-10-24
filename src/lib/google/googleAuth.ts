@@ -179,14 +179,28 @@ export function waitForGoogleClient(timeoutMs = 10000): Promise<void> {
 let cachedTokenClient: GoogleTokenClient | null = null;
 let currentResolve: ((response: GoogleTokenResponse) => void) | null = null;
 let currentReject: ((err: Error) => void) | null = null;
+let authGeneration = 0;
+
+function invalidateAuthRequest(): number {
+  authGeneration++;
+  const reject = currentReject;
+  currentResolve = null;
+  currentReject = null;
+  // Each request needs its own callback; an older popup can still respond later.
+  cachedTokenClient = null;
+  reject?.(new Error("Přihlášení bylo nahrazeno novější relací."));
+  return authGeneration;
+}
 
 /**
  * Inicializuje nebo vrátí cached Google OAuth Token Client
  */
 export async function getOrCreateTokenClient(): Promise<GoogleTokenClient> {
   if (cachedTokenClient) return cachedTokenClient;
+  const generation = authGeneration;
 
   await waitForGoogleClient();
+  if (generation !== authGeneration) throw new Error("Přihlášení bylo nahrazeno novější relací.");
 
   if (!window.google?.accounts?.oauth2?.initTokenClient) {
     throw new Error("Google Identity Services oauth2 není k dispozici.");
@@ -198,6 +212,7 @@ export async function getOrCreateTokenClient(): Promise<GoogleTokenClient> {
     client_id: clientId,
     scope: GOOGLE_DRIVE_FILE_SCOPE,
     callback: (response: GoogleTokenResponse) => {
+      if (generation !== authGeneration || !currentResolve) return;
       if (response.error) {
         console.error("Chyba při autorizaci Google účtu:", response.error, response.error_description);
         if (currentReject) {
@@ -224,6 +239,7 @@ export async function getOrCreateTokenClient(): Promise<GoogleTokenClient> {
       }
     },
     error_callback: (err: unknown) => {
+      if (generation !== authGeneration || !currentReject) return;
       console.error("Google OAuth error:", err);
       if (currentReject) {
         currentReject(new Error(String(err)));
@@ -240,7 +256,9 @@ export async function getOrCreateTokenClient(): Promise<GoogleTokenClient> {
  * Vyvolá přihlášení uživatele (otevře Google OAuth dialog)
  */
 export async function loginToGoogle(prompt: string = "select_account"): Promise<string> {
+  const generation = invalidateAuthRequest();
   const tokenClient = await getOrCreateTokenClient();
+  if (generation !== authGeneration) throw new Error("Přihlášení bylo nahrazeno novější relací.");
 
   return new Promise((resolve, reject) => {
     currentResolve = (response) => {
@@ -270,6 +288,7 @@ export async function loginToGoogle(prompt: string = "select_account"): Promise<
  * Odhlásí uživatele a zruší token
  */
 export async function logoutFromGoogle(): Promise<void> {
+  const generation = invalidateAuthRequest();
   const auth = getStoredAuth();
   if (auth?.accessToken && window.google?.accounts?.oauth2?.revoke) {
     try {
@@ -281,13 +300,16 @@ export async function logoutFromGoogle(): Promise<void> {
       console.warn("Chyba při revokaci Google tokenu:", e);
     }
   }
-  clearStoredAuth();
+  if (generation === authGeneration && getStoredAuth()?.accessToken === auth?.accessToken) {
+    clearStoredAuth();
+  }
 }
 
 /**
  * Načte profil uživatele přes Google Drive API about.get
  */
 export async function fetchGoogleUserProfile(token: string): Promise<GoogleUser | null> {
+  const generation = authGeneration;
   try {
     const res = await fetch("https://www.googleapis.com/drive/v3/about?fields=user", {
       headers: {
@@ -304,7 +326,7 @@ export async function fetchGoogleUserProfile(token: string): Promise<GoogleUser 
         permissionId: typeof data.user.permissionId === "string" ? data.user.permissionId : undefined,
       };
       const current = getStoredAuth();
-      if (current) {
+      if (generation === authGeneration && current?.accessToken === token) {
         saveStoredAuth({ ...current, user });
       }
       return user;
