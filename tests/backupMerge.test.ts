@@ -110,14 +110,23 @@ test("merges categories by id", () => {
   assert.ok(merged.categories.some((c) => c.id === "cat-custom"));
 });
 
-test("skips records without id and duplicate ids inside the backup", () => {
+test("keeps the first duplicate id inside a valid backup", () => {
   const dupBackup = makeData({
-    bikes: [makeBike("b3", "First", OLD), makeBike("b3", "Duplicate", OLD), { ...makeBike("", "No id", OLD) }],
+    bikes: [makeBike("b3", "First", OLD), makeBike("b3", "Duplicate", OLD)],
   });
   const merged = mergeBackupData(current, dupBackup);
   assert.deepStrictEqual(merged.bikes.map((b) => b.name), ["Current name", "First"]);
   const preview = buildRestorePreview(dupBackup, current);
   assert.deepStrictEqual(preview.groups.find((g) => g.label === "Kola"), { label: "Kola", added: 1, existing: 1 });
+});
+
+test("rejects the whole backup instead of skipping a record without id", () => {
+  const invalid = makeData({ bikes: [makeBike("b3", "Valid", OLD), makeBike("", "Invalid", OLD)] });
+  const original = JSON.stringify(current);
+  assert.throws(() => parseBackupForRestore(JSON.stringify(invalid)), /bikes\[1\].id/);
+  assert.throws(() => buildRestorePreview(invalid, current), /bikes\[1\].id/);
+  assert.throws(() => mergeBackupData(current, invalid), /bikes\[1\].id/);
+  assert.strictEqual(JSON.stringify(current), original);
 });
 
 test("preview counts match the merge result", () => {
