@@ -58,4 +58,3 @@ for (const kind of ["bike", "component"] as const) {
   assert.equal(edit(data, { purchaseDate: "" }).financialTransactions[1].transactionDate, common.purchaseDate);
 }
 console.log("Purchase editing tests passed");
-
