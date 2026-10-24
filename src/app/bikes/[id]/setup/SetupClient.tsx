@@ -16,16 +16,17 @@ import { formatTireLabel, formatTireBadge, barToPsi, sagMm, getSupportedAdjuster
 import { SetupSheet, ReadoutRow, ReadoutField, SagRuler, ClickStepper } from "@/components/setup/SetupParts";
 import { Modal, ModalFooter } from "@/components/common/Modal";
 import { DeleteButton } from "@/components/common/DeleteButton";
-import type { DampingAdjuster } from "@/types/vault";
+import { setupContentFromDraft, resolveForkTravel } from "@/lib/domain/setupEditing";
+import type { Bike, BikeSetup, Component, SetupSnapshot, DampingAdjuster } from "@/types/vault";
 
 interface SetupClientProps {
-  bike: any;
-  initialSetup?: any;
-  snapshots?: any[];
-  forkComp?: any;
-  shockComp?: any;
-  frontTireComp?: any;
-  rearTireComp?: any;
+  bike: Bike;
+  initialSetup?: BikeSetup;
+  snapshots?: SetupSnapshot[];
+  forkComp?: Component;
+  shockComp?: Component;
+  frontTireComp?: Component;
+  rearTireComp?: Component;
   forkTravelSpec?: number | null;
   frameTravelSpec?: number | null;
 }
@@ -73,7 +74,7 @@ export function SetupClient({
   const [shockNotes, setShockNotes] = useState(initialSetup?.shockNotes || "");
 
   // Zdvih: odvozený z props při každém renderu (spec namontovaného dílu, u vidlice fallback na uložené nastavení).
-  const forkTravelNum = forkTravelSpec || initialSetup?.forkTravelMm || null;
+  const forkTravelNum = resolveForkTravel(forkTravelSpec, initialSetup?.forkTravelMm);
   const shockTravelNum = frameTravelSpec ?? null;
 
   // Nepodporované tlumení se jen skryje; uložené hodnoty zůstávají ve stavu i při uložení.
@@ -101,42 +102,20 @@ export function SetupClient({
   const [snapshotName, setSnapshotName] = useState("");
   const [snapshotNote, setSnapshotNote] = useState("");
 
+  const getSetupContent = () => setupContentFromDraft({
+    forkPressure, forkSag, forkLsc, forkHsc, forkLsr, forkHsr, forkTokens,
+    forkNotes, shockPressure, shockSag, shockLsc, shockHsc, shockLsr, shockHsr,
+    shockTokens, shockNotes, frontPressure, frontInsert, frontNotes, rearPressure, rearInsert,
+    rearNotes, generalNotes,
+  }, forkTravelSpec, initialSetup?.forkTravelMm);
+
   const handleSaveSetup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setSuccessMsg(null);
 
     try {
-      saveSetup(bike.id, {
-        forkPressurePsi: forkPressure ? parseFloat(forkPressure) : null,
-        forkSagPercent: forkSag ? parseInt(forkSag, 10) : null,
-        forkLscClicks: forkLsc ? parseInt(forkLsc, 10) : null,
-        forkHscClicks: forkHsc ? parseInt(forkHsc, 10) : null,
-        forkLsrClicks: forkLsr ? parseInt(forkLsr, 10) : null,
-        forkHsrClicks: forkHsr ? parseInt(forkHsr, 10) : null,
-        forkVolumeSpacers: forkTokens ? parseInt(forkTokens, 10) : null,
-        forkTravelMm: forkTravelNum,
-        forkNotes: forkNotes.trim() || null,
-
-        shockPressurePsi: shockPressure ? parseFloat(shockPressure) : null,
-        shockSagPercent: shockSag ? parseInt(shockSag, 10) : null,
-        shockLscClicks: shockLsc ? parseInt(shockLsc, 10) : null,
-        shockHscClicks: shockHsc ? parseInt(shockHsc, 10) : null,
-        shockLsrClicks: shockLsr ? parseInt(shockLsr, 10) : null,
-        shockHsrClicks: shockHsr ? parseInt(shockHsr, 10) : null,
-        shockVolumeSpacers: shockTokens ? parseInt(shockTokens, 10) : null,
-        shockNotes: shockNotes.trim() || null,
-
-        frontTirePressureBar: frontPressure ? parseFloat(frontPressure) : null,
-        frontTireInsert: frontInsert.trim() || null,
-        frontTireNotes: frontNotes.trim() || null,
-
-        rearTirePressureBar: rearPressure ? parseFloat(rearPressure) : null,
-        rearTireInsert: rearInsert.trim() || null,
-        rearTireNotes: rearNotes.trim() || null,
-
-        generalNotes: generalNotes.trim() || null,
-      });
+      saveSetup(bike.id, getSetupContent());
 
       setSuccessMsg("Nastavení kola bylo úspěšně uloženo.");
       setTimeout(() => setSuccessMsg(null), 4000);
@@ -153,32 +132,7 @@ export function SetupClient({
     if (!snapshotName.trim()) return;
 
     try {
-      const snapshotData = {
-        forkPressurePsi: forkPressure ? parseFloat(forkPressure) : null,
-        forkSagPercent: forkSag ? parseInt(forkSag, 10) : null,
-        forkLscClicks: forkLsc ? parseInt(forkLsc, 10) : null,
-        forkHscClicks: forkHsc ? parseInt(forkHsc, 10) : null,
-        forkLsrClicks: forkLsr ? parseInt(forkLsr, 10) : null,
-        forkHsrClicks: forkHsr ? parseInt(forkHsr, 10) : null,
-        forkVolumeSpacers: forkTokens ? parseInt(forkTokens, 10) : null,
-        forkTravelMm: forkTravelNum,
-        forkNotes: forkNotes.trim() || null,
-        shockPressurePsi: shockPressure ? parseFloat(shockPressure) : null,
-        shockSagPercent: shockSag ? parseInt(shockSag, 10) : null,
-        shockLscClicks: shockLsc ? parseInt(shockLsc, 10) : null,
-        shockHscClicks: shockHsc ? parseInt(shockHsc, 10) : null,
-        shockLsrClicks: shockLsr ? parseInt(shockLsr, 10) : null,
-        shockHsrClicks: shockHsr ? parseInt(shockHsr, 10) : null,
-        shockVolumeSpacers: shockTokens ? parseInt(shockTokens, 10) : null,
-        shockNotes: shockNotes.trim() || null,
-        frontTirePressureBar: frontPressure ? parseFloat(frontPressure) : null,
-        frontTireInsert: frontInsert.trim() || null,
-        frontTireNotes: frontNotes.trim() || null,
-        rearTirePressureBar: rearPressure ? parseFloat(rearPressure) : null,
-        rearTireInsert: rearInsert.trim() || null,
-        rearTireNotes: rearNotes.trim() || null,
-        generalNotes: generalNotes.trim() || null,
-      };
+      const snapshotData = getSetupContent();
 
       saveSetupSnapshot(bike.id, snapshotName.trim(), snapshotData, snapshotNote.trim() || undefined);
       setIsSnapshotModalOpen(false);
@@ -493,10 +447,10 @@ export function SetupClient({
 
                 <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2">
                   {[
-                    ["Vidlice", snap.snapshotData?.forkPressurePsi ? formatPsi(snap.snapshotData.forkPressurePsi) : "–"],
-                    ["Tlumič", snap.snapshotData?.shockPressurePsi ? formatPsi(snap.snapshotData.shockPressurePsi) : "–"],
-                    ["Přední", formatBar(snap.snapshotData?.frontTirePressureBar)],
-                    ["Zadní", formatBar(snap.snapshotData?.rearTirePressureBar)],
+                    ["Vidlice", snap.snapshotData?.forkPressurePsi ? formatPsi(snap.snapshotData.forkPressurePsi as number | string | null | undefined) : "–"],
+                    ["Tlumič", snap.snapshotData?.shockPressurePsi ? formatPsi(snap.snapshotData.shockPressurePsi as number | string | null | undefined) : "–"],
+                    ["Přední", formatBar(snap.snapshotData?.frontTirePressureBar as number | string | null | undefined)],
+                    ["Zadní", formatBar(snap.snapshotData?.rearTirePressureBar as number | string | null | undefined)],
                   ].map(([k, v]) => (
                     <div key={k}>
                       <dt className="section-label">{k}</dt>
