@@ -32,6 +32,7 @@ import { useFeedback } from "@/components/common/Feedback";
 import { isDevAuthBypassEnabled } from "@/lib/devAuthBypass";
 import { recordOdometerSnapshot, calculateInstallationUsage } from "@/lib/domain/odometer";
 import { compareMileage, compareRideTime, validateLinkConstraint, validateNewBikeGearId } from "@/lib/domain/stravaSync";
+import { updateBikeInData, updateComponentInData } from "@/lib/domain/purchaseEditing";
 import { formatMinutes } from "@/lib/i18n";
 import {
   BikeComponentsDisposition,
@@ -373,47 +374,10 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   };
 
   const updateBike = (id: string, updates: Partial<Bike>) => {
-    mutateData((prev) => {
-      const now = new Date().toISOString();
-      const bikes = prev.bikes.map((b) => (b.id === id ? { ...b, ...updates, id: b.id, updatedAt: now } : b));
-      const bike = bikes.find((b) => b.id === id);
-      if (!bike || !("purchasePrice" in updates || "purchaseDate" in updates)) {
-        return { ...prev, bikes };
-      }
-
-      // Udržuje transakci nákupu kola v souladu s jeho kupní cenou
-      const price = Number(bike.purchasePrice || 0);
-      const existing = prev.financialTransactions.find(
-        (t) => t.bikeId === id && t.category === "BIKE_PURCHASE"
-      );
-      let financialTransactions = prev.financialTransactions;
-      if (price <= 0) {
-        financialTransactions = financialTransactions.filter((t) => t !== existing);
-      } else if (existing) {
-        financialTransactions = financialTransactions.map((t) =>
-          t === existing
-            ? { ...t, amount: price, transactionDate: bike.purchaseDate || t.transactionDate }
-            : t
-        );
-      } else {
-        financialTransactions = [
-          {
-            id: generateId("fin"),
-            bikeId: id,
-            type: "EXPENSE",
-            category: "BIKE_PURCHASE",
-            amount: price,
-            currency: bike.currency || "CZK",
-            transactionDate: bike.purchaseDate || now.split("T")[0],
-            notes: `Pořízení kola ${bike.manufacturer} ${bike.model}`,
-            createdAt: now,
-          },
-          ...financialTransactions,
-        ];
-      }
-
-      return { ...prev, bikes, financialTransactions };
-    });
+    mutateData((prev) => updateBikeInData(prev, id, updates, {
+      now: new Date().toISOString(),
+      generateTransactionId: () => generateId("fin"),
+    }));
   };
 
   // Přeřadí kola z orderedIds do daného pořadí; ostatní kola (jiné záložky) zůstanou na svých pozicích.
@@ -781,47 +745,10 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   };
 
   const updateComponent = (id: string, updates: Partial<Component>) => {
-    mutateData((prev) => {
-      const now = new Date().toISOString();
-      const components = prev.components.map((c) => (c.id === id ? { ...c, ...updates, updatedAt: now } : c));
-      const comp = components.find((c) => c.id === id);
-      if (!comp || !("purchasePrice" in updates || "purchaseDate" in updates)) {
-        return { ...prev, components };
-      }
-
-      // Udržuje transakci nákupu komponenty v souladu s její cenou
-      const price = Number(comp.purchasePrice || 0);
-      const existing = prev.financialTransactions.find(
-        (t) => t.componentId === id && t.category === "COMPONENT_PURCHASE"
-      );
-      let financialTransactions = prev.financialTransactions;
-      if (price <= 0) {
-        financialTransactions = financialTransactions.filter((t) => t !== existing);
-      } else if (existing) {
-        financialTransactions = financialTransactions.map((t) =>
-          t === existing
-            ? { ...t, amount: price, transactionDate: comp.purchaseDate || t.transactionDate }
-            : t
-        );
-      } else {
-        financialTransactions = [
-          {
-            id: generateId("fin"),
-            componentId: id,
-            type: "EXPENSE",
-            category: "COMPONENT_PURCHASE",
-            amount: price,
-            currency: comp.currency || "CZK",
-            transactionDate: comp.purchaseDate || now.split("T")[0],
-            notes: `Nákup komponentu ${comp.manufacturer} ${comp.model}`,
-            createdAt: now,
-          },
-          ...financialTransactions,
-        ];
-      }
-
-      return { ...prev, components, financialTransactions };
-    });
+    mutateData((prev) => updateComponentInData(prev, id, updates, {
+      now: new Date().toISOString(),
+      generateTransactionId: () => generateId("fin"),
+    }));
   };
 
   const retireComponent = (id: string) => {

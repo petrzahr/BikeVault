@@ -3,6 +3,7 @@
  * Run: npx tsx tests/bikeEditingAndFormImprovements.test.ts
  */
 
+import { updateBikeInData } from "../src/lib/domain/purchaseEditing";
 import assert from "node:assert";
 import fs from "node:fs";
 import path from "node:path";
@@ -155,16 +156,11 @@ function createMockDataset(): BikeVaultData {
   };
 }
 
-/**
- * Simulace updateBike mutátoru podle implementace ve VaultContext
- */
-function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>): BikeVaultData {
-  return {
-    ...data,
-    bikes: data.bikes.map((b) =>
-      b.id === id ? { ...b, ...updates, id: b.id, updatedAt: new Date().toISOString() } : b
-    ),
-  };
+function editBike(data: BikeVaultData, id: string, updates: Partial<Bike>): BikeVaultData {
+  return updateBikeInData(data, id, updates, {
+    now: "2026-10-24T10:00:00.000Z",
+    generateTransactionId: () => "fin-new",
+  });
 }
 
 // -------------------------------------------------------------
@@ -172,7 +168,7 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
 // -------------------------------------------------------------
 {
   const data = createMockDataset();
-  const updated = applyUpdateBike(data, "bike-test-1", {
+  const updated = editBike(data, "bike-test-1", {
     name: "Propain Spindrift CF Ultimate",
     manufacturer: "Propain Bicycles",
     model: "Spindrift CF Gen 5",
@@ -191,7 +187,7 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
 {
   const data = createMockDataset();
   // Zkusíme úmyslně předat cizí ID v updates
-  const updated = applyUpdateBike(data, "bike-test-1", {
+  const updated = editBike(data, "bike-test-1", {
     id: "MALICIOUS-ID-OVERWRITE",
     name: "Renamed Bike",
   } as Partial<Bike>);
@@ -211,7 +207,7 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
   const initialOdoCount = data.odometerEntries.filter((o) => o.bikeId === "bike-test-1").length;
   const initialOdoEntries = JSON.stringify(data.odometerEntries);
 
-  const updated = applyUpdateBike(data, "bike-test-1", {
+  const updated = editBike(data, "bike-test-1", {
     name: "New Name",
     weightKg: 14.9,
   });
@@ -229,7 +225,7 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
   const data = createMockDataset();
   const initialInstallations = JSON.stringify(data.componentInstallations);
 
-  const updated = applyUpdateBike(data, "bike-test-1", {
+  const updated = editBike(data, "bike-test-1", {
     notes: "Upravené poznámky",
   });
 
@@ -245,7 +241,7 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
   const initialSchedules = JSON.stringify(data.serviceSchedules);
   const initialEvents = JSON.stringify(data.serviceEvents);
 
-  const updated = applyUpdateBike(data, "bike-test-1", {
+  const updated = editBike(data, "bike-test-1", {
     weightKg: 15.2,
   });
 
@@ -259,13 +255,15 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
 // -------------------------------------------------------------
 {
   const data = createMockDataset();
-  const initialFinance = JSON.stringify(data.financialTransactions);
+  const initialFinance = structuredClone(data.financialTransactions);
 
-  const updated = applyUpdateBike(data, "bike-test-1", {
-    purchasePrice: 120000, // Změna kupní ceny v metadatech kola nesmí smazat existující finanční transakce
+  const updated = editBike(data, "bike-test-1", {
+    purchasePrice: 120000,
   });
 
-  assert.strictEqual(JSON.stringify(updated.financialTransactions), initialFinance);
+  assert.deepStrictEqual(updated.financialTransactions, initialFinance.map((transaction) =>
+    transaction.id === "fin-test-1" ? { ...transaction, amount: 120000 } : transaction));
+  assert.deepStrictEqual(data.financialTransactions, initialFinance);
   console.log("✅ PASSED Test 6: Editing does not remove financial transaction history.");
 }
 
@@ -311,7 +309,7 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
 
   // Ověření podpory velikosti rámu a přesného zachování sériového čísla
   const data = createMockDataset();
-  const updated = applyUpdateBike(data, "bike-test-1", {
+  const updated = editBike(data, "bike-test-1", {
     frameSize: "56 / L",
     serialNumber: "sN-ExAcT-1234_#X", // přesné zachování velikosti písmen a znaků
   });
@@ -384,11 +382,11 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
 {
   const data = createMockDataset();
   // Změna hmotnosti z 15.8 na 14.5
-  const updated1 = applyUpdateBike(data, "bike-test-1", { weightKg: 14.5 });
+  const updated1 = editBike(data, "bike-test-1", { weightKg: 14.5 });
   assert.strictEqual(updated1.bikes[0].weightKg, 14.5);
 
   // Následné vymazání hmotnosti na null
-  const updated2 = applyUpdateBike(updated1, "bike-test-1", { weightKg: null });
+  const updated2 = editBike(updated1, "bike-test-1", { weightKg: null });
   assert.strictEqual(updated2.bikes[0].weightKg, null);
   console.log("✅ PASSED Test 11: Bike weight can be edited, updated and cleared.");
 }
@@ -400,7 +398,7 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
   const data = createMockDataset();
   const sampleDataUrl = "data:image/webp;base64,UklGRhoAAABXRUJQVlA4TAYAAAAvAAAAAAfQ//73vw==";
 
-  const updated = applyUpdateBike(data, "bike-test-1", {
+  const updated = editBike(data, "bike-test-1", {
     uploadedImage: sampleDataUrl,
   });
 
@@ -531,7 +529,7 @@ function applyUpdateBike(data: BikeVaultData, id: string, updates: Partial<Bike>
   const data = createMockDataset();
   const originalBike = data.bikes[0];
 
-  const updated = applyUpdateBike(data, originalBike.id, {
+  const updated = editBike(data, originalBike.id, {
     uploadedImage: "data:image/webp;base64,NEW_IMAGE_PAYLOAD",
   });
 
